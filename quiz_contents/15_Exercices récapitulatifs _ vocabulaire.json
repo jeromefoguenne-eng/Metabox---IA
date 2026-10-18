@@ -1,0 +1,25 @@
+{
+  "name": "Exercices récapitulatifs : vocabulaire",
+  "url": "https://moodle.hech.be/mod/quiz/view.php?id=11024",
+  "intro": "Conditions d’achèvement\n\nVocabulaire : lorsqu’un mot est souligné dans la consigne, coche la bonne définition de ce mot parmi les propositions suggérées. Attention, si plusieurs mots sont soulignés, plusieurs définitions sont à cocher.\n\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+  "questions": [
+    {
+      "number": "Question 1",
+      "type": "que multichoice deferredfeedback notyetanswered",
+      "text": "1) Expliquez quelles sont les causes et les conséquences de la dénaturation des protéines.",
+      "formulation": "Texte de la question\n\n1) Expliquez quelles sont les causes et les conséquences de la dénaturation des protéines.\n\nQuestion 1\nRéponse\na.\n\nCe qui est à l'origine d'une action ou d'un événement.\n\nb.\n\nL'élément déclencheur d'un processus.\n\nc.\n\nLa conclusion d'un raisonnement ou d'un processus logique.\n\nd.\n\nCe qui est à l'origine d'un phénomène, d'un événement ou d'une action.\n\ne.\n\nCe qui se produit après un événement et qui est dû à cet événement.\n\nf.\n\nCe qui se produit après un événement et qui est dû à cet événement.\n\ng.\n\nLa cause directe d'une situation donnée.\n\nh.\n\nL'effet direct d'un phénomène naturel.",
+      "options": [
+        "a.\n\nCe qui est à l'origine d'une action ou d'un événement.",
+        "b.\n\nL'élément déclencheur d'un processus.",
+        "c.\n\nLa conclusion d'un raisonnement ou d'un processus logique.",
+        "d.\n\nCe qui est à l'origine d'un phénomène, d'un événement ou d'une action.",
+        "e.\n\nCe qui se produit après un événement et qui est dû à cet événement.",
+        "f.\n\nCe qui se produit après un événement et qui est dû à cet événement.",
+        "g.\n\nLa cause directe d'une situation donnée.",
+        "h.\n\nL'effet direct d'un phénomène naturel."
+      ]
+    }
+  ],
+  "glossary_entries": [],
+  "raw_text": ""
+}

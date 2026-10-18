@@ -1,0 +1,583 @@
+[
+  {
+    "name": "Exercice 1 - Synonymes des verbes d'action",
+    "url": "https://moodle.hech.be/mod/quiz/view.php?id=11002",
+    "intro": "Conditions d’achèvement\n\nPour t’entrainer à mieux percevoir ces verbes d’action et leurs synonymes, replace les verbes qui signifient la même chose dans la colonne correspondante.\n\n\n\n\nContinuer la dernière prévisualisation\n\nMéthode d’évaluation : Note la plus haute\n\nVos tentatives\nTentative 1\nRésumé de la tentative 1\nStatut\tEn cours\nCommencé\tdimanche 18 octobre 2026, 17:34",
+    "questions": [],
+    "glossary_entries": [],
+    "raw_text": ""
+  },
+  {
+    "name": "Exercice 2 - Identification des verbes de consigne",
+    "url": "https://moodle.hech.be/mod/quiz/view.php?id=11003",
+    "intro": "Conditions d’achèvement\n\nAfin de te familiariser avec d’autres verbes de consigne et leur signification, pour chaque verbe proposé, coche la correspondance correcte (d’après l’exercice de Gilson, G. (s.d.). Comprendre et appliquer des consignes. Ludum Invaders. https://luduminvaders.com/).\n\n\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+    "questions": [
+      {
+        "number": "Question 1",
+        "type": "que multichoice deferredfeedback notyetanswered",
+        "text": "Biffer",
+        "formulation": "Texte de la question\nBiffer\nQuestion 1\nRéponse\na.\n\nBarrer\n\n\nb.\n\nGommer\n\n\nc.\n\nTracer un trait sous le mot\n\n\nEffacer mon choix",
+        "options": [
+          "a.\n\nBarrer",
+          "b.\n\nGommer",
+          "c.\n\nTracer un trait sous le mot"
+        ]
+      },
+      {
+        "number": "Question 2",
+        "type": "que multichoice deferredfeedback notyetanswered",
+        "text": "Définir",
+        "formulation": "Texte de la question\n\nDéfinir\n\n\nQuestion 2\nRéponse\na.\n\nExpliquer le sens\n\n\nb.\n\nTerminer le tout en une fois\n\n\nc.\n\nDonner les caractéristiques\n\n\nEffacer mon choix",
+        "options": [
+          "a.\n\nExpliquer le sens",
+          "b.\n\nTerminer le tout en une fois",
+          "c.\n\nDonner les caractéristiques"
+        ]
+      },
+      {
+        "number": "Question 3",
+        "type": "que multichoice deferredfeedback notyetanswered",
+        "text": "Citer",
+        "formulation": "Texte de la question\n\nCiter\n\n\nQuestion 3\nRéponse\na.\n\nExpliquer\n\n\nb.\n\nNuméroter\n\n\nc.\n\nNommer\n\n\nEffacer mon choix",
+        "options": [
+          "a.\n\nExpliquer",
+          "b.\n\nNuméroter",
+          "c.\n\nNommer"
+        ]
+      },
+      {
+        "number": "Question 4",
+        "type": "que multichoice deferredfeedback notyetanswered",
+        "text": "Cocher",
+        "formulation": "Texte de la question\n\nCocher\n\n\nQuestion 4\nRéponse\na.\n\nAssembler\n\n\nb.\n\nPlacer un petit trait dans une case en face d'une proposition\n\n\nc.\n\nEffacer\n\n\nEffacer mon choix",
+        "options": [
+          "a.\n\nAssembler",
+          "b.\n\nPlacer un petit trait dans une case en face d'une proposition",
+          "c.\n\nEffacer"
+        ]
+      },
+      {
+        "number": "Question 5",
+        "type": "que multichoice deferredfeedback notyetanswered",
+        "text": "Souligner",
+        "formulation": "Texte de la question\n\nSouligner\n\n\nQuestion 5\nRéponse\na.\n\nTracer un trait sous ...\n\n\nb.\n\nTracer un ovale autour de...\n\n\nc.\n\nSéparer par des traits.\n\n\nEffacer mon choix",
+        "options": [
+          "a.\n\nTracer un trait sous ...",
+          "b.\n\nTracer un ovale autour de...",
+          "c.\n\nSéparer par des traits."
+        ]
+      },
+      {
+        "number": "Question 6",
+        "type": "que multichoice deferredfeedback notyetanswered",
+        "text": "Relier",
+        "formulation": "Texte de la question\n\nRelier\n\n\nQuestion 6\nRéponse\na.\n\nPlacer deux éléments l'un à côté de l'autre\n\n\nb.\n\nTracer une ligne allant d'un élément à un autre\n\n\nc.\n\nLire une seconde fois\n\n\nEffacer mon choix",
+        "options": [
+          "a.\n\nPlacer deux éléments l'un à côté de l'autre",
+          "b.\n\nTracer une ligne allant d'un élément à un autre",
+          "c.\n\nLire une seconde fois"
+        ]
+      },
+      {
+        "number": "Question 7",
+        "type": "que multichoice deferredfeedback notyetanswered",
+        "text": "Classer",
+        "formulation": "Texte de la question\n\nClasser\n\n\nQuestion 7\nRéponse\na.\n\nRanger dans un certain ordre\n\n\nb.\n\nDiviser des éléments en catégories\n\n\nc.\n\nOrganiser son cours\n\n\nEffacer mon choix",
+        "options": [
+          "a.\n\nRanger dans un certain ordre",
+          "b.\n\nDiviser des éléments en catégories",
+          "c.\n\nOrganiser son cours"
+        ]
+      },
+      {
+        "number": "Question 8",
+        "type": "que multichoice deferredfeedback notyetanswered",
+        "text": "Enumérer",
+        "formulation": "Texte de la question\n\nEnumérer\n\n\nQuestion 8\nRéponse\na.\n\nCiter des éléments les uns après les autres\n\n\nb.\n\nDonner une explication\n\n\nc.\n\nDonner le nom de quelque chose\n\n\nEffacer mon choix",
+        "options": [
+          "a.\n\nCiter des éléments les uns après les autres",
+          "b.\n\nDonner une explication",
+          "c.\n\nDonner le nom de quelque chose"
+        ]
+      },
+      {
+        "number": "Question 9",
+        "type": "que multichoice deferredfeedback notyetanswered",
+        "text": "Compléter",
+        "formulation": "Texte de la question\n\nCompléter\n\n\nQuestion 9\nRéponse\na.\n\nAjouter ce qui manque\n\n\nb.\n\nChoisir la bonne réponse\n\n\nc.\n\nTout récrire\n\n\nEffacer mon choix",
+        "options": [
+          "a.\n\nAjouter ce qui manque",
+          "b.\n\nChoisir la bonne réponse",
+          "c.\n\nTout récrire"
+        ]
+      },
+      {
+        "number": "Question 10",
+        "type": "que multichoice deferredfeedback notyetanswered",
+        "text": "Comparer",
+        "formulation": "Texte de la question\n\nComparer\n\n\nQuestion 10\nRéponse\na.\n\nAssembler parallèlement deux éléments\n\n\nb.\n\nUtiliser son compas\n\n\nc.\n\nTrouver les ressemblances et les différences entre deux éléments\n\n\nEffacer mon choix",
+        "options": [
+          "a.\n\nAssembler parallèlement deux éléments",
+          "b.\n\nUtiliser son compas",
+          "c.\n\nTrouver les ressemblances et les différences entre deux éléments"
+        ]
+      }
+    ],
+    "glossary_entries": [],
+    "raw_text": ""
+  },
+  {
+    "name": "Exercice 3 - Verbes d'action",
+    "url": "https://moodle.hech.be/mod/quiz/view.php?id=11004",
+    "intro": "Conditions d’achèvement\n\nComplète les énoncés suivants à l’aide du bon verbe. Attention : tu ne peux pas utiliser deux fois le même verbe ! (Exercice repris de Zakhartchouk, J.-M. (2019). Comprendre les énoncés et les consignes. Réseau Canopé).\n\n\n\n\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+    "questions": [
+      {
+        "number": "Question 1",
+        "type": "que gapselect deferredfeedback notyetanswered",
+        "text": "Vide 1 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n trois herbivores.\n\nVide 2 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n cinq adjectifs mélioratifs dans ce texte.\n\nVide 3 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n le début de ce conte.\n\nVide 4 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n le tableau qui indique les vitesses moyennes de déplacement de certains animaux.\n\nVide 5 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n ces opérations : 8,7 + 3,9 ; 15,3 x 23,7.\n\nVide 6 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n les pronoms et les noms auxquels ils se réfèrent dans ce texte.\n\nVide 7 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n le mouvement de cet animal dans le documentaire qui va être projeté.\n\nVide 8 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n les informations que vous avez trouvées à la bibliothèque avec vos mots à vous.\n\nVide 9 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n ce que vous voyez sur cette photographie.\n\nVide 10 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n les mots suivants : hiéroglyphe, mastaba, pyramide.\n\nVide 11 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n en trois parties l’histoire dont vous avez inventé le scénario.\n\nVide 12 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n votre choix (il fallait choisir quel était le personnage principal d’un roman, avec trois possibilités).\n\nVide 13 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n davantage votre devoir, qui était trop court.\n\nVide 14 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n cette règle aux cinq phrases suivantes.\n\nVide 15 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n un équivalent français à cette expression anglaise.",
+        "formulation": "Texte de la question\n\nVide 1 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n trois herbivores.\n\nVide 2 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n cinq adjectifs mélioratifs dans ce texte.\n\nVide 3 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n le début de ce conte.\n\nVide 4 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n le tableau qui indique les vitesses moyennes de déplacement de certains animaux.\n\nVide 5 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n ces opérations : 8,7 + 3,9 ; 15,3 x 23,7.\n\nVide 6 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n les pronoms et les noms auxquels ils se réfèrent dans ce texte.\n\nVide 7 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n le mouvement de cet animal dans le documentaire qui va être projeté.\n\nVide 8 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n les informations que vous avez trouvées à la bibliothèque avec vos mots à vous.\n\nVide 9 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n ce que vous voyez sur cette photographie.\n\nVide 10 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n les mots suivants : hiéroglyphe, mastaba, pyramide.\n\nVide 11 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n en trois parties l’histoire dont vous avez inventé le scénario.\n\nVide 12 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n votre choix (il fallait choisir quel était le personnage principal d’un roman, avec trois possibilités).\n\nVide 13 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n davantage votre devoir, qui était trop court.\n\nVide 14 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n cette règle aux cinq phrases suivantes.\n\nVide 15 Question 1\n \nCitez\nCherchez\nRésumez\nComplétez\nEffectuez\nRelevez\nIndiquez\nReformulez\nDécrivez\nDéfinissez\nRédigez\nJustifiez\nDéveloppez\nAppliquez\nTrouvez\n un équivalent français à cette expression anglaise.",
+        "options": [
+          "Citez",
+          "Cherchez",
+          "Résumez",
+          "Complétez",
+          "Effectuez",
+          "Relevez",
+          "Indiquez",
+          "Reformulez",
+          "Décrivez",
+          "Définissez",
+          "Rédigez",
+          "Justifiez",
+          "Développez",
+          "Appliquez",
+          "Trouvez"
+        ]
+      }
+    ],
+    "glossary_entries": [],
+    "raw_text": ""
+  },
+  {
+    "name": "Point théorique après l'exercice 3",
+    "url": "https://moodle.hech.be/mod/feedback/view.php?id=11005",
+    "intro": "",
+    "questions": [],
+    "glossary_entries": [],
+    "raw_text": "Conditions d’achèvement\n\nFace à une consigne, il est important que tu fasses la distinction entre :\n\n\nLes verbes qui expliquent, racontent, désignent quelque chose ou quelqu’un ➡️ Ces verbes permettent de créer du contexte. Nous verrons dans le Module 3, point 1 comment distinguer les éléments essentiels et accessoires d’une consigne.\nLes verbes qui indiquent une tâche à effectuer. Parmi ceux-ci, il existe :\n\nLes verbes d’actions précis : souligner, lister, dire avec ses mots…\nLes verbes plus flous : relever, catégoriser…\nLes verbes conceptuels : décrire, expliquer, argumenter… \n\nEn fonction du verbe qui va être utilisé dans la consigne, la difficulté que tu pourras ressentir va être plus ou moins forte 🥵.\n\nExemple :\nSi je te demande de… Lister les principaux ingrédients de la pâte à crêpe 🥞.\nSans trop de difficulté, tu vas pouvoir me dire que, pour faire des crêpes, il faut :\n\n\nDu lait,\nDe la farine,\n\nDes œufs,\n\nDu sucre vanillé.\n\nEn revanche, si je te demande d’… Expliquer en quoi une gaufre est plus calorique qu’une crêpe 🧇, il faut d'abord comprendre que le verbe expliquer n’est pas toujours perçu de la même façon par tout le monde.\nEnsuite, tu dois déchiffrer que, dans ce contexte spécifique, expliquer renferme une autre action, qui n’est pas clairement énoncée : celle de comparer. En effet, pour justifier ta réponse, tu vas devoir comparer les 2 recettes afin de démontrer que la gaufre est plus calorique que la crêpe.\n\n\n\nModifier les questions\nPrévisualiser les questions\nVue d’ensemble\n \nRéponses envoyées: 0\nQuestions: 0"
+  },
+  {
+    "name": "Exercice 4 - Distinguer les attentes",
+    "url": "https://moodle.hech.be/mod/quiz/view.php?id=11006",
+    "intro": "Conditions d’achèvement\n\nEt pour toi, qu’est-ce qui est le plus difficile ?\n\nAu vu de la théorie que tu viens de lire, classe ces verbes d’action selon le degré de difficulté qu’ils représentent.\n\n\n\n\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+    "questions": [
+      {
+        "number": "Question 1",
+        "type": "que ddimageortext deferredfeedback notyetanswered",
+        "text": "Liste des verbes : Classifier – Résumer – Définir – Comparer – Reformuler (ces verbes apparaitront sous la forme d’étiquettes à replacer le long de la jauge)",
+        "formulation": "Texte de la question\n\nListe des verbes : Classifier – Résumer – Définir – Comparer – Reformuler (ces verbes apparaitront sous la forme d’étiquettes à replacer le long de la jauge)\n\n\n\n\nvide\n \nvide\n \nvide\n \nvide\n \nvide\n \nDéfinirReformulerClassifierComparerRésumer",
+        "options": []
+      }
+    ],
+    "glossary_entries": [],
+    "raw_text": ""
+  },
+  {
+    "name": "Point théorique après l'exercice 4",
+    "url": "https://moodle.hech.be/mod/feedback/view.php?id=11007",
+    "intro": "",
+    "questions": [],
+    "glossary_entries": [],
+    "raw_text": "Conditions d’achèvement\n\nComment expliquer ce classement ?\n\n\nCertains verbes traduisent une action parfois plus difficile à réaliser qu’il n’y parait car ils renferment une part d’implicite, c’est-à-dire des opérations mentales spécifiques qui y sont liées et qu’on ne perçoit pas toujours directement 🤔.\n\n\nSi nous repartons des verbes de l’exercice précédent :\n\n\nDéfinir est l’action la plus simple : il suffit de rendre mot à mot la définition que tu auras mémorisée au préalable. Le verbe indique clairement ce que tu dois faire.\nL’action de reformuler est plus difficile que la précédente. De façon implicite, lorsqu’on te demande de reformuler, on attend de toi que tu t’appropries un concept pour en rendre compte avec tes propres mots, d’une façon différente que celle présentée en cours. Cet aspect n’est pas toujours perçu.\n\nLorsqu’on te demande de classifier, on attend de toi que tu ranges par catégories des éléments qui possèdent des caractéristiques communes. Ainsi, ce verbe renferme plusieurs opérations mentales différentes, pas toujours claires. Voici l’ensemble des actions que renferme le verbe classifier : a) Lister les caractéristiques de l’élément 1 et celles de l’élément 2 ; b) Parmi les caractéristiques relevées, dégager les caractéristiques communes ; c) Lorsque ces caractéristiques communes sont identifiées, établir les catégories, celles qui serviront pour la classification.\n\nDe la même façon, le verbe comparer rassemble plusieurs opérations mentales également : a) Lister les caractéristiques de l’élément 1 et celles de l’élément 2 ; b) Parmi les caractéristiques relevées, identifier les traits communs et les différences ; c) Parmi les caractéristiques relevées, établir des éléments de comparaison pertinents, c’est-à-dire des éléments qui se répondent. Exemple : 🍎 Les pommes sont plus grandes que les cerises ➡️ Pertinent, l’élément comparateur est la taille >< 🍏 Les pommes sont vertes, les cerises sont petites ➡️ Non-pertinent, les éléments de comparaison (la couleur d’un côté, la taille de l’autre) ne se répondent pas et ne font donc pas sens.\n\nL’action de résumer implique plusieurs opérations mentales conséquentes : a) Chercher dans sa mémoire les différentes parties de cours qui sont importantes en fonction de la question posée ; b) Distinguer les éléments essentiels au résumé de ceux qui sont accessoires et qui doivent être laissés de côté pour offrir une réponse abrégée.\n\n\nLa difficulté de l’action se cache dans le verbe employé dans la consigne à cause de l’ensemble des opérations mentales qu’il implique, de façon parfois implicite. 🚨\n\n\nTu peux retrouver une liste de verbes d’action et leur stratégie de résolution dans le Module 4, points 1 et 3 😊.\n\n\nModifier les questions\nPrévisualiser les questions\nVue d’ensemble\n \nRéponses envoyées: 0\nQuestions: 0"
+  },
+  {
+    "name": "Exercice 1 : les locutions",
+    "url": "https://moodle.hech.be/mod/quiz/view.php?id=11009",
+    "intro": "Conditions d’achèvement\n\nEn cliquant sur ce lien, tu accèdes à un bref rappel théorique, suivi d'un exercice relatif aux prépositions.\n\n\nhttps://www.francaisfacile.com/exercices/exercice-francais-2/exercice-francais-99422.php\n\n\n\n\nAjouter question\n\nMéthode d’évaluation : Note la plus haute\n\nAucune question n’a encore été ajoutée\nRetour au cours",
+    "questions": [],
+    "glossary_entries": [],
+    "raw_text": ""
+  },
+  {
+    "name": "Exercice 2 : les conjonctions",
+    "url": "https://moodle.hech.be/mod/quiz/view.php?id=11010",
+    "intro": "Conditions d’achèvement\n\nLes dossiers d’exercices auxquels tu as accès en cliquant sur les liens ci-dessous regroupent : de la théorie, des exercices et la correction de ceux-ci. Afin de réaliser les exercices, tu peux imprimer le document vers lequel tu es renvoyé ou bien prendre une feuille de papier et les réaliser à la main, en gardant les consignes en ligne sous le yeux.\n\nConjonctions de coordination : https://ameliofrancais.ccdmd.qc.ca/ressources/405/caracteristiques-des-coordonnants?s=&f=54\nConjonctions de subordination : https://ameliofrancais.ccdmd.qc.ca/ressources/409/caracteristiques-des-subordonnants?s=&f=54\n\nAjouter question\n\nMéthode d’évaluation : Note la plus haute\n\nAucune question n’a encore été ajoutée\nRetour au cours",
+    "questions": [],
+    "glossary_entries": [],
+    "raw_text": ""
+  },
+  {
+    "name": "Exercice 1 : les pronoms interrogatifs",
+    "url": "https://moodle.hech.be/mod/quiz/view.php?id=11012",
+    "intro": "Conditions d’achèvement\n\nEn cliquant sur ce lien, tu arrives vers un document qui reprend de la théorie et des exercices liés aux pronoms interrogatifs. Afin de réaliser ces exercices, tu peux imprimer le document ou les réaliser sur une feuille, en gardant les consignes sous le yeux.\n\n\nhttps://ameliofrancais.ccdmd.qc.ca/storage/amelioration-du-francais/ressources/1697755742-allo_pron_038_V2.pdf\n\n\n\n\nAjouter question\n\nMéthode d’évaluation : Note la plus haute\n\nAucune question n’a encore été ajoutée\nRetour au cours",
+    "questions": [],
+    "glossary_entries": [],
+    "raw_text": ""
+  },
+  {
+    "name": "Exercices pronoms",
+    "url": "https://moodle.hech.be/mod/quiz/view.php?id=11014",
+    "intro": "Conditions d’achèvement\n\nEnrichir son vocabulaire en associant un mot et sa définition : https://jeudictionnaire.ccdmd.qc.ca/\nEnrichir son vocabulaire en travaillant sur les synonymes : https://motsjumeaux.ccdmd.qc.ca/\nEnrichir son vocabulaire en travaillant autour des adjectifs. Ton objectif est de trouver un adjectif précis qui te permettra de remplacer un segment de phrase : https://adjectifs.ccdmd.qc.ca/\nEnrichir son vocabulaire en travaillant sur la précision. Ton objectif est de trouver des mots plus précis afin de remplacer un segment de phrase : https://motspoussoirs.ccdmd.qc.ca/\n\nAjouter question\n\nMéthode d’évaluation : Note la plus haute\n\nAucune question n’a encore été ajoutée\nRetour au cours",
+    "questions": [],
+    "glossary_entries": [],
+    "raw_text": ""
+  },
+  {
+    "name": "Exercice 1 - Analyse de consignes",
+    "url": "https://moodle.hech.be/mod/quiz/view.php?id=11016",
+    "intro": "Conditions d’achèvement\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+    "questions": [
+      {
+        "number": "Question 1",
+        "type": "que shortanswer deferredfeedback notyetanswered",
+        "text": "Dans les énoncés proposés ci-dessous, relève les mots qui te paraissent les plus importants, en dehors des verbes de consignes. L’objectif est d’essayer ne pas relever plus de 2 mots par énoncé lorsque cela est possible. Justifie ta réponse (exercice repris de Zakhartchouk, J.-M. (2019). Comprendre les énoncés et les consignes. Réseau Canopé).\n\na)       Rangez les nombres suivants dans l’ordre décroissant : 8, 7, 4, 10, 32, 2, 14, 5 ?",
+        "formulation": "Texte de la question\n\nDans les énoncés proposés ci-dessous, relève les mots qui te paraissent les plus importants, en dehors des verbes de consignes. L’objectif est d’essayer ne pas relever plus de 2 mots par énoncé lorsque cela est possible. Justifie ta réponse (exercice repris de Zakhartchouk, J.-M. (2019). Comprendre les énoncés et les consignes. Réseau Canopé).\n\na)       Rangez les nombres suivants dans l’ordre décroissant : 8, 7, 4, 10, 32, 2, 14, 5 ?\n\n\n\n\n\n\n\nRéponse : \nQuestion 1",
+        "options": []
+      }
+    ],
+    "glossary_entries": [],
+    "raw_text": ""
+  },
+  {
+    "name": "Exercice 2 - Analyse de consignes",
+    "url": "https://moodle.hech.be/mod/quiz/view.php?id=11017",
+    "intro": "Conditions d’achèvement\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+    "questions": [
+      {
+        "number": "Question 1",
+        "type": "que multichoice deferredfeedback notyetanswered",
+        "text": "Parmi les énoncés suivants, certains ne contiennent pas toutes les données essentielles à la réalisation de l’exercice. Lesquels ? (Exercice repris de Zakhartchouk, J.-M. (2019). Comprendre les énoncés et les consignes. Réseau Canopé).",
+        "formulation": "Texte de la question\n\nParmi les énoncés suivants, certains ne contiennent pas toutes les données essentielles à la réalisation de l’exercice. Lesquels ? (Exercice repris de Zakhartchouk, J.-M. (2019). Comprendre les énoncés et les consignes. Réseau Canopé).\n\n\n\n\nQuestion 1\nRéponse\na.\n\nClassez en catégories les animaux que l’on voit sur la photographie (photographie jointe).\n\n\n\n\nb.\n\nImagine un poème avec les mots suivants : peur, forêt, fuite, pinsons, fraîcheur.\n\n\n\n\nc.\n\nLa ville de L. comptait 55 000 habitants en 1975, 60 000 en 1985, 65 000 en 1995. Combien va-t-elle en contenir en 2000 ?\n\n\n\n\nd.\n\nCite quelques animaux vivant dans un jardin.\n\n\n\n\ne.\n\nPour la rentrée, Pierre doit acheter 3 cahiers à grands carreaux à 6.55€ pièce, 5 stylos à 2.40€ chacun, une pochette de transparents à 10€ et quelques cahiers de brouillon qui ne coûtent qu’un euro pièce. Il a en poche 50€. A-t-il suffisamment d’argent pour tout acheter ?\n\n\n\n\nf.\n\nCalcule le périmètre de ce champ dont la longueur est le double de la largeur.\n\n\n\n\ng.\n\nDécris l’animal qui est sur cette photographie (photographie d’une statue de la louve romaine avec Romulus et Remus) ?\n\n\n\n\nh.\n\nTu dois raconter ce conte étudié en classe à d’autres enfants. Écris le début de ce que tu vas dire.",
+        "options": [
+          "a.\n\nClassez en catégories les animaux que l’on voit sur la photographie (photographie jointe).",
+          "b.\n\nImagine un poème avec les mots suivants : peur, forêt, fuite, pinsons, fraîcheur.",
+          "c.\n\nLa ville de L. comptait 55 000 habitants en 1975, 60 000 en 1985, 65 000 en 1995. Combien va-t-elle en contenir en 2000 ?",
+          "d.\n\nCite quelques animaux vivant dans un jardin.",
+          "e.\n\nPour la rentrée, Pierre doit acheter 3 cahiers à grands carreaux à 6.55€ pièce, 5 stylos à 2.40€ chacun, une pochette de transparents à 10€ et quelques cahiers de brouillon qui ne coûtent qu’un euro pièce. Il a en poche 50€. A-t-il suffisamment d’argent pour tout acheter ?",
+          "f.\n\nCalcule le périmètre de ce champ dont la longueur est le double de la largeur.",
+          "g.\n\nDécris l’animal qui est sur cette photographie (photographie d’une statue de la louve romaine avec Romulus et Remus) ?",
+          "h.\n\nTu dois raconter ce conte étudié en classe à d’autres enfants. Écris le début de ce que tu vas dire."
+        ]
+      }
+    ],
+    "glossary_entries": [],
+    "raw_text": ""
+  },
+  {
+    "name": "Exercices récapitulatifs : les mots essentiels",
+    "url": "https://moodle.hech.be/mod/quiz/view.php?id=11022",
+    "intro": "Conditions d’achèvement\n\nEn dehors du verbe de consigne, relève les mots essentiels (ceux à côté desquels tu ne peux pas passer si tu souhaites offrir une réponse correcte et complète). Plusieurs mots peuvent être sélectionnés.\n\n\n\n\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+    "questions": [
+      {
+        "number": "Question 1",
+        "type": "que multichoice deferredfeedback notyetanswered",
+        "text": "1)      Expliquez en anglais la différence entre block train et single wagon.\n\n Mots essentiels :",
+        "formulation": "Texte de la question\n\n1)      Expliquez en anglais la différence entre block train et single wagon.\n\n Mots essentiels :\n\n\n\n\nQuestion 1\nRéponse\na.\n\nsingle wagon\n\n\nb.\n\nExpliquez\n\n\nc.\n\nen anglais\n\n\nd.\n\nblock train\n\n\ne.\n\nla différence",
+        "options": [
+          "a.\n\nsingle wagon",
+          "b.\n\nExpliquez",
+          "c.\n\nen anglais",
+          "d.\n\nblock train",
+          "e.\n\nla différence"
+        ]
+      }
+    ],
+    "glossary_entries": [],
+    "raw_text": ""
+  },
+  {
+    "name": "Exercices récapitulatifs : les verbes de consigne",
+    "url": "https://moodle.hech.be/mod/quiz/view.php?id=11023",
+    "intro": "Conditions d’achèvement\n\nIdentifie le verbe de consigne et explique, avec tes mots, ce qui t’est demandé via ce verbe. Y a-t-il des opérations mentales implicites derrière ce verbe ? Si oui, lesquelles ?\n\n\n\n\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+    "questions": [
+      {
+        "number": "Question 1",
+        "type": "que shortanswer deferredfeedback notyetanswered",
+        "text": "1)      Expliquez en anglais la différence entre block train et single wagon.\n\nVerbe(s) de consigne :",
+        "formulation": "Texte de la question\n\n1)      Expliquez en anglais la différence entre block train et single wagon.\n\nVerbe(s) de consigne :\n\n\n\n\nRéponse : \nQuestion 1",
+        "options": []
+      }
+    ],
+    "glossary_entries": [],
+    "raw_text": ""
+  },
+  {
+    "name": "Exercices récapitulatifs : vocabulaire",
+    "url": "https://moodle.hech.be/mod/quiz/view.php?id=11024",
+    "intro": "Conditions d’achèvement\n\nVocabulaire : lorsqu’un mot est souligné dans la consigne, coche la bonne définition de ce mot parmi les propositions suggérées. Attention, si plusieurs mots sont soulignés, plusieurs définitions sont à cocher.\n\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+    "questions": [
+      {
+        "number": "Question 1",
+        "type": "que multichoice deferredfeedback notyetanswered",
+        "text": "1) Expliquez quelles sont les causes et les conséquences de la dénaturation des protéines.",
+        "formulation": "Texte de la question\n\n1) Expliquez quelles sont les causes et les conséquences de la dénaturation des protéines.\n\nQuestion 1\nRéponse\na.\n\nCe qui est à l'origine d'une action ou d'un événement.\n\nb.\n\nL'élément déclencheur d'un processus.\n\nc.\n\nLa conclusion d'un raisonnement ou d'un processus logique.\n\nd.\n\nCe qui est à l'origine d'un phénomène, d'un événement ou d'une action.\n\ne.\n\nCe qui se produit après un événement et qui est dû à cet événement.\n\nf.\n\nCe qui se produit après un événement et qui est dû à cet événement.\n\ng.\n\nLa cause directe d'une situation donnée.\n\nh.\n\nL'effet direct d'un phénomène naturel.",
+        "options": [
+          "a.\n\nCe qui est à l'origine d'une action ou d'un événement.",
+          "b.\n\nL'élément déclencheur d'un processus.",
+          "c.\n\nLa conclusion d'un raisonnement ou d'un processus logique.",
+          "d.\n\nCe qui est à l'origine d'un phénomène, d'un événement ou d'une action.",
+          "e.\n\nCe qui se produit après un événement et qui est dû à cet événement.",
+          "f.\n\nCe qui se produit après un événement et qui est dû à cet événement.",
+          "g.\n\nLa cause directe d'une situation donnée.",
+          "h.\n\nL'effet direct d'un phénomène naturel."
+        ]
+      }
+    ],
+    "glossary_entries": [],
+    "raw_text": ""
+  },
+  {
+    "name": "Glossaire Moodle",
+    "url": "https://moodle.hech.be/mod/glossary/view.php?id=11025",
+    "intro": "",
+    "questions": [],
+    "glossary_entries": [],
+    "raw_text": "Conditions d’achèvement\nAjouter un article\nImporter des articles\n... \nExporter des articles\nRechercher\nRechercher\nRechercher dans les définitions aussi\n\n\nConsulter le glossaire à l’aide de cet index\n\nSpécial | A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z | Tout\nAucun article trouvé dans cette section"
+  },
+  {
+    "name": "Exercices Module 1 (Méthodologie)",
+    "url": "https://moodle.hech.be/mod/quiz/view.php?id=11027",
+    "intro": "Conditions d’achèvement\n\nRÉPONDS À CES QUESTIONS ET ÉVALUE TES CONNAISSANCE SUR LA MÉMORISATION ET LA MANIÈRE DE L’OPTIMISER.\n\n \n\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+    "questions": [
+      {
+        "number": "Question 1",
+        "type": "que multichoice deferredfeedback notyetanswered",
+        "text": "Après mémorisation, quel est le pourcentage d'informations retenues après une journée ?",
+        "formulation": "Texte de la question\n\nAprès mémorisation, quel est le pourcentage d'informations retenues après une journée ? \n\n\n \n\nQuestion 1\nRéponse\na.\n\n90 %\n\nb.\n\n40%\n\nc.\n\n70%\n\nd.\n\n10%\n\nEffacer mon choix",
+        "options": [
+          "a.\n\n90 %",
+          "b.\n\n40%",
+          "c.\n\n70%",
+          "d.\n\n10%"
+        ]
+      },
+      {
+        "number": "Question 2",
+        "type": "que multichoice deferredfeedback notyetanswered",
+        "text": "Après mémorisation, quel est le pourcentage d'informations retenues après 6 mois ?",
+        "formulation": "Texte de la question\n\nAprès mémorisation, quel est le pourcentage d'informations retenues après 6 mois ?\n\nQuestion 2\nRéponse\na.\n\n30 %\n\nb.\n\n0%\n\nc.\n\n10 %\n\nd.\n\n20%\n\nEffacer mon choix",
+        "options": [
+          "a.\n\n30 %",
+          "b.\n\n0%",
+          "c.\n\n10 %",
+          "d.\n\n20%"
+        ]
+      },
+      {
+        "number": "Question 3",
+        "type": "que multichoice deferredfeedback notyetanswered",
+        "text": "Quel est le pourcentage d’informations retenues après 20 minutes de cours ?",
+        "formulation": "Texte de la question\n\nQuel est le pourcentage d’informations retenues après 20 minutes de cours ? \n\nQuestion 3\nRéponse\na.\n\n60 %\n\nb.\n\n100 %\n\nc.\n\n40 %\n\nd.\n\n80 %",
+        "options": [
+          "a.\n\n60 %",
+          "b.\n\n100 %",
+          "c.\n\n40 %",
+          "d.\n\n80 %"
+        ]
+      },
+      {
+        "number": "Question 4",
+        "type": "que multichoice deferredfeedback notyetanswered",
+        "text": "Comment peut-on limiter les effets du temps sur la mémorisation ?",
+        "formulation": "Texte de la question\n\nComment peut-on limiter les effets du temps sur la mémorisation ?\n\nQuestion 4\nRéponse\na.\n\nAllonger le temps de mémorisation\n\nb.\n\nRéaliser des rappels quotidiens\n\nc.\n\nRéaliser des rappels espacés\n\nEffacer mon choix",
+        "options": [
+          "a.\n\nAllonger le temps de mémorisation",
+          "b.\n\nRéaliser des rappels quotidiens",
+          "c.\n\nRéaliser des rappels espacés"
+        ]
+      }
+    ],
+    "glossary_entries": [],
+    "raw_text": ""
+  },
+  {
+    "name": "Le métier d'étudiant - Lexique",
+    "url": "https://moodle.hech.be/mod/glossary/view.php?id=11032",
+    "intro": "",
+    "questions": [],
+    "glossary_entries": [],
+    "raw_text": "Conditions d’achèvement\nAjouter un article\nImporter des articles\n... \nExporter des articles\nRechercher\nRechercher\nRechercher dans les définitions aussi\n\n\nConsulter le glossaire à l’aide de cet index\n\nSpécial | A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z | Tout\nAucun article trouvé dans cette section"
+  },
+  {
+    "name": "Entrainement 1 (Jeu)",
+    "url": "https://moodle.hech.be/mod/game/view.php?id=11034",
+    "intro": "",
+    "questions": [],
+    "glossary_entries": [],
+    "raw_text": "Conditions d’achèvement\n\nÊtre étudiant, c’est un véritable métier… et ça ne s’improvise pas !\n\nTu es en train d’entrer dans un nouvel univers, avec ses codes, ses exigences, mais aussi ses libertés et ses opportunités. Ici, on n’attend pas que tu saches tout, mais on attend que tu t’impliques, que tu explores, que tu te construises.\n\nCette grille de mots croisés te propose d’entrer dans le vif du sujet :\nQuels sont les savoir-être, les compétences et les attitudes qui font de toi un étudiant autonome, curieux, responsable ?\n\nÀ travers 12 mots-clés et quelques questions simples, tu vas découvrir les ingrédients essentiels du « métier d’étudiant ».\n\nPrêt à relever le défi ? C’est parti !\n\nEntrainement 1\n\nÊtre étudiant, c’est un véritable métier… et ça ne s’improvise pas !\n\nTu es en train d’entrer dans un nouvel univers, avec ses codes, ses exigences, mais aussi ses libertés et ses opportunités. Ici, on n’attend pas que tu saches tout, mais on attend que tu t’impliques, que tu explores, que tu te construises.\n\nCette grille de mots croisés te propose d’entrer dans le vif du sujet :\nQuels sont les savoir-être, les compétences et les attitudes qui font de toi un étudiant autonome, curieux, responsable ?\n\nÀ travers 12 mots-clés et quelques questions simples, tu vas découvrir les ingrédients essentiels du « métier d’étudiant ».\n\nPrêt à relever le défi ? C’est parti !\n\n\nMéthode d’évaluation : Note la plus haute\n\n\nJouer maintenant",
+    "game_screen": "Conditions d’achèvement\n\nÊtre étudiant, c’est un véritable métier… et ça ne s’improvise pas !\n\nTu es en train d’entrer dans un nouvel univers, avec ses codes, ses exigences, mais aussi ses libertés et ses opportunités. Ici, on n’attend pas que tu saches tout, mais on attend que tu t’impliques, que tu explores, que tu te construises.\n\nCette grille de mots croisés te propose d’entrer dans le vif du sujet :\nQuels sont les savoir-être, les compétences et les attitudes qui font de toi un étudiant autonome, curieux, responsable ?\n\nÀ travers 12 mots-clés et quelques questions simples, tu vas découvrir les ingrédients essentiels du « métier d’étudiant ».\n\nPrêt à relever le défi ? C’est parti !\n\nErreur de mots croisés : {$a}\n\nPlus d’informations sur cette erreur\n\nContinuer"
+  },
+  {
+    "name": "Entrainement 2 (Jeu)",
+    "url": "https://moodle.hech.be/mod/game/view.php?id=11036",
+    "intro": "",
+    "questions": [],
+    "glossary_entries": [],
+    "raw_text": "Conditions d’achèvement\n\nEntrainement 2\n\n\nMéthode d’évaluation : Note la plus haute\n\n\nJouer maintenant",
+    "game_screen": "Conditions d’achèvement\n\n      \t        \t        \n    \t      \t15\t     \t150000\n14\t\t80000\n13\t\t40000\nJe ne me sens pas très bien dans mon groupe classe, j'ai l'impression que certains se moquent de moi...\t12\t\t20000\n11\t\t10000\n10\t\t5000\n9\t\t4000\n8\t\t2000\n7\t\t1500\n6\t\t1000\n5\t\t500\n4\t\t400\n3\t\t300\n2\t\t200\n1\t\t100\n     \n\t  Peut-être dois-je sérieusement songer à changer d'école...\t\n\t  Peut-être vais-je envoyer un message teams aux personnes concernées pour livrer mon ressenti et tenter d'engager un dialogue... Ou faire part de la situation à une personne de confiance comme un professeur ou un appariteur...\n\t  Ce n'est pas grave, je ne suis pas là pour me faire des amis mais pour apprendre un métier. Je ferai donc cavalier seul et voilà tout !"
+  },
+  {
+    "name": "Entrainement 3 (Quiz Métier Étudiant)",
+    "url": "https://moodle.hech.be/mod/quiz/view.php?id=11038",
+    "intro": "Conditions d’achèvement\n\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+    "questions": [
+      {
+        "number": "Question 1",
+        "type": "que multichoice deferredfeedback notyetanswered",
+        "text": "",
+        "formulation": "Texte de la question\n\nQuestion 1\nRéponse\n\n1\n\n2\n\n3\n\n4\n\n5\n\n6\n\n7\n\n8\n\nEffacer mon choix",
+        "options": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8"
+        ]
+      }
+    ],
+    "glossary_entries": [],
+    "raw_text": ""
+  },
+  {
+    "name": "Quiz - Test diagnostic Compétences Numériques",
+    "url": "https://moodle.hech.be/mod/quiz/view.php?id=11041",
+    "intro": "Conditions d’achèvement\n\nRéponds aux questions de ce test pour te donner un diagnostic de tes compétences numériques. \nA toi de jouer  \n\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+    "questions": [
+      {
+        "number": "Question 1",
+        "type": "que shortanswer immediatefeedback notyetanswered",
+        "text": "Je suis capable de travailler sur un document Teams sans modifier celui du groupe.",
+        "formulation": "Texte de la question\n\nJe suis capable de travailler sur un document Teams sans modifier celui du groupe.\n\nRéponse : \nQuestion 1\nVérifier\nQuestion 1",
+        "options": []
+      }
+    ],
+    "glossary_entries": [],
+    "raw_text": ""
+  },
+  {
+    "name": "Exercice 1 : Conjugaison (Ortho)",
+    "url": "https://moodle.hech.be/mod/quiz/view.php?id=11080",
+    "intro": "Conditions d’achèvement\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+    "questions": [
+      {
+        "number": "Question 1",
+        "type": "que shortanswer deferredfeedback notyetanswered",
+        "text": "Conjugue le verbe nettoyer à l'indicatif présent, 3e personne du pluriel.",
+        "formulation": "Texte de la question\n\nConjugue le verbe nettoyer à l'indicatif présent, 3e personne du pluriel. \n\nRéponse : \nQuestion 1",
+        "options": []
+      },
+      {
+        "number": "Question 2",
+        "type": "que shortanswer deferredfeedback notyetanswered",
+        "text": "Conjugue le verbe déceler au subjonctif présent, 3e personne du pluriel.",
+        "formulation": "Texte de la question\n\nConjugue le verbe déceler au subjonctif présent, 3e personne du pluriel. \n\nRéponse : \nQuestion 2",
+        "options": []
+      },
+      {
+        "number": "Question 3",
+        "type": "que shortanswer deferredfeedback notyetanswered",
+        "text": "Conjugue le verbe aboyer à l'indicatif futur simple, à la 3e personne du singulier.",
+        "formulation": "Texte de la question\n\nConjugue le verbe aboyer à l'indicatif futur simple, à la 3e personne du singulier. \n\nRéponse : \nQuestion 3",
+        "options": []
+      },
+      {
+        "number": "Question 4",
+        "type": "que shortanswer deferredfeedback notyetanswered",
+        "text": "Conjugue le verbe voir à l'indicatif futur simple, à la 2e personne du singulier.",
+        "formulation": "Texte de la question\n\nConjugue le verbe voir à l'indicatif futur simple, à la 2e personne du singulier. \n\nRéponse : \nQuestion 4",
+        "options": []
+      },
+      {
+        "number": "Question 5",
+        "type": "que shortanswer deferredfeedback notyetanswered",
+        "text": "Conjugue le verbe plier à l'indicatif imparfait, à la 2e personne du pluriel.",
+        "formulation": "Texte de la question\n\nConjugue le verbe plier à l'indicatif imparfait, à la 2e personne du pluriel. \n\nRéponse : \nQuestion 5",
+        "options": []
+      },
+      {
+        "number": "Question 6",
+        "type": "que shortanswer deferredfeedback notyetanswered",
+        "text": "Conjugue le verbe comprendre au subjonctif présent, à la 2e personne du pluriel.",
+        "formulation": "Texte de la question\n\nConjugue le verbe comprendre au subjonctif présent, à la 2e personne du pluriel. \n\nRéponse : \nQuestion 6",
+        "options": []
+      },
+      {
+        "number": "Question 7",
+        "type": "que shortanswer deferredfeedback notyetanswered",
+        "text": "Conjugue le verbe permettre au conditionnel passé, à la 1e personne du pluriel.",
+        "formulation": "Texte de la question\n\nConjugue le verbe permettre au conditionnel passé, à la 1e personne du pluriel. \n\nRéponse : \nQuestion 7",
+        "options": []
+      },
+      {
+        "number": "Question 8",
+        "type": "que shortanswer deferredfeedback notyetanswered",
+        "text": "Conjugue le verbe mourir au subjonctif présent, à la 3e personne du pluriel.",
+        "formulation": "Texte de la question\n\nConjugue le verbe mourir au subjonctif présent, à la 3e personne du pluriel. \n\nRéponse : \nQuestion 8",
+        "options": []
+      },
+      {
+        "number": "Question 9",
+        "type": "que shortanswer deferredfeedback notyetanswered",
+        "text": "Conjugue le verbe courir au conditionnel présent, à la 2e personne du pluriel.",
+        "formulation": "Texte de la question\n\nConjugue le verbe courir au conditionnel présent, à la 2e personne du pluriel. \n\nRéponse : \nQuestion 9",
+        "options": []
+      },
+      {
+        "number": "Question 10",
+        "type": "que shortanswer deferredfeedback notyetanswered",
+        "text": "Conjugue le verbe assoir à l'indicatif présent, 3e personne du pluriel.",
+        "formulation": "Texte de la question\n\nConjugue le verbe assoir à l'indicatif présent, 3e personne du pluriel. \n\nRéponse : \nQuestion 10",
+        "options": []
+      }
+    ],
+    "glossary_entries": [],
+    "raw_text": ""
+  },
+  {
+    "name": "Exercice 2 : Conjugaison (Ortho)",
+    "url": "https://moodle.hech.be/mod/quiz/view.php?id=11081",
+    "intro": "Conditions d’achèvement\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+    "questions": [
+      {
+        "number": "Question 1",
+        "type": "que shortanswer deferredfeedback notyetanswered",
+        "text": "Le sage n’(appeler, indicatif présent) ………………………………………. pas tristesses les petites fatigues de la journée.",
+        "formulation": "Texte de la question\n\nLe sage n’(appeler, indicatif présent) ………………………………………. pas tristesses les petites fatigues de la journée.\n\nRéponse : \nQuestion 1",
+        "options": []
+      },
+      {
+        "number": "Question 2",
+        "type": "que shortanswer deferredfeedback notyetanswered",
+        "text": "Tu essaies de te distraire et tu gaspilles des journées que tu (employer, indicatif conditionnel présent) ………………………………………………………… mieux en les consacrant à l’étude.",
+        "formulation": "Texte de la question\n\nTu essaies de te distraire et tu gaspilles des journées que tu (employer, indicatif conditionnel présent) ………………………………………………………… mieux en les consacrant à l’étude.\n\nRéponse : \nQuestion 2",
+        "options": []
+      },
+      {
+        "number": "Question 3",
+        "type": "que shortanswer deferredfeedback notyetanswered",
+        "text": "César (réduire, indicatif passé composé) …………………………………….. la Gaule après huit années de lutte.",
+        "formulation": "Texte de la question\n\nCésar (réduire, indicatif passé composé) …………………………………….. la Gaule après huit années de lutte.\n\nRéponse : \nQuestion 3",
+        "options": []
+      },
+      {
+        "number": "Question 4",
+        "type": "que shortanswer deferredfeedback notyetanswered",
+        "text": "Joseph (recourir, conditionnel présent) ……………………………………….. volontiers aux services d’un traiteur, mais il craint que ce ne soit trop cher.",
+        "formulation": "Texte de la question\n\nJoseph (recourir, conditionnel présent) ……………………………………….. volontiers aux services d’un traiteur, mais il craint que ce ne soit trop cher.\n\nRéponse : \nQuestion 4",
+        "options": []
+      },
+      {
+        "number": "Question 5",
+        "type": "que shortanswer deferredfeedback notyetanswered",
+        "text": "(Savoir, impératif présent) …………………………………………… discerner le vrai du faux, sans quoi tu auras souvent de mauvaises surprises.",
+        "formulation": "Texte de la question\n\n(Savoir, impératif présent) …………………………………………… discerner le vrai du faux, sans quoi tu auras souvent de mauvaises surprises.\n\nRéponse : \nQuestion 5",
+        "options": []
+      }
+    ],
+    "glossary_entries": [],
+    "raw_text": ""
+  }
+]

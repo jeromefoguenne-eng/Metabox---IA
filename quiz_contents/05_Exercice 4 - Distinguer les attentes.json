@@ -1,0 +1,16 @@
+{
+  "name": "Exercice 4 - Distinguer les attentes",
+  "url": "https://moodle.hech.be/mod/quiz/view.php?id=11006",
+  "intro": "Conditions d’achèvement\n\nEt pour toi, qu’est-ce qui est le plus difficile ?\n\nAu vu de la théorie que tu viens de lire, classe ces verbes d’action selon le degré de difficulté qu’ils représentent.\n\n\n\n\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+  "questions": [
+    {
+      "number": "Question 1",
+      "type": "que ddimageortext deferredfeedback notyetanswered",
+      "text": "Liste des verbes : Classifier – Résumer – Définir – Comparer – Reformuler (ces verbes apparaitront sous la forme d’étiquettes à replacer le long de la jauge)",
+      "formulation": "Texte de la question\n\nListe des verbes : Classifier – Résumer – Définir – Comparer – Reformuler (ces verbes apparaitront sous la forme d’étiquettes à replacer le long de la jauge)\n\n\n\n\nvide\n \nvide\n \nvide\n \nvide\n \nvide\n \nDéfinirReformulerClassifierComparerRésumer",
+      "options": []
+    }
+  ],
+  "glossary_entries": [],
+  "raw_text": ""
+}

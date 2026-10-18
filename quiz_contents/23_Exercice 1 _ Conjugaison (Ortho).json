@@ -1,0 +1,79 @@
+{
+  "name": "Exercice 1 : Conjugaison (Ortho)",
+  "url": "https://moodle.hech.be/mod/quiz/view.php?id=11080",
+  "intro": "Conditions d’achèvement\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+  "questions": [
+    {
+      "number": "Question 1",
+      "type": "que shortanswer deferredfeedback notyetanswered",
+      "text": "Conjugue le verbe nettoyer à l'indicatif présent, 3e personne du pluriel.",
+      "formulation": "Texte de la question\n\nConjugue le verbe nettoyer à l'indicatif présent, 3e personne du pluriel. \n\nRéponse : \nQuestion 1",
+      "options": []
+    },
+    {
+      "number": "Question 2",
+      "type": "que shortanswer deferredfeedback notyetanswered",
+      "text": "Conjugue le verbe déceler au subjonctif présent, 3e personne du pluriel.",
+      "formulation": "Texte de la question\n\nConjugue le verbe déceler au subjonctif présent, 3e personne du pluriel. \n\nRéponse : \nQuestion 2",
+      "options": []
+    },
+    {
+      "number": "Question 3",
+      "type": "que shortanswer deferredfeedback notyetanswered",
+      "text": "Conjugue le verbe aboyer à l'indicatif futur simple, à la 3e personne du singulier.",
+      "formulation": "Texte de la question\n\nConjugue le verbe aboyer à l'indicatif futur simple, à la 3e personne du singulier. \n\nRéponse : \nQuestion 3",
+      "options": []
+    },
+    {
+      "number": "Question 4",
+      "type": "que shortanswer deferredfeedback notyetanswered",
+      "text": "Conjugue le verbe voir à l'indicatif futur simple, à la 2e personne du singulier.",
+      "formulation": "Texte de la question\n\nConjugue le verbe voir à l'indicatif futur simple, à la 2e personne du singulier. \n\nRéponse : \nQuestion 4",
+      "options": []
+    },
+    {
+      "number": "Question 5",
+      "type": "que shortanswer deferredfeedback notyetanswered",
+      "text": "Conjugue le verbe plier à l'indicatif imparfait, à la 2e personne du pluriel.",
+      "formulation": "Texte de la question\n\nConjugue le verbe plier à l'indicatif imparfait, à la 2e personne du pluriel. \n\nRéponse : \nQuestion 5",
+      "options": []
+    },
+    {
+      "number": "Question 6",
+      "type": "que shortanswer deferredfeedback notyetanswered",
+      "text": "Conjugue le verbe comprendre au subjonctif présent, à la 2e personne du pluriel.",
+      "formulation": "Texte de la question\n\nConjugue le verbe comprendre au subjonctif présent, à la 2e personne du pluriel. \n\nRéponse : \nQuestion 6",
+      "options": []
+    },
+    {
+      "number": "Question 7",
+      "type": "que shortanswer deferredfeedback notyetanswered",
+      "text": "Conjugue le verbe permettre au conditionnel passé, à la 1e personne du pluriel.",
+      "formulation": "Texte de la question\n\nConjugue le verbe permettre au conditionnel passé, à la 1e personne du pluriel. \n\nRéponse : \nQuestion 7",
+      "options": []
+    },
+    {
+      "number": "Question 8",
+      "type": "que shortanswer deferredfeedback notyetanswered",
+      "text": "Conjugue le verbe mourir au subjonctif présent, à la 3e personne du pluriel.",
+      "formulation": "Texte de la question\n\nConjugue le verbe mourir au subjonctif présent, à la 3e personne du pluriel. \n\nRéponse : \nQuestion 8",
+      "options": []
+    },
+    {
+      "number": "Question 9",
+      "type": "que shortanswer deferredfeedback notyetanswered",
+      "text": "Conjugue le verbe courir au conditionnel présent, à la 2e personne du pluriel.",
+      "formulation": "Texte de la question\n\nConjugue le verbe courir au conditionnel présent, à la 2e personne du pluriel. \n\nRéponse : \nQuestion 9",
+      "options": []
+    },
+    {
+      "number": "Question 10",
+      "type": "que shortanswer deferredfeedback notyetanswered",
+      "text": "Conjugue le verbe assoir à l'indicatif présent, 3e personne du pluriel.",
+      "formulation": "Texte de la question\n\nConjugue le verbe assoir à l'indicatif présent, 3e personne du pluriel. \n\nRéponse : \nQuestion 10",
+      "options": []
+    }
+  ],
+  "glossary_entries": [],
+  "raw_text": ""
+}

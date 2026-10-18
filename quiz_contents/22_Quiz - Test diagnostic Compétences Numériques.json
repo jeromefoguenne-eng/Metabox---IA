@@ -1,0 +1,16 @@
+{
+  "name": "Quiz - Test diagnostic Compétences Numériques",
+  "url": "https://moodle.hech.be/mod/quiz/view.php?id=11041",
+  "intro": "Conditions d’achèvement\n\nRéponds aux questions de ce test pour te donner un diagnostic de tes compétences numériques. \nA toi de jouer  \n\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+  "questions": [
+    {
+      "number": "Question 1",
+      "type": "que shortanswer immediatefeedback notyetanswered",
+      "text": "Je suis capable de travailler sur un document Teams sans modifier celui du groupe.",
+      "formulation": "Texte de la question\n\nJe suis capable de travailler sur un document Teams sans modifier celui du groupe.\n\nRéponse : \nQuestion 1\nVérifier\nQuestion 1",
+      "options": []
+    }
+  ],
+  "glossary_entries": [],
+  "raw_text": ""
+}

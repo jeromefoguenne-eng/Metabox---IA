@@ -1,0 +1,16 @@
+{
+  "name": "Exercices récapitulatifs : les verbes de consigne",
+  "url": "https://moodle.hech.be/mod/quiz/view.php?id=11023",
+  "intro": "Conditions d’achèvement\n\nIdentifie le verbe de consigne et explique, avec tes mots, ce qui t’est demandé via ce verbe. Y a-t-il des opérations mentales implicites derrière ce verbe ? Si oui, lesquelles ?\n\n\n\n\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+  "questions": [
+    {
+      "number": "Question 1",
+      "type": "que shortanswer deferredfeedback notyetanswered",
+      "text": "1)      Expliquez en anglais la différence entre block train et single wagon.\n\nVerbe(s) de consigne :",
+      "formulation": "Texte de la question\n\n1)      Expliquez en anglais la différence entre block train et single wagon.\n\nVerbe(s) de consigne :\n\n\n\n\nRéponse : \nQuestion 1",
+      "options": []
+    }
+  ],
+  "glossary_entries": [],
+  "raw_text": ""
+}

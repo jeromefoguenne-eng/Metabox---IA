@@ -1,0 +1,25 @@
+{
+  "name": "Exercice 2 - Analyse de consignes",
+  "url": "https://moodle.hech.be/mod/quiz/view.php?id=11017",
+  "intro": "Conditions d’achèvement\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+  "questions": [
+    {
+      "number": "Question 1",
+      "type": "que multichoice deferredfeedback notyetanswered",
+      "text": "Parmi les énoncés suivants, certains ne contiennent pas toutes les données essentielles à la réalisation de l’exercice. Lesquels ? (Exercice repris de Zakhartchouk, J.-M. (2019). Comprendre les énoncés et les consignes. Réseau Canopé).",
+      "formulation": "Texte de la question\n\nParmi les énoncés suivants, certains ne contiennent pas toutes les données essentielles à la réalisation de l’exercice. Lesquels ? (Exercice repris de Zakhartchouk, J.-M. (2019). Comprendre les énoncés et les consignes. Réseau Canopé).\n\n\n\n\nQuestion 1\nRéponse\na.\n\nClassez en catégories les animaux que l’on voit sur la photographie (photographie jointe).\n\n\n\n\nb.\n\nImagine un poème avec les mots suivants : peur, forêt, fuite, pinsons, fraîcheur.\n\n\n\n\nc.\n\nLa ville de L. comptait 55 000 habitants en 1975, 60 000 en 1985, 65 000 en 1995. Combien va-t-elle en contenir en 2000 ?\n\n\n\n\nd.\n\nCite quelques animaux vivant dans un jardin.\n\n\n\n\ne.\n\nPour la rentrée, Pierre doit acheter 3 cahiers à grands carreaux à 6.55€ pièce, 5 stylos à 2.40€ chacun, une pochette de transparents à 10€ et quelques cahiers de brouillon qui ne coûtent qu’un euro pièce. Il a en poche 50€. A-t-il suffisamment d’argent pour tout acheter ?\n\n\n\n\nf.\n\nCalcule le périmètre de ce champ dont la longueur est le double de la largeur.\n\n\n\n\ng.\n\nDécris l’animal qui est sur cette photographie (photographie d’une statue de la louve romaine avec Romulus et Remus) ?\n\n\n\n\nh.\n\nTu dois raconter ce conte étudié en classe à d’autres enfants. Écris le début de ce que tu vas dire.",
+      "options": [
+        "a.\n\nClassez en catégories les animaux que l’on voit sur la photographie (photographie jointe).",
+        "b.\n\nImagine un poème avec les mots suivants : peur, forêt, fuite, pinsons, fraîcheur.",
+        "c.\n\nLa ville de L. comptait 55 000 habitants en 1975, 60 000 en 1985, 65 000 en 1995. Combien va-t-elle en contenir en 2000 ?",
+        "d.\n\nCite quelques animaux vivant dans un jardin.",
+        "e.\n\nPour la rentrée, Pierre doit acheter 3 cahiers à grands carreaux à 6.55€ pièce, 5 stylos à 2.40€ chacun, une pochette de transparents à 10€ et quelques cahiers de brouillon qui ne coûtent qu’un euro pièce. Il a en poche 50€. A-t-il suffisamment d’argent pour tout acheter ?",
+        "f.\n\nCalcule le périmètre de ce champ dont la longueur est le double de la largeur.",
+        "g.\n\nDécris l’animal qui est sur cette photographie (photographie d’une statue de la louve romaine avec Romulus et Remus) ?",
+        "h.\n\nTu dois raconter ce conte étudié en classe à d’autres enfants. Écris le début de ce que tu vas dire."
+      ]
+    }
+  ],
+  "glossary_entries": [],
+  "raw_text": ""
+}

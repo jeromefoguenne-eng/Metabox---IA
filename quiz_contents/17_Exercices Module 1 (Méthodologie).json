@@ -1,0 +1,56 @@
+{
+  "name": "Exercices Module 1 (Méthodologie)",
+  "url": "https://moodle.hech.be/mod/quiz/view.php?id=11027",
+  "intro": "Conditions d’achèvement\n\nRÉPONDS À CES QUESTIONS ET ÉVALUE TES CONNAISSANCE SUR LA MÉMORISATION ET LA MANIÈRE DE L’OPTIMISER.\n\n \n\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+  "questions": [
+    {
+      "number": "Question 1",
+      "type": "que multichoice deferredfeedback notyetanswered",
+      "text": "Après mémorisation, quel est le pourcentage d'informations retenues après une journée ?",
+      "formulation": "Texte de la question\n\nAprès mémorisation, quel est le pourcentage d'informations retenues après une journée ? \n\n\n \n\nQuestion 1\nRéponse\na.\n\n90 %\n\nb.\n\n40%\n\nc.\n\n70%\n\nd.\n\n10%\n\nEffacer mon choix",
+      "options": [
+        "a.\n\n90 %",
+        "b.\n\n40%",
+        "c.\n\n70%",
+        "d.\n\n10%"
+      ]
+    },
+    {
+      "number": "Question 2",
+      "type": "que multichoice deferredfeedback notyetanswered",
+      "text": "Après mémorisation, quel est le pourcentage d'informations retenues après 6 mois ?",
+      "formulation": "Texte de la question\n\nAprès mémorisation, quel est le pourcentage d'informations retenues après 6 mois ?\n\nQuestion 2\nRéponse\na.\n\n30 %\n\nb.\n\n0%\n\nc.\n\n10 %\n\nd.\n\n20%\n\nEffacer mon choix",
+      "options": [
+        "a.\n\n30 %",
+        "b.\n\n0%",
+        "c.\n\n10 %",
+        "d.\n\n20%"
+      ]
+    },
+    {
+      "number": "Question 3",
+      "type": "que multichoice deferredfeedback notyetanswered",
+      "text": "Quel est le pourcentage d’informations retenues après 20 minutes de cours ?",
+      "formulation": "Texte de la question\n\nQuel est le pourcentage d’informations retenues après 20 minutes de cours ? \n\nQuestion 3\nRéponse\na.\n\n60 %\n\nb.\n\n100 %\n\nc.\n\n40 %\n\nd.\n\n80 %",
+      "options": [
+        "a.\n\n60 %",
+        "b.\n\n100 %",
+        "c.\n\n40 %",
+        "d.\n\n80 %"
+      ]
+    },
+    {
+      "number": "Question 4",
+      "type": "que multichoice deferredfeedback notyetanswered",
+      "text": "Comment peut-on limiter les effets du temps sur la mémorisation ?",
+      "formulation": "Texte de la question\n\nComment peut-on limiter les effets du temps sur la mémorisation ?\n\nQuestion 4\nRéponse\na.\n\nAllonger le temps de mémorisation\n\nb.\n\nRéaliser des rappels quotidiens\n\nc.\n\nRéaliser des rappels espacés\n\nEffacer mon choix",
+      "options": [
+        "a.\n\nAllonger le temps de mémorisation",
+        "b.\n\nRéaliser des rappels quotidiens",
+        "c.\n\nRéaliser des rappels espacés"
+      ]
+    }
+  ],
+  "glossary_entries": [],
+  "raw_text": ""
+}

@@ -1,0 +1,25 @@
+{
+  "name": "Entrainement 3 (Quiz Métier Étudiant)",
+  "url": "https://moodle.hech.be/mod/quiz/view.php?id=11038",
+  "intro": "Conditions d’achèvement\n\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+  "questions": [
+    {
+      "number": "Question 1",
+      "type": "que multichoice deferredfeedback notyetanswered",
+      "text": "",
+      "formulation": "Texte de la question\n\nQuestion 1\nRéponse\n\n1\n\n2\n\n3\n\n4\n\n5\n\n6\n\n7\n\n8\n\nEffacer mon choix",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8"
+      ]
+    }
+  ],
+  "glossary_entries": [],
+  "raw_text": ""
+}

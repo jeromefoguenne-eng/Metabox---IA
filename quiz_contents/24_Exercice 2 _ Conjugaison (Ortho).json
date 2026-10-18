@@ -1,0 +1,44 @@
+{
+  "name": "Exercice 2 : Conjugaison (Ortho)",
+  "url": "https://moodle.hech.be/mod/quiz/view.php?id=11081",
+  "intro": "Conditions d’achèvement\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+  "questions": [
+    {
+      "number": "Question 1",
+      "type": "que shortanswer deferredfeedback notyetanswered",
+      "text": "Le sage n’(appeler, indicatif présent) ………………………………………. pas tristesses les petites fatigues de la journée.",
+      "formulation": "Texte de la question\n\nLe sage n’(appeler, indicatif présent) ………………………………………. pas tristesses les petites fatigues de la journée.\n\nRéponse : \nQuestion 1",
+      "options": []
+    },
+    {
+      "number": "Question 2",
+      "type": "que shortanswer deferredfeedback notyetanswered",
+      "text": "Tu essaies de te distraire et tu gaspilles des journées que tu (employer, indicatif conditionnel présent) ………………………………………………………… mieux en les consacrant à l’étude.",
+      "formulation": "Texte de la question\n\nTu essaies de te distraire et tu gaspilles des journées que tu (employer, indicatif conditionnel présent) ………………………………………………………… mieux en les consacrant à l’étude.\n\nRéponse : \nQuestion 2",
+      "options": []
+    },
+    {
+      "number": "Question 3",
+      "type": "que shortanswer deferredfeedback notyetanswered",
+      "text": "César (réduire, indicatif passé composé) …………………………………….. la Gaule après huit années de lutte.",
+      "formulation": "Texte de la question\n\nCésar (réduire, indicatif passé composé) …………………………………….. la Gaule après huit années de lutte.\n\nRéponse : \nQuestion 3",
+      "options": []
+    },
+    {
+      "number": "Question 4",
+      "type": "que shortanswer deferredfeedback notyetanswered",
+      "text": "Joseph (recourir, conditionnel présent) ……………………………………….. volontiers aux services d’un traiteur, mais il craint que ce ne soit trop cher.",
+      "formulation": "Texte de la question\n\nJoseph (recourir, conditionnel présent) ……………………………………….. volontiers aux services d’un traiteur, mais il craint que ce ne soit trop cher.\n\nRéponse : \nQuestion 4",
+      "options": []
+    },
+    {
+      "number": "Question 5",
+      "type": "que shortanswer deferredfeedback notyetanswered",
+      "text": "(Savoir, impératif présent) …………………………………………… discerner le vrai du faux, sans quoi tu auras souvent de mauvaises surprises.",
+      "formulation": "Texte de la question\n\n(Savoir, impératif présent) …………………………………………… discerner le vrai du faux, sans quoi tu auras souvent de mauvaises surprises.\n\nRéponse : \nQuestion 5",
+      "options": []
+    }
+  ],
+  "glossary_entries": [],
+  "raw_text": ""
+}

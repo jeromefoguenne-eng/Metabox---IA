@@ -1,0 +1,22 @@
+{
+  "name": "Exercices récapitulatifs : les mots essentiels",
+  "url": "https://moodle.hech.be/mod/quiz/view.php?id=11022",
+  "intro": "Conditions d’achèvement\n\nEn dehors du verbe de consigne, relève les mots essentiels (ceux à côté desquels tu ne peux pas passer si tu souhaites offrir une réponse correcte et complète). Plusieurs mots peuvent être sélectionnés.\n\n\n\n\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+  "questions": [
+    {
+      "number": "Question 1",
+      "type": "que multichoice deferredfeedback notyetanswered",
+      "text": "1)      Expliquez en anglais la différence entre block train et single wagon.\n\n Mots essentiels :",
+      "formulation": "Texte de la question\n\n1)      Expliquez en anglais la différence entre block train et single wagon.\n\n Mots essentiels :\n\n\n\n\nQuestion 1\nRéponse\na.\n\nsingle wagon\n\n\nb.\n\nExpliquez\n\n\nc.\n\nen anglais\n\n\nd.\n\nblock train\n\n\ne.\n\nla différence",
+      "options": [
+        "a.\n\nsingle wagon",
+        "b.\n\nExpliquez",
+        "c.\n\nen anglais",
+        "d.\n\nblock train",
+        "e.\n\nla différence"
+      ]
+    }
+  ],
+  "glossary_entries": [],
+  "raw_text": ""
+}

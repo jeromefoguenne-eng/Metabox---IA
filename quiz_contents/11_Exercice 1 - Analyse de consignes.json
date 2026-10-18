@@ -1,0 +1,16 @@
+{
+  "name": "Exercice 1 - Analyse de consignes",
+  "url": "https://moodle.hech.be/mod/quiz/view.php?id=11016",
+  "intro": "Conditions d’achèvement\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+  "questions": [
+    {
+      "number": "Question 1",
+      "type": "que shortanswer deferredfeedback notyetanswered",
+      "text": "Dans les énoncés proposés ci-dessous, relève les mots qui te paraissent les plus importants, en dehors des verbes de consignes. L’objectif est d’essayer ne pas relever plus de 2 mots par énoncé lorsque cela est possible. Justifie ta réponse (exercice repris de Zakhartchouk, J.-M. (2019). Comprendre les énoncés et les consignes. Réseau Canopé).\n\na)       Rangez les nombres suivants dans l’ordre décroissant : 8, 7, 4, 10, 32, 2, 14, 5 ?",
+      "formulation": "Texte de la question\n\nDans les énoncés proposés ci-dessous, relève les mots qui te paraissent les plus importants, en dehors des verbes de consignes. L’objectif est d’essayer ne pas relever plus de 2 mots par énoncé lorsque cela est possible. Justifie ta réponse (exercice repris de Zakhartchouk, J.-M. (2019). Comprendre les énoncés et les consignes. Réseau Canopé).\n\na)       Rangez les nombres suivants dans l’ordre décroissant : 8, 7, 4, 10, 32, 2, 14, 5 ?\n\n\n\n\n\n\n\nRéponse : \nQuestion 1",
+      "options": []
+    }
+  ],
+  "glossary_entries": [],
+  "raw_text": ""
+}

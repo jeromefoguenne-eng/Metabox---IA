@@ -1,0 +1,119 @@
+{
+  "name": "Exercice 2 - Identification des verbes de consigne",
+  "url": "https://moodle.hech.be/mod/quiz/view.php?id=11003",
+  "intro": "Conditions d’achèvement\n\nAfin de te familiariser avec d’autres verbes de consigne et leur signification, pour chaque verbe proposé, coche la correspondance correcte (d’après l’exercice de Gilson, G. (s.d.). Comprendre et appliquer des consignes. Ludum Invaders. https://luduminvaders.com/).\n\n\nPrévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+  "questions": [
+    {
+      "number": "Question 1",
+      "type": "que multichoice deferredfeedback notyetanswered",
+      "text": "Biffer",
+      "formulation": "Texte de la question\nBiffer\nQuestion 1\nRéponse\na.\n\nBarrer\n\n\nb.\n\nGommer\n\n\nc.\n\nTracer un trait sous le mot\n\n\nEffacer mon choix",
+      "options": [
+        "a.\n\nBarrer",
+        "b.\n\nGommer",
+        "c.\n\nTracer un trait sous le mot"
+      ]
+    },
+    {
+      "number": "Question 2",
+      "type": "que multichoice deferredfeedback notyetanswered",
+      "text": "Définir",
+      "formulation": "Texte de la question\n\nDéfinir\n\n\nQuestion 2\nRéponse\na.\n\nExpliquer le sens\n\n\nb.\n\nTerminer le tout en une fois\n\n\nc.\n\nDonner les caractéristiques\n\n\nEffacer mon choix",
+      "options": [
+        "a.\n\nExpliquer le sens",
+        "b.\n\nTerminer le tout en une fois",
+        "c.\n\nDonner les caractéristiques"
+      ]
+    },
+    {
+      "number": "Question 3",
+      "type": "que multichoice deferredfeedback notyetanswered",
+      "text": "Citer",
+      "formulation": "Texte de la question\n\nCiter\n\n\nQuestion 3\nRéponse\na.\n\nExpliquer\n\n\nb.\n\nNuméroter\n\n\nc.\n\nNommer\n\n\nEffacer mon choix",
+      "options": [
+        "a.\n\nExpliquer",
+        "b.\n\nNuméroter",
+        "c.\n\nNommer"
+      ]
+    },
+    {
+      "number": "Question 4",
+      "type": "que multichoice deferredfeedback notyetanswered",
+      "text": "Cocher",
+      "formulation": "Texte de la question\n\nCocher\n\n\nQuestion 4\nRéponse\na.\n\nAssembler\n\n\nb.\n\nPlacer un petit trait dans une case en face d'une proposition\n\n\nc.\n\nEffacer\n\n\nEffacer mon choix",
+      "options": [
+        "a.\n\nAssembler",
+        "b.\n\nPlacer un petit trait dans une case en face d'une proposition",
+        "c.\n\nEffacer"
+      ]
+    },
+    {
+      "number": "Question 5",
+      "type": "que multichoice deferredfeedback notyetanswered",
+      "text": "Souligner",
+      "formulation": "Texte de la question\n\nSouligner\n\n\nQuestion 5\nRéponse\na.\n\nTracer un trait sous ...\n\n\nb.\n\nTracer un ovale autour de...\n\n\nc.\n\nSéparer par des traits.\n\n\nEffacer mon choix",
+      "options": [
+        "a.\n\nTracer un trait sous ...",
+        "b.\n\nTracer un ovale autour de...",
+        "c.\n\nSéparer par des traits."
+      ]
+    },
+    {
+      "number": "Question 6",
+      "type": "que multichoice deferredfeedback notyetanswered",
+      "text": "Relier",
+      "formulation": "Texte de la question\n\nRelier\n\n\nQuestion 6\nRéponse\na.\n\nPlacer deux éléments l'un à côté de l'autre\n\n\nb.\n\nTracer une ligne allant d'un élément à un autre\n\n\nc.\n\nLire une seconde fois\n\n\nEffacer mon choix",
+      "options": [
+        "a.\n\nPlacer deux éléments l'un à côté de l'autre",
+        "b.\n\nTracer une ligne allant d'un élément à un autre",
+        "c.\n\nLire une seconde fois"
+      ]
+    },
+    {
+      "number": "Question 7",
+      "type": "que multichoice deferredfeedback notyetanswered",
+      "text": "Classer",
+      "formulation": "Texte de la question\n\nClasser\n\n\nQuestion 7\nRéponse\na.\n\nRanger dans un certain ordre\n\n\nb.\n\nDiviser des éléments en catégories\n\n\nc.\n\nOrganiser son cours\n\n\nEffacer mon choix",
+      "options": [
+        "a.\n\nRanger dans un certain ordre",
+        "b.\n\nDiviser des éléments en catégories",
+        "c.\n\nOrganiser son cours"
+      ]
+    },
+    {
+      "number": "Question 8",
+      "type": "que multichoice deferredfeedback notyetanswered",
+      "text": "Enumérer",
+      "formulation": "Texte de la question\n\nEnumérer\n\n\nQuestion 8\nRéponse\na.\n\nCiter des éléments les uns après les autres\n\n\nb.\n\nDonner une explication\n\n\nc.\n\nDonner le nom de quelque chose\n\n\nEffacer mon choix",
+      "options": [
+        "a.\n\nCiter des éléments les uns après les autres",
+        "b.\n\nDonner une explication",
+        "c.\n\nDonner le nom de quelque chose"
+      ]
+    },
+    {
+      "number": "Question 9",
+      "type": "que multichoice deferredfeedback notyetanswered",
+      "text": "Compléter",
+      "formulation": "Texte de la question\n\nCompléter\n\n\nQuestion 9\nRéponse\na.\n\nAjouter ce qui manque\n\n\nb.\n\nChoisir la bonne réponse\n\n\nc.\n\nTout récrire\n\n\nEffacer mon choix",
+      "options": [
+        "a.\n\nAjouter ce qui manque",
+        "b.\n\nChoisir la bonne réponse",
+        "c.\n\nTout récrire"
+      ]
+    },
+    {
+      "number": "Question 10",
+      "type": "que multichoice deferredfeedback notyetanswered",
+      "text": "Comparer",
+      "formulation": "Texte de la question\n\nComparer\n\n\nQuestion 10\nRéponse\na.\n\nAssembler parallèlement deux éléments\n\n\nb.\n\nUtiliser son compas\n\n\nc.\n\nTrouver les ressemblances et les différences entre deux éléments\n\n\nEffacer mon choix",
+      "options": [
+        "a.\n\nAssembler parallèlement deux éléments",
+        "b.\n\nUtiliser son compas",
+        "c.\n\nTrouver les ressemblances et les différences entre deux éléments"
+      ]
+    }
+  ],
+  "glossary_entries": [],
+  "raw_text": ""
+}
