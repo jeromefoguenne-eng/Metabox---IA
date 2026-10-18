@@ -1,0 +1,347 @@
+{
+  "course": {
+    "title": "Cours : Métabox | Moodle",
+    "url": "https://moodle.hech.be/course/view.php?id=685",
+    "sections": [
+      {
+        "title": "Section 0",
+        "summary": "",
+        "activities": [
+          {
+            "name": "Annonces",
+            "url": "https://moodle.hech.be/mod/forum/view.php?id=10993",
+            "type": "activity activity-wrapper forum modtype_forum hasinfo\n                                         mod_forum   ",
+            "description": ""
+          },
+          {
+            "name": "Service d'Accompagnement à la Réussite",
+            "url": "https://www.hech.be/fr/nos-services/sar",
+            "type": "activity activity-wrapper label modtype_label hasinfo\n                                         mod_label   ",
+            "description": ""
+          }
+        ]
+      },
+      {
+        "title": "Section 1",
+        "summary": "",
+        "activities": []
+      },
+      {
+        "title": "Section 2",
+        "summary": "",
+        "activities": []
+      },
+      {
+        "title": "Section 3",
+        "summary": "",
+        "activities": []
+      },
+      {
+        "title": "Section 4",
+        "summary": "",
+        "activities": []
+      },
+      {
+        "title": "Section 5",
+        "summary": "",
+        "activities": []
+      },
+      {
+        "title": "Section 6",
+        "summary": "",
+        "activities": []
+      },
+      {
+        "title": "Section 7",
+        "summary": "",
+        "activities": []
+      }
+    ]
+  },
+  "subpages": [
+    {
+      "index": 1,
+      "title": "Annonces",
+      "url": "https://moodle.hech.be/mod/forum/view.php?id=10993",
+      "textContent": "Recherche (forums)\nRecherche (forums)\nAjouter une discussion\n(Aucune annonce n’a encore été publiée)",
+      "links": [
+        {
+          "text": "",
+          "href": ""
+        },
+        {
+          "text": "Ajouter une discussion",
+          "href": "https://moodle.hech.be/mod/forum/view.php?id=10993#collapseAddForm"
+        },
+        {
+          "text": "Build with",
+          "href": "https://www.tiny.cloud/powered-by-tiny?utm_campaign=poweredby&utm_source=tiny&utm_medium=referral&utm_content=v7"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "title": "Métabox News 2024-2025",
+      "url": "https://moodle.hech.be/mod/folder/view.php?id=10998",
+      "textContent": "Modifier\nTélécharger le dossier\n \n\t\n\t\n\t\nMétaBox News avril 2025.pdf\n\t\n\t\nMétabox News décembre 2024.pdf\n\t\n\t\nMétabox News fevrier 2025.pdf\n\t\n\t\nMétabox News octobre 2024.pdf",
+      "links": [
+        {
+          "text": "",
+          "href": "https://moodle.hech.be/mod/folder/view.php?id=10998#"
+        },
+        {
+          "text": "MétaBox News avril 2025.pdf",
+          "href": "https://moodle.hech.be/pluginfile.php/15631/mod_folder/content/0/M%C3%A9taBox%20News%20avril%202025.pdf?forcedownload=1"
+        },
+        {
+          "text": "Métabox News décembre 2024.pdf",
+          "href": "https://moodle.hech.be/pluginfile.php/15631/mod_folder/content/0/M%C3%A9tabox%20News%20d%C3%A9cembre%202024.pdf?forcedownload=1"
+        },
+        {
+          "text": "Métabox News fevrier 2025.pdf",
+          "href": "https://moodle.hech.be/pluginfile.php/15631/mod_folder/content/0/M%C3%A9tabox%20News%20fevrier%202025.pdf?forcedownload=1"
+        },
+        {
+          "text": "Métabox News octobre 2024.pdf",
+          "href": "https://moodle.hech.be/pluginfile.php/15631/mod_folder/content/0/M%C3%A9tabox%20News%20octobre%202024.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "title": "Métabox News 2025-2026",
+      "url": "https://moodle.hech.be/mod/folder/view.php?id=10999",
+      "textContent": "Modifier\nTélécharger le dossier\n \n\t\n\t\n\t\nMétabox News avril 2026.pdf\n\t\n\t\nMétabox News mai 2026.pdf\n\t\n\t\nMétabox News Octobre 2025.pdf\n\t\n\t\nMétaboxNews décembre 2025.pdf",
+      "links": [
+        {
+          "text": "",
+          "href": "https://moodle.hech.be/mod/folder/view.php?id=10999#"
+        },
+        {
+          "text": "Métabox News avril 2026.pdf",
+          "href": "https://moodle.hech.be/pluginfile.php/15632/mod_folder/content/0/M%C3%A9tabox%20News%20avril%202026.pdf?forcedownload=1"
+        },
+        {
+          "text": "Métabox News mai 2026.pdf",
+          "href": "https://moodle.hech.be/pluginfile.php/15632/mod_folder/content/0/M%C3%A9tabox%20News%20mai%202026.pdf?forcedownload=1"
+        },
+        {
+          "text": "Métabox News Octobre 2025.pdf",
+          "href": "https://moodle.hech.be/pluginfile.php/15632/mod_folder/content/0/M%C3%A9tabox%20News%20Octobre%202025.pdf?forcedownload=1"
+        },
+        {
+          "text": "MétaboxNews décembre 2025.pdf",
+          "href": "https://moodle.hech.be/pluginfile.php/15632/mod_folder/content/0/M%C3%A9taboxNews%20d%C3%A9cembre%202025.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "title": "Exercice 1",
+      "url": "https://moodle.hech.be/mod/quiz/view.php?id=11002",
+      "textContent": "Prévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+      "links": []
+    },
+    {
+      "index": 5,
+      "title": "Exercice 2",
+      "url": "https://moodle.hech.be/mod/quiz/view.php?id=11003",
+      "textContent": "Prévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+      "links": []
+    },
+    {
+      "index": 6,
+      "title": "Exercice 3",
+      "url": "https://moodle.hech.be/mod/quiz/view.php?id=11004",
+      "textContent": "Prévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+      "links": []
+    },
+    {
+      "index": 7,
+      "title": "Exercice 4",
+      "url": "https://moodle.hech.be/mod/quiz/view.php?id=11006",
+      "textContent": "Prévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+      "links": []
+    },
+    {
+      "index": 8,
+      "title": "Exercice 1 : les locutions",
+      "url": "https://moodle.hech.be/mod/quiz/view.php?id=11009",
+      "textContent": "Ajouter question\n\nMéthode d’évaluation : Note la plus haute\n\nAucune question n’a encore été ajoutée\nRetour au cours",
+      "links": [
+        {
+          "text": "Ajouter question",
+          "href": "https://moodle.hech.be/mod/quiz/edit.php?cmid=11009"
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "title": "Exercice 2 : les conjonctions",
+      "url": "https://moodle.hech.be/mod/quiz/view.php?id=11010",
+      "textContent": "Ajouter question\n\nMéthode d’évaluation : Note la plus haute\n\nAucune question n’a encore été ajoutée\nRetour au cours",
+      "links": [
+        {
+          "text": "Ajouter question",
+          "href": "https://moodle.hech.be/mod/quiz/edit.php?cmid=11010"
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "title": "Exercice 1 : les pronoms interrogatifs",
+      "url": "https://moodle.hech.be/mod/quiz/view.php?id=11012",
+      "textContent": "Ajouter question\n\nMéthode d’évaluation : Note la plus haute\n\nAucune question n’a encore été ajoutée\nRetour au cours",
+      "links": [
+        {
+          "text": "Ajouter question",
+          "href": "https://moodle.hech.be/mod/quiz/edit.php?cmid=11012"
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "title": "Exercices",
+      "url": "https://moodle.hech.be/mod/quiz/view.php?id=11014",
+      "textContent": "Ajouter question\n\nMéthode d’évaluation : Note la plus haute\n\nAucune question n’a encore été ajoutée\nRetour au cours",
+      "links": [
+        {
+          "text": "Ajouter question",
+          "href": "https://moodle.hech.be/mod/quiz/edit.php?cmid=11014"
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "title": "Exercice 1",
+      "url": "https://moodle.hech.be/mod/quiz/view.php?id=11016",
+      "textContent": "Prévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+      "links": []
+    },
+    {
+      "index": 13,
+      "title": "Exercice 2",
+      "url": "https://moodle.hech.be/mod/quiz/view.php?id=11017",
+      "textContent": "Prévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+      "links": []
+    },
+    {
+      "index": 14,
+      "title": "Exercices récapitulatifs : les mots essentiels",
+      "url": "https://moodle.hech.be/mod/quiz/view.php?id=11022",
+      "textContent": "Prévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+      "links": []
+    },
+    {
+      "index": 15,
+      "title": "Exercices récapitulatifs : les verbes de consigne",
+      "url": "https://moodle.hech.be/mod/quiz/view.php?id=11023",
+      "textContent": "Prévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+      "links": []
+    },
+    {
+      "index": 16,
+      "title": "Exercices récapitulatifs : vocabulaire",
+      "url": "https://moodle.hech.be/mod/quiz/view.php?id=11024",
+      "textContent": "Prévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+      "links": []
+    },
+    {
+      "index": 17,
+      "title": "Exercices Module 1",
+      "url": "https://moodle.hech.be/mod/quiz/view.php?id=11027",
+      "textContent": "Prévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+      "links": []
+    },
+    {
+      "index": 18,
+      "title": "Entrainement 3",
+      "url": "https://moodle.hech.be/mod/quiz/view.php?id=11038",
+      "textContent": "Prévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+      "links": []
+    },
+    {
+      "index": 19,
+      "title": "Quiz - Test diagnostic",
+      "url": "https://moodle.hech.be/mod/quiz/view.php?id=11041",
+      "textContent": "Prévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+      "links": []
+    },
+    {
+      "index": 20,
+      "title": "Check-list Ortho'Express",
+      "url": "https://moodle.hech.be/mod/resource/view.php?id=11049",
+      "textContent": "",
+      "links": []
+    },
+    {
+      "index": 21,
+      "title": "Guide utilisation Check-list",
+      "url": "https://moodle.hech.be/mod/resource/view.php?id=11050",
+      "textContent": "",
+      "links": []
+    },
+    {
+      "index": 22,
+      "title": "Exercices en ligne",
+      "url": "https://moodle.hech.be/mod/url/view.php?id=11063",
+      "textContent": "Cliquer sur Exercices en ligne pour ouvrir la ressource.",
+      "links": [
+        {
+          "text": "Exercices en ligne",
+          "href": "https://ponctuation.ccdmd.qc.ca/"
+        }
+      ]
+    },
+    {
+      "index": 23,
+      "title": "Exercices en ligne",
+      "url": "https://moodle.hech.be/mod/url/view.php?id=11070",
+      "textContent": "Cliquer sur Exercices en ligne pour ouvrir la ressource.",
+      "links": [
+        {
+          "text": "Exercices en ligne",
+          "href": "https://deficonstructions.ccdmd.qc.ca/"
+        }
+      ]
+    },
+    {
+      "index": 24,
+      "title": "Exercices en ligne",
+      "url": "https://moodle.hech.be/mod/url/view.php?id=11071",
+      "textContent": "Cliquer sur Exercices en ligne pour ouvrir la ressource.",
+      "links": [
+        {
+          "text": "Exercices en ligne",
+          "href": "https://detecteur.ccdmd.qc.ca/#/parcours"
+        }
+      ]
+    },
+    {
+      "index": 25,
+      "title": "Exercice 1 : Conjugaison",
+      "url": "https://moodle.hech.be/mod/quiz/view.php?id=11080",
+      "textContent": "Prévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+      "links": []
+    },
+    {
+      "index": 26,
+      "title": "Exercice 2 : Conjugaison",
+      "url": "https://moodle.hech.be/mod/quiz/view.php?id=11081",
+      "textContent": "Prévisualiser le test\n\nMéthode d’évaluation : Note la plus haute",
+      "links": []
+    },
+    {
+      "index": 27,
+      "title": "Accord du déterminant",
+      "url": "https://moodle.hech.be/mod/url/view.php?id=11088",
+      "textContent": "Cliquer sur Accord du déterminant pour ouvrir la ressource.",
+      "links": [
+        {
+          "text": "Accord du déterminant",
+          "href": "https://usito.usherbrooke.ca/articles/aides_%C3%A0_la_r%C3%A9daction/TableauxDesD%C3%A9terminants"
+        }
+      ]
+    }
+  ]
+}
