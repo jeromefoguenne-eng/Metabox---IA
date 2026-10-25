@@ -4,8 +4,11 @@ import {
   HelpCircle, 
   Users, 
   PhoneCall, 
-  Percent, 
   Volume2, 
+  VolumeX,
+  Maximize2,
+  Minimize2,
+  X,
   Sparkles, 
   RotateCcw, 
   ArrowRight,
@@ -23,7 +26,8 @@ export default function TvGameShowArena({
   quiz, 
   showType = 'millionnaire', // 'millionnaire' | 'champion' | 'roue' | 'concours'
   themeColor = '#4f46e5',
-  onFinishGame 
+  onFinishGame,
+  onClose
 }) {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -32,6 +36,8 @@ export default function TvGameShowArena({
   const [scoreEcts, setScoreEcts] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [hostDialogue, setHostDialogue] = useState("");
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMuted, setIsMuted] = useState(sounds.isMuted());
 
   // Jokers state (for Millionnaire)
   const [joker50Used, setJoker50Used] = useState(false);
@@ -46,13 +52,37 @@ export default function TvGameShowArena({
 
   // Timer for Questions pour un Champion / Concours
   const [timeLeft, setTimeLeft] = useState(15);
-  const [hasBuzzed, setHasBuzzed] = useState(false);
+  const [hasBuzzed, setHasBuzzed] = useState(showType !== 'champion');
 
   const currentQ = quiz.questions[currentIdx];
   const totalQuestions = quiz.questions.length;
   const isMultipleChoice = currentQ?.options && currentQ.options.length > 0;
 
-  // Question announce by TV Host
+  // Toggle browser fullscreen
+  const toggleNativeFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+      setIsFullscreen(true);
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+        setIsFullscreen(false);
+      }
+    }
+  };
+
+  // Keyboard shortcut ESC to close
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && onClose) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+  // Question announce by TV Host with realistic neural voice
   useEffect(() => {
     if (!currentQ || gameOver) return;
 
@@ -66,23 +96,27 @@ export default function TvGameShowArena({
     setTimeLeft(showType === 'champion' ? 12 : 15);
     setHasBuzzed(showType !== 'champion');
 
-    let speechText = "";
+    let voiceKey = "";
+    let dialogueText = "";
+
     if (showType === 'millionnaire') {
       const reward = (currentIdx + 1) * 6;
-      speechText = `Pour ${reward} crédits ECTS... que signifie le verbe : ${currentQ.verb || 'suivant'} ?`;
-      setHostDialogue(`🎙️ Jean-Pierre Foucault : « Pour ${reward} crédits ECTS... que signifie le verbe « ${currentQ.verb} » ? »`);
+      voiceKey = `q_verb_${currentIdx + 1}`;
+      dialogueText = `🎙️ Henri : « Pour ${reward} crédits ECTS... que signifie le verbe « ${currentQ.verb || ''} » ? »`;
     } else if (showType === 'champion') {
-      speechText = `Top ! Question de sciences cognitives : ${currentQ.question}`;
-      setHostDialogue(`🎙️ Samuel Étienne : « Top ! Question numéro ${currentIdx + 1} : buzzez dès que vous avez la réponse ! »`);
+      voiceKey = `q_meth_${currentIdx + 1}`;
+      dialogueText = `🎙️ Henri : « Top chrono ! Question ${currentIdx + 1} de sciences cognitives : buzzez dès que vous êtes prêt ! »`;
     } else if (showType === 'roue') {
-      speechText = `Faites tourner la roue ! ${currentQ.prompt}`;
-      setHostDialogue(`🎙️ Olivier Minne : « Tournez la roue des accords ! Formez la conjugaison exacte ! »`);
+      voiceKey = `q_ortho_${currentIdx + 1}`;
+      dialogueText = `🎙️ Henri : « La roue des accords tourne ! Formez la conjugaison exacte ! »`;
     } else {
-      speechText = `Question du grand concours : ${currentQ.question}`;
-      setHostDialogue(`🎙️ Carole Rousseau : « Attention à tous les candidats, chrono lancé ! »`);
+      voiceKey = `q_stud_${currentIdx + 1}`;
+      dialogueText = `🎙️ Henri : « Question ${currentIdx + 1} du Grand Concours : concentration maximale ! »`;
     }
 
-    sounds.speakHost(speechText);
+    setHostDialogue(dialogueText);
+    sounds.playVoice(voiceKey);
+
   }, [currentIdx, showType, gameOver]);
 
   // Countdown for Champion & Grand Concours
@@ -105,12 +139,12 @@ export default function TvGameShowArena({
     setIsAnswerLocked(true);
     setReaction('wrong');
     sounds.playBuzzer();
-    sounds.playGroan();
-    sounds.speakHost("Temps écoulé ! C'est le coup de gong fatidique !");
-    setHostDialogue("⏰ GONG ! Le chrono est arrivé à zéro !");
+    sounds.playGong();
+    sounds.playVoice("feedback_timeout");
+    setHostDialogue("⏰ GONG ! Le temps est écoulé ! Coup dur pour le candidat !");
   };
 
-  // Jokers handler
+  // Jokers handlers with realistic voices
   const handleUse5050 = () => {
     if (joker50Used || isAnswerLocked || !isMultipleChoice) return;
     sounds.playPop();
@@ -120,10 +154,10 @@ export default function TvGameShowArena({
       .map((_, idx) => idx)
       .filter(idx => idx !== currentQ.correctIndex);
     
-    // Pick 2 random wrong options to hide
     const toHide = wrongIndexes.sort(() => Math.random() - 0.5).slice(0, 2);
     setHiddenOptions(toHide);
-    sounds.speakHost("Le 50 50 a éliminé deux mauvaises réponses !");
+    setHostDialogue("⚡ « L'ordinateur élimine immédiatement deux mauvaises propositions ! Plus que 2 choix ! »");
+    sounds.playVoice("joker_5050");
   };
 
   const handleUseAudience = () => {
@@ -133,13 +167,14 @@ export default function TvGameShowArena({
 
     const poll = currentQ.options.map((_, idx) => {
       if (idx === currentQ.correctIndex) {
-        return Math.floor(Math.random() * 20) + 65; // 65% to 85% for correct
+        return Math.floor(Math.random() * 20) + 68; // 68% to 88% for correct
       }
-      return Math.floor(Math.random() * 15) + 5;
+      return Math.floor(Math.random() * 12) + 4;
     });
 
     setAudiencePoll(poll);
-    sounds.speakHost("Le public en studio a voté ! Regardez l'écran !");
+    setHostDialogue("👥 « Le public en studio vote sur ses boîtiers électroniques ! Regardez les résultats ! »");
+    sounds.playVoice("joker_public");
   };
 
   const handleUseSar = () => {
@@ -147,9 +182,15 @@ export default function TvGameShowArena({
     sounds.playPop();
     setJokerSarUsed(true);
 
-    const tip = currentQ.explanation || "Analysez attentivement la racine du mot et distinguez la tâche de son contexte !";
+    const tip = currentQ.explanation || "Analysez attentivement la racine du verbe et isolez la consigne de son contexte !";
     setSarTip(tip);
-    sounds.speakHost("Votre conseiller du SAR est au bout du fil !");
+    setHostDialogue("📞 « Liaison établie avec le SAR de la HECh ! Écoutons le conseil pédagogique en direct ! »");
+    
+    // Play host intro then Belgian female advisor tip
+    sounds.playVoice("joker_sar", () => {
+      const tipVoice = showType === 'champion' ? "sar_tip_ebbinghaus" : "sar_tip_default";
+      sounds.playVoice(tipVoice);
+    });
   };
 
   // Handle Option Select in TV Game
@@ -160,76 +201,95 @@ export default function TvGameShowArena({
     setIsAnswerLocked(true);
 
     const isCorrect = idx === currentQ.correctIndex;
-
-    // Suspense moment
-    sounds.speakHost("C'est votre dernier mot ?");
-    setHostDialogue("🎙️ « C'est votre dernier mot ? Vérifions ensemble ! »");
+    setHostDialogue("🎙️ Henri : « C'est votre choix définitif ? Regardons le verdict ! »");
 
     setTimeout(() => {
       if (isCorrect) {
         setReaction('correct');
         sounds.playApplause();
         sounds.playSuccess();
-        sounds.speakHost("Et c'est... une EXCELLENTE réponse ! Le public est debout !");
-        setHostDialogue("🎉 OUI ! C'est une excellente réponse validée !");
+        
+        const randomCorrect = `feedback_correct_${(currentIdx % 3) + 1}`;
+        sounds.playVoice(randomCorrect);
+        setHostDialogue("🎉 OUI ! Excellente réponse validée par les arbitres du jeu !");
         setScoreEcts(prev => prev + 6);
 
         confetti({
-          particleCount: 70,
-          spread: 70,
-          origin: { y: 0.7 }
+          particleCount: 80,
+          spread: 80,
+          origin: { y: 0.6 }
         });
       } else {
         setReaction('wrong');
+        sounds.playBuzzer();
         sounds.playGroan();
-        sounds.playError();
-        sounds.speakHost("Aïe aïe aïe... coup dur pour notre candidat, ce n'était pas la bonne réponse !");
-        setHostDialogue("❌ Aïe aïe aïe, mauvaise réponse !");
+
+        const randomWrong = `feedback_wrong_${(currentIdx % 2) + 1}`;
+        sounds.playVoice(randomWrong);
+        setHostDialogue(`❌ Aïe, c'est une erreur... La bonne réponse était : « ${currentQ.options[currentQ.correctIndex]} »`);
       }
     }, 1200);
   };
 
-  // Handle Text Input validation (Roue des accords)
-  const handleValidateText = () => {
+  // Handle Text Submission (Roue des Accords)
+  const handleTextSubmit = (e) => {
+    e?.preventDefault();
     if (isAnswerLocked || !textInput.trim()) return;
+
     sounds.playPop();
     setIsAnswerLocked(true);
 
-    const given = textInput.trim().toLowerCase();
-    const isCorrect = currentQ.correctAnswers?.some(a => a.toLowerCase() === given);
+    const cleaned = textInput.trim().toLowerCase();
+    const isCorrect = currentQ.correctAnswers.some(ans => ans.toLowerCase() === cleaned);
+
+    setHostDialogue("🎙️ Henri : « La roue s'arrête... Est-ce la conjugaison attendue ? »");
 
     setTimeout(() => {
       if (isCorrect) {
         setReaction('correct');
         sounds.playApplause();
         sounds.playSuccess();
-        sounds.speakHost("Bien joué ! Vous avez débloqué les lettres d'or !");
-        setHostDialogue("🎉 Bravo ! Forme verbale parfaitement accordée !");
-        setScoreEcts(prev => prev + 10);
-        confetti({ particleCount: 70, spread: 70, origin: { y: 0.7 } });
+        sounds.playVoice("feedback_correct_1");
+        setHostDialogue(`🎉 Parfait ! L'orthographe « ${currentQ.correctAnswers[0]} » est 100% validée !`);
+        setScoreEcts(prev => prev + 6);
+
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
       } else {
         setReaction('wrong');
+        sounds.playBuzzer();
         sounds.playGroan();
-        sounds.playError();
-        sounds.speakHost("Erreur sur l'accord ! Attention à la terminaison !");
-        setHostDialogue(`❌ Raté ! La bonne forme était : ${currentQ.correctAnswers?.join(' ou ')}`);
+        sounds.playVoice("feedback_wrong_1");
+        setHostDialogue(`❌ Dommage ! La forme exacte était : « ${currentQ.correctAnswers[0]} ».`);
       }
-    }, 800);
+    }, 1000);
   };
 
-  // Next question
-  const handleNext = () => {
+  const handleNextQuestion = () => {
     sounds.playPop();
     if (currentIdx + 1 < totalQuestions) {
       setCurrentIdx(prev => prev + 1);
     } else {
       setGameOver(true);
       setReaction('victory');
-      sounds.playFanfare();
       sounds.playApplause();
-      sounds.speakHost("Incroyable parcours ! Standing ovation du public pour notre champion !");
-      confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
-      if (onFinishGame) onFinishGame(scoreEcts);
+      sounds.playFanfare();
+
+      const victoryVoice = `victory_${showType}`;
+      sounds.playVoice(victoryVoice);
+
+      confetti({
+        particleCount: 150,
+        spread: 100,
+        origin: { y: 0.5 }
+      });
+
+      if (onFinishGame) {
+        onFinishGame(scoreEcts);
+      }
     }
   };
 
@@ -244,305 +304,355 @@ export default function TvGameShowArena({
   };
 
   return (
-    <div className="bg-white border-2 border-slate-200 rounded-3xl p-6 md:p-8 shadow-xl space-y-6">
+    <div className="fixed inset-0 z-50 w-screen h-screen bg-slate-950 flex flex-col overflow-hidden text-white select-none animate-in fade-in duration-300">
       
-      {/* 1. Header with Game Show Brand */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 font-mono">
-              🎬 {showType === 'millionnaire' ? 'Qui veut gagner des Crédits ?' : showType === 'champion' ? 'Questions pour un Major' : 'Le Grand Concours'}
-            </span>
-            <span className="text-xs text-slate-500 font-medium">Question {currentIdx + 1} sur {totalQuestions}</span>
-          </div>
-          <h3 className="font-['Outfit'] text-2xl font-black text-slate-900 mt-1">
-            {quiz.title}
-          </h3>
-        </div>
-
-        {/* ECTS Bank / Score */}
-        <div className="flex items-center gap-3">
-          <div className="px-5 py-2.5 rounded-2xl bg-amber-50 border border-amber-200 flex items-center gap-2.5 shadow-xs">
-            <Trophy className="w-5 h-5 text-amber-600" />
-            <div>
-              <span className="text-[10px] font-bold text-amber-800 uppercase block leading-none">Gains ECTS</span>
-              <span className="font-['Outfit'] font-black text-lg text-amber-950 font-mono">
-                {scoreEcts} <span className="text-xs font-normal text-slate-500">/ 60 ECTS</span>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. THE LIVE 3D LOW POLY TV STUDIO */}
-      <div className="relative">
-        <GameShow3D 
-          reaction={reaction} 
-          theme={showType} 
-          themeColor={themeColor} 
-        />
-
-        {/* Host Speech Bubble Overlay */}
-        <div className="mt-3 p-4 rounded-2xl bg-slate-900 text-white border border-slate-800 text-xs sm:text-sm font-semibold flex items-center justify-between gap-3 shadow-md">
+      {/* 1. Broadcast TV Header Bar */}
+      <header className="h-16 px-6 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 flex items-center justify-between z-20 shrink-0">
+        <div className="flex items-center gap-4">
           <div className="flex items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping" />
-            <span className="leading-relaxed">{hostDialogue}</span>
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+            </span>
+            <span className="px-2 py-0.5 rounded-md bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] font-black uppercase tracking-wider">
+              EN DIRECT · STUDIO 3D
+            </span>
           </div>
+
+          <div className="h-4 w-px bg-slate-700 hidden sm:block" />
+
+          <div className="flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-amber-400" />
+            <span className="font-outfit font-black text-sm tracking-wide text-white uppercase hidden sm:inline">
+              {showType === 'millionnaire' && "Qui veut gagner des Crédits ?"}
+              {showType === 'champion' && "Questions pour un Major"}
+              {showType === 'roue' && "La Roue des Accords"}
+              {showType === 'concours' && "Le Grand Concours du Campus"}
+            </span>
+          </div>
+        </div>
+
+        {/* Center: ECTS & Progress */}
+        <div className="flex items-center gap-3 bg-slate-800/80 px-4 py-1.5 rounded-full border border-slate-700/80 shadow-inner">
+          <div className="flex items-center gap-1.5 text-amber-400 font-black text-sm">
+            <Zap className="w-4 h-4 fill-amber-400" />
+            <span>{scoreEcts}</span>
+            <span className="text-[11px] text-amber-300/80 font-bold uppercase">ECTS</span>
+          </div>
+          <span className="text-slate-600 font-bold">|</span>
+          <span className="text-xs font-bold text-slate-300">
+            Manche {currentIdx + 1} / {totalQuestions}
+          </span>
+        </div>
+
+        {/* Right: Audio Toggle, Fullscreen & Exit */}
+        <div className="flex items-center gap-2">
           <button
-            onClick={() => sounds.speakHost(hostDialogue.replace(/🎙️.*?«/, '').replace(/»/, ''))}
-            title="Réécouter la voix du présentateur"
-            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 transition shrink-0"
+            onClick={() => {
+              const muted = sounds.toggleMute();
+              setIsMuted(muted);
+            }}
+            title={isMuted ? "Activer le son" : "Couper le son"}
+            className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition border border-slate-700 flex items-center justify-center cursor-pointer"
           >
-            <Volume2 className="w-4 h-4" />
+            {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
           </button>
+
+          <button
+            onClick={toggleNativeFullscreen}
+            title="Plein écran navigateur"
+            className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition border border-slate-700 flex items-center justify-center cursor-pointer"
+          >
+            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+          </button>
+
+          {onClose && (
+            <button
+              onClick={() => {
+                sounds.stopAllVoice();
+                sounds.playPop();
+                onClose();
+              }}
+              title="Quitter le studio TV (Échap)"
+              className="px-3.5 py-1.5 rounded-xl bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white transition border border-rose-500/40 text-xs font-black flex items-center gap-1.5 cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+              <span className="hidden md:inline">Quitter le studio</span>
+            </button>
+          )}
+        </div>
+      </header>
+
+      {/* 2. Main Studio Viewport (Split: 3D Stage on top, Broadcast HUD on bottom) */}
+      <div className="flex-1 flex flex-col relative overflow-hidden">
+        
+        {/* Upper Half: 3D TV Studio Scene */}
+        <div className="h-[50vh] min-h-[280px] w-full relative bg-slate-950">
+          <GameShow3D 
+            reaction={reaction} 
+            theme={showType}
+            themeColor={themeColor}
+          />
+
+          {/* Host Prompter / Teleprompter Subtitle Banner Overlay */}
+          <div className="absolute bottom-3 left-4 right-4 max-w-4xl mx-auto z-10 pointer-events-none">
+            <div className="bg-slate-900/90 backdrop-blur-md border border-indigo-500/40 rounded-2xl px-5 py-3 shadow-2xl flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center shrink-0 shadow-md">
+                <Sparkles className="w-5 h-5 text-amber-300" />
+              </div>
+              <p className="text-sm font-lexend text-white font-medium leading-relaxed drop-shadow-sm">
+                {hostDialogue}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Lower Half: Broadcast HUD & Interactive Answers Panel */}
+        <div className="flex-1 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 border-t border-slate-800 p-4 sm:p-6 overflow-y-auto flex flex-col justify-between">
+          <div className="max-w-4xl mx-auto w-full">
+
+            {/* Game Over Screen */}
+            {gameOver ? (
+              <div className="text-center py-6 animate-in zoom-in-95 duration-400">
+                <div className="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-amber-400 to-orange-500 p-0.5 shadow-2xl shadow-amber-500/30 mb-4 flex items-center justify-center">
+                  <Trophy className="w-10 h-10 text-slate-950" />
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-outfit font-black text-white mb-2">
+                  Session Studio Terminée !
+                </h3>
+                <p className="text-slate-300 font-lexend text-base max-w-lg mx-auto mb-6">
+                  Vous remportez <strong className="text-amber-400 font-black text-xl">{scoreEcts} Crédits ECTS</strong> ! Le jury et les professeurs de la HECh saluent votre performance !
+                </p>
+                <div className="flex flex-wrap justify-center gap-4">
+                  <button
+                    onClick={handleRestart}
+                    className="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-outfit font-black text-sm tracking-wide shadow-lg shadow-indigo-600/30 transition flex items-center gap-2 cursor-pointer"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    Rejouer l'émission
+                  </button>
+                  {onClose && (
+                    <button
+                      onClick={onClose}
+                      className="px-6 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-outfit font-bold text-sm transition border border-slate-700 cursor-pointer"
+                    >
+                      Retour aux modules
+                    </button>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Millionnaire Jokers Bar */}
+                {showType === 'millionnaire' && (
+                  <div className="flex flex-wrap items-center justify-between gap-3 mb-4 bg-slate-800/60 p-2.5 rounded-2xl border border-slate-700/60">
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 ml-2">
+                      <HelpCircle className="w-4 h-4 text-indigo-400" />
+                      Jokers Plateau :
+                    </span>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleUse5050}
+                        disabled={joker50Used || isAnswerLocked}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${
+                          joker50Used 
+                            ? 'bg-slate-800 text-slate-600 cursor-not-allowed line-through' 
+                            : 'bg-indigo-600/30 hover:bg-indigo-600 text-indigo-200 hover:text-white border border-indigo-500/40 cursor-pointer shadow-xs'
+                        }`}
+                      >
+                        ⚖️ 50 / 50
+                      </button>
+                      <button
+                        onClick={handleUseAudience}
+                        disabled={jokerAudienceUsed || isAnswerLocked}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${
+                          jokerAudienceUsed 
+                            ? 'bg-slate-800 text-slate-600 cursor-not-allowed line-through' 
+                            : 'bg-purple-600/30 hover:bg-purple-600 text-purple-200 hover:text-white border border-purple-500/40 cursor-pointer shadow-xs'
+                        }`}
+                      >
+                        <Users className="w-3.5 h-3.5" />
+                        Vote du Public
+                      </button>
+                      <button
+                        onClick={handleUseSar}
+                        disabled={jokerSarUsed || isAnswerLocked}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${
+                          jokerSarUsed 
+                            ? 'bg-slate-800 text-slate-600 cursor-not-allowed line-through' 
+                            : 'bg-emerald-600/30 hover:bg-emerald-600 text-emerald-200 hover:text-white border border-emerald-500/40 cursor-pointer shadow-xs'
+                        }`}
+                      >
+                        <PhoneCall className="w-3.5 h-3.5" />
+                        Appel au SAR
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Champion Timer & Buzzer */}
+                {showType === 'champion' && (
+                  <div className="flex items-center justify-between gap-3 mb-4 bg-slate-800/60 p-3 rounded-2xl border border-slate-700/60">
+                    <div className="flex items-center gap-2 text-rose-400 font-outfit font-black text-sm">
+                      <Timer className="w-5 h-5 animate-spin" />
+                      <span>{timeLeft}s restantes</span>
+                    </div>
+                    {!hasBuzzed && !isAnswerLocked && (
+                      <button
+                        onClick={() => {
+                          sounds.playBuzzer();
+                          setHasBuzzed(true);
+                          setHostDialogue("🚨 BUZZER CANDIDAT ! Vous avez la main, annoncez votre réponse !");
+                        }}
+                        className="px-6 py-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-red-600/40 animate-pulse cursor-pointer"
+                      >
+                        🚨 BUZZER !
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* SAR Advice Box if triggered */}
+                {sarTip && (
+                  <div className="mb-4 p-3.5 rounded-2xl bg-emerald-950/60 border border-emerald-500/50 text-emerald-200 text-xs flex items-start gap-3 animate-in fade-in">
+                    <PhoneCall className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="block font-bold text-white mb-0.5">Conseiller SAR en ligne :</strong>
+                      {sarTip}
+                    </div>
+                  </div>
+                )}
+
+                {/* Question Prompt Card */}
+                <div className="p-4 sm:p-5 rounded-2xl bg-slate-800/90 border border-slate-700 shadow-xl mb-4 relative overflow-hidden">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 font-mono font-bold text-[11px] border border-indigo-500/30">
+                      ÉPREUVE #{currentIdx + 1}
+                    </span>
+                    {currentQ.verb && (
+                      <span className="text-xs font-bold text-slate-400">
+                        Verbe d'action à identifier
+                      </span>
+                    )}
+                  </div>
+
+                  <h4 className="text-lg sm:text-xl font-outfit font-extrabold text-white leading-snug">
+                    {currentQ.verb ? `Que signifie le verbe « ${currentQ.verb} » ?` : (currentQ.question || currentQ.prompt)}
+                  </h4>
+
+                  {currentQ.context && (
+                    <p className="mt-2 text-sm text-slate-300 font-mono bg-slate-900/80 p-3 rounded-xl border border-slate-700/60">
+                      {currentQ.context}
+                    </p>
+                  )}
+                </div>
+
+                {/* Question Type: Multiple Choice */}
+                {isMultipleChoice ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {currentQ.options.map((option, idx) => {
+                      if (hiddenOptions.includes(idx)) {
+                        return (
+                          <div key={idx} className="h-14 rounded-2xl border border-dashed border-slate-800 bg-slate-900/30 opacity-40 flex items-center justify-center text-xs text-slate-600 font-mono">
+                            Proposition éliminée par le 50/50
+                          </div>
+                        );
+                      }
+
+                      const letter = String.fromCharCode(65 + idx);
+                      const isSelected = selectedOption === idx;
+                      const isCorrect = idx === currentQ.correctIndex;
+
+                      let btnStyle = "bg-slate-800/80 hover:bg-slate-750 text-slate-200 border-slate-700/80 hover:border-indigo-500/60";
+                      
+                      if (isAnswerLocked) {
+                        if (isCorrect) {
+                          btnStyle = "bg-emerald-600/90 text-white border-emerald-400 shadow-lg shadow-emerald-600/30";
+                        } else if (isSelected) {
+                          btnStyle = "bg-rose-600/90 text-white border-rose-400 shadow-lg shadow-rose-600/30";
+                        } else {
+                          btnStyle = "bg-slate-900/60 text-slate-600 border-slate-800 opacity-50";
+                        }
+                      }
+
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => handleSelectOption(idx)}
+                          disabled={isAnswerLocked || (!hasBuzzed && showType === 'champion')}
+                          className={`p-3.5 sm:p-4 rounded-2xl border text-left transition-all duration-200 font-lexend flex items-center justify-between gap-3 shadow-md relative group cursor-pointer ${btnStyle} ${
+                            !hasBuzzed && showType === 'champion' ? 'opacity-40 cursor-not-allowed' : ''
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="w-7 h-7 rounded-lg bg-slate-900/90 border border-slate-700 text-xs font-black text-amber-400 flex items-center justify-center shrink-0">
+                              {letter}
+                            </span>
+                            <span className="text-sm font-semibold leading-snug">
+                              {option}
+                            </span>
+                          </div>
+
+                          {/* Audience poll indicator */}
+                          {audiencePoll && (
+                            <span className="text-xs font-mono font-black text-indigo-300 bg-indigo-950/80 px-2 py-0.5 rounded border border-indigo-700/50 shrink-0">
+                              {audiencePoll[idx]}%
+                            </span>
+                          )}
+
+                          {isAnswerLocked && isCorrect && (
+                            <CheckCircle2 className="w-5 h-5 text-white shrink-0" />
+                          )}
+                          {isAnswerLocked && isSelected && !isCorrect && (
+                            <XCircle className="w-5 h-5 text-white shrink-0" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  /* Question Type: Text Input (Roue des Accords) */
+                  <form onSubmit={handleTextSubmit} className="space-y-4">
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={textInput}
+                        onChange={(e) => setTextInput(e.target.value)}
+                        placeholder="Tapez ici la conjugaison exacte..."
+                        disabled={isAnswerLocked}
+                        className="flex-1 px-4 py-3 rounded-2xl bg-slate-900 border border-slate-700 text-white font-mono text-base focus:outline-hidden focus:border-indigo-500 shadow-inner"
+                      />
+                      <button
+                        type="submit"
+                        disabled={isAnswerLocked || !textInput.trim()}
+                        className="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white font-outfit font-black text-sm tracking-wide shadow-lg shadow-indigo-600/30 transition flex items-center gap-2 cursor-pointer"
+                      >
+                        <span>Valider</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </form>
+                )}
+
+                {/* Next Question Button if answer locked */}
+                {isAnswerLocked && (
+                  <div className="mt-5 flex justify-end animate-in fade-in duration-300">
+                    <button
+                      onClick={handleNextQuestion}
+                      className="px-7 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-outfit font-black text-sm tracking-wide shadow-xl shadow-emerald-500/30 transition flex items-center gap-2 cursor-pointer"
+                    >
+                      <span>{currentIdx + 1 < totalQuestions ? "Question Suivante" : "Voir le Résultat Final"}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+
+          </div>
         </div>
       </div>
 
-      {/* 3. JOKERS BAR (Si Millionnaire) */}
-      {showType === 'millionnaire' && !gameOver && (
-        <div className="flex flex-wrap items-center justify-center gap-3 py-2 bg-indigo-50/50 p-3 rounded-2xl border border-indigo-100">
-          <span className="text-xs font-bold text-indigo-900 uppercase tracking-wider mr-2">
-            Vos Jokers TV :
-          </span>
-
-          <button
-            onClick={handleUse5050}
-            disabled={joker50Used || isAnswerLocked}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition shadow-xs ${
-              joker50Used 
-                ? 'bg-slate-200 text-slate-400 cursor-not-allowed line-through' 
-                : 'bg-white hover:bg-indigo-600 hover:text-white text-indigo-700 border border-indigo-200'
-            }`}
-          >
-            <Percent className="w-4 h-4" /> Le 50 / 50
-          </button>
-
-          <button
-            onClick={handleUseAudience}
-            disabled={jokerAudienceUsed || isAnswerLocked}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition shadow-xs ${
-              jokerAudienceUsed 
-                ? 'bg-slate-200 text-slate-400 cursor-not-allowed line-through' 
-                : 'bg-white hover:bg-indigo-600 hover:text-white text-indigo-700 border border-indigo-200'
-            }`}
-          >
-            <Users className="w-4 h-4" /> Vote du Public
-          </button>
-
-          <button
-            onClick={handleUseSar}
-            disabled={jokerSarUsed || isAnswerLocked}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition shadow-xs ${
-              jokerSarUsed 
-                ? 'bg-slate-200 text-slate-400 cursor-not-allowed line-through' 
-                : 'bg-white hover:bg-indigo-600 hover:text-white text-indigo-700 border border-indigo-200'
-            }`}
-          >
-            <PhoneCall className="w-4 h-4" /> Appel au SAR
-          </button>
-        </div>
-      )}
-
-      {/* Audience Poll Result (Histogramme) */}
-      {audiencePoll && (
-        <div className="p-4 rounded-2xl bg-indigo-900 text-white space-y-2 animate-in fade-in duration-300">
-          <div className="flex items-center justify-between text-xs font-bold text-indigo-200">
-            <span>📊 Sondage du Public en direct dans les gradins :</span>
-            <span>100% des votants</span>
-          </div>
-          <div className="grid grid-cols-3 gap-3 pt-2">
-            {audiencePoll.map((pct, i) => (
-              <div key={i} className="text-center">
-                <div className="h-16 bg-indigo-950 rounded-xl flex items-end p-1 overflow-hidden">
-                  <div 
-                    className="w-full bg-gradient-to-t from-cyan-400 to-indigo-400 rounded-lg transition-all duration-700" 
-                    style={{ height: `${pct}%` }} 
-                  />
-                </div>
-                <div className="font-mono text-xs font-bold text-cyan-300 mt-1">{pct}%</div>
-                <div className="text-[10px] text-indigo-300 font-bold">Choix {String.fromCharCode(65 + i)}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* SAR Phone Hint */}
-      {sarTip && (
-        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs sm:text-sm text-amber-900 flex items-start gap-3 animate-in fade-in duration-300">
-          <PhoneCall className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-          <div>
-            <span className="font-bold block text-amber-950 mb-0.5">📞 Conseiller SAR HECh :</span>
-            « {sarTip} »
-          </div>
-        </div>
-      )}
-
-      {/* 4. QUESTION & PROMPT CARD */}
-      {!gameOver && (
-        <div className="p-6 rounded-3xl bg-slate-50 border-2 border-slate-200 space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold px-3 py-1 rounded-full bg-slate-200 text-slate-700 font-mono uppercase">
-              Question {currentIdx + 1}
-            </span>
-            {(showType === 'champion' || showType === 'concours') && (
-              <div className="flex items-center gap-1.5 text-xs font-bold text-rose-600 bg-rose-50 px-3 py-1 rounded-full border border-rose-200">
-                <Timer className="w-3.5 h-3.5" /> Chrono : {timeLeft}s
-              </div>
-            )}
-          </div>
-
-          {currentQ.verb ? (
-            <div className="text-center py-2">
-              <span className="text-xs text-slate-500 font-bold uppercase tracking-wider block mb-1">
-                Verbe à identifier :
-              </span>
-              <div className="font-['Outfit'] text-3xl sm:text-4xl font-black text-indigo-700">
-                {currentQ.verb}
-              </div>
-            </div>
-          ) : (
-            <div className="font-['Outfit'] text-lg sm:text-xl font-bold text-slate-900 text-center py-2">
-              {currentQ.prompt || currentQ.question}
-            </div>
-          )}
-
-          {currentQ.context && (
-            <div className="text-xs sm:text-sm font-serif italic text-amber-900 bg-amber-50/70 p-3.5 rounded-xl border border-amber-200 text-center">
-              « {currentQ.context} »
-            </div>
-          )}
-
-          {/* Multiple Choice Options (TV Style Push Buttons) */}
-          {isMultipleChoice ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-2">
-              {currentQ.options.map((opt, optIdx) => {
-                if (hiddenOptions.includes(optIdx)) {
-                  return (
-                    <div key={optIdx} className="p-4 rounded-2xl border border-dashed border-slate-200 bg-slate-100/50 opacity-40 text-center text-xs text-slate-400 font-mono">
-                      [ Option éliminée par le 50/50 ]
-                    </div>
-                  );
-                }
-
-                const isSelected = selectedOption === optIdx;
-                const isCorrect = optIdx === currentQ.correctIndex;
-
-                let btnStyle = 'bg-white border-2 border-slate-200 hover:border-indigo-400 text-slate-800 hover:bg-indigo-50/40 shadow-xs';
-                if (isAnswerLocked) {
-                  if (isCorrect) {
-                    btnStyle = 'bg-emerald-50 border-2 border-emerald-500 text-emerald-950 font-black shadow-md';
-                  } else if (isSelected && !isCorrect) {
-                    btnStyle = 'bg-rose-50 border-2 border-rose-500 text-rose-950 font-bold';
-                  } else {
-                    btnStyle = 'bg-slate-50 border-slate-200 text-slate-400 opacity-50';
-                  }
-                } else if (isSelected) {
-                  btnStyle = 'bg-indigo-50 border-2 border-indigo-600 text-indigo-900 font-bold ring-2 ring-indigo-400';
-                }
-
-                return (
-                  <button
-                    key={optIdx}
-                    disabled={isAnswerLocked}
-                    onClick={() => handleSelectOption(optIdx)}
-                    className={`text-left p-4 sm:p-5 rounded-2xl transition-all flex items-center justify-between gap-3 text-sm sm:text-base font-semibold group ${btnStyle}`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="w-8 h-8 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center font-mono font-bold text-xs text-slate-600 group-hover:bg-indigo-600 group-hover:text-white transition">
-                        {String.fromCharCode(65 + optIdx)}
-                      </span>
-                      <span>{opt}</span>
-                    </div>
-
-                    {isAnswerLocked && isCorrect && (
-                      <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                    )}
-                    {isAnswerLocked && isSelected && !isCorrect && (
-                      <XCircle className="w-5 h-5 text-rose-600 shrink-0" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          ) : (
-            /* Text input for Roue des accords */
-            <div className="pt-2">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  disabled={isAnswerLocked}
-                  value={textInput}
-                  onChange={(e) => setTextInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleValidateText()}
-                  placeholder="Tapez la forme verbale exacte..."
-                  className="flex-1 p-4 rounded-2xl border-2 border-slate-300 text-base font-bold text-slate-900 focus:outline-none focus:border-indigo-600 bg-white"
-                />
-                <button
-                  disabled={isAnswerLocked || !textInput.trim()}
-                  onClick={handleValidateText}
-                  className="px-6 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-['Outfit'] font-bold text-sm transition shadow-sm disabled:opacity-50"
-                >
-                  Valider
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Explanation if locked */}
-          {isAnswerLocked && currentQ.explanation && (
-            <div className="mt-4 p-4 rounded-2xl bg-indigo-50 border border-indigo-200 text-xs sm:text-sm text-indigo-950 flex items-start gap-2.5">
-              <HelpCircle className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
-              <div className="leading-relaxed">
-                <strong className="text-indigo-800">Le Saviez-vous ? </strong>
-                {currentQ.explanation}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* 5. GAME OVER SUMMARY */}
-      {gameOver && (
-        <div className="text-center py-8 space-y-6">
-          <div className="w-20 h-20 mx-auto rounded-3xl bg-amber-100 border-2 border-amber-300 p-3 text-amber-600 flex items-center justify-center shadow-lg">
-            <Trophy className="w-10 h-10" />
-          </div>
-
-          <div>
-            <h4 className="font-['Outfit'] text-3xl font-black text-slate-900">
-              Standing Ovation du Public ! 👏
-            </h4>
-            <div className="font-['Outfit'] text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-indigo-600 to-purple-600 mt-2">
-              {scoreEcts} Crédits ECTS Gagnés !
-            </div>
-            <p className="text-xs sm:text-sm text-slate-500 mt-2">
-              Votre performance a été enregistrée dans votre carnet de réussite Métabox !
-            </p>
-          </div>
-
-          <div className="flex justify-center gap-3">
-            <button
-              onClick={handleRestart}
-              className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-['Outfit'] font-bold text-sm transition shadow-md shadow-indigo-600/30"
-            >
-              <RotateCcw className="w-4 h-4" /> Rejouer une émission TV
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* 6. ACTION FOOTER */}
-      {!gameOver && isAnswerLocked && (
-        <div className="flex justify-end pt-2">
-          <button
-            onClick={handleNext}
-            className="flex items-center gap-2 px-7 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-['Outfit'] font-black text-sm transition shadow-md shadow-indigo-600/25"
-          >
-            {currentIdx + 1 < totalQuestions ? 'Question Suivante' : 'Voir le Palmarès TV'} <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-      )}
     </div>
   );
 }

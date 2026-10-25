@@ -87,9 +87,20 @@ export default function TileDetails({
   const renderQuizExperience = (quizId) => {
     if (!activeQuizId || activeQuizId !== quizId || !QUIZ_DATABASE[quizId]) return null;
 
+    if (isTvShowMode) {
+      return (
+        <TvGameShowArena
+          quiz={QUIZ_DATABASE[quizId]}
+          showType={getShowTypeForQuiz(quizId)}
+          themeColor={getTileThemeColor(tile.id)}
+          onClose={() => setActiveQuizId(null)}
+          onFinishGame={(score) => onLaunchQuiz(quizId)}
+        />
+      );
+    }
+
     return (
       <div className="mt-8 pt-6 border-t-2 border-slate-200 animate-in fade-in duration-300">
-        {/* Experience Mode Toggle */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6 bg-white p-3 rounded-2xl border border-slate-200 shadow-xs">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-indigo-600" />
@@ -101,43 +112,26 @@ export default function TileDetails({
                 sounds.playPop();
                 setIsTvShowMode(true);
               }}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
-                isTvShowMode 
-                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-xs' 
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-              }`}
+              className="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700"
             >
-              🎬 Émission TV 3D (Studio, Présentateur & Public)
+              🎬 Passer en Émission TV 3D (Plein Écran)
             </button>
             <button
               onClick={() => {
                 sounds.playPop();
                 setIsTvShowMode(false);
               }}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
-                !isTvShowMode 
-                  ? 'bg-slate-900 text-white shadow-xs' 
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-              }`}
+              className="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-slate-900 text-white shadow-xs"
             >
               📝 Mode Examen Moodle
             </button>
           </div>
         </div>
 
-        {isTvShowMode ? (
-          <TvGameShowArena
-            quiz={QUIZ_DATABASE[quizId]}
-            showType={getShowTypeForQuiz(quizId)}
-            themeColor={getTileThemeColor(tile.id)}
-            onFinishGame={(score) => onLaunchQuiz(quizId)}
-          />
-        ) : (
-          <QuizPlayer
-            quiz={QUIZ_DATABASE[quizId]}
-            onComplete={() => onLaunchQuiz(quizId)}
-          />
-        )}
+        <QuizPlayer
+          quiz={QUIZ_DATABASE[quizId]}
+          onComplete={() => onLaunchQuiz(quizId)}
+        />
       </div>
     );
   };
@@ -355,12 +349,13 @@ export default function TileDetails({
                         <button
                           onClick={() => {
                             sounds.playPop();
-                            setActiveQuizId(activeQuizId === 'exo-verbes-1' ? null : 'exo-verbes-1');
+                            setIsTvShowMode(true);
+                            setActiveQuizId('exo-verbes-1');
                           }}
-                          className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold transition shadow-sm"
+                          className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs sm:text-sm font-outfit font-black tracking-wide transition shadow-lg shadow-indigo-600/25 cursor-pointer"
                         >
                           <Play className="w-4 h-4 fill-current" /> 
-                          {activeQuizId === 'exo-verbes-1' ? 'Fermer le quiz' : 'Lancer l’entraînement (10 Q)'}
+                          🎬 Lancer le Jeu TV en Plein Écran (10 Questions)
                         </button>
                       </div>
 
@@ -515,12 +510,13 @@ export default function TileDetails({
               <button
                 onClick={() => {
                   sounds.playPop();
-                  setActiveQuizId(activeQuizId === 'exo-meth-ebbinghaus' ? null : 'exo-meth-ebbinghaus');
+                  setIsTvShowMode(true);
+                  setActiveQuizId('exo-meth-ebbinghaus');
                 }}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs sm:text-sm font-bold transition shadow-sm"
+                className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 text-xs sm:text-sm font-outfit font-black tracking-wide transition shadow-lg shadow-amber-500/25 cursor-pointer"
               >
                 <Play className="w-4 h-4 fill-current" /> 
-                {activeQuizId === 'exo-meth-ebbinghaus' ? 'Fermer le quiz' : 'Tester mes connaissances sur la mémorisation (Quiz Moodle)'}
+                🎬 Lancer le Jeu TV en Plein Écran (Courbe d'Ebbinghaus)
               </button>
 
               {renderQuizExperience('exo-meth-ebbinghaus')}
@@ -581,12 +577,13 @@ export default function TileDetails({
               <button
                 onClick={() => {
                   sounds.playPop();
-                  setActiveQuizId(activeQuizId === 'exo-student-quiz' ? null : 'exo-student-quiz');
+                  setIsTvShowMode(true);
+                  setActiveQuizId('exo-student-quiz');
                 }}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-bold transition shadow-sm"
+                className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs sm:text-sm font-outfit font-black tracking-wide transition shadow-lg shadow-purple-600/25 cursor-pointer"
               >
                 <Play className="w-4 h-4 fill-current" /> 
-                {activeQuizId === 'exo-student-quiz' ? 'Fermer le quiz' : 'Passer le Quiz Métier d’Étudiant (Moodle HECh)'}
+                🎬 Lancer le Jeu TV en Plein Écran (Le Grand Concours)
               </button>
 
               {renderQuizExperience('exo-student-quiz')}
@@ -694,12 +691,13 @@ export default function TileDetails({
               <button
                 onClick={() => {
                   sounds.playPop();
-                  setActiveQuizId(activeQuizId === 'exo-ortho-1' ? null : 'exo-ortho-1');
+                  setIsTvShowMode(true);
+                  setActiveQuizId('exo-ortho-1');
                 }}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold transition shadow-sm"
+                className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white text-xs sm:text-sm font-outfit font-black tracking-wide transition shadow-lg shadow-rose-600/25 cursor-pointer"
               >
                 <Play className="w-4 h-4 fill-current" /> 
-                {activeQuizId === 'exo-ortho-1' ? 'Fermer l’exercice' : 'Lancer l’Exercice 1 de Conjugaison Piège (Moodle HECh)'}
+                🎬 Lancer le Jeu TV en Plein Écran (La Roue des Accords)
               </button>
 
               {renderQuizExperience('exo-ortho-1')}
