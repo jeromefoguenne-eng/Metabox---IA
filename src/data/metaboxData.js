@@ -646,6 +646,27 @@ export const QUIZ_DATABASE = {
         context: "Si le train avait du retard, vous ..................................... pour arriver à l'examen.",
         correctAnswers: ["courriez"],
         explanation: "Au conditionnel présent, courir prend deux 'r' : vous courriez."
+      },
+      {
+        id: "oq8",
+        prompt: "Conjuguez le verbe 'acquérir' au subjonctif présent, à la 3e personne du singulier :",
+        context: "Il est impératif que chaque étudiant ..................................... les crédits de son bloc 1.",
+        correctAnswers: ["acquière", "acquiere"],
+        explanation: "Au subjonctif présent : qu'il acquière (avec accent grave sur le e)."
+      },
+      {
+        id: "oq9",
+        prompt: "Conjuguez le verbe 'envoyer' au futur simple, à la 1re personne du pluriel :",
+        context: "Dès lundi matin, nous vous ..................................... le relevé de notes officiel.",
+        correctAnswers: ["enverrons"],
+        explanation: "Au futur simple, envoyer a pour radical enverr- avec deux 'r' : nous enverrons."
+      },
+      {
+        id: "oq10",
+        prompt: "Conjuguez le verbe 'résoudre' au participe passé au masculin pluriel :",
+        context: "Tous les cas litigieux ont été ..................................... en séance plénière.",
+        correctAnswers: ["résolus", "resolus"],
+        explanation: "Le participe passé de résoudre est résolu (sans t). Au masculin pluriel : résolus."
       }
     ]
   },

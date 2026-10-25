@@ -17,10 +17,12 @@ import {
   Zap,
   Play,
   Timer,
+  Heart,
   Compass,
   Star,
-  Flame,
-  Award
+  Award,
+  AlertTriangle,
+  Send
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import GameShow3D from './GameShow3D';
@@ -45,7 +47,7 @@ const SHOW_META = {
   },
   roue: {
     title: "La Roue des Accords",
-    subtitle: "Mur de Mots & Conjugaisons Pièges du Supérieur",
+    subtitle: "Mur de Mots & 10 Manches pour 3 Vies",
     badge: "ROUE DE LA FORTUNE · ORTHO'EXPRESS HECh",
     primaryGradient: "from-fuchsia-500 via-purple-600 to-pink-500",
     themeBg: "bg-purple-950/90 border-pink-500/40",
@@ -61,20 +63,20 @@ const SHOW_META = {
   }
 };
 
-// WHEEL WEDGES for La Roue des Accords
+// 12 WEDGES FOR LA ROUE DES ACCORDS (with 3 Banqueroutes)
 const WHEEL_WEDGES = [
-  { label: "100 ECTS", value: 100, color: "bg-emerald-600", isSpecial: false },
-  { label: "250 ECTS", value: 250, color: "bg-blue-600", isSpecial: false },
-  { label: "💥 BANQUEROUTE", value: 0, color: "bg-rose-700", isSpecial: true, type: "bankrupt" },
-  { label: "500 ECTS", value: 500, color: "bg-amber-600", isSpecial: false },
-  { label: "⭐ HOLD-UP", value: 750, color: "bg-purple-600", isSpecial: true, type: "holdup" },
-  { label: "150 ECTS", value: 150, color: "bg-cyan-600", isSpecial: false },
-  { label: "1000 ECTS", value: 1000, color: "bg-yellow-500 text-slate-950", isSpecial: false },
-  { label: "⚡ CHANCE", value: 300, color: "bg-indigo-600", isSpecial: true, type: "chance" },
-  { label: "200 ECTS", value: 200, color: "bg-teal-600", isSpecial: false },
-  { label: "400 ECTS", value: 400, color: "bg-orange-600", isSpecial: false },
-  { label: "750 ECTS", value: 750, color: "bg-fuchsia-600", isSpecial: false },
-  { label: "💥 PASSE", value: 0, color: "bg-slate-700", isSpecial: true, type: "pass" }
+  { id: 0, label: "100 ECTS", value: 100, fill: "#10b981", textColor: "#ffffff", isSpecial: false },
+  { id: 1, label: "250 ECTS", value: 250, fill: "#3b82f6", textColor: "#ffffff", isSpecial: false },
+  { id: 2, label: "💥 BANQUEROUTE", value: 0, fill: "#b91c1c", textColor: "#fef08a", isSpecial: true, type: "bankrupt" },
+  { id: 3, label: "500 ECTS", value: 500, fill: "#f59e0b", textColor: "#ffffff", isSpecial: false },
+  { id: 4, label: "⭐ HOLD-UP", value: 750, fill: "#8b5cf6", textColor: "#ffffff", isSpecial: true, type: "holdup" },
+  { id: 5, label: "💥 BANQUEROUTE", value: 0, fill: "#991b1b", textColor: "#fef08a", isSpecial: true, type: "bankrupt" },
+  { id: 6, label: "1000 ECTS", value: 1000, fill: "#eab308", textColor: "#0f172a", isSpecial: false },
+  { id: 7, label: "150 ECTS", value: 150, fill: "#06b6d4", textColor: "#ffffff", isSpecial: false },
+  { id: 8, label: "300 ECTS", value: 300, fill: "#6366f1", textColor: "#ffffff", isSpecial: false },
+  { id: 9, label: "400 ECTS", value: 400, fill: "#f97316", textColor: "#ffffff", isSpecial: false },
+  { id: 10, label: "750 ECTS", value: 750, fill: "#ec4899", textColor: "#ffffff", isSpecial: false },
+  { id: 11, label: "💥 BANQUEROUTE", value: 0, fill: "#dc2626", textColor: "#fef08a", isSpecial: true, type: "bankrupt" }
 ];
 
 export default function TvGameShowArena({ 
@@ -99,6 +101,9 @@ export default function TvGameShowArena({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMuted, setIsMuted] = useState(sounds.isMuted());
 
+  // 3 LIVES SYSTEM (Particularly for La Roue des Accords)
+  const [lives, setLives] = useState(3);
+
   // Jokers state (for Millionnaire)
   const [joker50Used, setJoker50Used] = useState(false);
   const [hiddenOptions, setHiddenOptions] = useState([]);
@@ -115,6 +120,23 @@ export default function TvGameShowArena({
   const [canPickLetter, setCanPickLetter] = useState(false);
   const [solveInput, setSolveInput] = useState("");
   const [isSolveOpen, setIsSolveOpen] = useState(false);
+  const [roundPointsValue, setRoundPointsValue] = useState(null);
+
+  // LEADERBOARD (Persisted in localStorage)
+  const [leaderboard, setLeaderboard] = useState(() => {
+    try {
+      const saved = localStorage.getItem('hech_roue_highscores');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return [
+      { id: 1, pseudo: "Camille (Master Com)", score: 4850, date: "24/10/2026", rounds: "10/10", livesLeft: 3 },
+      { id: 2, pseudo: "Maxime (SAR HECh)", score: 3900, date: "23/10/2026", rounds: "10/10", livesLeft: 2 },
+      { id: 3, pseudo: "Éléonore (Rivageois)", score: 3100, date: "22/10/2026", rounds: "9/10", livesLeft: 1 },
+      { id: 4, pseudo: "Théo (Campus Huy)", score: 2450, date: "21/10/2026", rounds: "8/10", livesLeft: 1 }
+    ];
+  });
+  const [playerPseudo, setPlayerPseudo] = useState("");
+  const [hasSavedScore, setHasSavedScore] = useState(false);
 
   // --- SPECIFIC: LE GRAND CONCOURS DE LA HECH (Fictional Opponents & Speed) ---
   const [opponents, setOpponents] = useState([
@@ -133,7 +155,7 @@ export default function TvGameShowArena({
   const totalQuestions = quiz.questions.length;
   const isMultipleChoice = currentQ?.options && currentQ.options.length > 0;
 
-  // Word Wall target word for Roue des Accords
+  // Target word for Roue des Accords
   const targetWord = (currentQ?.correctAnswers?.[0] || "").toUpperCase();
 
   // 1. Play Opening Theme on mount
@@ -204,6 +226,7 @@ export default function TvGameShowArena({
     setRevealedLetters(new Set());
     setCanPickLetter(false);
     setCurrentWedge(null);
+    setRoundPointsValue(null);
     setIsSolveOpen(false);
     setSolveInput("");
 
@@ -219,15 +242,10 @@ export default function TvGameShowArena({
       voiceKey = `q_verb_${currentIdx + 1}`;
       dialogueText = `🎙️ Henri : « Question ${currentIdx + 1} (${currentQ.difficulty || 'Palier'}) pour ${reward} crédits ECTS... Que signifie le verbe « ${currentQ.verb || ''} » ? »`;
 
-      // Announce safety tier
       if (currentQ.isSafetyTier) {
-        setTimeout(() => {
-          sounds.playVoice("tier_safety");
-        }, 3500);
+        setTimeout(() => sounds.playVoice("tier_safety"), 3500);
       } else if (currentQ.tier === 3 && currentIdx === 7) {
-        setTimeout(() => {
-          sounds.playVoice("tier_final");
-        }, 3500);
+        setTimeout(() => sounds.playVoice("tier_final"), 3500);
       }
 
     } else if (showType === 'champion') {
@@ -235,7 +253,7 @@ export default function TvGameShowArena({
       dialogueText = `🎙️ Henri : « Top chrono ! Question ${currentIdx + 1} de sciences cognitives : buzzez dès que vous êtes prêt ! »`;
     } else if (showType === 'roue') {
       voiceKey = `q_ortho_${currentIdx + 1}`;
-      dialogueText = `🎙️ Henri : « Faites tourner la roue des accords ! Découvrez les lettres sur le mur de mots ! »`;
+      dialogueText = `🎙️ Henri : « Manche ${currentIdx + 1} sur 10 ! Faites tourner la roue pour déterminer vos points de manche ! »`;
     } else {
       voiceKey = `q_stud_${currentIdx + 1}`;
       dialogueText = `🎙️ Henri : « Question ${currentIdx + 1} du Grand Concours de la HECh ! Attention aux adversaires, buzzez le premier ! »`;
@@ -255,13 +273,10 @@ export default function TvGameShowArena({
       return;
     }
 
-    // Grand Concours : Simulate Opponents Buzzer between 5s and 9s
     if (showType === 'concours' && !buzzWinner && !isAnswerLocked) {
-      // Check if an AI buzzes at this second
       opponents.forEach((opp, i) => {
-        const triggerSecond = 10 - i * 2; // e.g., 10s, 8s, 6s, 4s
+        const triggerSecond = 10 - i * 2;
         if (timeLeft === triggerSecond && opp.state === 'thinking' && Math.random() > 0.4) {
-          // Opponent Buzzes!
           handleOpponentBuzz(opp);
         }
       });
@@ -281,9 +296,8 @@ export default function TvGameShowArena({
     setHostDialogue(`🚨 BUZZER ! ${opp.name} (${opp.campus}) a buzzé en premier !`);
     sounds.playVoice("opponent_buzz");
 
-    // Simulate opponent answer after 1.5s
     setTimeout(() => {
-      const isOppCorrect = Math.random() > 0.35; // 65% correct
+      const isOppCorrect = Math.random() > 0.35;
       if (isOppCorrect) {
         sounds.playSuccess();
         setHostDialogue(`✅ ${opp.name} donne la bonne réponse et empoche +10 ECTS !`);
@@ -293,7 +307,7 @@ export default function TvGameShowArena({
         sounds.playGroan();
         setHostDialogue(`❌ Mauvaise réponse de ${opp.name} ! La main revient à vous, choisissez votre réponse !`);
         setOpponents(prev => prev.map(o => o.id === opp.id ? { ...o, score: Math.max(0, o.score - 5), state: 'wrong' } : o));
-        setBuzzWinner(null); // Player can answer!
+        setBuzzWinner(null);
       }
     }, 1800);
   };
@@ -307,24 +321,32 @@ export default function TvGameShowArena({
     setHostDialogue("⏰ GONG ! Le temps est écoulé ! Coup dur pour les candidats !");
   };
 
-  // --- LA ROUE DES ACCORDS: SPINNING WHEEL LOGIC ---
+  // --- LA ROUE DES ACCORDS: REAL ROTATING WHEEL WITH BANQUEROUTE & LIVES ---
   const handleSpinWheel = () => {
     if (isSpinningWheel || canPickLetter || isAnswerLocked) return;
 
     sounds.playPop();
     setIsSpinningWheel(true);
-    setHostDialogue("🎡 La roue tourne... Où va-t-elle s'arrêter ?!");
+    setCurrentWedge(null);
+    setHostDialogue("🎡 La roue tourne à pleine vitesse... Où va-t-elle s'arrêter ?!");
 
-    // Random rotations + landing wedge
+    // Realistic wheel physics simulation
     const wedgeCount = WHEEL_WEDGES.length;
     const randomWedgeIdx = Math.floor(Math.random() * wedgeCount);
-    const extraRounds = 5 + Math.floor(Math.random() * 3);
+    const extraRounds = 6 + Math.floor(Math.random() * 3);
     const wedgeAngle = 360 / wedgeCount;
-    const targetDeg = extraRounds * 360 + randomWedgeIdx * wedgeAngle + (wedgeAngle / 2);
+    // Pointer is at TOP (90 deg in standard SVG, or 270)
+    const targetDeg = wheelRotation + extraRounds * 360 + randomWedgeIdx * wedgeAngle + (wedgeAngle / 2);
 
-    setWheelRotation(prev => prev + targetDeg);
+    setWheelRotation(targetDeg);
+
+    // Audio clicks while spinning
+    const intervalTicks = setInterval(() => {
+      sounds.playPop();
+    }, 140);
 
     setTimeout(() => {
+      clearInterval(intervalTicks);
       setIsSpinningWheel(false);
       const landed = WHEEL_WEDGES[randomWedgeIdx];
       setCurrentWedge(landed);
@@ -332,18 +354,34 @@ export default function TvGameShowArena({
       if (landed.type === 'bankrupt') {
         sounds.playBuzzer();
         sounds.playGroan();
-        setHostDialogue("💥 BANQUEROUTE ! Vos crédits du tour sont perdus ! Relancez la roue !");
-        setScoreEcts(prev => Math.max(0, prev - 50));
-      } else if (landed.type === 'pass') {
-        sounds.playGroan();
-        setHostDialogue("💨 PASSE TON TOUR ! Relancez la roue pour retenter votre chance !");
+        sounds.playVoice("roue_bankrupt");
+        setHostDialogue("💥 BANQUEROUTE ! Coup de tonnerre ! Vous perdez les points du tour ET une vie !");
+        
+        handleLoseLife();
+
       } else {
         sounds.playSuccess();
-        sounds.playPop();
+        setRoundPointsValue(landed.value);
         setCanPickLetter(true);
-        setHostDialogue(`🎯 ${landed.label} en jeu ! Choisissez une lettre sur le clavier ci-dessous !`);
+        setHostDialogue(`🎯 MANCHE JOUÉE POUR : ${landed.label} ! Proposez une lettre ou résolvez !`);
       }
-    }, 3200);
+    }, 3800);
+  };
+
+  const handleLoseLife = () => {
+    setLives(prev => {
+      const nextLives = prev - 1;
+      if (nextLives <= 0) {
+        setTimeout(() => {
+          setGameOver(true);
+          setReaction('wrong');
+          sounds.playGroan();
+          sounds.playVoice("roue_life_lost");
+          setHostDialogue("💀 ÉLIMINATION ! Vous avez perdu vos 3 vies ! La session prend fin.");
+        }, 1200);
+      }
+      return Math.max(0, nextLives);
+    });
   };
 
   const handlePickLetter = (letter) => {
@@ -355,25 +393,25 @@ export default function TvGameShowArena({
     setRevealedLetters(nextLetters);
     setCanPickLetter(false);
 
-    // Check if letter in target word
     const occurrences = (targetWord.match(new RegExp(letter, "g")) || []).length;
 
     if (occurrences > 0) {
       sounds.playSuccess();
-      const points = (currentWedge?.value || 100) * occurrences;
-      setScoreEcts(prev => prev + Math.floor(points / 25)); // converted to ECTS
+      const points = (roundPointsValue || 250) * occurrences;
+      setScoreEcts(prev => prev + Math.floor(points / 20));
       setHostDialogue(`🎉 OUI ! Il y a ${occurrences} fois la lettre « ${letter} » sur le mur de mots !`);
-      
       confetti({ particleCount: 40, spread: 50, origin: { y: 0.6 } });
 
-      // Check if full word revealed
       const allFound = [...targetWord].every(char => !/[A-ZÀ-ÖØ-öø-ÿ]/.test(char) || nextLetters.has(char));
       if (allFound) {
         handleWordSolvedSuccess();
       }
     } else {
+      sounds.playBuzzer();
       sounds.playGroan();
-      setHostDialogue(`❌ Pas de « ${letter} » dans cette conjugaison ! Tournez à nouveau la roue !`);
+      sounds.playVoice("roue_life_lost");
+      setHostDialogue(`❌ Pas de « ${letter} » dans cette conjugaison ! Vous perdez une vie !`);
+      handleLoseLife();
     }
   };
 
@@ -390,8 +428,10 @@ export default function TvGameShowArena({
     } else {
       sounds.playBuzzer();
       sounds.playGroan();
-      setHostDialogue(`❌ Ce n'est pas « ${solveInput} » ! Vous perdez ce tour !`);
+      sounds.playVoice("roue_life_lost");
+      setHostDialogue(`❌ Fausse réponse ! Ce n'était pas « ${solveInput} ». Vous perdez une vie !`);
       setIsSolveOpen(false);
+      handleLoseLife();
     }
   };
 
@@ -401,8 +441,8 @@ export default function TvGameShowArena({
     sounds.playApplause();
     sounds.playSuccess();
     sounds.playVoice("feedback_correct_1");
-    setHostDialogue(`🎉 ÉNIGME RÉSOLUE ! La forme « ${currentQ.correctAnswers[0]} » est 100% validée !`);
-    setScoreEcts(prev => prev + 12);
+    setHostDialogue(`🎉 MANCHE ${currentIdx + 1} REMPORTÉE ! La forme « ${currentQ.correctAnswers[0]} » est 100% validée !`);
+    setScoreEcts(prev => prev + (roundPointsValue || 250));
     confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
   };
 
@@ -473,16 +513,11 @@ export default function TvGameShowArena({
         const randomCorrect = `feedback_correct_${(currentIdx % 3) + 1}`;
         sounds.playVoice(randomCorrect);
         
-        // Bonus points in Grand Concours if answered fast
         const earned = showType === 'concours' ? 12 : (currentQ.rewardEcts || 6);
         setScoreEcts(prev => prev + earned);
         setHostDialogue("🎉 OUI ! Excellente réponse validée par les arbitres de la HECh !");
 
-        confetti({
-          particleCount: 80,
-          spread: 80,
-          origin: { y: 0.6 }
-        });
+        confetti({ particleCount: 80, spread: 80, origin: { y: 0.6 } });
       } else {
         setReaction('wrong');
         sounds.playBuzzer();
@@ -505,14 +540,10 @@ export default function TvGameShowArena({
       sounds.playApplause();
       sounds.playFanfare();
 
-      const victoryVoice = `victory_${showType}`;
+      const victoryVoice = showType === 'roue' ? "roue_victory_10" : `victory_${showType}`;
       sounds.playVoice(victoryVoice);
 
-      confetti({
-        particleCount: 150,
-        spread: 100,
-        origin: { y: 0.5 }
-      });
+      confetti({ particleCount: 160, spread: 110, origin: { y: 0.5 } });
 
       if (onFinishGame) {
         onFinishGame(scoreEcts);
@@ -525,10 +556,36 @@ export default function TvGameShowArena({
     setIsShowingIntro(true);
     setCurrentIdx(0);
     setScoreEcts(0);
+    setLives(3);
     setGameOver(false);
+    setHasSavedScore(false);
     setJoker50Used(false);
     setJokerAudienceUsed(false);
     setJokerSarUsed(false);
+  };
+
+  // Save to Leaderboard
+  const handleSaveToLeaderboard = (e) => {
+    e?.preventDefault();
+    if (!playerPseudo.trim() || hasSavedScore) return;
+
+    sounds.playPop();
+    const newEntry = {
+      id: Date.now(),
+      pseudo: playerPseudo.trim(),
+      score: scoreEcts,
+      date: new Date().toLocaleDateString('fr-BE'),
+      rounds: `${currentIdx + 1}/10`,
+      livesLeft: lives
+    };
+
+    const updated = [newEntry, ...leaderboard].sort((a, b) => b.score - a.score).slice(0, 6);
+    setLeaderboard(updated);
+    try {
+      localStorage.setItem('hech_roue_highscores', JSON.stringify(updated));
+    } catch {}
+    setHasSavedScore(true);
+    sounds.playSuccess();
   };
 
   // Full 10-tier Pyramide for Qui veut gagner des crédits
@@ -578,17 +635,36 @@ export default function TvGameShowArena({
           </div>
         </div>
 
-        {/* Center: ECTS & Progress */}
-        <div className="flex items-center gap-3 bg-slate-800/80 px-4 py-1.5 rounded-full border border-slate-700/80 shadow-inner">
-          <div className="flex items-center gap-1.5 text-amber-400 font-black text-sm">
-            <Zap className="w-4 h-4 fill-amber-400" />
-            <span>{scoreEcts}</span>
-            <span className="text-[11px] text-amber-300/80 font-bold uppercase">ECTS</span>
+        {/* Center: Lives, ECTS & Progress */}
+        <div className="flex items-center gap-4">
+          {/* 3 LIVES INDICATOR */}
+          {showType === 'roue' && (
+            <div className="flex items-center gap-1.5 bg-rose-950/60 px-3 py-1.5 rounded-full border border-rose-500/40 shadow-inner">
+              <span className="text-[10px] font-bold text-rose-300 uppercase mr-1 hidden sm:inline">Vies :</span>
+              {[1, 2, 3].map(heartIdx => (
+                <Heart 
+                  key={heartIdx} 
+                  className={`w-4 h-4 transition-all duration-300 ${
+                    heartIdx <= lives 
+                      ? 'text-rose-500 fill-rose-500 scale-110 drop-shadow-[0_0_8px_rgba(244,63,94,0.6)]' 
+                      : 'text-slate-600 opacity-40'
+                  }`} 
+                />
+              ))}
+            </div>
+          )}
+
+          <div className="flex items-center gap-3 bg-slate-800/80 px-4 py-1.5 rounded-full border border-slate-700/80 shadow-inner">
+            <div className="flex items-center gap-1.5 text-amber-400 font-black text-sm">
+              <Zap className="w-4 h-4 fill-amber-400" />
+              <span>{scoreEcts}</span>
+              <span className="text-[11px] text-amber-300/80 font-bold uppercase">ECTS</span>
+            </div>
+            <span className="text-slate-600 font-bold">|</span>
+            <span className="text-xs font-bold text-slate-300">
+              Manche {currentIdx + 1} / {totalQuestions}
+            </span>
           </div>
-          <span className="text-slate-600 font-bold">|</span>
-          <span className="text-xs font-bold text-slate-300">
-            Manche {currentIdx + 1} / {totalQuestions}
-          </span>
         </div>
 
         {/* Right: Audio Toggle, Fullscreen & Exit */}
@@ -633,7 +709,7 @@ export default function TvGameShowArena({
       <div className="flex-1 flex flex-col relative overflow-hidden">
         
         {/* Upper Half: 3D TV Studio Scene */}
-        <div className="h-[48vh] min-h-[280px] w-full relative bg-slate-950">
+        <div className="h-[46vh] min-h-[260px] w-full relative bg-slate-950">
           <GameShow3D 
             reaction={reaction} 
             theme={showType}
@@ -692,30 +768,96 @@ export default function TvGameShowArena({
         <div className="flex-1 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 border-t border-slate-800 p-4 sm:p-5 overflow-y-auto flex flex-col justify-between">
           <div className="max-w-5xl mx-auto w-full">
 
-            {/* Game Over Screen */}
+            {/* Game Over Screen WITH HALL OF FAME LEADERBOARD */}
             {gameOver ? (
-              <div className="text-center py-6 animate-in zoom-in-95 duration-400">
-                <div className="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-amber-400 to-orange-500 p-0.5 shadow-2xl shadow-amber-500/30 mb-4 flex items-center justify-center">
-                  <Trophy className="w-10 h-10 text-slate-950" />
+              <div className="text-center py-4 animate-in zoom-in-95 duration-400">
+                <div className="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-tr from-amber-400 to-orange-500 p-0.5 shadow-2xl shadow-amber-500/30 mb-3 flex items-center justify-center">
+                  <Trophy className="w-8 h-8 text-slate-950" />
                 </div>
-                <h3 className="text-2xl sm:text-3xl font-outfit font-black text-white mb-2">
-                  Session Studio Validée !
+                
+                <h3 className="text-2xl font-outfit font-black text-white mb-1">
+                  {lives > 0 ? "🏆 VICTOIRE DES 10 MANCHES !" : "💀 PARTIE TERMINÉE !"}
                 </h3>
-                <p className="text-slate-300 font-lexend text-base max-w-lg mx-auto mb-6">
-                  Vous terminez avec <strong className="text-amber-400 font-black text-xl">{scoreEcts} Crédits ECTS</strong> ! Le Service d'Accompagnement à la Réussite (SAR) et la Haute École Charlemagne saluent votre engagement !
+                <p className="text-slate-300 font-lexend text-sm max-w-lg mx-auto mb-4">
+                  {lives > 0 
+                    ? `Félicitations ! Vous terminez avec ${scoreEcts} Crédits ECTS et ${lives} vie(s) restante(s) !` 
+                    : `Vous avez défendu vos chances jusqu'à la manche ${currentIdx + 1}/10 avec ${scoreEcts} ECTS !`}
                 </p>
+
+                {/* Save Pseudo Form */}
+                {!hasSavedScore && (
+                  <form onSubmit={handleSaveToLeaderboard} className="max-w-md mx-auto mb-6 flex gap-2">
+                    <input
+                      type="text"
+                      value={playerPseudo}
+                      onChange={(e) => setPlayerPseudo(e.target.value)}
+                      placeholder="Votre Prénom / Pseudo (ex. Alex - HECh)..."
+                      className="flex-1 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs focus:outline-hidden focus:border-amber-400"
+                    />
+                    <button
+                      type="submit"
+                      disabled={!playerPseudo.trim()}
+                      className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-slate-950 font-outfit font-black text-xs uppercase flex items-center gap-1.5 cursor-pointer shadow-md"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                      Enregistrer
+                    </button>
+                  </form>
+                )}
+
+                {/* PANNEAU DE SCORING (HALL OF FAME DES MEILLEURES PARTIES) */}
+                <div className="max-w-xl mx-auto bg-slate-900/90 border border-amber-500/40 rounded-2xl p-4 shadow-2xl mb-6 text-left">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
+                    <div className="flex items-center gap-2">
+                      <Award className="w-4 h-4 text-amber-400" />
+                      <span className="text-xs font-outfit font-black text-white uppercase tracking-wider">
+                        Palmarès des Meilleures Parties HECh
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-amber-400 font-mono font-bold">TOP SCORES</span>
+                  </div>
+
+                  <div className="space-y-2">
+                    {leaderboard.map((entry, rank) => (
+                      <div 
+                        key={entry.id}
+                        className={`flex items-center justify-between p-2.5 rounded-xl border text-xs font-lexend ${
+                          rank === 0 
+                            ? 'bg-amber-500/10 border-amber-500/40 text-amber-300' 
+                            : 'bg-slate-800/40 border-slate-800 text-slate-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-mono font-black text-[10px] ${
+                            rank === 0 ? 'bg-amber-400 text-slate-950' : 'bg-slate-700 text-slate-300'
+                          }`}>
+                            {rank + 1}
+                          </span>
+                          <span className="font-bold">{entry.pseudo}</span>
+                          <span className="text-[10px] text-slate-500">({entry.rounds})</span>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <span className="font-mono font-black text-amber-400">{entry.score} ECTS</span>
+                          <span className="text-[10px] text-rose-400">{'❤️'.repeat(entry.livesLeft || 1)}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="flex flex-wrap justify-center gap-4">
                   <button
                     onClick={handleRestart}
-                    className="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-outfit font-black text-sm tracking-wide shadow-lg shadow-indigo-600/30 transition flex items-center gap-2 cursor-pointer"
+                    className="px-6 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-outfit font-black text-xs uppercase tracking-wider shadow-lg shadow-indigo-600/30 transition flex items-center gap-2 cursor-pointer"
                   >
                     <RotateCcw className="w-4 h-4" />
-                    Rejouer l'émission
+                    Rejouer l'émission (3 Vies)
                   </button>
                   {onClose && (
                     <button
                       onClick={onClose}
-                      className="px-6 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-outfit font-bold text-sm transition border border-slate-700 cursor-pointer"
+                      className="px-6 py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-outfit font-bold text-xs uppercase transition border border-slate-700 cursor-pointer"
                     >
                       Retour aux modules
                     </button>
@@ -812,9 +954,7 @@ export default function TvGameShowArena({
                 {/* 2. LE GRAND CONCOURS DE LA HECH : Fictional Opponents & Speed Race */}
                 {showType === 'concours' && (
                   <div className="mb-4">
-                    {/* Opponents Speed Radar Bar */}
                     <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 bg-slate-900/80 p-2.5 rounded-2xl border border-slate-800 mb-3">
-                      {/* Player Card */}
                       <div className="p-2 rounded-xl bg-indigo-600/30 border border-indigo-500/60 flex items-center gap-2">
                         <span className="text-xl">🌟</span>
                         <div className="flex-1 min-w-0">
@@ -826,7 +966,6 @@ export default function TvGameShowArena({
                         </div>
                       </div>
 
-                      {/* 4 Opponents */}
                       {opponents.map(opp => (
                         <div 
                           key={opp.id} 
@@ -853,20 +992,26 @@ export default function TvGameShowArena({
                     </div>
 
                     <div className="flex items-center justify-between text-xs text-slate-400 px-1">
-                      <span>⏱️ Chrono de vitesse : <strong className="text-rose-400 font-mono font-black">{timeLeft}s</strong></span>
+                      <span>⏱️ Chrono : <strong className="text-rose-400 font-mono font-black">{timeLeft}s</strong></span>
                       <span className="text-amber-400 font-bold">Répondez avant les autres campus pour marquer les points !</span>
                     </div>
                   </div>
                 )}
 
-                {/* 3. LA ROUE DES ACCORDS : Mur de Mots & Roue Interactive */}
+                {/* 3. LA ROUE DES ACCORDS : VISIBLE ROTATING WHEEL + MUR DE MOTS + 3 LIVES */}
                 {showType === 'roue' && (
                   <div className="mb-4">
+                    
                     {/* Le Mur de Mots (Word Wall Flip Tiles) */}
-                    <div className="bg-slate-900/90 border border-purple-500/40 rounded-2xl p-4 shadow-xl text-center mb-3">
-                      <span className="text-[11px] font-bold text-pink-400 uppercase tracking-widest block mb-2">
-                        MUR DE MOTS · ORTHO'EXPRESS HECh
-                      </span>
+                    <div className="bg-slate-900/90 border border-purple-500/40 rounded-2xl p-4 shadow-xl text-center mb-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[10px] font-bold text-pink-400 uppercase tracking-widest">
+                          MUR DE MOTS · MANCHE {currentIdx + 1} / 10
+                        </span>
+                        <span className="text-xs font-bold text-amber-300">
+                          Objectif : Sauver vos 3 vies jusqu'au bout !
+                        </span>
+                      </div>
 
                       {/* Enigma Word Tiles */}
                       <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 my-2">
@@ -892,81 +1037,161 @@ export default function TvGameShowArena({
                       </p>
                     </div>
 
-                    {/* Wheel & Action Buttons */}
-                    <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-800/60 p-3 rounded-2xl border border-slate-700/60">
-                      <div className="flex items-center gap-3">
+                    {/* SPLIT VIEW: VISIBLE ROTATING WHEEL on left, ACTIONS on right */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-slate-900/70 p-4 rounded-3xl border border-purple-500/30">
+                      
+                      {/* LEFT: THE VISIBLE PHYSICAL ROTATING WHEEL */}
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="relative w-56 h-56 sm:w-64 sm:h-64 flex items-center justify-center">
+                          
+                          {/* Pointer Arrow at 12 o'clock */}
+                          <div className="absolute top-0 z-20 transform -translate-y-2">
+                            <div className="w-0 h-0 border-l-[14px] border-l-transparent border-r-[14px] border-r-transparent border-t-[24px] border-t-amber-400 drop-shadow-[0_2px_8px_rgba(245,158,11,0.8)] animate-pulse" />
+                          </div>
+
+                          {/* SVG ROTATING WHEEL */}
+                          <div 
+                            className="w-full h-full rounded-full shadow-[0_0_35px_rgba(236,72,153,0.35)] border-4 border-slate-800"
+                            style={{
+                              transform: `rotate(${wheelRotation}deg)`,
+                              transition: isSpinningWheel ? 'transform 3.8s cubic-bezier(0.12, 0.95, 0.22, 1.0)' : 'none'
+                            }}
+                          >
+                            <svg viewBox="0 0 240 240" className="w-full h-full">
+                              {WHEEL_WEDGES.map((wedge, wIdx) => {
+                                const angle = 360 / WHEEL_WEDGES.length;
+                                const startAngle = (wIdx * angle - 90) * (Math.PI / 180);
+                                const endAngle = ((wIdx + 1) * angle - 90) * (Math.PI / 180);
+                                
+                                const x1 = 120 + 116 * Math.cos(startAngle);
+                                const y1 = 120 + 116 * Math.sin(startAngle);
+                                const x2 = 120 + 116 * Math.cos(endAngle);
+                                const y2 = 120 + 116 * Math.sin(endAngle);
+
+                                const pathData = `M 120 120 L ${x1} ${y1} A 116 116 0 0 1 ${x2} ${y2} Z`;
+
+                                // Text angle & position
+                                const midAngle = (wIdx * angle + angle / 2 - 90);
+                                const radMid = midAngle * (Math.PI / 180);
+                                const tx = 120 + 72 * Math.cos(radMid);
+                                const ty = 120 + 72 * Math.sin(radMid);
+
+                                return (
+                                  <g key={wedge.id}>
+                                    <path d={pathData} fill={wedge.fill} stroke="#0f172a" strokeWidth="1.5" />
+                                    <text
+                                      x={tx}
+                                      y={ty}
+                                      fill={wedge.textColor}
+                                      fontSize={wedge.isSpecial ? "8" : "9"}
+                                      fontWeight="900"
+                                      textAnchor="middle"
+                                      dominantBaseline="central"
+                                      transform={`rotate(${midAngle + 90}, ${tx}, ${ty})`}
+                                    >
+                                      {wedge.isSpecial ? (wedge.type === 'bankrupt' ? 'BANQUE' : 'HOLD') : wedge.value}
+                                    </text>
+                                  </g>
+                                );
+                              })}
+
+                              {/* Center Hub with HECh Monogram */}
+                              <circle cx="120" cy="120" r="28" fill="#0f172a" stroke="#f59e0b" strokeWidth="3" />
+                              <text x="120" y="125" fill="#f59e0b" fontSize="13" fontWeight="900" textAnchor="middle">
+                                HECh
+                              </text>
+                            </svg>
+                          </div>
+                        </div>
+
+                        {/* Status readout below the wheel */}
+                        <div className="mt-3 text-center">
+                          {roundPointsValue ? (
+                            <div className="px-4 py-1.5 rounded-xl bg-amber-400 text-slate-950 font-outfit font-black text-xs uppercase shadow-md animate-bounce">
+                              🎯 Manche Jouée pour : {roundPointsValue} ECTS !
+                            </div>
+                          ) : (
+                            <span className="text-[11px] text-slate-400 font-bold">
+                              Tournez la roue pour fixer les points de la manche
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* RIGHT: SPIN BUTTON, ALPHABET KEYBOARD & SOLVE */}
+                      <div className="flex flex-col gap-3">
                         <button
                           onClick={handleSpinWheel}
                           disabled={isSpinningWheel || canPickLetter || isAnswerLocked}
-                          className={`px-5 py-2.5 rounded-xl font-outfit font-black text-xs uppercase tracking-wider transition shadow-lg flex items-center gap-2 cursor-pointer ${
+                          className={`w-full py-3.5 rounded-2xl font-outfit font-black text-sm uppercase tracking-wider transition shadow-xl flex items-center justify-center gap-2 cursor-pointer ${
                             isSpinningWheel 
                               ? 'bg-slate-700 text-slate-400 animate-pulse'
-                              : 'bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white shadow-pink-600/30'
+                              : 'bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:scale-[1.02] text-white shadow-pink-600/30'
                           }`}
                         >
-                          <Compass className={`w-4 h-4 ${isSpinningWheel ? 'animate-spin' : ''}`} />
-                          <span>{isSpinningWheel ? "La roue tourne..." : "🎡 Faire Tourner la Roue"}</span>
+                          <Compass className={`w-5 h-5 ${isSpinningWheel ? 'animate-spin' : ''}`} />
+                          <span>{isSpinningWheel ? "La roue tourne..." : "🎡 Faire Tourner la Roue !"}</span>
                         </button>
 
-                        {currentWedge && (
-                          <div className={`px-3 py-1.5 rounded-xl text-xs font-black ${currentWedge.color}`}>
-                            {currentWedge.label}
+                        {/* Alphabet Keyboard (Enabled after wheel lands on points) */}
+                        <div className="p-3 bg-slate-950/80 border border-purple-500/30 rounded-2xl">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-[10px] font-bold text-pink-300 uppercase">
+                              {canPickLetter ? "👉 Choisissez une lettre :" : "Tournez la roue pour débloquer le clavier"}
+                            </span>
                           </div>
+                          
+                          <div className="flex flex-wrap gap-1 justify-center">
+                            {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l => (
+                              <button
+                                key={l}
+                                onClick={() => handlePickLetter(l)}
+                                disabled={!canPickLetter || revealedLetters.has(l) || isAnswerLocked}
+                                className={`w-6 h-7 sm:w-7 sm:h-8 rounded-lg font-mono text-[11px] font-black transition cursor-pointer ${
+                                  revealedLetters.has(l)
+                                    ? 'bg-slate-800 text-slate-600 cursor-not-allowed opacity-30'
+                                    : canPickLetter
+                                    ? 'bg-indigo-600 hover:bg-pink-600 text-white shadow-xs'
+                                    : 'bg-slate-800 text-slate-500 cursor-not-allowed opacity-40'
+                                }`}
+                              >
+                                {l}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Quick Solve Drawer */}
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setIsSolveOpen(!isSolveOpen)}
+                            disabled={isAnswerLocked}
+                            className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-outfit font-black text-xs uppercase transition border border-slate-700 cursor-pointer text-center"
+                          >
+                            ⚡ Résoudre l'accord direct
+                          </button>
+                        </div>
+
+                        {isSolveOpen && !isAnswerLocked && (
+                          <form onSubmit={handleSolveSubmit} className="flex gap-2 animate-in fade-in">
+                            <input
+                              type="text"
+                              value={solveInput}
+                              onChange={(e) => setSolveInput(e.target.value)}
+                              placeholder="Tapez le mot résolu..."
+                              className="flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-pink-500/50 text-white font-mono text-xs focus:outline-hidden"
+                            />
+                            <button
+                              type="submit"
+                              className="px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-black text-xs uppercase cursor-pointer"
+                            >
+                              Valider
+                            </button>
+                          </form>
                         )}
                       </div>
 
-                      <button
-                        onClick={() => setIsSolveOpen(!isSolveOpen)}
-                        disabled={isAnswerLocked}
-                        className="px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold text-xs transition border border-slate-600 cursor-pointer"
-                      >
-                        ⚡ Résoudre l'accord direct
-                      </button>
                     </div>
-
-                    {/* Alphabet Board if Can Pick Letter */}
-                    {canPickLetter && (
-                      <div className="mt-3 p-3 bg-purple-950/60 border border-purple-500/40 rounded-2xl animate-in zoom-in-95">
-                        <span className="text-[11px] font-bold text-pink-300 block mb-2">
-                          Sélectionnez une consonne ou une voyelle pour l'afficher sur le mur :
-                        </span>
-                        <div className="flex flex-wrap gap-1.5 justify-center">
-                          {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l => (
-                            <button
-                              key={l}
-                              onClick={() => handlePickLetter(l)}
-                              disabled={revealedLetters.has(l)}
-                              className={`w-7 h-8 sm:w-8 sm:h-9 rounded-lg font-mono text-xs font-black transition cursor-pointer ${
-                                revealedLetters.has(l)
-                                  ? 'bg-slate-800 text-slate-600 cursor-not-allowed opacity-40'
-                                  : 'bg-indigo-600 hover:bg-pink-600 text-white shadow-xs'
-                              }`}
-                            >
-                              {l}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Solve Input Drawer */}
-                    {isSolveOpen && !isAnswerLocked && (
-                      <form onSubmit={handleSolveSubmit} className="mt-3 flex gap-2 animate-in fade-in">
-                        <input
-                          type="text"
-                          value={solveInput}
-                          onChange={(e) => setSolveInput(e.target.value)}
-                          placeholder="Tapez ici le mot complet résolu..."
-                          className="flex-1 px-4 py-2.5 rounded-xl bg-slate-900 border border-pink-500/50 text-white font-mono text-sm focus:outline-hidden"
-                        />
-                        <button
-                          type="submit"
-                          className="px-5 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-black text-xs uppercase cursor-pointer"
-                        >
-                          Valider
-                        </button>
-                      </form>
-                    )}
                   </div>
                 )}
 
@@ -1007,7 +1232,7 @@ export default function TvGameShowArena({
                   </div>
                 )}
 
-                {/* Multiple Choice Options (Millionnaire, Champion, Grand Concours) */}
+                {/* Multiple Choice Options */}
                 {isMultipleChoice && showType !== 'roue' && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {currentQ.options.map((option, idx) => {
