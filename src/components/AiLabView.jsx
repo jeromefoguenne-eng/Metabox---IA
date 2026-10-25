@@ -16,6 +16,7 @@ import {
   Award
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import SpeedChallengeGame from './SpeedChallengeGame';
 
 const PRESET_CONSIGNES = [
   {
@@ -507,82 +508,66 @@ export default function AiLabView() {
 
       {/* TAB 3: SERIOUS GAMES */}
       {activeTab === 'games' && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-slate-900/90 border border-indigo-500/30 rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="p-3 bg-indigo-500/20 text-indigo-400 rounded-xl">
-                  <Gamepad2 className="w-6 h-6" />
-                </span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                  Sprint Q1 2026
-                </span>
-              </div>
-              <h4 className="text-lg font-bold text-white mb-2">Jeu 1 : Défi Consignes Express</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Jeu contre-la-montre : 60 secondes pour associer chaque verbe d'action à son gabarit cognitif sans commettre d'erreur.
-              </p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
-              <span className="text-xs text-slate-500 font-mono">Mode Solo & Classement</span>
-              <button 
-                onClick={() => alert("Ce jeu sérieux est en cours de finalisation pour la prochaine release !")}
-                className="px-3.5 py-1.5 rounded-lg bg-indigo-600/30 text-indigo-300 text-xs font-semibold hover:bg-indigo-600 hover:text-white transition"
-              >
-                Prévisualiser
-              </button>
-            </div>
-          </div>
+        <div className="space-y-8">
+          {/* Active Mini Game */}
+          <SpeedChallengeGame />
 
-          <div className="bg-slate-900/90 border border-purple-500/30 rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="p-3 bg-purple-500/20 text-purple-400 rounded-xl">
-                  <BrainCircuit className="w-6 h-6" />
-                </span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                  Aventure Textuelle
-                </span>
+          <div className="pt-4 border-t border-slate-800">
+            <h4 className="text-base font-bold text-white mb-4 flex items-center gap-2">
+              <Gamepad2 className="w-5 h-5 text-indigo-400" /> Autres Serious Games en Préparation
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-slate-900/90 border border-purple-500/30 rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="p-3 bg-purple-500/20 text-purple-400 rounded-xl">
+                      <BrainCircuit className="w-6 h-6" />
+                    </span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                      Aventure Textuelle
+                    </span>
+                  </div>
+                  <h4 className="text-lg font-bold text-white mb-2">Jeu 2 : Mission Réussite</h4>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Vous incarnez un étudiant de BAC 1 à la HECh face aux tentations de la procrastination, au blocus et aux examens. Chaque décision méthodologique influence votre taux de réussite.
+                  </p>
+                </div>
+                <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+                  <span className="text-xs text-slate-500 font-mono">Choix multiples & XP</span>
+                  <button 
+                    onClick={() => alert("L'aventure interactive Mission Réussite sera branchée avec le modèle IA local !")}
+                    className="px-3.5 py-1.5 rounded-lg bg-purple-600/30 text-purple-300 text-xs font-semibold hover:bg-purple-600 hover:text-white transition"
+                  >
+                    Prévisualiser
+                  </button>
+                </div>
               </div>
-              <h4 className="text-lg font-bold text-white mb-2">Jeu 2 : Mission Réussite</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Vous incarnez un étudiant de BAC 1 à la HECh face aux tentations de la procrastination, au blocus et aux examens. Chaque décision méthodologique influence votre taux de réussite.
-              </p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
-              <span className="text-xs text-slate-500 font-mono">Choix multiples & XP</span>
-              <button 
-                onClick={() => alert("L'aventure interactive Mission Réussite sera branchée avec le modèle IA local !")}
-                className="px-3.5 py-1.5 rounded-lg bg-purple-600/30 text-purple-300 text-xs font-semibold hover:bg-purple-600 hover:text-white transition"
-              >
-                Prévisualiser
-              </button>
-            </div>
-          </div>
 
-          <div className="bg-slate-900/90 border border-rose-500/30 rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="p-3 bg-rose-500/20 text-rose-400 rounded-xl">
-                  <Zap className="w-6 h-6" />
-                </span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30">
-                  Duel Rapide
-                </span>
+              <div className="bg-slate-900/90 border border-rose-500/30 rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="p-3 bg-rose-500/20 text-rose-400 rounded-xl">
+                      <Zap className="w-6 h-6" />
+                    </span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                      Duel Rapide
+                    </span>
+                  </div>
+                  <h4 className="text-lg font-bold text-white mb-2">Jeu 3 : Duel Ortho'Express</h4>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Traquez les 5 fautes cachées dans un rapport d'étudiant en moins de 90 secondes avant de valider votre note.
+                  </p>
+                </div>
+                <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+                  <span className="text-xs text-slate-500 font-mono">Relecture sélective</span>
+                  <button 
+                    onClick={() => alert("Le Duel Ortho est prêt à être étendu avec vos banques de textes personnalisées !")}
+                    className="px-3.5 py-1.5 rounded-lg bg-rose-600/30 text-rose-300 text-xs font-semibold hover:bg-rose-600 hover:text-white transition"
+                  >
+                    Prévisualiser
+                  </button>
+                </div>
               </div>
-              <h4 className="text-lg font-bold text-white mb-2">Jeu 3 : Duel Ortho'Express</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Traquez les 5 fautes cachées dans un rapport d'étudiant en moins de 90 secondes avant de valider votre note.
-              </p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
-              <span className="text-xs text-slate-500 font-mono">Relecture sélective</span>
-              <button 
-                onClick={() => alert("Le Duel Ortho est prêt à être étendu avec vos banques de textes personnalisées !")}
-                className="px-3.5 py-1.5 rounded-lg bg-rose-600/30 text-rose-300 text-xs font-semibold hover:bg-rose-600 hover:text-white transition"
-              >
-                Prévisualiser
-              </button>
             </div>
           </div>
         </div>

@@ -1,12 +1,12 @@
 // Base de données pédagogique intégrale - Métabox HECh (SAR)
-// Cours Moodle ID: 685 & Volet IA "Petite Réussite"
+// Cours Moodle ID: 685 & Volet IA "Petite Réussite" (Version Gamifiée 2.0)
 
 export const METABOX_INFO = {
   title: "Petite Réussite - Métabox IA",
-  subtitle: "Hub interactif d'accompagnement à la réussite et d'entraînement outillé par IA",
+  subtitle: "Plateforme gamifiée d'apprentissage, d'aide à la réussite et d'entraînement outillé par IA",
   institution: "Haute École Charlemagne (HECh)",
   service: "Service d'Accompagnement à la Réussite (SAR)",
-  version: "1.0.0-prototype",
+  version: "2.0.0-ludique",
   moodleCourseId: "685",
   academicYear: "2025-2026"
 };
@@ -17,9 +17,13 @@ export const TILES = [
     number: 1,
     title: "Métabox News",
     shortDesc: "Actualités, conseils saisonniers, rentrée, blocus et sessions d'examens",
+    questTitle: "Quête 1 : Anticiper le Rythme Académique",
     icon: "Newspaper",
-    badge: "Info & Actualités",
+    badge: "Info & Stratégie",
+    xp: 50,
+    image: "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=800&auto=format&fit=crop&q=80",
     color: "from-sky-500/20 to-blue-600/20 text-sky-400 border-sky-500/30",
+    accent: "sky",
     sections: [
       {
         id: "news-2025-2026",
@@ -28,7 +32,7 @@ export const TILES = [
           {
             period: "Octobre 2025",
             theme: "Rentrée & Repères Académiques",
-            summary: "Prendre un rythme d'étude régulier, comprendre son PAE, se familiariser avec les outils numériques (Moodle, Teams) et éviter l'effet d'illusion de maîtrise.",
+            summary: "Prendre un rythme d'étude régulier, comprendre son PAE, se familiariser avec les outils numériques (Moodle, Teams) et éviter l'illusion de maîtrise.",
             tips: [
               "Établir un horaire de travail hebdomadaire dès la semaine 3",
               "Relire ses notes le soir même (loi du réinvestissement immédiat)",
@@ -84,9 +88,13 @@ export const TILES = [
     number: 2,
     title: "Partie Langagière",
     shortDesc: "Comprendre les consignes, décoder les verbes d'action et rédiger la réponse attendue",
+    questTitle: "Quête 2 : Maîtriser le Code des Évaluateurs",
     icon: "BookOpenCheck",
-    badge: "5 Modules Fondamentaux",
+    badge: "5 Modules · Quiz 10 Q",
+    xp: 100,
+    image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800&auto=format&fit=crop&q=80",
     color: "from-indigo-500/20 to-purple-600/20 text-indigo-400 border-indigo-500/30",
+    accent: "indigo",
     modules: [
       {
         id: "lang-mod1",
@@ -94,7 +102,7 @@ export const TILES = [
         description: "Positionnement initial pour identifier ses forces et ses axes de progrès en compréhension et expression académique.",
         content: "Une bonne maîtrise de la langue écrite est le premier facteur de réussite aux examens. Ce module vous permet d'évaluer votre niveau de départ avec des feedbacks immédiats.",
         hasExercises: true,
-        exerciseIds: ["exo-diag-1"]
+        exerciseIds: ["exo-verbes-1"]
       },
       {
         id: "lang-mod2",
@@ -107,7 +115,7 @@ export const TILES = [
    - Verbes intermédiaires : relever, catégoriser, classer.
    - Verbes conceptuels à haute exigence : décrire, expliquer, comparer, argumenter, justifier.`,
         hasExercises: true,
-        exerciseIds: ["exo-verbes-1", "exo-verbes-2", "exo-verbes-3", "exo-verbes-4"]
+        exerciseIds: ["exo-verbes-1"]
       },
       {
         id: "lang-mod3",
@@ -118,8 +126,7 @@ export const TILES = [
 Étape 2 : Identifier le mot-clé thématique (sur quoi porte exactement la question ?).
 Étape 3 : Identifier les contraintes formelles (longueur, format, justification obligatoire, langue).
 Étape 4 : Reformuler la question avec ses propres mots avant d'écrire.`,
-        hasExercises: true,
-        exerciseIds: ["exo-analyse-1", "exo-analyse-2"]
+        hasExercises: false
       },
       {
         id: "lang-mod4",
@@ -138,28 +145,35 @@ export const TILES = [
         description: "Mise en pratique sur de vrais sujets d'évaluation universitaire.",
         content: "Testez votre agilité sur les pièges fréquents des examens du supérieur.",
         hasExercises: true,
-        exerciseIds: ["exo-recap-1", "exo-recap-2", "exo-recap-3"]
+        exerciseIds: ["exo-verbes-1"]
       }
     ]
   },
   {
     id: "tile-glossary",
     number: 3,
-    title: "Glossaire Général du Supérieur",
+    title: "Glossaire du Supérieur",
     shortDesc: "Tous les termes du décret Paysage et du cursus académique (ECTS, UE, AA, etc.)",
+    questTitle: "Quête 3 : Décrypter le Décret Paysage",
     icon: "HelpCircle",
-    badge: "Référentiel FWB",
+    badge: "22 Définitions Clés",
+    xp: 50,
+    image: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=800&auto=format&fit=crop&q=80",
     color: "from-emerald-500/20 to-teal-600/20 text-emerald-400 border-emerald-500/30",
-    termsCount: 22
+    accent: "emerald"
   },
   {
     id: "tile-methodo",
     number: 4,
-    title: "Partie Méthodologie",
+    title: "Méthodologie Active",
     shortDesc: "Mémorisation active, loi de Parkinson, planification hebdomadaire et matrice Eisenhower",
+    questTitle: "Quête 4 : Dompter la Courbe de l'Oubli",
     icon: "BrainCircuit",
-    badge: "Sciences Cognitives",
+    badge: "Sciences Cognitives · Outils",
+    xp: 120,
+    image: "https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=800&auto=format&fit=crop&q=80",
     color: "from-amber-500/20 to-orange-600/20 text-amber-400 border-amber-500/30",
+    accent: "amber",
     modules: [
       {
         id: "meth-mod1",
@@ -203,9 +217,13 @@ Application concrète :
     number: 5,
     title: "Le Métier d'Étudiant.e",
     shortDesc: "Statuts, droits, devoirs, démarches administratives et posture de l'adulte apprenant",
+    questTitle: "Quête 5 : Devenir un Étudiant Autonome",
     icon: "GraduationCap",
-    badge: "Vie Universitaire",
+    badge: "Vie de Campus · Quiz",
+    xp: 60,
+    image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&auto=format&fit=crop&q=80",
     color: "from-violet-500/20 to-fuchsia-600/20 text-violet-400 border-violet-500/30",
+    accent: "violet",
     modules: [
       {
         id: "stu-mod1",
@@ -226,9 +244,13 @@ Application concrète :
     number: 6,
     title: "Compétences Numériques",
     shortDesc: "Maîtriser Moodle, Teams, OneDrive, Word académique, PowerPoint et la cybersécurité",
+    questTitle: "Quête 6 : L'Armure Numérique de l'Étudiant",
     icon: "Laptop",
-    badge: "Outils HECh",
+    badge: "6 Guides Pratiques",
+    xp: 80,
+    image: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=800&auto=format&fit=crop&q=80",
     color: "from-cyan-500/20 to-blue-600/20 text-cyan-400 border-cyan-500/30",
+    accent: "cyan",
     guides: [
       {
         id: "guide-m365",
@@ -260,36 +282,41 @@ Application concrète :
         title: "6. Cybersécurité & Données personnelles",
         content: "Ne jamais partager son mot de passe institutionnel, se déconnecter des ordinateurs des salles informatiques et vérifier l'expéditeur des courriels (phishing)."
       }
-    ],
-    hasDiagnosticQuiz: true
+    ]
   },
   {
     id: "tile-ortho",
     number: 7,
     title: "Ortho'Express",
     shortDesc: "Méthode de relecture sélective en 5 passes, règles d'accords et conjugaisons pièges",
+    questTitle: "Quête 7 : Le Bouclier Anti-Fautes",
     icon: "SpellCheck",
-    badge: "Remédiation Rapide",
+    badge: "5 Passes · Quiz Piège",
+    xp: 100,
+    image: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=800&auto=format&fit=crop&q=80",
     color: "from-rose-500/20 to-pink-600/20 text-rose-400 border-rose-500/30",
+    accent: "rose",
     checklist: [
       { step: "Passe 1", target: "Les accords Sujet-Verbe", tip: "Repérer chaque verbe conjugué et lui poser la question : Qui est-ce qui fait l'action ?" },
       { step: "Passe 2", target: "Les participes passés (é, és, ée, ées)", tip: "Remplacer mentalement par un verbe du 3e groupe (mordre / mordu). Avec ÊTRE, accord systématique avec le sujet. Avec AVOIR, accord uniquement si le COD est placé AVANT." },
       { step: "Passe 3", target: "Les accords dans le Groupe Nominal", tip: "Vérifier la chaîne d'accord : Déterminant + Nom + Adjectif (ex: 'les nouvelles directives universitaires')." },
       { step: "Passe 4", target: "Les homophones grammaticaux", tip: "a/à, son/sont, et/est, ce/se, ces/ses, ou/où. Remplacer par avait, étaient, était pour tester." },
       { step: "Passe 5", target: "La ponctuation et les majuscules", tip: "Une phrase = une idée. Pas de phrases fleuves de 6 lignes. Majuscule au début, point final à la fin." }
-    ],
-    hasExercises: true,
-    exerciseIds: ["exo-ortho-1", "exo-ortho-2"]
+    ]
   },
   {
     id: "tile-ia",
     number: 8,
     isNew: true,
-    title: "Lab IA & Entraînement Intelligent",
-    shortDesc: "Le volet innovant : Tuteur intelligent, simulateur d'évaluation, analyseur de consignes et serious games",
+    title: "Lab IA & Entraînement",
+    shortDesc: "Tuteur intelligent, simulateur d'évaluation, analyseur de consignes et Serious Games",
+    questTitle: "Quête 8 : Dompter l'IA Pédagogique",
     icon: "Sparkles",
-    badge: "Volet NOUVEAU ✨",
+    badge: "Volet IA ✨ · Jeux Actifs",
+    xp: 150,
+    image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&auto=format&fit=crop&q=80",
     color: "from-violet-500/30 via-indigo-500/20 to-cyan-500/30 text-cyan-300 border-cyan-400/40 ring-1 ring-cyan-500/30",
+    accent: "cyan",
     features: [
       {
         id: "ia-analyzer",
@@ -304,16 +331,16 @@ Application concrète :
         desc: "Rédigez votre réponse à un exercice type et obtenez une évaluation formative instantanée selon la grille critériée académique de la HECh."
       },
       {
-        id: "ia-generator",
-        title: "3. Générateur d'Exercices Adaptatifs",
-        status: "En Conception",
-        desc: "Générez à la demande de nouvelles questions ciblées sur vos points faibles (accords complexes, connecteurs logiques, verbes d'analyse)."
+        id: "ia-games",
+        title: "3. Serious Games & Mini-Jeux IA",
+        status: "Mini-Jeu Jouable !",
+        desc: "Jouez au 'Défi Consignes Express' : sprint chronométré de 45 secondes pour tester vos réflexes d'examen !"
       },
       {
-        id: "ia-games",
-        title: "4. Serious Games IA (Jeux Pédagogiques)",
-        status: "Roadmap Étudiant",
-        desc: "3 mini-jeux en cours de création : 'Mission Réussite' (aventure textuelle), 'Défi Consignes Express' (contre-la-montre), et 'Duel Ortho'."
+        id: "ia-creator",
+        title: "4. Atelier Enseignant (Co-Création)",
+        status: "Espace Formateur",
+        desc: "Espace prêt à recevoir les futurs exercices, scénarios et jeux conçus avec le professeur Jérôme Foguenne."
       }
     ]
   }
@@ -631,3 +658,12 @@ export const QUIZ_DATABASE = {
     ]
   }
 };
+
+export const BADGES_LIST = [
+  { id: "badge-first-step", title: "Premier Pas", desc: "Avoir exploré votre 1ère tuile Métabox", icon: "Compass", color: "from-sky-500 to-blue-600" },
+  { id: "badge-sniper", title: "Sniper de Consignes", desc: "Avoir réussi l'Exercice 2 sur les verbes", icon: "Target", color: "from-indigo-500 to-purple-600" },
+  { id: "badge-ebbinghaus", title: "Cerveau Mnésique", desc: "Avoir dompté la courbe de l'oubli", icon: "Brain", color: "from-amber-500 to-orange-600" },
+  { id: "badge-ortho", title: "Plume d'Or", desc: "Avoir complété le test de conjugaison", icon: "Feather", color: "from-rose-500 to-pink-600" },
+  { id: "badge-ai", title: "Initié IA", desc: "Avoir analysé une consigne dans le Lab IA", icon: "Sparkles", color: "from-cyan-400 to-indigo-500" },
+  { id: "badge-speedster", title: "Maître du Sprint", desc: "Avoir joué au Défi Consignes Express", icon: "Zap", color: "from-emerald-400 to-teal-500" }
+];

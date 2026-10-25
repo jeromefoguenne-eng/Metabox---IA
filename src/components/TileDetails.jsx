@@ -28,7 +28,8 @@ export default function TileDetails({
   tile, 
   onMarkComplete, 
   isCompleted, 
-  onLaunchQuiz 
+  onLaunchQuiz,
+  onBackToDashboard
 }) {
   // Tile 2 module selection
   const [selectedModuleIdx, setSelectedModuleIdx] = useState(0);
@@ -57,37 +58,58 @@ export default function TileDetails({
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
-      {/* Tile Header Banner */}
-      <div className={`p-6 md:p-8 rounded-2xl bg-gradient-to-br ${tile.color} border shadow-xl relative overflow-hidden`}>
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-900/80 text-white border border-slate-700">
+      {/* Back to Dashboard Navigation */}
+      {onBackToDashboard && (
+        <button
+          onClick={onBackToDashboard}
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-xs font-semibold text-slate-300 hover:text-white transition shadow-sm"
+        >
+          <ArrowRight className="w-3.5 h-3.5 rotate-180" />
+          Retour au Dashboard des Tuiles
+        </button>
+      )}
+
+      {/* Visual Image Header Banner */}
+      <div className="relative rounded-3xl overflow-hidden border border-slate-700/80 shadow-2xl h-60 md:h-72">
+        <img 
+          src={tile.image} 
+          alt={tile.title} 
+          className="w-full h-full object-cover filter brightness-[0.7] transform hover:scale-105 transition-transform duration-700" 
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/65 to-transparent" />
+
+        <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-between">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold px-3 py-1 rounded-full bg-slate-950/80 backdrop-blur-md text-white border border-slate-700 shadow">
                 Tuile {tile.number} sur 7
               </span>
-              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-900/40 text-slate-200">
+              <span className="text-xs font-semibold px-3 py-1 rounded-full bg-indigo-500/30 backdrop-blur-md text-indigo-200 border border-indigo-400/30 shadow">
                 {tile.badge}
               </span>
             </div>
-            <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+
+            <button
+              onClick={() => onMarkComplete(tile.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition backdrop-blur-md shadow-lg ${
+                isCompleted
+                  ? 'bg-emerald-500/40 text-emerald-200 border border-emerald-400/50'
+                  : 'bg-slate-950/80 hover:bg-slate-900 text-white border border-slate-700'
+              }`}
+            >
+              <CheckCircle2 className={`w-4 h-4 ${isCompleted ? 'text-emerald-400' : 'text-slate-400'}`} />
+              {isCompleted ? 'Quête Complétée ✅' : 'Marquer comme lu (+XP)'}
+            </button>
+          </div>
+
+          <div>
+            <h2 className="text-2xl md:text-4xl font-black text-white tracking-tight drop-shadow-md">
               {tile.title}
             </h2>
-            <p className="text-sm md:text-base text-slate-200 mt-2 max-w-3xl leading-relaxed">
+            <p className="text-xs md:text-sm text-slate-200 mt-2 max-w-2xl leading-relaxed drop-shadow">
               {tile.shortDesc}
             </p>
           </div>
-
-          <button
-            onClick={() => onMarkComplete(tile.id)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold transition shadow-lg ${
-              isCompleted
-                ? 'bg-emerald-600/30 text-emerald-300 border border-emerald-500/50'
-                : 'bg-slate-900 hover:bg-slate-800 text-white border border-slate-700'
-            }`}
-          >
-            <CheckCircle2 className={`w-4 h-4 ${isCompleted ? 'text-emerald-400' : 'text-slate-400'}`} />
-            {isCompleted ? 'Tuile Complétée' : 'Marquer comme lu'}
-          </button>
         </div>
       </div>
 
