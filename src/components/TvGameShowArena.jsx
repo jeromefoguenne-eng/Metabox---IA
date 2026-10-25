@@ -140,10 +140,10 @@ export default function TvGameShowArena({
 
   // --- SPECIFIC: LE GRAND CONCOURS DE LA HECH (Fictional Opponents & Speed) ---
   const [opponents, setOpponents] = useState([
-    { id: 'lucas', name: 'Lucas', campus: 'Rivageois (Liège)', score: 30, avatar: '🎓', state: 'idle' },
-    { id: 'manon', name: 'Manon', campus: 'Huy (Gestion)', score: 35, avatar: '📚', state: 'idle' },
-    { id: 'alexandre', name: 'Alexandre', campus: 'Verviers (Informatique)', score: 25, avatar: '⚡', state: 'idle' },
-    { id: 'sarah', name: 'Sarah', campus: 'Outremeuse (Santé)', score: 30, avatar: '🔬', state: 'idle' }
+    { id: 'lucas', name: 'Lucas', campus: 'Rivageois (Liège)', score: 0, avatar: '🎓', state: 'idle' },
+    { id: 'manon', name: 'Manon', campus: 'Huy (Gestion)', score: 0, avatar: '📚', state: 'idle' },
+    { id: 'alexandre', name: 'Alexandre', campus: 'Verviers (Informatique)', score: 0, avatar: '⚡', state: 'idle' },
+    { id: 'sarah', name: 'Sarah', campus: 'Outremeuse (Santé)', score: 0, avatar: '🔬', state: 'idle' }
   ]);
   const [buzzWinner, setBuzzWinner] = useState(null);
 
@@ -249,7 +249,7 @@ export default function TvGameShowArena({
     setAudiencePoll(null);
     setSarTip(null);
     setReaction('speaking');
-    setTimeLeft(showType === 'champion' ? 12 : 15);
+    setTimeLeft(showType === 'champion' ? 12 : showType === 'concours' ? 18 : 15);
     setHasBuzzed(showType !== 'champion');
 
     // Reset Roue states
@@ -319,13 +319,19 @@ export default function TvGameShowArena({
       return;
     }
 
-    if (showType === 'concours' && !buzzWinner && !isAnswerLocked) {
-      opponents.forEach((opp, i) => {
-        const triggerSecond = 10 - i * 2;
-        if (timeLeft === triggerSecond && opp.state === 'thinking' && Math.random() > 0.4) {
-          handleOpponentBuzz(opp);
+    // Balanced AI opponent buzzer: give player 7 seconds of peace to read first
+    // Only buzz after timeLeft <= 11 (after 7 seconds of question display)
+    if (showType === 'concours' && !buzzWinner && !isAnswerLocked && timeLeft <= 11) {
+      // Pick at most one opponent who considers buzzing, with lower probability
+      const opponentIndex = (11 - timeLeft) % opponents.length;
+      const candidateOpp = opponents[opponentIndex];
+
+      if (candidateOpp && candidateOpp.state === 'thinking') {
+        // Controlled 25% chance per second so player has plenty of opportunities to answer first
+        if (Math.random() < 0.25) {
+          handleOpponentBuzz(candidateOpp);
         }
-      });
+      }
     }
 
     const t = setInterval(() => {
@@ -339,23 +345,24 @@ export default function TvGameShowArena({
     sounds.playBuzzer();
     setBuzzWinner(opp.id);
     setOpponents(prev => prev.map(o => o.id === opp.id ? { ...o, state: 'buzzed' } : o));
-    setHostDialogue(`🚨 BUZZER ! ${opp.name} (${opp.campus}) a buzzé en premier !`);
+    setHostDialogue(`🚨 BUZZER ! ${opp.name} (${opp.campus}) tente sa chance !`);
     sounds.playVoice("opponent_buzz");
 
     setTimeout(() => {
-      const isOppCorrect = Math.random() > 0.35;
+      // 50% chance of making an error, so the player often recovers the question hand!
+      const isOppCorrect = Math.random() < 0.50;
       if (isOppCorrect) {
         sounds.playSuccess();
-        setHostDialogue(`✅ ${opp.name} donne la bonne réponse et empoche +10 ECTS !`);
+        setHostDialogue(`✅ ${opp.name} a vu juste et marque +10 ECTS !`);
         setOpponents(prev => prev.map(o => o.id === opp.id ? { ...o, score: o.score + 10, state: 'won' } : o));
         setIsAnswerLocked(true);
       } else {
         sounds.playGroan();
-        setHostDialogue(`❌ Mauvaise réponse de ${opp.name} ! La main revient à vous, choisissez votre réponse !`);
+        setHostDialogue(`❌ Erreur de ${opp.name} ! La main vous revient, saisissez l'occasion pour marquer !`);
         setOpponents(prev => prev.map(o => o.id === opp.id ? { ...o, score: Math.max(0, o.score - 5), state: 'wrong' } : o));
         setBuzzWinner(null);
       }
-    }, 1800);
+    }, 1600);
   };
 
   const handleTimeOut = () => {
