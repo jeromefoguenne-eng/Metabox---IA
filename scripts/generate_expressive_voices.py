@@ -38,15 +38,16 @@ VOICE_SCRIPTS = [
     ("sar_tip_ebbinghaus", VOICE_SAR, "+1%", "+0Hz",
      "Rappelez-vous qu'en sciences cognitives, la répétition espacée et le rappel actif battent toujours la relecture passive ! Testez-vous régulièrement."),
 
-    # Questions - Qui veut gagner des crédits (Verbes)
-    ("q_verb_1", VOICE_HOST, "+2%", "+0Hz", "Pour vos tout premiers crédits ECTS... Que signifie précisément le verbe : Identifier ?"),
-    ("q_verb_2", VOICE_HOST, "+2%", "+0Hz", "Deuxième question de l'ascension... Que signifie le verbe : Définir ?"),
-    ("q_verb_3", VOICE_HOST, "+2%", "+0Hz", "Attention, verbe d'action précis... Que signifie le verbe : Citer ?"),
-    ("q_verb_4", VOICE_HOST, "+2%", "+0Hz", "Quatrième palier... Que signifie concrètement l'action de : Cocher ?"),
-    ("q_verb_5", VOICE_HOST, "+2%", "+0Hz", "Un grand classique des consignes écrites... Que signifie le verbe : Souligner ?"),
-    ("q_verb_6", VOICE_HOST, "+2%", "+0Hz", "Question de repérage... Que signifie le verbe : Relier ?"),
+    # Questions - Qui veut gagner des crédits (Verbes gradués selon exo-verbes-1)
+    # Q1: Souligner, Q2: Cocher, Q3: Biffer, Q4: Relier, Q5: Citer, Q6: Énumérer, Q7: Classer, Q8: Définir, Q9: Compléter, Q10: Comparer
+    ("q_verb_1", VOICE_HOST, "+2%", "+0Hz", "Pour vos six premiers crédits ECTS... Que signifie concrètement le verbe : Souligner ?"),
+    ("q_verb_2", VOICE_HOST, "+2%", "+0Hz", "Deuxième question de l'ascension... Que signifie le verbe : Cocher ?"),
+    ("q_verb_3", VOICE_HOST, "+2%", "+0Hz", "Troisième palier... Que signifie précisément le verbe d'action : Biffer ?"),
+    ("q_verb_4", VOICE_HOST, "+2%", "+0Hz", "Quatrième palier et premier palier de sécurité garanti à 24 crédits ! Que signifie le verbe : Relier ?"),
+    ("q_verb_5", VOICE_HOST, "+2%", "+0Hz", "Cinquième question... Que signifie concrètement l'action de : Citer ?"),
+    ("q_verb_6", VOICE_HOST, "+2%", "+0Hz", "Sixième échelon... Que signifie précisément l'action d' : Énumérer ?"),
     ("q_verb_7", VOICE_HOST, "+2%", "+0Hz", "Montée en exigence méthodologique... Que signifie le verbe : Classer ?"),
-    ("q_verb_8", VOICE_HOST, "+2%", "+0Hz", "Huitième question... Que signifie précisément l'action d' : Énumérer ?"),
+    ("q_verb_8", VOICE_HOST, "+2%", "+0Hz", "Huitième palier de haute exigence... Que signifie avec rigueur le verbe : Définir ?"),
     ("q_verb_9", VOICE_HOST, "+2%", "+0Hz", "Avant-dernière marche vers le sommet... Que signifie le verbe : Compléter ?"),
     ("q_verb_10", VOICE_HOST, "+2%", "+0Hz", "Dernière question pour décrocher le grand chelem des 60 crédits... Que signifie le verbe : Comparer ?"),
 
