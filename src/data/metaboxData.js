@@ -590,83 +590,133 @@ export const QUIZ_DATABASE = {
     ]
   },
 
-  // Exercice 1 Conjugaison (Ortho'Express)
+  // Exercice 1 Conjugaison (Ortho'Express) - La Roue des Accords
   "exo-ortho-1": {
     id: "exo-ortho-1",
     tileId: "tile-ortho",
-    title: "Exercice 1 : Conjugaison & Temps Pièges de l'Enseignement Supérieur",
+    title: "La Roue des Accords : Les Grandes Énigmes de la Conjugaison",
     source: "Ortho'Express HECh",
-    instruction: "Complétez chaque phrase avec la forme verbale conjuguée exacte.",
+    instruction: "Faites tourner la roue, découvrez les lettres et reconstituez les phrases entières sur le mur de mots !",
     questions: [
       {
         id: "oq1",
+        difficulty: "Niveau 1 : Présent d'usage",
+        category: "ACCORD VERBES EN -OYER (PRÉSENT)",
         prompt: "Conjuguez le verbe 'nettoyer' à l'indicatif présent, 3e personne du pluriel :",
-        context: "Ils ..................................... la salle de laboratoire avant de partir.",
-        correctAnswers: ["nettoient"],
+        context: "Ils nettoient la salle de laboratoire avant de partir.",
+        fullSentence: "ILS NETTOIENT LA SALLE DE LABORATOIRE AVANT DE PARTIR",
+        verbForm: "NETTOIENT",
+        initialRevealed: ["E", "A"],
+        correctAnswers: ["nettoient", "ILS NETTOIENT LA SALLE DE LABORATOIRE AVANT DE PARTIR"],
         explanation: "Les verbes en -oyer changent leur 'y' en 'i' devant un 'e' muet : ils nettoient."
       },
       {
         id: "oq2",
+        difficulty: "Niveau 1 : Subjonctif présent",
+        category: "SUBJONCTIF PRÉSENT DU VERBE DÉCELER",
         prompt: "Conjuguez le verbe 'déceler' au subjonctif présent, 3e personne du pluriel :",
-        context: "Il faut qu'ils ..................................... l'origine de l'erreur dans l'algorithme.",
-        correctAnswers: ["décèlent", "decelent"],
+        context: "Il faut qu'ils décèlent l'origine de l'erreur dans l'algorithme.",
+        fullSentence: "IL FAUT QU'ILS DÉCÈLENT L'ORIGINE DE L'ERREUR DANS L'ALGORITHME",
+        verbForm: "DÉCÈLENT",
+        initialRevealed: ["E", "L"],
+        correctAnswers: ["décèlent", "decelent", "IL FAUT QU'ILS DÉCÈLENT L'ORIGINE DE L'ERREUR DANS L'ALGORITHME"],
         explanation: "Au subjonctif présent : qu'ils décèlent (accent grave sur le e)."
       },
       {
         id: "oq3",
+        difficulty: "Niveau 2 : Futur verbe en -oyer",
+        category: "FUTUR SIMPLE DU VERBE ABOYER",
         prompt: "Conjuguez le verbe 'aboyer' au futur simple, à la 3e personne du singulier :",
-        context: "Le chien ..................................... si quelqu'un s'approche.",
-        correctAnswers: ["aboiera"],
-        explanation: "Futur simple : il aboiera (avec un 'i')."
+        context: "Le chien aboiera si quelqu'un s'approche du bâtiment.",
+        fullSentence: "LE CHIEN ABOIERA SI QUELQU'UN S'APPROCHE DU BÂTIMENT",
+        verbForm: "ABOIERA",
+        initialRevealed: ["I", "E"],
+        correctAnswers: ["aboiera", "LE CHIEN ABOIERA SI QUELQU'UN S'APPROCHE DU BÂTIMENT"],
+        explanation: "Futur simple : il aboiera (avec un 'i' devant la terminaison -era)."
       },
       {
         id: "oq4",
+        difficulty: "Niveau 2 : Futur avec radical double consonne",
+        category: "FUTUR SIMPLE DU VERBE VOIR",
         prompt: "Conjuguez le verbe 'voir' au futur simple, à la 2e personne du singulier :",
-        context: "Demain lors de l'entretien, tu ..................................... le coordinateur de section.",
-        correctAnswers: ["verras"],
+        context: "Demain lors de l'entretien, tu verras le coordinateur de section.",
+        fullSentence: "DEMAIN LORS DE L'ENTRETIEN TU VERRAS LE COORDINATEUR DE SECTION",
+        verbForm: "VERRAS",
+        initialRevealed: ["R", "E"],
+        correctAnswers: ["verras", "DEMAIN LORS DE L'ENTRETIEN TU VERRAS LE COORDINATEUR DE SECTION"],
         explanation: "Le radical du futur pour le verbe voir prend deux 'r' : tu verras."
       },
       {
         id: "oq5",
+        difficulty: "Niveau 3 : Imparfait en -ier (Piège du double i)",
+        category: "INDICATIF IMPARFAIT DU VERBE PLIER",
         prompt: "Conjuguez le verbe 'plier' à l'indicatif imparfait, à la 2e personne du pluriel :",
-        context: "Pendant l'atelier créatif, vous ..................................... les feuilles de calque.",
-        correctAnswers: ["pliiez"],
+        context: "Pendant l'atelier créatif, vous pliiez les feuilles de calque.",
+        fullSentence: "PENDANT L'ATELIER CRÉATIF VOUS PLIIEZ LES FEUILLES DE CALQUE",
+        verbForm: "PLIIEZ",
+        initialRevealed: ["I", "S"],
+        correctAnswers: ["pliiez", "PENDANT L'ATELIER CRÉATIF VOUS PLIIEZ LES FEUILLES DE CALQUE"],
         explanation: "À l'imparfait avec vous, on conserve le 'i' du radical suivi du 'iez' de la terminaison : vous pliiez."
       },
       {
         id: "oq6",
+        difficulty: "Niveau 3 : Subjonctif verbe du 3e groupe",
+        category: "SUBJONCTIF PRÉSENT DU VERBE MOURIR",
         prompt: "Conjuguez le verbe 'mourir' au subjonctif présent, à la 3e personne du pluriel :",
-        context: "Le biologiste veille à ce que les cellules ne ..................................... pas au froid.",
-        correctAnswers: ["meurent"],
-        explanation: "Subjonctif présent : qu'ils/qu'elles meurent."
+        context: "Le biologiste veille à ce que les cellules ne meurent pas au froid.",
+        fullSentence: "LE BIOLOGISTE VEILLE À CE QUE LES CELLULES NE MEURENT PAS AU FROID",
+        verbForm: "MEURENT",
+        initialRevealed: ["E", "T"],
+        correctAnswers: ["meurent", "LE BIOLOGISTE VEILLE À CE QUE LES CELLULES NE MEURENT PAS AU FROID"],
+        explanation: "Subjonctif présent : qu'ils/qu'elles meurent (radical meu-)."
       },
       {
         id: "oq7",
+        difficulty: "Niveau 4 : Conditionnel avec double consonne",
+        category: "CONDITIONNEL PRÉSENT DU VERBE COURIR",
         prompt: "Conjuguez le verbe 'courir' au conditionnel présent, à la 2e personne du pluriel :",
-        context: "Si le train avait du retard, vous ..................................... pour arriver à l'examen.",
-        correctAnswers: ["courriez"],
-        explanation: "Au conditionnel présent, courir prend deux 'r' : vous courriez."
+        context: "Si le train avait du retard, vous courriez pour arriver à l'examen.",
+        fullSentence: "SI LE TRAIN AVAIT DU RETARD VOUS COURRIEZ POUR ARRIVER À L'EXAMEN",
+        verbForm: "COURRIEZ",
+        initialRevealed: ["R", "U"],
+        correctAnswers: ["courriez", "SI LE TRAIN AVAIT DU RETARD VOUS COURRIEZ POUR ARRIVER À L'EXAMEN"],
+        explanation: "Au conditionnel présent, courir prend deux 'r' : vous courriez (contrairement à l'imparfait : vous couriez)."
       },
       {
         id: "oq8",
+        difficulty: "Niveau 4 : Subjonctif irrégulier",
+        category: "SUBJONCTIF PRÉSENT DU VERBE ACQUÉRIR",
         prompt: "Conjuguez le verbe 'acquérir' au subjonctif présent, à la 3e personne du singulier :",
-        context: "Il est impératif que chaque étudiant ..................................... les crédits de son bloc 1.",
-        correctAnswers: ["acquière", "acquiere"],
-        explanation: "Au subjonctif présent : qu'il acquière (avec accent grave sur le e)."
+        context: "Il est impératif que chaque étudiant acquière les crédits de son bloc un.",
+        fullSentence: "IL EST IMPÉRATIF QUE CHAQUE ÉTUDIANT ACQUIÈRE LES CRÉDITS DE SON BLOC UN",
+        verbForm: "ACQUIÈRE",
+        initialRevealed: ["A", "E"],
+        correctAnswers: ["acquière", "acquiere", "IL EST IMPÉRATIF QUE CHAQUE ÉTUDIANT ACQUIÈRE LES CRÉDITS DE SON BLOC UN"],
+        explanation: "Au subjonctif présent : qu'il acquière (avec accent grave sur le e et terminaison en -e)."
       },
       {
         id: "oq9",
+        difficulty: "Niveau 5 : Futur irrégulier avec double r",
+        category: "FUTUR SIMPLE DU VERBE ENVOYER",
         prompt: "Conjuguez le verbe 'envoyer' au futur simple, à la 1re personne du pluriel :",
-        context: "Dès lundi matin, nous vous ..................................... le relevé de notes officiel.",
-        correctAnswers: ["enverrons"],
+        context: "Dès lundi matin, nous vous enverrons le relevé de notes officiel.",
+        fullSentence: "DÈS LUNDI MATIN NOUS VOUS ENVERRONS LE RELEVÉ DE NOTES OFFICIEL",
+        verbForm: "ENVERRONS",
+        initialRevealed: ["O", "N"],
+        correctAnswers: ["enverrons", "DÈS LUNDI MATIN NOUS VOUS ENVERRONS LE RELEVÉ DE NOTES OFFICIEL"],
         explanation: "Au futur simple, envoyer a pour radical enverr- avec deux 'r' : nous enverrons."
       },
       {
         id: "oq10",
+        difficulty: "Niveau 5 : Accord du participe passé avec être",
+        category: "PARTICIPE PASSÉ DU VERBE RÉSOUDRE",
         prompt: "Conjuguez le verbe 'résoudre' au participe passé au masculin pluriel :",
-        context: "Tous les cas litigieux ont été ..................................... en séance plénière.",
-        correctAnswers: ["résolus", "resolus"],
-        explanation: "Le participe passé de résoudre est résolu (sans t). Au masculin pluriel : résolus."
+        context: "Tous les cas litigieux ont été résolus en séance plénière.",
+        fullSentence: "TOUS LES CAS LITIGIEUX ONT ÉTÉ RÉSOLUS EN SÉANCE PLÉNIÈRE",
+        verbForm: "RÉSOLUS",
+        initialRevealed: ["S", "E"],
+        correctAnswers: ["résolus", "resolus", "TOUS LES CAS LITIGIEUX ONT ÉTÉ RÉSOLUS EN SÉANCE PLÉNIÈRE"],
+        explanation: "Le participe passé de résoudre est résolu (sans t). Au masculin pluriel accordé avec le sujet : résolus."
       }
     ]
   },

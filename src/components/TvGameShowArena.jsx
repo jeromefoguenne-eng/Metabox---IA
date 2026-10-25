@@ -155,8 +155,9 @@ export default function TvGameShowArena({
   const totalQuestions = quiz.questions.length;
   const isMultipleChoice = currentQ?.options && currentQ.options.length > 0;
 
-  // Target word for Roue des Accords
-  const targetWord = (currentQ?.correctAnswers?.[0] || "").toUpperCase();
+  // Target full sentence or target word for Roue des Accords
+  const targetSentence = (currentQ?.fullSentence || currentQ?.context || currentQ?.correctAnswers?.[0] || "").toUpperCase();
+  const targetWord = (currentQ?.verbForm || currentQ?.correctAnswers?.[0] || "").toUpperCase();
 
   // 1. Play Opening Theme on mount
   useEffect(() => {
@@ -223,7 +224,8 @@ export default function TvGameShowArena({
     setHasBuzzed(showType !== 'champion');
 
     // Reset Roue states
-    setRevealedLetters(new Set());
+    const initSet = new Set(currentQ?.initialRevealed?.map(l => l.toUpperCase()) || []);
+    setRevealedLetters(initSet);
     setCanPickLetter(false);
     setCurrentWedge(null);
     setRoundPointsValue(null);
@@ -384,16 +386,30 @@ export default function TvGameShowArena({
     });
   };
 
+  const normalizeChar = (ch) => {
+    return ch.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+  };
+
   const handlePickLetter = (letter) => {
-    if (!canPickLetter || revealedLetters.has(letter) || isAnswerLocked) return;
+    if (!canPickLetter || isAnswerLocked) return;
+
+    const normLetter = normalizeChar(letter);
+    if (revealedLetters.has(normLetter) || revealedLetters.has(letter)) return;
 
     sounds.playPop();
     const nextLetters = new Set(revealedLetters);
     nextLetters.add(letter);
+    nextLetters.add(normLetter);
     setRevealedLetters(nextLetters);
     setCanPickLetter(false);
 
-    const occurrences = (targetWord.match(new RegExp(letter, "g")) || []).length;
+    // Count occurrences across the entire target sentence
+    let occurrences = 0;
+    for (const ch of targetSentence) {
+      if (normalizeChar(ch) === normLetter) {
+        occurrences++;
+      }
+    }
 
     if (occurrences > 0) {
       sounds.playSuccess();
@@ -402,7 +418,12 @@ export default function TvGameShowArena({
       setHostDialogue(`🎉 OUI ! Il y a ${occurrences} fois la lettre « ${letter} » sur le mur de mots !`);
       confetti({ particleCount: 40, spread: 50, origin: { y: 0.6 } });
 
-      const allFound = [...targetWord].every(char => !/[A-ZÀ-ÖØ-öø-ÿ]/.test(char) || nextLetters.has(char));
+      // Check if all letters in sentence are revealed
+      const allFound = [...targetSentence].every(char => {
+        if (!/[A-ZÀ-ÖØ-öø-ÿ]/.test(char)) return true; // spaces, punctuation are auto-revealed
+        return nextLetters.has(char) || nextLetters.has(normalizeChar(char));
+      });
+
       if (allFound) {
         handleWordSolvedSuccess();
       }
@@ -410,7 +431,7 @@ export default function TvGameShowArena({
       sounds.playBuzzer();
       sounds.playGroan();
       sounds.playVoice("roue_life_lost");
-      setHostDialogue(`❌ Pas de « ${letter} » dans cette conjugaison ! Vous perdez une vie !`);
+      setHostDialogue(`❌ Pas de « ${letter} » dans cette phrase mystère ! Vous perdez une vie !`);
       handleLoseLife();
     }
   };
@@ -421,9 +442,22 @@ export default function TvGameShowArena({
 
     sounds.playPop();
     const cleaned = solveInput.trim().toUpperCase();
-    const isCorrect = currentQ.correctAnswers.some(ans => ans.toUpperCase() === cleaned);
+    const normCleaned = normalizeChar(cleaned);
+
+    // Can be solved either with the conjugated verb form alone OR the entire sentence
+    const isCorrect = currentQ.correctAnswers.some(ans => {
+      const normAns = normalizeChar(ans.toUpperCase());
+      return normAns === normCleaned || ans.toUpperCase() === cleaned;
+    }) || normalizeChar(targetSentence) === normCleaned || targetSentence === cleaned;
 
     if (isCorrect) {
+      // Reveal all letters
+      const allChars = new Set(revealedLetters);
+      for (const ch of targetSentence) {
+        allChars.add(ch);
+        allChars.add(normalizeChar(ch));
+      }
+      setRevealedLetters(allChars);
       handleWordSolvedSuccess();
     } else {
       sounds.playBuzzer();
@@ -441,7 +475,7 @@ export default function TvGameShowArena({
     sounds.playApplause();
     sounds.playSuccess();
     sounds.playVoice("feedback_correct_1");
-    setHostDialogue(`🎉 MANCHE ${currentIdx + 1} REMPORTÉE ! La forme « ${currentQ.correctAnswers[0]} » est 100% validée !`);
+    setHostDialogue(`🎉 MANCHE ${currentIdx + 1} REMPORTÉE ! La phrase mystère et la forme « ${currentQ.verbForm || currentQ.correctAnswers[0]} » sont 100% validées !`);
     setScoreEcts(prev => prev + (roundPointsValue || 250));
     confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
   };
@@ -1002,38 +1036,60 @@ export default function TvGameShowArena({
                 {showType === 'roue' && (
                   <div className="mb-4">
                     
-                    {/* Le Mur de Mots (Word Wall Flip Tiles) */}
-                    <div className="bg-slate-900/90 border border-purple-500/40 rounded-2xl p-4 shadow-xl text-center mb-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] font-bold text-pink-400 uppercase tracking-widest">
-                          MUR DE MOTS · MANCHE {currentIdx + 1} / 10
-                        </span>
-                        <span className="text-xs font-bold text-amber-300">
-                          Objectif : Sauver vos 3 vies jusqu'au bout !
-                        </span>
+                    {/* Le Mur de Mots (Word Wall Flip Tiles) - Format Phrase Complète */}
+                    <div className="bg-slate-900/95 border-2 border-purple-500/50 rounded-3xl p-4 sm:p-5 shadow-2xl text-center mb-4 relative overflow-hidden">
+                      
+                      {/* Top Header info */}
+                      <div className="flex flex-wrap items-center justify-between gap-2 mb-3 pb-2 border-b border-purple-500/20">
+                        <div className="flex items-center gap-2">
+                          <span className="px-2.5 py-0.5 rounded-full bg-pink-500/20 text-pink-300 font-mono text-[11px] font-bold border border-pink-500/30">
+                            MANCHE {currentIdx + 1} / 10
+                          </span>
+                          <span className="text-xs font-bold text-amber-300 uppercase tracking-wide">
+                            {currentQ.difficulty || "Énigme"}
+                          </span>
+                        </div>
+                        <div className="px-3 py-1 rounded-xl bg-purple-950/80 border border-purple-400/30 text-purple-200 text-xs font-black tracking-wider">
+                          🏷️ INDICE : <span className="text-amber-300 font-bold">{currentQ.category || "ACCORD DU VERBE"}</span>
+                        </div>
                       </div>
 
-                      {/* Enigma Word Tiles */}
-                      <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 my-2">
-                        {[...targetWord].map((char, cIdx) => {
-                          const isRevealed = revealedLetters.has(char) || !/[A-ZÀ-ÖØ-öø-ÿ]/.test(char) || isAnswerLocked;
-                          return (
-                            <div 
-                              key={cIdx}
-                              className={`w-9 h-12 sm:w-11 sm:h-14 rounded-xl border-2 flex items-center justify-center font-mono text-xl sm:text-2xl font-black transition-all duration-300 shadow-md ${
-                                isRevealed
-                                  ? 'bg-gradient-to-b from-amber-200 to-amber-400 text-slate-950 border-amber-100 scale-105'
-                                  : 'bg-indigo-950/80 text-transparent border-indigo-400/40'
-                              }`}
-                            >
-                              {isRevealed ? char : ''}
-                            </div>
-                          );
-                        })}
+                      {/* Full Sentence arranged in words */}
+                      <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 my-3 p-3 bg-slate-950/70 rounded-2xl border border-slate-800">
+                        {targetSentence.split(" ").map((word, wIdx) => (
+                          <div key={wIdx} className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+                            {[...word].map((char, cIdx) => {
+                              const normChar = normalizeChar(char);
+                              const isLetter = /[A-ZÀ-ÖØ-öø-ÿ]/.test(char);
+                              const isRevealed = !isLetter || revealedLetters.has(char) || revealedLetters.has(normChar) || isAnswerLocked;
+                              
+                              // Check if this letter is part of the focal verb to highlight it subtly
+                              const isTargetVerbPart = currentQ.verbForm && currentQ.verbForm.includes(normChar);
+
+                              return (
+                                <div 
+                                  key={cIdx}
+                                  className={`w-7 h-9 sm:w-8 sm:h-11 md:w-9 md:h-12 rounded-lg sm:rounded-xl border-2 flex items-center justify-center font-mono text-sm sm:text-base md:text-xl font-black transition-all duration-300 shadow-md ${
+                                    !isLetter
+                                      ? 'bg-transparent text-amber-300 border-transparent text-lg font-black'
+                                      : isRevealed
+                                      ? isTargetVerbPart
+                                        ? 'bg-gradient-to-b from-amber-300 to-yellow-500 text-slate-950 border-amber-200 shadow-amber-500/30 scale-105'
+                                        : 'bg-gradient-to-b from-slate-100 to-slate-200 text-slate-950 border-white scale-100'
+                                      : 'bg-indigo-950/90 text-transparent border-indigo-500/40 shadow-inner hover:border-indigo-400/60'
+                                  }`}
+                                >
+                                  {isRevealed ? char : ''}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ))}
                       </div>
 
-                      <p className="text-xs text-slate-300 font-lexend mt-2">
-                        {currentQ.context}
+                      {/* Clue Prompt */}
+                      <p className="text-xs sm:text-sm text-slate-300 font-lexend mt-2">
+                        {currentQ.prompt || currentQ.context}
                       </p>
                     </div>
 
@@ -1166,9 +1222,9 @@ export default function TvGameShowArena({
                           <button
                             onClick={() => setIsSolveOpen(!isSolveOpen)}
                             disabled={isAnswerLocked}
-                            className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-outfit font-black text-xs uppercase transition border border-slate-700 cursor-pointer text-center"
+                            className="flex-1 py-2.5 rounded-xl bg-purple-900/60 hover:bg-purple-800 text-purple-200 hover:text-white font-outfit font-black text-xs uppercase transition border border-purple-500/50 cursor-pointer text-center flex items-center justify-center gap-1.5 shadow-md"
                           >
-                            ⚡ Résoudre l'accord direct
+                            ⚡ Proposer une solution (Verbe ou Phrase entière)
                           </button>
                         </div>
 
@@ -1178,7 +1234,7 @@ export default function TvGameShowArena({
                               type="text"
                               value={solveInput}
                               onChange={(e) => setSolveInput(e.target.value)}
-                              placeholder="Tapez le mot résolu..."
+                              placeholder="Tapez le verbe conjugué ou la phrase entière..."
                               className="flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-pink-500/50 text-white font-mono text-xs focus:outline-hidden"
                             />
                             <button
