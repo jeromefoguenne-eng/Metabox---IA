@@ -199,16 +199,45 @@ export default function TvGameShowArena({
     }
   };
 
-  // Keyboard shortcut ESC to close
+  // Stop suspense when component unmounts
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && onClose) {
-        onClose();
-      }
+    return () => {
+      sounds.stopSuspense();
+      sounds.stopAllVoice();
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+  }, []);
+
+  // Oppressive suspense buildup as seconds pass while player hesitates in Millionnaire
+  const [reflectionSeconds, setReflectionSeconds] = useState(0);
+
+  useEffect(() => {
+    if (showType !== 'millionnaire' || isShowingIntro || isAnswerLocked || gameOver) {
+      setReflectionSeconds(0);
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setReflectionSeconds(prev => {
+        const next = prev + 1;
+        // Escalate suspense volume progressively up to 25 seconds
+        const fraction = Math.min(1.0, next / 25.0);
+        sounds.escalateSuspensePressure(fraction);
+
+        // Psychological pressure dialogue by Henri after 12s of hesitation in Tier 2/3
+        if (next === 12 && currentQ.tier === 2) {
+          sounds.playVoice("pressure_hesitate_tier2");
+          setHostDialogue("🎙️ Henri : « Prenez votre temps... Mais rappelez-vous qu'à ce niveau de la pyramide, chaque seconde d'hésitation fait monter la pression ! »");
+        } else if (next === 10 && currentQ.tier === 3) {
+          sounds.playVoice("pressure_hesitate_tier3");
+          setHostDialogue("🎙️ Henri : « Le studio est plongé dans le noir... Sentez-vous la tension ? Réfléchissez bien avant de verrouiller votre choix définitif ! »");
+        }
+
+        return next;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [showType, isShowingIntro, isAnswerLocked, gameOver, currentIdx, currentQ]);
 
   // Question announce by TV Host with realistic neural voice
   useEffect(() => {
@@ -242,12 +271,27 @@ export default function TvGameShowArena({
     if (showType === 'millionnaire') {
       const reward = (currentIdx + 1) * 6;
       voiceKey = `q_verb_${currentIdx + 1}`;
-      dialogueText = `🎙️ Henri : « Question ${currentIdx + 1} (${currentQ.difficulty || 'Palier'}) pour ${reward} crédits ECTS... Que signifie le verbe « ${currentQ.verb || ''} » ? »`;
+      
+      const isTier1 = currentIdx < 3;
+      const isTier2 = currentIdx >= 3 && currentIdx < 7;
+      const isTier3 = currentIdx >= 7;
+
+      if (isTier1) {
+        dialogueText = `🎙️ Henri : « Question ${currentIdx + 1} pour ${reward} crédits ECTS... Échauffement en douceur : que signifie « ${currentQ.verb || ''} » ? »`;
+      } else if (isTier2) {
+        dialogueText = `🎙️ Henri : « Question ${currentIdx + 1} pour ${reward} crédits. La pression monte d'un cran... Prenez garde : que signifie « ${currentQ.verb || ''} » ? »`;
+      } else {
+        dialogueText = `🎙️ Henri : « Silence en studio... Question ${currentIdx + 1} de HAUTE EXIGENCE pour ${reward} crédits ECTS ! Que signifie avec rigueur « ${currentQ.verb || ''} » ? Est-ce votre dernier mot ? »`;
+      }
+
+      // Start or escalate oppressive suspense music based on tier
+      const tierLevel = currentQ.tier || (isTier3 ? 3 : isTier2 ? 2 : 1);
+      sounds.startSuspense(tierLevel);
 
       if (currentQ.isSafetyTier) {
-        setTimeout(() => sounds.playVoice("tier_safety"), 3500);
+        setTimeout(() => sounds.playVoice("tier_safety"), 4500);
       } else if (currentQ.tier === 3 && currentIdx === 7) {
-        setTimeout(() => sounds.playVoice("tier_final"), 3500);
+        setTimeout(() => sounds.playVoice("tier_final"), 4500);
       }
 
     } else if (showType === 'champion') {
@@ -536,7 +580,15 @@ export default function TvGameShowArena({
     setIsAnswerLocked(true);
 
     const isCorrect = idx === currentQ.correctIndex;
-    setHostDialogue("🎙️ Henri : « C'est votre choix définitif ? Regardons le verdict ! »");
+
+    if (showType === 'millionnaire') {
+      const isHighTier = (currentQ.tier || 1) >= 2;
+      setHostDialogue(`🎙️ Henri : « C'est votre dernier mot pour ${currentQ.rewardEcts || 6} crédits ECTS ? ... Suspense ... »`);
+      // Brief heartbeat silence before explosion or victory
+      setTimeout(() => sounds.stopSuspense(), 1200);
+    } else {
+      setHostDialogue("🎙️ Henri : « C'est votre choix définitif ? Regardons le verdict ! »");
+    }
 
     setTimeout(() => {
       if (isCorrect) {
@@ -561,7 +613,7 @@ export default function TvGameShowArena({
         sounds.playVoice(randomWrong);
         setHostDialogue(`❌ Aïe, c'est une erreur... La bonne réponse était : « ${currentQ.options[currentQ.correctIndex]} »`);
       }
-    }, 1200);
+    }, showType === 'millionnaire' ? 1800 : 1200);
   };
 
   const handleNextQuestion = () => {

@@ -194,9 +194,55 @@ class SoundManager {
     this.playAudioFile('/audio/sfx/gong_timeout.mp3', 0.9);
   }
 
-  startSuspense() {
-    if (this.muted || this.suspenseAudio) return;
-    this.suspenseAudio = this.playAudioFile('/audio/sfx/suspense_drone.mp3', 0.4, true);
+  // --- Musique de Suspense Oppressante Dynamique (Paliers 1, 2, 3) ---
+  startSuspense(tier = 1) {
+    if (this.muted) return;
+
+    // Pick track based on pyramid tier
+    const trackName = tier === 3 
+      ? 'tension_tier3' 
+      : tier === 2 
+      ? 'tension_tier2' 
+      : 'tension_tier1';
+    
+    const audioPath = `/audio/sfx/${trackName}.mp3`;
+
+    // If already playing the exact track, just adjust volume
+    if (this.suspenseAudio && this.currentSuspenseTier === tier) {
+      return;
+    }
+
+    // Stop current track with smooth transition
+    this.stopSuspense();
+
+    try {
+      const audio = new Audio(audioPath);
+      audio.loop = true;
+      // Volume starts modest and can increase with tier
+      const baseVol = tier === 3 ? 0.65 : tier === 2 ? 0.52 : 0.40;
+      audio.volume = baseVol;
+      this.suspenseAudio = audio;
+      this.currentSuspenseTier = tier;
+      this.baseSuspenseVolume = baseVol;
+
+      const p = audio.play();
+      if (p !== undefined) {
+        p.catch(() => {
+          this.suspenseAudio = null;
+        });
+      }
+    } catch {
+      this.suspenseAudio = null;
+    }
+  }
+
+  // Faire monter l'oppression et le volume au fil des secondes de réflexion
+  escalateSuspensePressure(intensityFraction = 0.5) {
+    if (this.muted || !this.suspenseAudio) return;
+    try {
+      const targetVol = Math.min(0.92, (this.baseSuspenseVolume || 0.45) + (intensityFraction * 0.35));
+      this.suspenseAudio.volume = targetVol;
+    } catch {}
   }
 
   stopSuspense() {
@@ -206,6 +252,7 @@ class SoundManager {
         this.suspenseAudio.currentTime = 0;
       } catch {}
       this.suspenseAudio = null;
+      this.currentSuspenseTier = null;
     }
   }
 

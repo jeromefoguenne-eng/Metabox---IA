@@ -39,17 +39,42 @@ VOICE_SCRIPTS = [
      "Rappelez-vous qu'en sciences cognitives, la répétition espacée et le rappel actif battent toujours la relecture passive ! Testez-vous régulièrement."),
 
     # Questions - Qui veut gagner des crédits (Verbes gradués selon exo-verbes-1)
-    # Q1: Souligner, Q2: Cocher, Q3: Biffer, Q4: Relier, Q5: Citer, Q6: Énumérer, Q7: Classer, Q8: Définir, Q9: Compléter, Q10: Comparer
-    ("q_verb_1", VOICE_HOST, "+2%", "+0Hz", "Pour vos six premiers crédits ECTS... Que signifie concrètement le verbe : Souligner ?"),
-    ("q_verb_2", VOICE_HOST, "+2%", "+0Hz", "Deuxième question de l'ascension... Que signifie le verbe : Cocher ?"),
-    ("q_verb_3", VOICE_HOST, "+2%", "+0Hz", "Troisième palier... Que signifie précisément le verbe d'action : Biffer ?"),
-    ("q_verb_4", VOICE_HOST, "+2%", "+0Hz", "Quatrième palier et premier palier de sécurité garanti à 24 crédits ! Que signifie le verbe : Relier ?"),
-    ("q_verb_5", VOICE_HOST, "+2%", "+0Hz", "Cinquième question... Que signifie concrètement l'action de : Citer ?"),
-    ("q_verb_6", VOICE_HOST, "+2%", "+0Hz", "Sixième échelon... Que signifie précisément l'action d' : Énumérer ?"),
-    ("q_verb_7", VOICE_HOST, "+2%", "+0Hz", "Montée en exigence méthodologique... Que signifie le verbe : Classer ?"),
-    ("q_verb_8", VOICE_HOST, "+2%", "+0Hz", "Huitième palier de haute exigence... Que signifie avec rigueur le verbe : Définir ?"),
-    ("q_verb_9", VOICE_HOST, "+2%", "+0Hz", "Avant-dernière marche vers le sommet... Que signifie le verbe : Compléter ?"),
-    ("q_verb_10", VOICE_HOST, "+2%", "+0Hz", "Dernière question pour décrocher le grand chelem des 60 crédits... Que signifie le verbe : Comparer ?"),
+    # Montée en intensité dramatique & pression psychologique croissante de Henri
+    ("q_verb_1", VOICE_HOST, "+1%", "+0Hz", 
+     "Nous commençons en douceur pour 6 crédits ECTS... Échauffement indispensable avant la tempête : que signifie concrètement le verbe Souligner ?"),
+    
+    ("q_verb_2", VOICE_HOST, "+1%", "+0Hz", 
+     "Deuxième question pour 12 crédits. Restez calme et méthodique : que signifie le verbe Cocher ?"),
+    
+    ("q_verb_3", VOICE_HOST, "+0%", "-1Hz", 
+     "Troisième palier, 18 crédits. Attention à ne pas vous précipiter, les erreurs bêtes coûtent cher : que signifie le verbe Biffer ?"),
+    
+    ("q_verb_4", VOICE_HOST, "-1%", "-1Hz", 
+     "Attention... Moment crucial. Quatrième question pour 24 crédits ! C'est votre premier palier de sécurité garanti ! Si vous échouez maintenant, vous repartez bredouille. Que signifie le verbe Relier ?"),
+    
+    ("q_verb_5", VOICE_HOST, "-1%", "-1Hz", 
+     "Vous avez franchi le palier de sécurité, mais maintenant la pente se raidit. Question 5 pour 30 crédits. Que signifie exactement l'action de Citer ? Réfléchissez bien..."),
+    
+    ("q_verb_6", VOICE_HOST, "-2%", "-2Hz", 
+     "Question 6 pour 36 crédits. Le silence se fait sur le plateau... L'erreur est interdite à ce niveau de la compétition. Que signifie précisément l'action d'Énumérer ?"),
+    
+    ("q_verb_7", VOICE_HOST, "-2%", "-2Hz", 
+     "42 crédits en jeu ! La tension est palpable. Un faux pas maintenant, et vous retomberez à 24 crédits. Que signifie avec rigueur le verbe Classer ?"),
+    
+    ("q_verb_8", VOICE_HOST, "-3%", "-2Hz", 
+     "Nous entrons dans la zone rouge... Palier de haute exigence universitaire pour 48 crédits. Prenez votre temps, respirez... Que signifie rigoureusement le verbe Définir ? C'est votre dernier mot ?"),
+    
+    ("q_verb_9", VOICE_HOST, "-3%", "-3Hz", 
+     "54 crédits ECTS ! Le public retient son souffle, l'enjeu est colossal... Vous n'êtes plus qu'à deux pas du titre. Que signifie le verbe Compléter ? Ne laissez pas le doute vous envahir..."),
+    
+    ("q_verb_10", VOICE_HOST, "-4%", "-3Hz", 
+     "Silence absolu en studio... Voici la dixième et ultime question. 60 crédits ECTS... Le grand chelem académique. Un seul faux pas et le sommet vous échappe. Henri vous demande : que signifie précisément le verbe Comparer ? Est-ce votre dernier mot ?"),
+
+    # Voix de pression supplémentaire (relance de suspense si le joueur hésite)
+    ("pressure_hesitate_tier2", VOICE_HOST, "-2%", "-2Hz", 
+     "Prenez votre temps... Mais rappelez-vous qu'à ce niveau de la pyramide, chaque seconde d'hésitation fait monter la pression."),
+    ("pressure_hesitate_tier3", VOICE_HOST, "-3%", "-3Hz", 
+     "Le studio est plongé dans le noir... Sentez-vous la tension ? Réfléchissez bien avant de verrouiller votre choix définitif."),
 
     # Questions - Questions pour un Major (Ebbinghaus)
     ("q_meth_1", VOICE_HOST, "+4%", "+1Hz", "Top chrono ! Question une : Après mémorisation sans réactivation, quel pourcentage d'informations est encore retenu après seulement 20 minutes de cours ?"),
