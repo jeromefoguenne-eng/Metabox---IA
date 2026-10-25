@@ -26,6 +26,7 @@ import TileDetails from './components/TileDetails';
 import AiLabView from './components/AiLabView';
 import TrophiesModal from './components/TrophiesModal';
 import { TILES, METABOX_INFO, BADGES_LIST } from './data/metaboxData';
+import { sounds } from './utils/soundEffects';
 
 const ICONS = {
   Newspaper,
@@ -64,9 +65,9 @@ export default function App() {
   const [userXp, setUserXp] = useState(() => {
     try {
       const saved = localStorage.getItem('metabox_user_xp');
-      return saved ? parseInt(saved, 10) : 120;
+      return saved ? parseInt(saved, 10) : 150;
     } catch {
-      return 120;
+      return 150;
     }
   });
 
@@ -110,8 +111,9 @@ export default function App() {
 
   const addXp = (amount) => {
     setUserXp(prev => prev + amount);
+    sounds.playSuccess();
     confetti({
-      particleCount: 40,
+      particleCount: 50,
       spread: 60,
       origin: { y: 0.8 }
     });
@@ -120,6 +122,7 @@ export default function App() {
   const unlockBadge = (badgeId) => {
     if (!unlockedBadges.includes(badgeId)) {
       setUnlockedBadges(prev => [...prev, badgeId]);
+      sounds.playFanfare();
       confetti({
         particleCount: 80,
         spread: 80,
@@ -149,17 +152,20 @@ export default function App() {
     }
   };
 
+  const handleSelectTileWithSound = (id) => {
+    sounds.playPop();
+    setActiveTileId(id);
+    setMobileMenuOpen(false);
+  };
+
   const activeTile = TILES.find(t => t.id === activeTileId);
 
   return (
-    <div className="min-h-screen bg-[#070d18] text-slate-100 flex flex-col font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-['Lexend'] selection:bg-indigo-500/20 selection:text-indigo-800">
       {/* Top Application Header */}
       <Header
         activeTileId={activeTileId}
-        onSelectTile={(id) => {
-          setActiveTileId(id);
-          setMobileMenuOpen(false);
-        }}
+        onSelectTile={handleSelectTileWithSound}
         completedTiles={completedTiles}
         completedQuizzes={completedQuizzes}
         userXp={userXp}
@@ -168,60 +174,62 @@ export default function App() {
       />
 
       {/* Main Container */}
-      <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col lg:flex-row gap-8">
+      <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
         
         {/* Mobile Navigation Toggle */}
-        <div className="lg:hidden flex items-center justify-between bg-slate-900 border border-slate-800 p-3.5 rounded-2xl">
+        <div className="lg:hidden flex items-center justify-between bg-white border border-slate-200 p-4 rounded-2xl shadow-xs">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-400">Vue :</span>
-            <span className="text-xs font-bold text-indigo-400 truncate max-w-[180px]">
-              {activeTileId === 'dashboard' ? 'Dashboard des Tuiles' : activeTile?.title || 'Lab IA'}
+            <span className="text-xs font-bold text-slate-400">Section :</span>
+            <span className="text-xs font-bold text-indigo-600 truncate max-w-[180px]">
+              {activeTileId === 'dashboard' ? 'Dashboard Quêtes' : activeTile?.title || 'Lab IA'}
             </span>
           </div>
           <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-xl bg-slate-800 text-slate-200"
+            onClick={() => {
+              sounds.playPop();
+              setMobileMenuOpen(!mobileMenuOpen);
+            }}
+            className="p-2 rounded-xl bg-slate-100 text-slate-700"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
 
         {/* Sidebar / Quick Navigation Menu */}
-        <aside className={`lg:w-72 shrink-0 ${mobileMenuOpen ? 'block' : 'hidden lg:block'}`}>
+        <aside className={`lg:w-80 shrink-0 ${mobileMenuOpen ? 'block' : 'hidden lg:block'}`}>
           <div className="sticky top-24 space-y-4">
             
-            {/* Dashboard Quick Switch Button */}
+            {/* Dashboard Switch Button */}
             <button
-              onClick={() => {
-                setActiveTileId('dashboard');
-                setMobileMenuOpen(false);
-              }}
-              className={`w-full p-3.5 rounded-2xl border transition-all flex items-center gap-3 font-bold text-xs ${
+              onClick={() => handleSelectTileWithSound('dashboard')}
+              className={`w-full p-4 rounded-2xl border-2 transition-all flex items-center gap-3.5 font-bold text-sm shadow-xs ${
                 activeTileId === 'dashboard'
-                  ? 'bg-gradient-to-r from-cyan-600/30 to-indigo-600/30 border-cyan-400 text-white shadow-lg ring-1 ring-cyan-400/50'
-                  : 'bg-slate-900/80 border-slate-800 hover:bg-slate-800 text-slate-300'
+                  ? 'bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-600/20'
+                  : 'bg-white border-slate-200 hover:border-indigo-300 text-slate-700 hover:bg-indigo-50/50'
               }`}
             >
-              <div className="p-2 rounded-xl bg-slate-800 text-cyan-400">
-                <LayoutGrid className="w-4 h-4" />
+              <div className={`p-2 rounded-xl ${activeTileId === 'dashboard' ? 'bg-white/20 text-white' : 'bg-indigo-50 text-indigo-600'}`}>
+                <LayoutGrid className="w-5 h-5" />
               </div>
               <div className="text-left">
-                <div>Vue d'ensemble Bento</div>
-                <div className="text-[10px] text-slate-400 font-normal">Toutes les 8 tuiles</div>
+                <div className="font-['Outfit'] font-bold text-base leading-tight">Dashboard Quêtes</div>
+                <div className={`text-xs font-normal ${activeTileId === 'dashboard' ? 'text-indigo-100' : 'text-slate-400'}`}>
+                  Vue d'ensemble des 8 tuiles
+                </div>
               </div>
             </button>
 
             <div className="flex items-center justify-between px-1 pt-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                Quêtes & Modules
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Modules & Quêtes
               </span>
-              <span className="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-                {completedTiles.length}/8 finies
+              <span className="text-xs font-mono font-bold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200">
+                {completedTiles.length}/8 validés
               </span>
             </div>
 
             {/* List of 8 Tiles in Sidebar */}
-            <div className="space-y-1.5 max-h-[55vh] overflow-y-auto pr-1">
+            <div className="space-y-2 max-h-[55vh] overflow-y-auto pr-1">
               {TILES.map((tile) => {
                 const IconComponent = ICONS[tile.icon] || BookOpenCheck;
                 const isActive = activeTileId === tile.id;
@@ -230,32 +238,29 @@ export default function App() {
                 return (
                   <button
                     key={tile.id}
-                    onClick={() => {
-                      setActiveTileId(tile.id);
-                      setMobileMenuOpen(false);
-                    }}
-                    className={`w-full text-left p-2.5 rounded-xl border transition-all flex items-center justify-between gap-2.5 group ${
+                    onClick={() => handleSelectTileWithSound(tile.id)}
+                    className={`w-full text-left p-3 rounded-2xl border transition-all flex items-center justify-between gap-3 group ${
                       isActive
                         ? tile.isNew
-                          ? 'bg-gradient-to-r from-cyan-950/70 to-indigo-950/70 border-cyan-400/80 shadow-md ring-1 ring-cyan-400'
-                          : 'bg-indigo-600/25 border-indigo-500 text-white shadow-md ring-1 ring-indigo-500'
-                        : 'bg-slate-900/50 border-slate-800/70 hover:bg-slate-800/60 hover:border-slate-700'
+                          ? 'bg-gradient-to-r from-cyan-50 to-indigo-50 border-cyan-400 text-slate-900 shadow-sm ring-2 ring-cyan-400/40'
+                          : 'bg-indigo-50/90 border-indigo-500 text-indigo-950 shadow-sm ring-1 ring-indigo-500'
+                        : 'bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700'
                     }`}
                   >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className={`p-1.5 rounded-lg shrink-0 ${
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={`p-2 rounded-xl shrink-0 ${
                         isActive
-                          ? tile.isNew ? 'bg-cyan-500/20 text-cyan-300' : 'bg-indigo-500/20 text-indigo-300'
-                          : 'bg-slate-800 text-slate-400 group-hover:text-slate-200'
+                          ? tile.isNew ? 'bg-cyan-600 text-white' : 'bg-indigo-600 text-white'
+                          : 'bg-slate-100 text-slate-500 group-hover:text-indigo-600'
                       }`}>
-                        <IconComponent className="w-3.5 h-3.5" />
+                        <IconComponent className="w-4 h-4" />
                       </div>
 
                       <div className="min-w-0">
-                        <div className="text-xs font-bold text-white truncate">
+                        <div className="font-['Outfit'] text-sm font-bold text-slate-900 truncate">
                           {tile.title}
                         </div>
-                        <p className="text-[10px] text-slate-400 truncate">
+                        <p className="text-xs text-slate-500 truncate">
                           Tuile {tile.number} · +{tile.xp} XP
                         </p>
                       </div>
@@ -263,10 +268,10 @@ export default function App() {
 
                     <div className="shrink-0">
                       {isCompleted ? (
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                       ) : (
-                        <ChevronRight className={`w-3 h-3 transition ${
-                          isActive ? 'text-indigo-400 translate-x-0.5' : 'text-slate-600'
+                        <ChevronRight className={`w-4 h-4 transition ${
+                          isActive ? 'text-indigo-600 translate-x-0.5' : 'text-slate-400'
                         }`} />
                       )}
                     </div>
@@ -275,24 +280,24 @@ export default function App() {
               })}
             </div>
 
-            {/* Gamification Level Mini-Card */}
-            <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-950/30 to-purple-950/20 border border-indigo-500/30 text-xs text-slate-300 space-y-2 mt-4">
+            {/* Level Mini Card */}
+            <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2.5 mt-4">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-white text-xs">Statut Étudiant</span>
-                <span className="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full font-bold">
-                  Niv. {userLevel}
+                <span className="font-['Outfit'] font-bold text-slate-900 text-sm">Niveau Étudiant</span>
+                <span className="text-xs bg-indigo-50 text-indigo-700 border border-indigo-200 px-2.5 py-0.5 rounded-full font-bold">
+                  Niveau {userLevel}
                 </span>
               </div>
-              <div className="text-[11px] text-slate-400">
+              <div className="text-xs text-slate-500 font-medium">
                 {getLevelTitle(userLevel)}
               </div>
-              <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mt-1">
+              <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200">
                 <div 
-                  className="bg-gradient-to-r from-amber-400 to-indigo-500 h-full rounded-full transition-all duration-500"
+                  className="bg-gradient-to-r from-amber-400 to-indigo-600 h-full rounded-full transition-all duration-500"
                   style={{ width: `${Math.min(100, Math.round((userXp % 250) / 2.5))}%` }}
                 />
               </div>
-              <div className="text-[10px] text-slate-400 text-right font-mono">
+              <div className="text-xs text-slate-400 text-right font-mono font-medium">
                 {userXp} / {userLevel * 250} XP
               </div>
             </div>
@@ -303,7 +308,7 @@ export default function App() {
         <main className="flex-1 min-w-0">
           {activeTileId === 'dashboard' ? (
             <BentoGrid
-              onSelectTile={(tileId) => setActiveTileId(tileId)}
+              onSelectTile={(tileId) => handleSelectTileWithSound(tileId)}
               completedTiles={completedTiles}
               userXp={userXp}
               userLevel={userLevel}
@@ -313,10 +318,10 @@ export default function App() {
           ) : activeTileId === 'tile-ia' ? (
             <div className="space-y-4">
               <button
-                onClick={() => setActiveTileId('dashboard')}
-                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-xs font-semibold text-slate-300 hover:text-white transition shadow-sm"
+                onClick={() => handleSelectTileWithSound('dashboard')}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-bold text-slate-700 hover:text-indigo-600 transition shadow-xs"
               >
-                ← Retour au Dashboard des Tuiles
+                ← Retour au Dashboard des Quêtes
               </button>
               <AiLabView />
             </div>
@@ -326,7 +331,7 @@ export default function App() {
               isCompleted={completedTiles.includes(activeTileId)}
               onMarkComplete={handleToggleTileCompletion}
               onLaunchQuiz={handleQuizComplete}
-              onBackToDashboard={() => setActiveTileId('dashboard')}
+              onBackToDashboard={() => handleSelectTileWithSound('dashboard')}
             />
           )}
         </main>
@@ -339,18 +344,18 @@ export default function App() {
         unlockedBadges={unlockedBadges}
       />
 
-      {/* Footer */}
-      <footer className="mt-auto border-t border-slate-800/80 bg-slate-950/80 py-6 text-xs text-slate-500">
+      {/* Footer Clair & Épuré */}
+      <footer className="mt-auto border-t border-slate-200 bg-white py-8 text-xs sm:text-sm text-slate-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <span className="font-semibold text-slate-400">Petite Réussite - Métabox IA (Édition Gamifiée 2.0)</span> · SAR Haute École Charlemagne
+            <span className="font-['Outfit'] font-bold text-slate-800">Petite Réussite - Métabox IA (Édition Lumineuse 2.1)</span> · SAR Haute École Charlemagne
           </div>
           <div className="flex items-center gap-4">
             <a
               href="https://github.com/jeromefoguenne-eng/Metabox---IA"
               target="_blank"
               rel="noreferrer"
-              className="hover:text-slate-300 flex items-center gap-1.5 transition"
+              className="hover:text-indigo-600 flex items-center gap-1.5 transition font-medium"
             >
               <Code2 className="w-4 h-4" /> GitHub Repository
             </a>

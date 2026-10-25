@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import SpeedChallengeGame from './SpeedChallengeGame';
+import { sounds } from '../utils/soundEffects';
 
 const PRESET_CONSIGNES = [
   {
@@ -49,13 +50,20 @@ export default function AiLabView() {
   const [evaluationFeedback, setEvaluationFeedback] = useState(null);
   const [isEvaluating, setIsEvaluating] = useState(false);
 
+  const handleTabChange = (t) => {
+    sounds.playPop();
+    setActiveTab(t);
+  };
+
   // Analyze consigne function
   const handleAnalyzeConsigne = () => {
     if (!inputConsigne.trim()) return;
+    sounds.playPop();
     setIsAnalyzing(true);
     setAnalyzedResult(null);
 
     setTimeout(() => {
+      sounds.playSuccess();
       const lower = inputConsigne.toLowerCase();
       const detectedVerbs = [];
       const verbRules = [
@@ -110,10 +118,12 @@ export default function AiLabView() {
   // Evaluate student answer
   const handleEvaluateAnswer = () => {
     if (!studentAnswer.trim()) return;
+    sounds.playPop();
     setIsEvaluating(true);
     setEvaluationFeedback(null);
 
     setTimeout(() => {
+      sounds.playSuccess();
       const words = studentAnswer.trim().split(/\s+/).length;
       const lower = studentAnswer.toLowerCase();
 
@@ -130,7 +140,7 @@ export default function AiLabView() {
       if (grade > 20) grade = 20;
 
       confetti({
-        particleCount: 50,
+        particleCount: 60,
         spread: 60,
         origin: { y: 0.7 }
       });
@@ -155,80 +165,81 @@ export default function AiLabView() {
   };
 
   return (
-    <div className="space-y-8">
-      {/* Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-900/40 via-purple-900/30 to-slate-900 border border-indigo-500/30 p-6 md:p-8 shadow-2xl">
-        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="space-y-8 animate-in fade-in duration-200">
+      {/* Banner Clair & Coloré */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-600 p-8 md:p-10 shadow-lg text-white">
+        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-80 h-80 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+
         <div className="relative z-10 flex flex-wrap items-center justify-between gap-6">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-semibold mb-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-cyan-200 border border-white/30 text-xs font-bold mb-3 shadow-xs">
               <Sparkles className="w-3.5 h-3.5" />
               Volet Innovant Petite Réussite
             </div>
-            <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
-              Lab IA & Entraînement Intelligent Métabox
+            <h2 className="font-['Outfit'] text-2xl md:text-4xl font-black tracking-tight leading-tight">
+              Lab IA & Entraînement Intelligent Métabox ✨
             </h2>
-            <p className="text-slate-300 text-sm md:text-base mt-2 leading-relaxed">
-              Ce volet prépare les outils d'intelligence artificielle pédagogique pour la Haute École Charlemagne : 
-              analyse automatisée de consignes complexes, simulation de feedback immédiat et futurs jeux sérieux adaptatifs.
+            <p className="text-sm md:text-base text-indigo-100 mt-2 leading-relaxed">
+              Outils d'intelligence artificielle pédagogique pour la Haute École Charlemagne : 
+              décodage sémantique de consignes, simulation de feedback immédiat et serious games.
             </p>
           </div>
 
-          <div className="bg-slate-900/80 border border-slate-700/80 p-4 rounded-xl flex items-center gap-4 backdrop-blur-sm">
-            <div className="p-3 bg-indigo-500/20 text-indigo-400 rounded-xl">
-              <BrainCircuit className="w-8 h-8" />
+          <div className="bg-white/95 backdrop-blur-md text-slate-800 p-4 rounded-2xl flex items-center gap-4 shadow-md border border-white/60">
+            <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+              <BrainCircuit className="w-7 h-7" />
             </div>
             <div>
-              <div className="text-xs text-slate-400 font-medium">Architecture IA</div>
-              <div className="text-sm font-bold text-white">Local-First (Ollama) & Free-Tier</div>
-              <div className="text-[11px] text-emerald-400 flex items-center gap-1 mt-0.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" /> Zéro frais institutionnel
+              <div className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Moteurs IA</div>
+              <div className="font-['Outfit'] text-sm font-bold text-slate-900">Local First (Ollama)</div>
+              <div className="text-[11px] text-emerald-600 font-bold flex items-center gap-1 mt-0.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> 100% Souverain & Gratuit
               </div>
             </div>
           </div>
         </div>
 
         {/* Navigation Tabs inside IA Lab */}
-        <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-slate-800">
+        <div className="flex flex-wrap gap-2.5 mt-8 pt-6 border-t border-white/20">
           <button
-            onClick={() => setActiveTab('analyzer')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold transition ${
+            onClick={() => handleTabChange('analyzer')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition ${
               activeTab === 'analyzer'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
-                : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 border border-slate-700/60'
+                ? 'bg-white text-indigo-700 shadow-md'
+                : 'bg-white/20 text-white hover:bg-white/30'
             }`}
           >
             <Search className="w-4 h-4" /> 1. Analyseur de Consignes IA
           </button>
 
           <button
-            onClick={() => setActiveTab('simulator')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold transition ${
+            onClick={() => handleTabChange('simulator')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition ${
               activeTab === 'simulator'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
-                : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 border border-slate-700/60'
+                ? 'bg-white text-indigo-700 shadow-md'
+                : 'bg-white/20 text-white hover:bg-white/30'
             }`}
           >
             <MessageSquareCheck className="w-4 h-4" /> 2. Simulateur de Feedback & Notation
           </button>
 
           <button
-            onClick={() => setActiveTab('games')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold transition ${
+            onClick={() => handleTabChange('games')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition ${
               activeTab === 'games'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
-                : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 border border-slate-700/60'
+                ? 'bg-white text-indigo-700 shadow-md'
+                : 'bg-white/20 text-white hover:bg-white/30'
             }`}
           >
-            <Gamepad2 className="w-4 h-4" /> 3. Serious Games & Jeux IA (Roadmap)
+            <Gamepad2 className="w-4 h-4" /> 3. Serious Games (Défi Express ⚡️)
           </button>
 
           <button
-            onClick={() => setActiveTab('creator')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold transition ${
+            onClick={() => handleTabChange('creator')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition ${
               activeTab === 'creator'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
-                : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 border border-slate-700/60'
+                ? 'bg-white text-indigo-700 shadow-md'
+                : 'bg-white/20 text-white hover:bg-white/30'
             }`}
           >
             <PlusCircle className="w-4 h-4" /> 4. Atelier Enseignant (Co-Création)
@@ -240,26 +251,29 @@ export default function AiLabView() {
       {activeTab === 'analyzer' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-6 space-y-4">
-            <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <Search className="w-5 h-5 text-indigo-400" />
+            <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm">
+              <h3 className="font-['Outfit'] text-xl font-bold text-slate-900 flex items-center gap-2">
+                <Search className="w-5 h-5 text-indigo-600" />
                 Déposez une consigne d'examen
               </h3>
-              <p className="text-xs text-slate-400 mt-1 mb-4">
+              <p className="text-xs sm:text-sm text-slate-500 mt-1 mb-5">
                 Collez une consigne réelle d'enseignant ou testez un exemple issu du Moodle HECh.
               </p>
 
               {/* Presets */}
               <div className="space-y-2 mb-4">
-                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                   Exemples prédéfinis du cours :
                 </span>
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-2">
                   {PRESET_CONSIGNES.map((preset, idx) => (
                     <button
                       key={idx}
-                      onClick={() => setInputConsigne(preset.text)}
-                      className="text-left text-xs p-2 rounded-lg bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 text-slate-300 hover:text-white transition"
+                      onClick={() => {
+                        sounds.playPop();
+                        setInputConsigne(preset.text);
+                      }}
+                      className="text-left text-xs sm:text-sm p-3 rounded-xl bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 text-slate-700 hover:text-indigo-900 transition"
                     >
                       👉 <strong>{preset.title}</strong>
                     </button>
@@ -272,14 +286,14 @@ export default function AiLabView() {
                 value={inputConsigne}
                 onChange={(e) => setInputConsigne(e.target.value)}
                 placeholder="Tapez ou collez une consigne d'évaluation ici..."
-                className="w-full p-3.5 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed font-sans"
+                className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white leading-relaxed font-sans"
               />
 
               <div className="mt-4 flex justify-end">
                 <button
                   onClick={handleAnalyzeConsigne}
                   disabled={isAnalyzing || !inputConsigne.trim()}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold transition shadow-lg shadow-indigo-600/30 disabled:opacity-50"
+                  className="flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold transition shadow-sm disabled:opacity-50"
                 >
                   {isAnalyzing ? (
                     <>
@@ -297,37 +311,37 @@ export default function AiLabView() {
 
           <div className="lg:col-span-6">
             {analyzedResult ? (
-              <div className="bg-slate-900/90 border border-indigo-500/40 rounded-2xl p-6 shadow-xl space-y-5 animate-in fade-in duration-300">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                  <h4 className="font-bold text-white flex items-center gap-2 text-base">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+              <div className="bg-white border-2 border-indigo-200 rounded-3xl p-6 md:p-8 shadow-sm space-y-6 animate-in fade-in duration-300">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                  <h4 className="font-['Outfit'] font-black text-slate-900 flex items-center gap-2 text-base sm:text-lg">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                     Diagnostic Métacognitif de la Consigne
                   </h4>
                   {analyzedResult.hasDoubleConsigne && (
-                    <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                      ⚠️ Double consigne détectée !
+                    <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-amber-100 text-amber-900">
+                      ⚠️ Double consigne !
                     </span>
                   )}
                 </div>
 
                 {/* Detected Verbs */}
                 <div>
-                  <h5 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                  <h5 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
                     Verbes d'action identifiés :
                   </h5>
-                  <div className="space-y-2">
+                  <div className="space-y-2.5">
                     {analyzedResult.verbs.map((v, i) => (
-                      <div key={i} className="p-3 rounded-xl bg-slate-800/80 border border-slate-700/80 flex items-start justify-between gap-3">
+                      <div key={i} className="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-200 flex items-start justify-between gap-3">
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-mono font-bold text-indigo-300 capitalize text-sm">{v.v}</span>
-                            <span className="text-[10px] px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                            <span className="font-mono font-black text-indigo-700 capitalize text-sm">{v.v}</span>
+                            <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 font-bold">
                               {v.type}
                             </span>
                           </div>
-                          <p className="text-xs text-slate-300 mt-1">{v.need}</p>
+                          <p className="text-xs sm:text-sm text-slate-700 mt-1">{v.need}</p>
                         </div>
-                        <span className="text-[10px] text-slate-400 shrink-0">{v.level}</span>
+                        <span className="text-[10px] text-slate-400 font-medium shrink-0">{v.level}</span>
                       </div>
                     ))}
                   </div>
@@ -336,10 +350,10 @@ export default function AiLabView() {
                 {/* Constraints */}
                 {analyzedResult.constraints.length > 0 && (
                   <div>
-                    <h5 className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                      <AlertCircle className="w-3.5 h-3.5" /> Contraintes spécifiques repérées :
+                    <h5 className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <AlertCircle className="w-4 h-4" /> Contraintes spécifiques repérées :
                     </h5>
-                    <ul className="list-disc list-inside text-xs text-slate-300 space-y-1">
+                    <ul className="list-disc list-inside text-xs sm:text-sm text-slate-700 space-y-1">
                       {analyzedResult.constraints.map((c, i) => (
                         <li key={i}>{c}</li>
                       ))}
@@ -349,12 +363,12 @@ export default function AiLabView() {
 
                 {/* Recommended Structure */}
                 <div>
-                  <h5 className="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2">
+                  <h5 className="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2">
                     Gabarit de Réponse Idéal (Attendu par l'évaluateur) :
                   </h5>
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     {analyzedResult.templateOutline.map((step, i) => (
-                      <div key={i} className="text-xs p-2 rounded-lg bg-emerald-950/20 border border-emerald-500/30 text-emerald-200">
+                      <div key={i} className="text-xs sm:text-sm p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-950 font-medium">
                         {step}
                       </div>
                     ))}
@@ -362,11 +376,11 @@ export default function AiLabView() {
                 </div>
 
                 {/* Common Traps */}
-                <div className="bg-rose-950/20 border border-rose-500/30 p-3.5 rounded-xl">
-                  <h5 className="text-xs font-semibold text-rose-300 mb-1.5 flex items-center gap-1.5">
-                    <AlertCircle className="w-4 h-4" /> Pièges fréquents sanctionnés aux examens :
+                <div className="bg-rose-50 border border-rose-200 p-4 rounded-2xl">
+                  <h5 className="text-xs font-bold text-rose-800 mb-1.5 flex items-center gap-1.5">
+                    <AlertCircle className="w-4 h-4 text-rose-600" /> Pièges fréquents sanctionnés aux examens :
                   </h5>
-                  <ul className="list-disc list-inside text-xs text-rose-200/90 space-y-1">
+                  <ul className="list-disc list-inside text-xs sm:text-sm text-rose-900 space-y-1">
                     {analyzedResult.commonTraps.map((trap, i) => (
                       <li key={i}>{trap}</li>
                     ))}
@@ -374,10 +388,10 @@ export default function AiLabView() {
                 </div>
               </div>
             ) : (
-              <div className="h-full min-h-[300px] bg-slate-900/40 border border-dashed border-slate-800 rounded-2xl flex flex-col items-center justify-center p-8 text-center text-slate-500">
-                <BrainCircuit className="w-12 h-12 text-slate-700 mb-3" />
-                <p className="text-sm font-medium">L'analyse sémantique s'affichera ici.</p>
-                <p className="text-xs text-slate-600 mt-1">
+              <div className="h-full min-h-[300px] bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center p-8 text-center text-slate-400">
+                <BrainCircuit className="w-12 h-12 text-slate-300 mb-3" />
+                <p className="text-sm font-bold text-slate-700">L'analyse sémantique s'affichera ici.</p>
+                <p className="text-xs text-slate-500 mt-1 max-w-sm">
                   Cliquez sur « Décoder la consigne avec l'IA » pour obtenir le rapport détaillé.
                 </p>
               </div>
@@ -390,20 +404,20 @@ export default function AiLabView() {
       {activeTab === 'simulator' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-6 space-y-4">
-            <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <MessageSquareCheck className="w-5 h-5 text-indigo-400" />
+            <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm">
+              <h3 className="font-['Outfit'] text-xl font-bold text-slate-900 flex items-center gap-2">
+                <MessageSquareCheck className="w-5 h-5 text-indigo-600" />
                 Simulateur de Rédaction & Évaluation
               </h3>
-              <p className="text-xs text-slate-400 mt-1 mb-4">
+              <p className="text-xs sm:text-sm text-slate-500 mt-1 mb-5">
                 Entraînez-vous à rédiger votre réponse : l'IA évalue la cohérence, le niveau de langue et la rigueur académique.
               </p>
 
-              <div className="p-3.5 rounded-xl bg-indigo-950/30 border border-indigo-500/30 mb-4">
-                <span className="text-[11px] font-bold text-indigo-300 uppercase tracking-wider block mb-1">
+              <div className="p-4 rounded-2xl bg-indigo-50 border border-indigo-200 mb-4">
+                <span className="text-[11px] font-bold text-indigo-800 uppercase tracking-wider block mb-1">
                   Question de l'exercice :
                 </span>
-                <p className="text-sm font-semibold text-white">{simQuestion}</p>
+                <p className="text-sm sm:text-base font-bold text-slate-900">{simQuestion}</p>
               </div>
 
               <textarea
@@ -411,17 +425,17 @@ export default function AiLabView() {
                 value={studentAnswer}
                 onChange={(e) => setStudentAnswer(e.target.value)}
                 placeholder="Rédigez votre réponse comme si vous étiez à l'examen..."
-                className="w-full p-3.5 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed font-sans"
+                className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white leading-relaxed font-sans"
               />
 
               <div className="flex items-center justify-between mt-4">
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-slate-500 font-medium">
                   {studentAnswer.trim() ? studentAnswer.trim().split(/\s+/).length : 0} mots rédigés
                 </span>
                 <button
                   onClick={handleEvaluateAnswer}
                   disabled={isEvaluating || !studentAnswer.trim()}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold transition shadow-lg shadow-indigo-600/30 disabled:opacity-50"
+                  className="flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold transition shadow-sm disabled:opacity-50"
                 >
                   {isEvaluating ? (
                     <>
@@ -439,15 +453,15 @@ export default function AiLabView() {
 
           <div className="lg:col-span-6">
             {evaluationFeedback ? (
-              <div className="bg-slate-900/90 border border-emerald-500/40 rounded-2xl p-6 shadow-xl space-y-5 animate-in fade-in duration-300">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="bg-white border-2 border-emerald-300 rounded-3xl p-6 md:p-8 shadow-sm space-y-6 animate-in fade-in duration-300">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                   <div>
-                    <span className="text-xs font-semibold text-slate-400">Feedback Formatif Immédiat</span>
-                    <h4 className="font-bold text-white text-base">Rapport de Compétence Écrite</h4>
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Feedback Formatif Immédiat</span>
+                    <h4 className="font-['Outfit'] font-black text-slate-900 text-lg">Rapport de Compétence Écrite</h4>
                   </div>
-                  <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 border border-slate-700">
-                    <Award className="w-5 h-5 text-amber-400" />
-                    <span className="font-bold text-lg text-white">
+                  <div className="flex items-center gap-2 px-5 py-2 rounded-2xl bg-amber-50 border border-amber-200 shadow-xs">
+                    <Award className="w-6 h-6 text-amber-600" />
+                    <span className="font-['Outfit'] font-black text-xl text-amber-900">
                       {evaluationFeedback.score} <span className="text-xs text-slate-400 font-normal">/ 20</span>
                     </span>
                   </div>
@@ -455,12 +469,12 @@ export default function AiLabView() {
 
                 {/* Strengths */}
                 <div>
-                  <h5 className="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Points forts constatés :
+                  <h5 className="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Points forts constatés :
                   </h5>
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     {evaluationFeedback.strengths.map((str, i) => (
-                      <div key={i} className="text-xs p-2.5 rounded-lg bg-emerald-950/20 border border-emerald-500/30 text-emerald-200">
+                      <div key={i} className="text-xs sm:text-sm p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-950 font-medium">
                         ✅ {str}
                       </div>
                     ))}
@@ -470,12 +484,12 @@ export default function AiLabView() {
                 {/* Improvements */}
                 {evaluationFeedback.improvements.length > 0 && (
                   <div>
-                    <h5 className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                      <AlertCircle className="w-3.5 h-3.5" /> Pistes d'amélioration pour atteindre le 18/20 :
+                    <h5 className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <AlertCircle className="w-4 h-4 text-amber-600" /> Pistes d'amélioration pour atteindre le 18/20 :
                     </h5>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       {evaluationFeedback.improvements.map((imp, i) => (
-                        <div key={i} className="text-xs p-2.5 rounded-lg bg-amber-950/20 border border-amber-500/30 text-amber-200">
+                        <div key={i} className="text-xs sm:text-sm p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-950 font-medium">
                           💡 {imp}
                         </div>
                       ))}
@@ -484,20 +498,20 @@ export default function AiLabView() {
                 )}
 
                 {/* Model Answer */}
-                <div className="bg-slate-800/80 border border-slate-700 p-3.5 rounded-xl">
-                  <h5 className="text-xs font-semibold text-indigo-300 mb-1.5 flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5" /> Réponse modèle type (Corrigé académique) :
+                <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl">
+                  <h5 className="text-xs font-bold text-indigo-700 mb-2 flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-indigo-600" /> Réponse modèle type (Corrigé académique) :
                   </h5>
-                  <p className="text-xs text-slate-300 leading-relaxed italic">
+                  <p className="text-xs sm:text-sm text-slate-700 leading-relaxed italic">
                     « {evaluationFeedback.idealModel} »
                   </p>
                 </div>
               </div>
             ) : (
-              <div className="h-full min-h-[300px] bg-slate-900/40 border border-dashed border-slate-800 rounded-2xl flex flex-col items-center justify-center p-8 text-center text-slate-500">
-                <MessageSquareCheck className="w-12 h-12 text-slate-700 mb-3" />
-                <p className="text-sm font-medium">L'évaluation formative et le feedback s'afficheront ici.</p>
-                <p className="text-xs text-slate-600 mt-1">
+              <div className="h-full min-h-[300px] bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center p-8 text-center text-slate-400">
+                <MessageSquareCheck className="w-12 h-12 text-slate-300 mb-3" />
+                <p className="text-sm font-bold text-slate-700">L'évaluation formative et le feedback s'afficheront ici.</p>
+                <p className="text-xs text-slate-500 mt-1 max-w-sm">
                   Rédigez votre réponse et cliquez sur « Évaluer avec l'IA ».
                 </p>
               </div>
@@ -512,57 +526,63 @@ export default function AiLabView() {
           {/* Active Mini Game */}
           <SpeedChallengeGame />
 
-          <div className="pt-4 border-t border-slate-800">
-            <h4 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-              <Gamepad2 className="w-5 h-5 text-indigo-400" /> Autres Serious Games en Préparation
+          <div className="pt-6 border-t border-slate-200">
+            <h4 className="font-['Outfit'] text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <Gamepad2 className="w-5 h-5 text-indigo-600" /> Autres Serious Games en Préparation
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-slate-900/90 border border-purple-500/30 rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between">
+              <div className="bg-white border-2 border-purple-200 rounded-3xl p-6 shadow-sm flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="p-3 bg-purple-500/20 text-purple-400 rounded-xl">
+                    <span className="p-3 bg-purple-50 text-purple-700 rounded-2xl">
                       <BrainCircuit className="w-6 h-6" />
                     </span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                    <span className="text-[10px] font-bold px-3 py-1 rounded-full bg-purple-100 text-purple-800">
                       Aventure Textuelle
                     </span>
                   </div>
-                  <h4 className="text-lg font-bold text-white mb-2">Jeu 2 : Mission Réussite</h4>
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                  <h4 className="font-['Outfit'] text-lg font-bold text-slate-900 mb-2">Jeu 2 : Mission Réussite</h4>
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                     Vous incarnez un étudiant de BAC 1 à la HECh face aux tentations de la procrastination, au blocus et aux examens. Chaque décision méthodologique influence votre taux de réussite.
                   </p>
                 </div>
-                <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+                <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
                   <span className="text-xs text-slate-500 font-mono">Choix multiples & XP</span>
                   <button 
-                    onClick={() => alert("L'aventure interactive Mission Réussite sera branchée avec le modèle IA local !")}
-                    className="px-3.5 py-1.5 rounded-lg bg-purple-600/30 text-purple-300 text-xs font-semibold hover:bg-purple-600 hover:text-white transition"
+                    onClick={() => {
+                      sounds.playPop();
+                      alert("L'aventure interactive Mission Réussite sera branchée avec le modèle IA local !");
+                    }}
+                    className="px-4 py-2 rounded-xl bg-purple-50 text-purple-700 text-xs font-bold hover:bg-purple-100 transition"
                   >
                     Prévisualiser
                   </button>
                 </div>
               </div>
 
-              <div className="bg-slate-900/90 border border-rose-500/30 rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between">
+              <div className="bg-white border-2 border-rose-200 rounded-3xl p-6 shadow-sm flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="p-3 bg-rose-500/20 text-rose-400 rounded-xl">
+                    <span className="p-3 bg-rose-50 text-rose-700 rounded-2xl">
                       <Zap className="w-6 h-6" />
                     </span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                    <span className="text-[10px] font-bold px-3 py-1 rounded-full bg-rose-100 text-rose-800">
                       Duel Rapide
                     </span>
                   </div>
-                  <h4 className="text-lg font-bold text-white mb-2">Jeu 3 : Duel Ortho'Express</h4>
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                  <h4 className="font-['Outfit'] text-lg font-bold text-slate-900 mb-2">Jeu 3 : Duel Ortho'Express</h4>
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                     Traquez les 5 fautes cachées dans un rapport d'étudiant en moins de 90 secondes avant de valider votre note.
                   </p>
                 </div>
-                <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+                <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
                   <span className="text-xs text-slate-500 font-mono">Relecture sélective</span>
                   <button 
-                    onClick={() => alert("Le Duel Ortho est prêt à être étendu avec vos banques de textes personnalisées !")}
-                    className="px-3.5 py-1.5 rounded-lg bg-rose-600/30 text-rose-300 text-xs font-semibold hover:bg-rose-600 hover:text-white transition"
+                    onClick={() => {
+                      sounds.playPop();
+                      alert("Le Duel Ortho est prêt à être étendu avec vos banques de textes personnalisées !");
+                    }}
+                    className="px-4 py-2 rounded-xl bg-rose-50 text-rose-700 text-xs font-bold hover:bg-rose-100 transition"
                   >
                     Prévisualiser
                   </button>
@@ -575,30 +595,30 @@ export default function AiLabView() {
 
       {/* TAB 4: ATELIER CO-CREATION */}
       {activeTab === 'creator' && (
-        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl">
+        <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm">
           <div className="max-w-2xl mb-6">
-            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+            <span className="text-xs font-bold px-3 py-1 rounded-full bg-cyan-50 text-cyan-800 border border-cyan-200">
               Espace Concepteur Pédagogique
             </span>
-            <h3 className="text-xl font-bold text-white mt-2">
+            <h3 className="font-['Outfit'] text-2xl font-black text-slate-900 mt-2">
               Co-création d'Exercices et de Jeux avec l'Équipe AgentCorp
             </h3>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
               Cette interface est prête à intégrer vos futures spécifications pédagogiques. 
               Vous pourrez ajouter de nouvelles consignes d'examens, paramétrer des barèmes d'évaluation et configurer les règles des mini-jeux.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl bg-slate-800/60 border border-slate-700/60">
-              <h4 className="font-bold text-white text-sm mb-1">🔗 Synchronisation avec Moodle HECh</h4>
-              <p className="text-xs text-slate-400">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="p-6 rounded-2xl bg-indigo-50/50 border border-indigo-100">
+              <h4 className="font-['Outfit'] font-bold text-slate-900 text-base mb-1.5">🔗 Synchronisation avec Moodle HECh</h4>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                 Toutes les modifications ou nouveaux exercices ajoutés pourront être exportés au format Moodle XML ou GIFT pour être réinjectés directement dans le cours officiel 685.
               </p>
             </div>
-            <div className="p-4 rounded-xl bg-slate-800/60 border border-slate-700/60">
-              <h4 className="font-bold text-white text-sm mb-1">🤖 Intégration Modèles Locaux (Ollama)</h4>
-              <p className="text-xs text-slate-400">
+            <div className="p-6 rounded-2xl bg-purple-50/50 border border-purple-100">
+              <h4 className="font-['Outfit'] font-bold text-slate-900 text-base mb-1.5">🤖 Intégration Modèles Locaux (Ollama)</h4>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                 Conforme aux règles de mobilisation des modèles : utilisation prioritaire de Qwen Coder / Gemma local pour générer les feedbacks et variantes d'exercices à coût zéro.
               </p>
             </div>

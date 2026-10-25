@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CheckCircle2, XCircle, RefreshCw, Trophy, ArrowRight, HelpCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { sounds } from '../utils/soundEffects';
 
 export default function QuizPlayer({ quiz, onComplete }) {
   const [userAnswers, setUserAnswers] = useState({});
@@ -13,6 +14,7 @@ export default function QuizPlayer({ quiz, onComplete }) {
 
   const handleSelectOption = (questionId, optionIndex) => {
     if (submitted) return;
+    sounds.playPop();
     setUserAnswers(prev => ({
       ...prev,
       [questionId]: optionIndex
@@ -47,11 +49,16 @@ export default function QuizPlayer({ quiz, onComplete }) {
     }
 
     if (score === quiz.questions.length && score > 0) {
+      sounds.playFanfare();
       confetti({
-        particleCount: 80,
-        spread: 70,
+        particleCount: 90,
+        spread: 80,
         origin: { y: 0.6 }
       });
+    } else if (score >= quiz.questions.length / 2) {
+      sounds.playSuccess();
+    } else {
+      sounds.playError();
     }
 
     if (onComplete) {
@@ -60,6 +67,7 @@ export default function QuizPlayer({ quiz, onComplete }) {
   };
 
   const handleReset = () => {
+    sounds.playPop();
     setUserAnswers({});
     setTextAnswers({});
     setSubmitted(false);
@@ -83,30 +91,30 @@ export default function QuizPlayer({ quiz, onComplete }) {
     : Object.keys(textAnswers).filter(k => textAnswers[k]?.trim()).length;
 
   return (
-    <div className="bg-slate-900/90 border border-slate-700/80 rounded-2xl p-6 shadow-xl backdrop-blur-sm">
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4 mb-6">
+    <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-6">
         <div>
-          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+          <span className="text-xs font-bold px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
             Exercice Interactif Moodle
           </span>
-          <h3 className="text-xl font-bold text-white mt-1">{quiz.title}</h3>
-          <p className="text-xs text-slate-400 mt-0.5">{quiz.source}</p>
+          <h3 className="font-['Outfit'] text-xl sm:text-2xl font-black text-slate-900 mt-2">{quiz.title}</h3>
+          <p className="text-xs text-slate-500 mt-0.5">{quiz.source}</p>
         </div>
         {submitted && (
-          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 border border-slate-700">
-            <Trophy className="w-5 h-5 text-amber-400" />
-            <span className="font-bold text-white">
+          <div className="flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-amber-50 border border-amber-200 shadow-xs">
+            <Trophy className="w-5 h-5 text-amber-600" />
+            <span className="font-['Outfit'] font-black text-base text-amber-900">
               Score : {score} / {quiz.questions.length}
             </span>
-            <span className="text-xs px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 ml-1">
+            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-200/80 text-amber-900 ml-1">
               {Math.round((score / quiz.questions.length) * 100)}%
             </span>
           </div>
         )}
       </div>
 
-      <p className="text-sm text-slate-300 mb-6 bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/50">
-        💡 <strong className="text-indigo-300">Consigne :</strong> {quiz.instruction}
+      <p className="text-xs sm:text-sm text-slate-700 mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-200 leading-relaxed">
+        💡 <strong className="text-indigo-700 font-bold">Consigne :</strong> {quiz.instruction}
       </p>
 
       <div className="space-y-6">
@@ -121,25 +129,25 @@ export default function QuizPlayer({ quiz, onComplete }) {
           return (
             <div
               key={q.id || idx}
-              className={`p-4 rounded-xl border transition-all ${
+              className={`p-5 rounded-2xl border-2 transition-all ${
                 submitted
                   ? (isQMultiple ? isCorrectChoice : isCorrectText)
-                    ? 'bg-emerald-950/20 border-emerald-500/40'
-                    : 'bg-rose-950/20 border-rose-500/40'
-                  : 'bg-slate-800/40 border-slate-700/60 hover:border-slate-600'
+                    ? 'bg-emerald-50/60 border-emerald-300'
+                    : 'bg-rose-50/60 border-rose-300'
+                  : 'bg-white border-slate-200 hover:border-slate-300'
               }`}
             >
               <div className="flex items-start justify-between gap-3 mb-3">
-                <span className="text-xs font-semibold px-2 py-0.5 rounded bg-slate-700/60 text-slate-300">
+                <span className="text-xs font-bold px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 font-mono">
                   Question {idx + 1} / {quiz.questions.length}
                 </span>
                 {submitted && (
                   (isQMultiple ? isCorrectChoice : isCorrectText) ? (
-                    <span className="flex items-center gap-1 text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                    <span className="flex items-center gap-1 text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">
                       <CheckCircle2 className="w-3.5 h-3.5" /> Correct
                     </span>
                   ) : (
-                    <span className="flex items-center gap-1 text-xs font-semibold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">
+                    <span className="flex items-center gap-1 text-xs font-bold text-rose-800 bg-rose-100 px-2.5 py-0.5 rounded-full">
                       <XCircle className="w-3.5 h-3.5" /> Incorrect
                     </span>
                   )
@@ -148,40 +156,40 @@ export default function QuizPlayer({ quiz, onComplete }) {
 
               {/* Question title / Verb */}
               {q.verb ? (
-                <div className="text-base font-semibold text-white mb-3">
-                  Verbe à identifier : <span className="text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-md border border-indigo-500/20 font-mono">{q.verb}</span>
+                <div className="text-base font-bold text-slate-900 mb-4">
+                  Verbe à identifier : <span className="text-indigo-700 bg-indigo-50 px-3 py-1 rounded-lg border border-indigo-200 font-mono font-black">{q.verb}</span>
                 </div>
               ) : q.prompt ? (
-                <div className="mb-3">
-                  <p className="text-sm font-medium text-slate-200">{q.prompt}</p>
+                <div className="mb-4">
+                  <p className="text-sm sm:text-base font-bold text-slate-900">{q.prompt}</p>
                   {q.context && (
-                    <p className="text-sm font-serif italic text-amber-200/90 bg-amber-500/10 p-2.5 rounded-lg border border-amber-500/20 mt-1.5">
+                    <p className="text-sm font-serif italic text-amber-900 bg-amber-50 p-3 rounded-xl border border-amber-200 mt-2">
                       « {q.context} »
                     </p>
                   )}
                 </div>
               ) : (
-                <p className="text-sm font-semibold text-white mb-3">{q.question}</p>
+                <p className="text-sm sm:text-base font-bold text-slate-900 mb-4">{q.question}</p>
               )}
 
               {/* Options for Multiple Choice */}
               {isQMultiple ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {q.options.map((opt, optIdx) => {
                     const isOptionSelected = selected === optIdx;
                     const isThisCorrect = optIdx === q.correctIndex;
 
-                    let btnStyle = 'bg-slate-800/80 border-slate-700 text-slate-200 hover:bg-slate-700/80 hover:border-slate-600';
+                    let btnStyle = 'bg-slate-50 border-slate-200 text-slate-800 hover:bg-slate-100';
                     if (submitted) {
                       if (isThisCorrect) {
-                        btnStyle = 'bg-emerald-500/20 border-emerald-500/60 text-emerald-200 font-semibold';
+                        btnStyle = 'bg-emerald-100 border-emerald-400 text-emerald-950 font-bold';
                       } else if (isOptionSelected && !isThisCorrect) {
-                        btnStyle = 'bg-rose-500/20 border-rose-500/60 text-rose-200';
+                        btnStyle = 'bg-rose-100 border-rose-400 text-rose-950 font-medium';
                       } else {
-                        btnStyle = 'bg-slate-800/40 border-slate-800 text-slate-400 opacity-60';
+                        btnStyle = 'bg-slate-50 border-slate-100 text-slate-400 opacity-60';
                       }
                     } else if (isOptionSelected) {
-                      btnStyle = 'bg-indigo-600/30 border-indigo-500 text-indigo-200 font-medium ring-1 ring-indigo-500';
+                      btnStyle = 'bg-indigo-50 border-indigo-600 text-indigo-900 font-bold ring-2 ring-indigo-500/30';
                     }
 
                     return (
@@ -190,12 +198,12 @@ export default function QuizPlayer({ quiz, onComplete }) {
                         type="button"
                         disabled={submitted}
                         onClick={() => handleSelectOption(q.id, optIdx)}
-                        className={`text-left px-3.5 py-2.5 rounded-lg border text-sm transition-all flex items-start gap-2.5 ${btnStyle}`}
+                        className={`text-left p-3.5 rounded-xl border-2 text-xs sm:text-sm transition-all flex items-start gap-3 ${btnStyle}`}
                       >
-                        <span className="font-mono text-xs text-slate-400 mt-0.5">
+                        <span className="font-mono font-bold text-xs text-slate-500 mt-0.5">
                           {String.fromCharCode(65 + optIdx)}.
                         </span>
-                        <span className="flex-1">{opt}</span>
+                        <span className="flex-1 leading-relaxed">{opt}</span>
                       </button>
                     );
                   })}
@@ -209,20 +217,20 @@ export default function QuizPlayer({ quiz, onComplete }) {
                       disabled={submitted}
                       value={textAnswers[q.id] || ''}
                       onChange={(e) => handleTextChange(q.id, e.target.value)}
-                      placeholder="Tapez la réponse ici..."
-                      className={`flex-1 px-3.5 py-2 rounded-lg bg-slate-900 border text-sm text-white focus:outline-none focus:ring-2 ${
+                      placeholder="Tapez votre réponse ici..."
+                      className={`flex-1 px-4 py-2.5 rounded-xl border text-sm text-slate-900 focus:outline-none focus:ring-2 ${
                         submitted
                           ? isCorrectText
-                            ? 'border-emerald-500/60 bg-emerald-950/20 text-emerald-200'
-                            : 'border-rose-500/60 bg-rose-950/20 text-rose-200'
-                          : 'border-slate-700 focus:ring-indigo-500 focus:border-indigo-500'
+                            ? 'border-emerald-400 bg-emerald-50 text-emerald-900 font-bold'
+                            : 'border-rose-400 bg-rose-50 text-rose-900'
+                          : 'border-slate-300 focus:ring-indigo-500 focus:border-indigo-500 bg-white'
                       }`}
                     />
                   </div>
                   {submitted && !isCorrectText && (
-                    <div className="text-xs text-rose-300 mt-1.5 flex items-center gap-1">
+                    <div className="text-xs text-rose-700 mt-2 flex items-center gap-1.5 font-medium">
                       <span>Réponse attendue :</span>
-                      <strong className="text-white font-mono bg-rose-900/40 px-1.5 py-0.5 rounded">
+                      <strong className="text-rose-900 font-mono bg-rose-100 px-2 py-0.5 rounded">
                         {q.correctAnswers?.join(' ou ')}
                       </strong>
                     </div>
@@ -232,10 +240,10 @@ export default function QuizPlayer({ quiz, onComplete }) {
 
               {/* Feedback Explanation */}
               {submitted && q.explanation && (
-                <div className="mt-3 pt-3 border-t border-slate-700/50 text-xs text-slate-300 flex items-start gap-2 bg-slate-900/60 p-2.5 rounded-lg">
-                  <HelpCircle className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-semibold text-indigo-300">Explication pédagogique : </span>
+                <div className="mt-4 pt-3 border-t border-slate-200 text-xs sm:text-sm text-slate-700 flex items-start gap-2.5 bg-slate-50 p-3 rounded-xl">
+                  <HelpCircle className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+                  <div className="leading-relaxed">
+                    <span className="font-bold text-indigo-700">Explication pédagogique : </span>
                     {q.explanation}
                   </div>
                 </div>
@@ -246,16 +254,16 @@ export default function QuizPlayer({ quiz, onComplete }) {
       </div>
 
       {/* Footer Actions */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mt-8 pt-6 border-t border-slate-800">
-        <span className="text-xs text-slate-400">
-          Progression : {answeredCount} sur {quiz.questions.length} répondue(s)
+      <div className="flex flex-wrap items-center justify-between gap-4 mt-8 pt-6 border-t border-slate-100">
+        <span className="text-xs font-medium text-slate-500">
+          Progression : <strong>{answeredCount}</strong> sur <strong>{quiz.questions.length}</strong> répondu(s)
         </span>
 
         <div className="flex gap-3">
           {submitted ? (
             <button
               onClick={handleReset}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium border border-slate-700 transition"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-bold border border-slate-200 transition"
             >
               <RefreshCw className="w-4 h-4" /> Recommencer l'exercice
             </button>
@@ -263,10 +271,10 @@ export default function QuizPlayer({ quiz, onComplete }) {
             <button
               onClick={handleSubmit}
               disabled={answeredCount === 0}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition shadow-lg ${
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white transition shadow-sm ${
                 answeredCount === 0
-                  ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
-                  : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/30'
+                  ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                  : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/20'
               }`}
             >
               Valider mes réponses <ArrowRight className="w-4 h-4" />
