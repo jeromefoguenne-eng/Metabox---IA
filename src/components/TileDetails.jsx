@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import QuizPlayer from './QuizPlayer';
 import EisenhowerBoard from './EisenhowerBoard';
+import TvGameShowArena from './TvGameShowArena';
 import { GLOSSARY_ITEMS, QUIZ_DATABASE } from '../data/metaboxData';
 import { sounds } from '../utils/soundEffects';
 
@@ -45,8 +46,101 @@ export default function TileDetails({
   // Ortho checklist states
   const [checkedSteps, setCheckedSteps] = useState({});
 
-  // Active embedded quiz id
+  // Active embedded quiz id & TV game show mode
   const [activeQuizId, setActiveQuizId] = useState(null);
+  const [isTvShowMode, setIsTvShowMode] = useState(true); // TV 3D by default!
+
+  const getShowTypeForQuiz = (quizId) => {
+    if (quizId === 'exo-verbes-1') return 'millionnaire';
+    if (quizId === 'exo-meth-ebbinghaus') return 'champion';
+    if (quizId === 'exo-ortho-1') return 'roue';
+    if (quizId === 'exo-student-quiz') return 'concours';
+    return 'millionnaire';
+  };
+
+  const getTileThemeColor = (tileId) => {
+    switch (tileId) {
+      case 'tile-news': return '#0284c7';
+      case 'tile-lang': return '#4f46e5';
+      case 'tile-glossary': return '#059669';
+      case 'tile-methodo': return '#d97706';
+      case 'tile-student': return '#9333ea';
+      case 'tile-digital': return '#0891b2';
+      case 'tile-ortho': return '#e11d48';
+      default: return '#6366f1';
+    }
+  };
+
+  const getTilePageBg = (tileId) => {
+    switch (tileId) {
+      case 'tile-news': return 'bg-sky-50/70 border-sky-200/80';
+      case 'tile-lang': return 'bg-indigo-50/70 border-indigo-200/80';
+      case 'tile-glossary': return 'bg-emerald-50/70 border-emerald-200/80';
+      case 'tile-methodo': return 'bg-amber-50/70 border-amber-200/80';
+      case 'tile-student': return 'bg-purple-50/70 border-purple-200/80';
+      case 'tile-digital': return 'bg-cyan-50/70 border-cyan-200/80';
+      case 'tile-ortho': return 'bg-rose-50/70 border-rose-200/80';
+      default: return 'bg-slate-50 border-slate-200';
+    }
+  };
+
+  const renderQuizExperience = (quizId) => {
+    if (!activeQuizId || activeQuizId !== quizId || !QUIZ_DATABASE[quizId]) return null;
+
+    return (
+      <div className="mt-8 pt-6 border-t-2 border-slate-200 animate-in fade-in duration-300">
+        {/* Experience Mode Toggle */}
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6 bg-white p-3 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-indigo-600" />
+            <span className="text-xs font-bold text-slate-800">Format d'expérience :</span>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                sounds.playPop();
+                setIsTvShowMode(true);
+              }}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                isTvShowMode 
+                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-xs' 
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+              }`}
+            >
+              🎬 Émission TV 3D (Studio, Présentateur & Public)
+            </button>
+            <button
+              onClick={() => {
+                sounds.playPop();
+                setIsTvShowMode(false);
+              }}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                !isTvShowMode 
+                  ? 'bg-slate-900 text-white shadow-xs' 
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+              }`}
+            >
+              📝 Mode Examen Moodle
+            </button>
+          </div>
+        </div>
+
+        {isTvShowMode ? (
+          <TvGameShowArena
+            quiz={QUIZ_DATABASE[quizId]}
+            showType={getShowTypeForQuiz(quizId)}
+            themeColor={getTileThemeColor(tile.id)}
+            onFinishGame={(score) => onLaunchQuiz(quizId)}
+          />
+        ) : (
+          <QuizPlayer
+            quiz={QUIZ_DATABASE[quizId]}
+            onComplete={() => onLaunchQuiz(quizId)}
+          />
+        )}
+      </div>
+    );
+  };
 
   if (!tile) return null;
 
@@ -77,7 +171,7 @@ export default function TileDetails({
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-200">
+    <div className={`space-y-8 animate-in fade-in duration-200 p-4 sm:p-6 rounded-3xl border-2 ${getTilePageBg(tile.id)} shadow-xs`}>
       {/* Back to Dashboard Navigation */}
       {onBackToDashboard && (
         <button
@@ -290,14 +384,7 @@ export default function TileDetails({
                     </div>
 
                     {/* Render active quiz inline */}
-                    {activeQuizId && QUIZ_DATABASE[activeQuizId] && (
-                      <div className="mt-6 pt-6 border-t border-slate-200">
-                        <QuizPlayer 
-                          quiz={QUIZ_DATABASE[activeQuizId]} 
-                          onComplete={() => onLaunchQuiz(activeQuizId)}
-                        />
-                      </div>
-                    )}
+                    {renderQuizExperience('exo-verbes-1')}
                   </div>
                 )}
               </div>
@@ -436,14 +523,7 @@ export default function TileDetails({
                 {activeQuizId === 'exo-meth-ebbinghaus' ? 'Fermer le quiz' : 'Tester mes connaissances sur la mémorisation (Quiz Moodle)'}
               </button>
 
-              {activeQuizId === 'exo-meth-ebbinghaus' && (
-                <div className="mt-6">
-                  <QuizPlayer 
-                    quiz={QUIZ_DATABASE['exo-meth-ebbinghaus']} 
-                    onComplete={() => onLaunchQuiz('exo-meth-ebbinghaus')}
-                  />
-                </div>
-              )}
+              {renderQuizExperience('exo-meth-ebbinghaus')}
             </div>
           </div>
 
@@ -509,14 +589,7 @@ export default function TileDetails({
                 {activeQuizId === 'exo-student-quiz' ? 'Fermer le quiz' : 'Passer le Quiz Métier d’Étudiant (Moodle HECh)'}
               </button>
 
-              {activeQuizId === 'exo-student-quiz' && (
-                <div className="mt-6">
-                  <QuizPlayer 
-                    quiz={QUIZ_DATABASE['exo-student-quiz']} 
-                    onComplete={() => onLaunchQuiz('exo-student-quiz')}
-                  />
-                </div>
-              )}
+              {renderQuizExperience('exo-student-quiz')}
             </div>
           </div>
         </div>
@@ -629,14 +702,7 @@ export default function TileDetails({
                 {activeQuizId === 'exo-ortho-1' ? 'Fermer l’exercice' : 'Lancer l’Exercice 1 de Conjugaison Piège (Moodle HECh)'}
               </button>
 
-              {activeQuizId === 'exo-ortho-1' && (
-                <div className="mt-6">
-                  <QuizPlayer 
-                    quiz={QUIZ_DATABASE['exo-ortho-1']} 
-                    onComplete={() => onLaunchQuiz('exo-ortho-1')}
-                  />
-                </div>
-              )}
+              {renderQuizExperience('exo-ortho-1')}
             </div>
           </div>
         </div>

@@ -1,4 +1,6 @@
-// Synthétiseur audio Web Audio API natif - 100% autonome, zéro dépendance
+// Synthétiseur audio Web Audio API natif & Voix TV Host Speech Synthesis
+// 100% autonome, zéro dépendance externe, compatible tous navigateurs
+
 class SoundManager {
   constructor() {
     this.ctx = null;
@@ -40,7 +42,7 @@ class SoundManager {
     return this.muted;
   }
 
-  // Pop / Click mignon
+  // Pop mignon pour les clics
   playPop() {
     if (this.muted) return;
     this.init();
@@ -51,8 +53,8 @@ class SoundManager {
 
     osc.type = 'sine';
     const now = this.ctx.currentTime;
-    osc.frequency.setValueAtTime(400, now);
-    osc.frequency.exponentialRampToValueAtTime(800, now + 0.08);
+    osc.frequency.setValueAtTime(450, now);
+    osc.frequency.exponentialRampToValueAtTime(850, now + 0.08);
 
     gain.gain.setValueAtTime(0.15, now);
     gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
@@ -91,7 +93,7 @@ class SoundManager {
     });
   }
 
-  // Erreur douce (Boop)
+  // Erreur / Boop doux
   playError() {
     if (this.muted) return;
     this.init();
@@ -115,7 +117,7 @@ class SoundManager {
     osc.stop(now + 0.18);
   }
 
-  // Combo croissant
+  // Combo pour mini-jeu
   playCombo(combo = 1) {
     if (this.muted) return;
     this.init();
@@ -140,7 +142,96 @@ class SoundManager {
     osc.stop(now + 0.12);
   }
 
-  // Victoire / Level Up Fanfare
+  // Buzzer TV Show
+  playBuzzer() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sawtooth';
+    const now = this.ctx.currentTime;
+    osc.frequency.setValueAtTime(160, now);
+
+    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.35);
+  }
+
+  // Applaudissements du public de studio TV (bruit blanc filtré dynamique)
+  playApplause() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const bufferSize = this.ctx.sampleRate * 2.2;
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (this.ctx.sampleRate * 1.2));
+    }
+
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(1000, this.ctx.currentTime);
+    filter.Q.setValueAtTime(1.5, this.ctx.currentTime);
+
+    const gain = this.ctx.createGain();
+    const now = this.ctx.currentTime;
+    gain.gain.setValueAtTime(0.05, now);
+    gain.gain.linearRampToValueAtTime(0.3, now + 0.3);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 2.0);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    noise.start(now);
+    noise.stop(now + 2.2);
+  }
+
+  // Huées / Soupirs du public en cas d'erreur ("Oooooh...")
+  playGroan() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const osc = this.ctx.createOscillator();
+    const filter = this.ctx.createBiquadFilter();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sawtooth';
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(350, this.ctx.currentTime);
+
+    const now = this.ctx.currentTime;
+    osc.frequency.setValueAtTime(180, now);
+    osc.frequency.linearRampToValueAtTime(110, now + 1.2);
+
+    gain.gain.setValueAtTime(0.02, now);
+    gain.gain.linearRampToValueAtTime(0.18, now + 0.2);
+    gain.gain.exponentialRampToValueAtTime(0.005, now + 1.3);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 1.3);
+  }
+
+  // Fanfare de victoire / Trophée
   playFanfare() {
     if (this.muted) return;
     this.init();
@@ -150,7 +241,7 @@ class SoundManager {
       { f: 523.25, d: 0.1 },  // C5
       { f: 659.25, d: 0.1 },  // E5
       { f: 783.99, d: 0.1 },  // G5
-      { f: 1046.50, d: 0.35 } // C6
+      { f: 1046.50, d: 0.4 }  // C6
     ];
 
     let t = this.ctx.currentTime;
@@ -171,6 +262,27 @@ class SoundManager {
       osc.stop(t + d);
       t += d * 0.75;
     });
+  }
+
+  // Voix du Présentateur TV (SpeechSynthesis)
+  speakHost(text) {
+    if (this.muted) return;
+    if (!('speechSynthesis' in window)) return;
+
+    window.speechSynthesis.cancel(); // Stop current speech
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'fr-FR';
+    utterance.rate = 1.08;
+    utterance.pitch = 1.05;
+
+    // Pick French voice if available
+    const voices = window.speechSynthesis.getVoices();
+    const frVoice = voices.find(v => v.lang.startsWith('fr') && !v.name.includes('Compact'));
+    if (frVoice) {
+      utterance.voice = frVoice;
+    }
+
+    window.speechSynthesis.speak(utterance);
   }
 }
 
