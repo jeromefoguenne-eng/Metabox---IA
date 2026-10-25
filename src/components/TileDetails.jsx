@@ -583,7 +583,7 @@ export default function TileDetails({
                 className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs sm:text-sm font-outfit font-black tracking-wide transition shadow-lg shadow-purple-600/25 cursor-pointer"
               >
                 <Play className="w-4 h-4 fill-current" /> 
-                🎬 Lancer le Jeu TV en Plein Écran (Le Grand Concours)
+                🎬 Lancer le Jeu TV en Plein Écran (Le Grand Concours de la HECh)
               </button>
 
               {renderQuizExperience('exo-student-quiz')}

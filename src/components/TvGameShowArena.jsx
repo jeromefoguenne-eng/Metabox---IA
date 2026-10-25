@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Trophy, 
   HelpCircle, 
@@ -16,7 +16,11 @@ import {
   XCircle,
   Zap,
   Play,
-  Timer
+  Timer,
+  Compass,
+  Star,
+  Flame,
+  Award
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import GameShow3D from './GameShow3D';
@@ -26,7 +30,7 @@ const SHOW_META = {
   millionnaire: {
     title: "Qui veut gagner des Crédits ?",
     subtitle: "Ascension vers les 60 Crédits ECTS · Verbes de Consigne",
-    badge: "GRAND JEU DU PALIER ACADÉMIQUE",
+    badge: "GRAND JEU DU PALIER ACADÉMIQUE HECh",
     primaryGradient: "from-sky-500 via-indigo-600 to-amber-500",
     themeBg: "bg-slate-900/90 border-sky-500/40",
     glowColor: "text-amber-400"
@@ -41,21 +45,37 @@ const SHOW_META = {
   },
   roue: {
     title: "La Roue des Accords",
-    subtitle: "Conjugaisons Pièges & Orthographe du Supérieur",
-    badge: "ROUE TOURNANTE · VALIDATION ORTHO'EXPRESS",
+    subtitle: "Mur de Mots & Conjugaisons Pièges du Supérieur",
+    badge: "ROUE DE LA FORTUNE · ORTHO'EXPRESS HECh",
     primaryGradient: "from-fuchsia-500 via-purple-600 to-pink-500",
     themeBg: "bg-purple-950/90 border-pink-500/40",
     glowColor: "text-pink-400"
   },
   concours: {
-    title: "Le Grand Concours du Campus",
-    subtitle: "Règlements, Statuts PEPS & Décret Paysage",
-    badge: "ÉPREUVE EN DIRECT DU MÉTIER D'ÉTUDIANT",
+    title: "Le Grand Concours de la HECh",
+    subtitle: "Tournoi Inter-Campus : Rivageois, Huy, Verviers & Outremeuse",
+    badge: "DÉFI CHRONO MULTI-CANDIDATS HECh",
     primaryGradient: "from-cyan-400 via-blue-600 to-violet-600",
     themeBg: "bg-cyan-950/90 border-cyan-500/40",
     glowColor: "text-cyan-300"
   }
 };
+
+// WHEEL WEDGES for La Roue des Accords
+const WHEEL_WEDGES = [
+  { label: "100 ECTS", value: 100, color: "bg-emerald-600", isSpecial: false },
+  { label: "250 ECTS", value: 250, color: "bg-blue-600", isSpecial: false },
+  { label: "💥 BANQUEROUTE", value: 0, color: "bg-rose-700", isSpecial: true, type: "bankrupt" },
+  { label: "500 ECTS", value: 500, color: "bg-amber-600", isSpecial: false },
+  { label: "⭐ HOLD-UP", value: 750, color: "bg-purple-600", isSpecial: true, type: "holdup" },
+  { label: "150 ECTS", value: 150, color: "bg-cyan-600", isSpecial: false },
+  { label: "1000 ECTS", value: 1000, color: "bg-yellow-500 text-slate-950", isSpecial: false },
+  { label: "⚡ CHANCE", value: 300, color: "bg-indigo-600", isSpecial: true, type: "chance" },
+  { label: "200 ECTS", value: 200, color: "bg-teal-600", isSpecial: false },
+  { label: "400 ECTS", value: 400, color: "bg-orange-600", isSpecial: false },
+  { label: "750 ECTS", value: 750, color: "bg-fuchsia-600", isSpecial: false },
+  { label: "💥 PASSE", value: 0, color: "bg-slate-700", isSpecial: true, type: "pass" }
+];
 
 export default function TvGameShowArena({ 
   quiz, 
@@ -87,8 +107,23 @@ export default function TvGameShowArena({
   const [jokerSarUsed, setJokerSarUsed] = useState(false);
   const [sarTip, setSarTip] = useState(null);
 
-  // Text answer state (for Roue des Accords)
-  const [textInput, setTextInput] = useState("");
+  // --- SPECIFIC: LA ROUE DES ACCORDS (Word Wall & Wheel) ---
+  const [revealedLetters, setRevealedLetters] = useState(new Set());
+  const [wheelRotation, setWheelRotation] = useState(0);
+  const [isSpinningWheel, setIsSpinningWheel] = useState(false);
+  const [currentWedge, setCurrentWedge] = useState(null);
+  const [canPickLetter, setCanPickLetter] = useState(false);
+  const [solveInput, setSolveInput] = useState("");
+  const [isSolveOpen, setIsSolveOpen] = useState(false);
+
+  // --- SPECIFIC: LE GRAND CONCOURS DE LA HECH (Fictional Opponents & Speed) ---
+  const [opponents, setOpponents] = useState([
+    { id: 'lucas', name: 'Lucas', campus: 'Rivageois (Liège)', score: 30, avatar: '🎓', state: 'idle' },
+    { id: 'manon', name: 'Manon', campus: 'Huy (Gestion)', score: 35, avatar: '📚', state: 'idle' },
+    { id: 'alexandre', name: 'Alexandre', campus: 'Verviers (Informatique)', score: 25, avatar: '⚡', state: 'idle' },
+    { id: 'sarah', name: 'Sarah', campus: 'Outremeuse (Santé)', score: 30, avatar: '🔬', state: 'idle' }
+  ]);
+  const [buzzWinner, setBuzzWinner] = useState(null);
 
   // Timer for Questions pour un Champion / Concours
   const [timeLeft, setTimeLeft] = useState(15);
@@ -98,21 +133,20 @@ export default function TvGameShowArena({
   const totalQuestions = quiz.questions.length;
   const isMultipleChoice = currentQ?.options && currentQ.options.length > 0;
 
-  // 1. Play Opening Theme (Générique TV) on mount
+  // Word Wall target word for Roue des Accords
+  const targetWord = (currentQ?.correctAnswers?.[0] || "").toUpperCase();
+
+  // 1. Play Opening Theme on mount
   useEffect(() => {
     if (isShowingIntro) {
       setReaction('speaking');
-      setHostDialogue(`🎬 Générique TV : « ${meta.title} » en direct du studio !`);
-      
-      // Play show theme music
+      setHostDialogue(`🎬 Générique TV : « ${meta.title} » en direct du studio HECh !`);
       sounds.playTheme(showType);
       
-      // Play host vocal greeting
       const timerVoice = setTimeout(() => {
         sounds.playVoice(`intro_${showType}`);
       }, 700);
 
-      // Auto-start after 4.2s if not clicked
       const timerAutoStart = setTimeout(() => {
         setIsShowingIntro(false);
       }, 4300);
@@ -162,10 +196,20 @@ export default function TvGameShowArena({
     setHiddenOptions([]);
     setAudiencePoll(null);
     setSarTip(null);
-    setTextInput("");
     setReaction('speaking');
     setTimeLeft(showType === 'champion' ? 12 : 15);
     setHasBuzzed(showType !== 'champion');
+
+    // Reset Roue states
+    setRevealedLetters(new Set());
+    setCanPickLetter(false);
+    setCurrentWedge(null);
+    setIsSolveOpen(false);
+    setSolveInput("");
+
+    // Reset Opponent states
+    setBuzzWinner(null);
+    setOpponents(prev => prev.map(o => ({ ...o, state: 'thinking' })));
 
     let voiceKey = "";
     let dialogueText = "";
@@ -173,16 +217,28 @@ export default function TvGameShowArena({
     if (showType === 'millionnaire') {
       const reward = (currentIdx + 1) * 6;
       voiceKey = `q_verb_${currentIdx + 1}`;
-      dialogueText = `🎙️ Henri : « Pour ${reward} crédits ECTS... que signifie le verbe « ${currentQ.verb || ''} » ? »`;
+      dialogueText = `🎙️ Henri : « Question ${currentIdx + 1} (${currentQ.difficulty || 'Palier'}) pour ${reward} crédits ECTS... Que signifie le verbe « ${currentQ.verb || ''} » ? »`;
+
+      // Announce safety tier
+      if (currentQ.isSafetyTier) {
+        setTimeout(() => {
+          sounds.playVoice("tier_safety");
+        }, 3500);
+      } else if (currentQ.tier === 3 && currentIdx === 7) {
+        setTimeout(() => {
+          sounds.playVoice("tier_final");
+        }, 3500);
+      }
+
     } else if (showType === 'champion') {
       voiceKey = `q_meth_${currentIdx + 1}`;
       dialogueText = `🎙️ Henri : « Top chrono ! Question ${currentIdx + 1} de sciences cognitives : buzzez dès que vous êtes prêt ! »`;
     } else if (showType === 'roue') {
       voiceKey = `q_ortho_${currentIdx + 1}`;
-      dialogueText = `🎙️ Henri : « La roue des accords tourne ! Formez la conjugaison exacte ! »`;
+      dialogueText = `🎙️ Henri : « Faites tourner la roue des accords ! Découvrez les lettres sur le mur de mots ! »`;
     } else {
       voiceKey = `q_stud_${currentIdx + 1}`;
-      dialogueText = `🎙️ Henri : « Question ${currentIdx + 1} du Grand Concours : concentration maximale ! »`;
+      dialogueText = `🎙️ Henri : « Question ${currentIdx + 1} du Grand Concours de la HECh ! Attention aux adversaires, buzzez le premier ! »`;
     }
 
     setHostDialogue(dialogueText);
@@ -190,7 +246,7 @@ export default function TvGameShowArena({
 
   }, [currentIdx, showType, gameOver, isShowingIntro]);
 
-  // Countdown for Champion & Grand Concours
+  // Countdown & Opponents simulation for Grand Concours
   useEffect(() => {
     if (isShowingIntro || gameOver || isAnswerLocked || showType === 'millionnaire' || showType === 'roue') return;
 
@@ -199,12 +255,48 @@ export default function TvGameShowArena({
       return;
     }
 
+    // Grand Concours : Simulate Opponents Buzzer between 5s and 9s
+    if (showType === 'concours' && !buzzWinner && !isAnswerLocked) {
+      // Check if an AI buzzes at this second
+      opponents.forEach((opp, i) => {
+        const triggerSecond = 10 - i * 2; // e.g., 10s, 8s, 6s, 4s
+        if (timeLeft === triggerSecond && opp.state === 'thinking' && Math.random() > 0.4) {
+          // Opponent Buzzes!
+          handleOpponentBuzz(opp);
+        }
+      });
+    }
+
     const t = setInterval(() => {
       setTimeLeft(prev => prev - 1);
     }, 1000);
 
     return () => clearInterval(t);
-  }, [timeLeft, isAnswerLocked, gameOver, showType, isShowingIntro]);
+  }, [timeLeft, isAnswerLocked, gameOver, showType, isShowingIntro, buzzWinner]);
+
+  const handleOpponentBuzz = (opp) => {
+    sounds.playBuzzer();
+    setBuzzWinner(opp.id);
+    setOpponents(prev => prev.map(o => o.id === opp.id ? { ...o, state: 'buzzed' } : o));
+    setHostDialogue(`🚨 BUZZER ! ${opp.name} (${opp.campus}) a buzzé en premier !`);
+    sounds.playVoice("opponent_buzz");
+
+    // Simulate opponent answer after 1.5s
+    setTimeout(() => {
+      const isOppCorrect = Math.random() > 0.35; // 65% correct
+      if (isOppCorrect) {
+        sounds.playSuccess();
+        setHostDialogue(`✅ ${opp.name} donne la bonne réponse et empoche +10 ECTS !`);
+        setOpponents(prev => prev.map(o => o.id === opp.id ? { ...o, score: o.score + 10, state: 'won' } : o));
+        setIsAnswerLocked(true);
+      } else {
+        sounds.playGroan();
+        setHostDialogue(`❌ Mauvaise réponse de ${opp.name} ! La main revient à vous, choisissez votre réponse !`);
+        setOpponents(prev => prev.map(o => o.id === opp.id ? { ...o, score: Math.max(0, o.score - 5), state: 'wrong' } : o));
+        setBuzzWinner(null); // Player can answer!
+      }
+    }, 1800);
+  };
 
   const handleTimeOut = () => {
     setIsAnswerLocked(true);
@@ -212,10 +304,109 @@ export default function TvGameShowArena({
     sounds.playBuzzer();
     sounds.playGong();
     sounds.playVoice("feedback_timeout");
-    setHostDialogue("⏰ GONG ! Le temps est écoulé ! Coup dur pour le candidat !");
+    setHostDialogue("⏰ GONG ! Le temps est écoulé ! Coup dur pour les candidats !");
   };
 
-  // Jokers handlers with realistic voices
+  // --- LA ROUE DES ACCORDS: SPINNING WHEEL LOGIC ---
+  const handleSpinWheel = () => {
+    if (isSpinningWheel || canPickLetter || isAnswerLocked) return;
+
+    sounds.playPop();
+    setIsSpinningWheel(true);
+    setHostDialogue("🎡 La roue tourne... Où va-t-elle s'arrêter ?!");
+
+    // Random rotations + landing wedge
+    const wedgeCount = WHEEL_WEDGES.length;
+    const randomWedgeIdx = Math.floor(Math.random() * wedgeCount);
+    const extraRounds = 5 + Math.floor(Math.random() * 3);
+    const wedgeAngle = 360 / wedgeCount;
+    const targetDeg = extraRounds * 360 + randomWedgeIdx * wedgeAngle + (wedgeAngle / 2);
+
+    setWheelRotation(prev => prev + targetDeg);
+
+    setTimeout(() => {
+      setIsSpinningWheel(false);
+      const landed = WHEEL_WEDGES[randomWedgeIdx];
+      setCurrentWedge(landed);
+
+      if (landed.type === 'bankrupt') {
+        sounds.playBuzzer();
+        sounds.playGroan();
+        setHostDialogue("💥 BANQUEROUTE ! Vos crédits du tour sont perdus ! Relancez la roue !");
+        setScoreEcts(prev => Math.max(0, prev - 50));
+      } else if (landed.type === 'pass') {
+        sounds.playGroan();
+        setHostDialogue("💨 PASSE TON TOUR ! Relancez la roue pour retenter votre chance !");
+      } else {
+        sounds.playSuccess();
+        sounds.playPop();
+        setCanPickLetter(true);
+        setHostDialogue(`🎯 ${landed.label} en jeu ! Choisissez une lettre sur le clavier ci-dessous !`);
+      }
+    }, 3200);
+  };
+
+  const handlePickLetter = (letter) => {
+    if (!canPickLetter || revealedLetters.has(letter) || isAnswerLocked) return;
+
+    sounds.playPop();
+    const nextLetters = new Set(revealedLetters);
+    nextLetters.add(letter);
+    setRevealedLetters(nextLetters);
+    setCanPickLetter(false);
+
+    // Check if letter in target word
+    const occurrences = (targetWord.match(new RegExp(letter, "g")) || []).length;
+
+    if (occurrences > 0) {
+      sounds.playSuccess();
+      const points = (currentWedge?.value || 100) * occurrences;
+      setScoreEcts(prev => prev + Math.floor(points / 25)); // converted to ECTS
+      setHostDialogue(`🎉 OUI ! Il y a ${occurrences} fois la lettre « ${letter} » sur le mur de mots !`);
+      
+      confetti({ particleCount: 40, spread: 50, origin: { y: 0.6 } });
+
+      // Check if full word revealed
+      const allFound = [...targetWord].every(char => !/[A-ZÀ-ÖØ-öø-ÿ]/.test(char) || nextLetters.has(char));
+      if (allFound) {
+        handleWordSolvedSuccess();
+      }
+    } else {
+      sounds.playGroan();
+      setHostDialogue(`❌ Pas de « ${letter} » dans cette conjugaison ! Tournez à nouveau la roue !`);
+    }
+  };
+
+  const handleSolveSubmit = (e) => {
+    e?.preventDefault();
+    if (isAnswerLocked || !solveInput.trim()) return;
+
+    sounds.playPop();
+    const cleaned = solveInput.trim().toUpperCase();
+    const isCorrect = currentQ.correctAnswers.some(ans => ans.toUpperCase() === cleaned);
+
+    if (isCorrect) {
+      handleWordSolvedSuccess();
+    } else {
+      sounds.playBuzzer();
+      sounds.playGroan();
+      setHostDialogue(`❌ Ce n'est pas « ${solveInput} » ! Vous perdez ce tour !`);
+      setIsSolveOpen(false);
+    }
+  };
+
+  const handleWordSolvedSuccess = () => {
+    setIsAnswerLocked(true);
+    setReaction('correct');
+    sounds.playApplause();
+    sounds.playSuccess();
+    sounds.playVoice("feedback_correct_1");
+    setHostDialogue(`🎉 ÉNIGME RÉSOLUE ! La forme « ${currentQ.correctAnswers[0]} » est 100% validée !`);
+    setScoreEcts(prev => prev + 12);
+    confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
+  };
+
+  // Jokers handlers
   const handleUse5050 = () => {
     if (joker50Used || isAnswerLocked || !isMultipleChoice) return;
     sounds.playPop();
@@ -263,9 +454,9 @@ export default function TvGameShowArena({
     });
   };
 
-  // Handle Option Select in TV Game
+  // Handle Option Select in TV Game (Multiple choice)
   const handleSelectOption = (idx) => {
-    if (isAnswerLocked) return;
+    if (isAnswerLocked || (buzzWinner && buzzWinner !== 'player')) return;
     sounds.playPop();
     setSelectedOption(idx);
     setIsAnswerLocked(true);
@@ -281,8 +472,11 @@ export default function TvGameShowArena({
         
         const randomCorrect = `feedback_correct_${(currentIdx % 3) + 1}`;
         sounds.playVoice(randomCorrect);
-        setHostDialogue("🎉 OUI ! Excellente réponse validée par les arbitres du jeu !");
-        setScoreEcts(prev => prev + 6);
+        
+        // Bonus points in Grand Concours if answered fast
+        const earned = showType === 'concours' ? 12 : (currentQ.rewardEcts || 6);
+        setScoreEcts(prev => prev + earned);
+        setHostDialogue("🎉 OUI ! Excellente réponse validée par les arbitres de la HECh !");
 
         confetti({
           particleCount: 80,
@@ -299,43 +493,6 @@ export default function TvGameShowArena({
         setHostDialogue(`❌ Aïe, c'est une erreur... La bonne réponse était : « ${currentQ.options[currentQ.correctIndex]} »`);
       }
     }, 1200);
-  };
-
-  // Handle Text Submission (Roue des Accords)
-  const handleTextSubmit = (e) => {
-    e?.preventDefault();
-    if (isAnswerLocked || !textInput.trim()) return;
-
-    sounds.playPop();
-    setIsAnswerLocked(true);
-
-    const cleaned = textInput.trim().toLowerCase();
-    const isCorrect = currentQ.correctAnswers.some(ans => ans.toLowerCase() === cleaned);
-
-    setHostDialogue("🎙️ Henri : « La roue s'arrête... Est-ce la conjugaison attendue ? »");
-
-    setTimeout(() => {
-      if (isCorrect) {
-        setReaction('correct');
-        sounds.playApplause();
-        sounds.playSuccess();
-        sounds.playVoice("feedback_correct_1");
-        setHostDialogue(`🎉 Parfait ! L'orthographe « ${currentQ.correctAnswers[0]} » est 100% validée !`);
-        setScoreEcts(prev => prev + 6);
-
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
-      } else {
-        setReaction('wrong');
-        sounds.playBuzzer();
-        sounds.playGroan();
-        sounds.playVoice("feedback_wrong_1");
-        setHostDialogue(`❌ Dommage ! La forme exacte était : « ${currentQ.correctAnswers[0]} ».`);
-      }
-    }, 1000);
   };
 
   const handleNextQuestion = () => {
@@ -374,27 +531,48 @@ export default function TvGameShowArena({
     setJokerSarUsed(false);
   };
 
+  // Full 10-tier Pyramide for Qui veut gagner des crédits
+  const PYRAMID_TIERS = [
+    { num: 10, verb: "Comparer", ects: 60, tier: 3, label: "Haute Exigence (Sommet)" },
+    { num: 9, verb: "Compléter", ects: 54, tier: 3, label: "Haute Exigence" },
+    { num: 8, verb: "Définir", ects: 48, tier: 3, label: "Haute Exigence" },
+    { num: 7, verb: "Classer", ects: 42, tier: 2, label: "Intermédiaire" },
+    { num: 6, verb: "Énumérer", ects: 36, tier: 2, label: "Intermédiaire" },
+    { num: 5, verb: "Citer", ects: 30, tier: 2, label: "Intermédiaire" },
+    { num: 4, verb: "Relier", ects: 24, tier: 2, label: "⭐ PALIER SÉCURITÉ GARANTI", isSafety: true },
+    { num: 3, verb: "Biffer", ects: 18, tier: 1, label: "Facile" },
+    { num: 2, verb: "Cocher", ects: 12, tier: 1, label: "Facile" },
+    { num: 1, verb: "Souligner", ects: 6, tier: 1, label: "Facile" }
+  ];
+
   return (
     <div className="fixed inset-0 z-50 w-screen h-screen bg-slate-950 flex flex-col overflow-hidden text-white select-none animate-in fade-in duration-300">
       
-      {/* 1. Broadcast TV Header Bar */}
+      {/* 1. Broadcast TV Header Bar with OFFICIAL HECH LOGO */}
       <header className="h-16 px-6 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 flex items-center justify-between z-20 shrink-0">
         <div className="flex items-center gap-4">
+          
+          {/* HECh Official Shield & Monogram */}
           <div className="flex items-center gap-2.5">
-            <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-            </span>
-            <span className="px-2.5 py-0.5 rounded-md bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] font-black uppercase tracking-wider">
-              EN DIRECT · STUDIO 3D
-            </span>
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-600 to-rose-800 flex items-center justify-center font-outfit font-black text-white text-base shadow-md shadow-rose-600/30 border border-rose-400/40">
+              H
+            </div>
+            <div className="flex flex-col">
+              <span className="font-outfit font-black text-xs tracking-wider text-white uppercase leading-none">
+                HECh
+              </span>
+              <span className="text-[9px] font-bold text-rose-400 uppercase tracking-widest leading-none mt-0.5">
+                SAR RÉUSSITE
+              </span>
+            </div>
           </div>
 
           <div className="h-4 w-px bg-slate-700 hidden sm:block" />
 
+          {/* Show Title */}
           <div className="flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-amber-400" />
-            <span className="font-outfit font-black text-sm tracking-wide text-white uppercase hidden sm:inline">
+            <Trophy className="w-4 h-4 text-amber-400" />
+            <span className="font-outfit font-black text-xs sm:text-sm tracking-wide text-white uppercase truncate max-w-[200px] md:max-w-none">
               {meta.title}
             </span>
           </div>
@@ -454,8 +632,8 @@ export default function TvGameShowArena({
       {/* 2. Main Studio Viewport */}
       <div className="flex-1 flex flex-col relative overflow-hidden">
         
-        {/* Upper Half: 3D TV Studio Scene with Specific Show Identity */}
-        <div className="h-[52vh] min-h-[300px] w-full relative bg-slate-950">
+        {/* Upper Half: 3D TV Studio Scene */}
+        <div className="h-[48vh] min-h-[280px] w-full relative bg-slate-950">
           <GameShow3D 
             reaction={reaction} 
             theme={showType}
@@ -465,7 +643,7 @@ export default function TvGameShowArena({
           {/* DYNAMIC OPENING GENERIQUE TV OVERLAY */}
           {isShowingIntro && (
             <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-md z-30 flex flex-col items-center justify-center p-6 text-center animate-in fade-in zoom-in-95 duration-500">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/20 text-red-400 border border-red-500/40 text-[11px] font-black uppercase tracking-widest mb-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/40 text-[11px] font-black uppercase tracking-widest mb-3">
                 <span className="animate-pulse">🔴</span> {meta.badge}
               </div>
 
@@ -480,7 +658,7 @@ export default function TvGameShowArena({
               <div className="flex flex-col sm:flex-row items-center gap-3">
                 <button
                   onClick={handleStartFromIntro}
-                  className="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:scale-105 transition-all text-white font-outfit font-black text-sm tracking-wider uppercase shadow-xl shadow-indigo-600/40 flex items-center gap-2.5 cursor-pointer"
+                  className="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-rose-600 via-indigo-600 to-purple-600 hover:scale-105 transition-all text-white font-outfit font-black text-sm tracking-wider uppercase shadow-xl shadow-indigo-600/40 flex items-center gap-2.5 cursor-pointer"
                 >
                   <Play className="w-4 h-4 fill-current" />
                   <span>Entrer sur le Plateau (C'est parti !)</span>
@@ -510,9 +688,9 @@ export default function TvGameShowArena({
           )}
         </div>
 
-        {/* Lower Half: Broadcast HUD & Interactive Answers Panel */}
-        <div className="flex-1 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 border-t border-slate-800 p-4 sm:p-6 overflow-y-auto flex flex-col justify-between">
-          <div className="max-w-4xl mx-auto w-full">
+        {/* Lower Half: Interactive Broadcast Controls & HUD */}
+        <div className="flex-1 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 border-t border-slate-800 p-4 sm:p-5 overflow-y-auto flex flex-col justify-between">
+          <div className="max-w-5xl mx-auto w-full">
 
             {/* Game Over Screen */}
             {gameOver ? (
@@ -521,10 +699,10 @@ export default function TvGameShowArena({
                   <Trophy className="w-10 h-10 text-slate-950" />
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-outfit font-black text-white mb-2">
-                  Session Studio Terminée !
+                  Session Studio Validée !
                 </h3>
                 <p className="text-slate-300 font-lexend text-base max-w-lg mx-auto mb-6">
-                  Vous remportez <strong className="text-amber-400 font-black text-xl">{scoreEcts} Crédits ECTS</strong> ! Le jury et les professeurs de la HECh saluent votre performance !
+                  Vous terminez avec <strong className="text-amber-400 font-black text-xl">{scoreEcts} Crédits ECTS</strong> ! Le Service d'Accompagnement à la Réussite (SAR) et la Haute École Charlemagne saluent votre engagement !
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
                   <button
@@ -546,71 +724,248 @@ export default function TvGameShowArena({
               </div>
             ) : (
               <>
-                {/* Millionnaire Jokers Bar */}
+                {/* 1. QUI VEUT GAGNER DES CRÉDITS : Pyramide de difficulté graduée & Jokers */}
                 {showType === 'millionnaire' && (
-                  <div className="flex flex-wrap items-center justify-between gap-3 mb-4 bg-slate-800/60 p-2.5 rounded-2xl border border-slate-700/60">
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 ml-2">
-                      <HelpCircle className="w-4 h-4 text-indigo-400" />
-                      Jokers Plateau :
-                    </span>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={handleUse5050}
-                        disabled={joker50Used || isAnswerLocked}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${
-                          joker50Used 
-                            ? 'bg-slate-800 text-slate-600 cursor-not-allowed line-through' 
-                            : 'bg-indigo-600/30 hover:bg-indigo-600 text-indigo-200 hover:text-white border border-indigo-500/40 cursor-pointer shadow-xs'
-                        }`}
-                      >
-                        ⚖️ 50 / 50
-                      </button>
-                      <button
-                        onClick={handleUseAudience}
-                        disabled={jokerAudienceUsed || isAnswerLocked}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${
-                          jokerAudienceUsed 
-                            ? 'bg-slate-800 text-slate-600 cursor-not-allowed line-through' 
-                            : 'bg-purple-600/30 hover:bg-purple-600 text-purple-200 hover:text-white border border-purple-500/40 cursor-pointer shadow-xs'
-                        }`}
-                      >
-                        <Users className="w-3.5 h-3.5" />
-                        Vote du Public
-                      </button>
-                      <button
-                        onClick={handleUseSar}
-                        disabled={jokerSarUsed || isAnswerLocked}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${
-                          jokerSarUsed 
-                            ? 'bg-slate-800 text-slate-600 cursor-not-allowed line-through' 
-                            : 'bg-emerald-600/30 hover:bg-emerald-600 text-emerald-200 hover:text-white border border-emerald-500/40 cursor-pointer shadow-xs'
-                        }`}
-                      >
-                        <PhoneCall className="w-3.5 h-3.5" />
-                        Appel au SAR
-                      </button>
+                  <div className="mb-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-800/60 p-2.5 rounded-2xl border border-slate-700/60 mb-3">
+                      <div className="flex items-center gap-2 ml-2">
+                        <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider ${
+                          currentQ.tier === 1 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
+                          currentQ.tier === 2 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
+                          'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                        }`}>
+                          Niveau {currentQ.tier} : {currentQ.difficulty}
+                        </span>
+                        {currentQ.isSafetyTier && (
+                          <span className="px-2 py-0.5 rounded-md bg-amber-400 text-slate-950 font-outfit font-black text-[10px] uppercase shadow-xs">
+                            🌟 Palier de Sécurité 24 ECTS
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Jokers */}
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleUse5050}
+                          disabled={joker50Used || isAnswerLocked}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${
+                            joker50Used 
+                              ? 'bg-slate-800 text-slate-600 cursor-not-allowed line-through' 
+                              : 'bg-indigo-600/30 hover:bg-indigo-600 text-indigo-200 hover:text-white border border-indigo-500/40 cursor-pointer shadow-xs'
+                          }`}
+                        >
+                          ⚖️ 50 / 50
+                        </button>
+                        <button
+                          onClick={handleUseAudience}
+                          disabled={jokerAudienceUsed || isAnswerLocked}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${
+                            jokerAudienceUsed 
+                              ? 'bg-slate-800 text-slate-600 cursor-not-allowed line-through' 
+                              : 'bg-purple-600/30 hover:bg-purple-600 text-purple-200 hover:text-white border border-purple-500/40 cursor-pointer shadow-xs'
+                          }`}
+                        >
+                          <Users className="w-3.5 h-3.5" />
+                          Vote Public
+                        </button>
+                        <button
+                          onClick={handleUseSar}
+                          disabled={jokerSarUsed || isAnswerLocked}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${
+                            jokerSarUsed 
+                              ? 'bg-slate-800 text-slate-600 cursor-not-allowed line-through' 
+                              : 'bg-emerald-600/30 hover:bg-emerald-600 text-emerald-200 hover:text-white border border-emerald-500/40 cursor-pointer shadow-xs'
+                          }`}
+                        >
+                          <PhoneCall className="w-3.5 h-3.5" />
+                          Appel SAR
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Progress Ladder bar */}
+                    <div className="flex gap-1 overflow-x-auto pb-1">
+                      {PYRAMID_TIERS.slice().reverse().map((tier, idx) => {
+                        const isCurrent = idx === currentIdx;
+                        const isPast = idx < currentIdx;
+                        return (
+                          <div 
+                            key={tier.num}
+                            className={`flex-1 min-w-[70px] py-1 px-1.5 rounded-lg text-center font-mono text-[10px] font-bold border transition ${
+                              isCurrent 
+                                ? 'bg-amber-500 text-slate-950 border-amber-300 shadow-md scale-105 font-black' 
+                                : isPast 
+                                ? 'bg-emerald-950/60 text-emerald-300 border-emerald-600/40' 
+                                : tier.isSafety
+                                ? 'bg-amber-950/40 text-amber-300 border-amber-500/60 font-black'
+                                : 'bg-slate-900/60 text-slate-500 border-slate-800'
+                            }`}
+                          >
+                            <span>{tier.ects} ECTS</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
 
-                {/* Champion Timer & Buzzer */}
-                {showType === 'champion' && (
-                  <div className="flex items-center justify-between gap-3 mb-4 bg-slate-800/60 p-3 rounded-2xl border border-slate-700/60">
-                    <div className="flex items-center gap-2 text-rose-400 font-outfit font-black text-sm">
-                      <Timer className="w-5 h-5 animate-spin" />
-                      <span>{timeLeft}s restantes</span>
+                {/* 2. LE GRAND CONCOURS DE LA HECH : Fictional Opponents & Speed Race */}
+                {showType === 'concours' && (
+                  <div className="mb-4">
+                    {/* Opponents Speed Radar Bar */}
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 bg-slate-900/80 p-2.5 rounded-2xl border border-slate-800 mb-3">
+                      {/* Player Card */}
+                      <div className="p-2 rounded-xl bg-indigo-600/30 border border-indigo-500/60 flex items-center gap-2">
+                        <span className="text-xl">🌟</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between">
+                            <strong className="text-xs font-bold text-white truncate">Vous (SAR)</strong>
+                            <span className="text-[11px] font-mono font-black text-amber-400">{scoreEcts}</span>
+                          </div>
+                          <span className="text-[9px] text-indigo-300 uppercase block font-bold">Candidat Actif</span>
+                        </div>
+                      </div>
+
+                      {/* 4 Opponents */}
+                      {opponents.map(opp => (
+                        <div 
+                          key={opp.id} 
+                          className={`p-2 rounded-xl border flex items-center gap-2 transition ${
+                            opp.state === 'buzzed'
+                              ? 'bg-rose-600/40 border-rose-500 animate-pulse'
+                              : opp.state === 'won'
+                              ? 'bg-emerald-600/30 border-emerald-500'
+                              : 'bg-slate-800/60 border-slate-700/60 text-slate-400'
+                          }`}
+                        >
+                          <span className="text-xl">{opp.avatar}</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold text-slate-200 truncate">{opp.name}</span>
+                              <span className="text-[11px] font-mono font-black text-slate-300">{opp.score}</span>
+                            </div>
+                            <span className="text-[8px] text-slate-400 truncate block">
+                              {opp.state === 'buzzed' ? '🚨 A BUZZÉ !' : opp.campus.split(' ')[0]}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    {!hasBuzzed && !isAnswerLocked && (
+
+                    <div className="flex items-center justify-between text-xs text-slate-400 px-1">
+                      <span>⏱️ Chrono de vitesse : <strong className="text-rose-400 font-mono font-black">{timeLeft}s</strong></span>
+                      <span className="text-amber-400 font-bold">Répondez avant les autres campus pour marquer les points !</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. LA ROUE DES ACCORDS : Mur de Mots & Roue Interactive */}
+                {showType === 'roue' && (
+                  <div className="mb-4">
+                    {/* Le Mur de Mots (Word Wall Flip Tiles) */}
+                    <div className="bg-slate-900/90 border border-purple-500/40 rounded-2xl p-4 shadow-xl text-center mb-3">
+                      <span className="text-[11px] font-bold text-pink-400 uppercase tracking-widest block mb-2">
+                        MUR DE MOTS · ORTHO'EXPRESS HECh
+                      </span>
+
+                      {/* Enigma Word Tiles */}
+                      <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 my-2">
+                        {[...targetWord].map((char, cIdx) => {
+                          const isRevealed = revealedLetters.has(char) || !/[A-ZÀ-ÖØ-öø-ÿ]/.test(char) || isAnswerLocked;
+                          return (
+                            <div 
+                              key={cIdx}
+                              className={`w-9 h-12 sm:w-11 sm:h-14 rounded-xl border-2 flex items-center justify-center font-mono text-xl sm:text-2xl font-black transition-all duration-300 shadow-md ${
+                                isRevealed
+                                  ? 'bg-gradient-to-b from-amber-200 to-amber-400 text-slate-950 border-amber-100 scale-105'
+                                  : 'bg-indigo-950/80 text-transparent border-indigo-400/40'
+                              }`}
+                            >
+                              {isRevealed ? char : ''}
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <p className="text-xs text-slate-300 font-lexend mt-2">
+                        {currentQ.context}
+                      </p>
+                    </div>
+
+                    {/* Wheel & Action Buttons */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-800/60 p-3 rounded-2xl border border-slate-700/60">
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={handleSpinWheel}
+                          disabled={isSpinningWheel || canPickLetter || isAnswerLocked}
+                          className={`px-5 py-2.5 rounded-xl font-outfit font-black text-xs uppercase tracking-wider transition shadow-lg flex items-center gap-2 cursor-pointer ${
+                            isSpinningWheel 
+                              ? 'bg-slate-700 text-slate-400 animate-pulse'
+                              : 'bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white shadow-pink-600/30'
+                          }`}
+                        >
+                          <Compass className={`w-4 h-4 ${isSpinningWheel ? 'animate-spin' : ''}`} />
+                          <span>{isSpinningWheel ? "La roue tourne..." : "🎡 Faire Tourner la Roue"}</span>
+                        </button>
+
+                        {currentWedge && (
+                          <div className={`px-3 py-1.5 rounded-xl text-xs font-black ${currentWedge.color}`}>
+                            {currentWedge.label}
+                          </div>
+                        )}
+                      </div>
+
                       <button
-                        onClick={() => {
-                          sounds.playBuzzer();
-                          setHasBuzzed(true);
-                          setHostDialogue("🚨 BUZZER CANDIDAT ! Vous avez la main, annoncez votre réponse !");
-                        }}
-                        className="px-6 py-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-red-600/40 animate-pulse cursor-pointer"
+                        onClick={() => setIsSolveOpen(!isSolveOpen)}
+                        disabled={isAnswerLocked}
+                        className="px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold text-xs transition border border-slate-600 cursor-pointer"
                       >
-                        🚨 BUZZER !
+                        ⚡ Résoudre l'accord direct
                       </button>
+                    </div>
+
+                    {/* Alphabet Board if Can Pick Letter */}
+                    {canPickLetter && (
+                      <div className="mt-3 p-3 bg-purple-950/60 border border-purple-500/40 rounded-2xl animate-in zoom-in-95">
+                        <span className="text-[11px] font-bold text-pink-300 block mb-2">
+                          Sélectionnez une consonne ou une voyelle pour l'afficher sur le mur :
+                        </span>
+                        <div className="flex flex-wrap gap-1.5 justify-center">
+                          {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l => (
+                            <button
+                              key={l}
+                              onClick={() => handlePickLetter(l)}
+                              disabled={revealedLetters.has(l)}
+                              className={`w-7 h-8 sm:w-8 sm:h-9 rounded-lg font-mono text-xs font-black transition cursor-pointer ${
+                                revealedLetters.has(l)
+                                  ? 'bg-slate-800 text-slate-600 cursor-not-allowed opacity-40'
+                                  : 'bg-indigo-600 hover:bg-pink-600 text-white shadow-xs'
+                              }`}
+                            >
+                              {l}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Solve Input Drawer */}
+                    {isSolveOpen && !isAnswerLocked && (
+                      <form onSubmit={handleSolveSubmit} className="mt-3 flex gap-2 animate-in fade-in">
+                        <input
+                          type="text"
+                          value={solveInput}
+                          onChange={(e) => setSolveInput(e.target.value)}
+                          placeholder="Tapez ici le mot complet résolu..."
+                          className="flex-1 px-4 py-2.5 rounded-xl bg-slate-900 border border-pink-500/50 text-white font-mono text-sm focus:outline-hidden"
+                        />
+                        <button
+                          type="submit"
+                          className="px-5 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-black text-xs uppercase cursor-pointer"
+                        >
+                          Valider
+                        </button>
+                      </form>
                     )}
                   </div>
                 )}
@@ -627,31 +982,33 @@ export default function TvGameShowArena({
                 )}
 
                 {/* Question Prompt Card */}
-                <div className="p-4 sm:p-5 rounded-2xl bg-slate-800/90 border border-slate-700 shadow-xl mb-4 relative overflow-hidden">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 font-mono font-bold text-[11px] border border-indigo-500/30">
-                      ÉPREUVE #{currentIdx + 1}
-                    </span>
-                    {currentQ.verb && (
-                      <span className="text-xs font-bold text-slate-400">
-                        Verbe d'action à identifier
+                {showType !== 'roue' && (
+                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-800/90 border border-slate-700 shadow-xl mb-4 relative overflow-hidden">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 font-mono font-bold text-[11px] border border-indigo-500/30">
+                        ÉPREUVE #{currentIdx + 1}
                       </span>
+                      {currentQ.verb && (
+                        <span className="text-xs font-bold text-slate-400">
+                          Verbe d'action à identifier
+                        </span>
+                      )}
+                    </div>
+
+                    <h4 className="text-base sm:text-lg font-outfit font-extrabold text-white leading-snug">
+                      {currentQ.verb ? `Que signifie précisément le verbe « ${currentQ.verb} » ?` : (currentQ.question || currentQ.prompt)}
+                    </h4>
+
+                    {currentQ.context && (
+                      <p className="mt-2 text-xs sm:text-sm text-slate-300 font-mono bg-slate-900/80 p-3 rounded-xl border border-slate-700/60">
+                        {currentQ.context}
+                      </p>
                     )}
                   </div>
+                )}
 
-                  <h4 className="text-lg sm:text-xl font-outfit font-extrabold text-white leading-snug">
-                    {currentQ.verb ? `Que signifie le verbe « ${currentQ.verb} » ?` : (currentQ.question || currentQ.prompt)}
-                  </h4>
-
-                  {currentQ.context && (
-                    <p className="mt-2 text-sm text-slate-300 font-mono bg-slate-900/80 p-3 rounded-xl border border-slate-700/60">
-                      {currentQ.context}
-                    </p>
-                  )}
-                </div>
-
-                {/* Question Type: Multiple Choice */}
-                {isMultipleChoice ? (
+                {/* Multiple Choice Options (Millionnaire, Champion, Grand Concours) */}
+                {isMultipleChoice && showType !== 'roue' && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {currentQ.options.map((option, idx) => {
                       if (hiddenOptions.includes(idx)) {
@@ -682,9 +1039,9 @@ export default function TvGameShowArena({
                         <button
                           key={idx}
                           onClick={() => handleSelectOption(idx)}
-                          disabled={isAnswerLocked || (!hasBuzzed && showType === 'champion')}
+                          disabled={isAnswerLocked || (buzzWinner && buzzWinner !== 'player')}
                           className={`p-3.5 sm:p-4 rounded-2xl border text-left transition-all duration-200 font-lexend flex items-center justify-between gap-3 shadow-md relative group cursor-pointer ${btnStyle} ${
-                            !hasBuzzed && showType === 'champion' ? 'opacity-40 cursor-not-allowed' : ''
+                            buzzWinner && buzzWinner !== 'player' ? 'opacity-40 cursor-not-allowed' : ''
                           }`}
                         >
                           <div className="flex items-center gap-3">
@@ -712,28 +1069,6 @@ export default function TvGameShowArena({
                       );
                     })}
                   </div>
-                ) : (
-                  /* Question Type: Text Input (Roue des Accords) */
-                  <form onSubmit={handleTextSubmit} className="space-y-4">
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={textInput}
-                        onChange={(e) => setTextInput(e.target.value)}
-                        placeholder="Tapez ici la conjugaison exacte..."
-                        disabled={isAnswerLocked}
-                        className="flex-1 px-4 py-3 rounded-2xl bg-slate-900 border border-slate-700 text-white font-mono text-base focus:outline-hidden focus:border-indigo-500 shadow-inner"
-                      />
-                      <button
-                        type="submit"
-                        disabled={isAnswerLocked || !textInput.trim()}
-                        className="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white font-outfit font-black text-sm tracking-wide shadow-lg shadow-indigo-600/30 transition flex items-center gap-2 cursor-pointer"
-                      >
-                        <span>Valider</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </form>
                 )}
 
                 {/* Next Question Button */}
@@ -743,7 +1078,7 @@ export default function TvGameShowArena({
                       onClick={handleNextQuestion}
                       className="px-7 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-outfit font-black text-sm tracking-wide shadow-xl shadow-emerald-500/30 transition flex items-center gap-2 cursor-pointer"
                     >
-                      <span>{currentIdx + 1 < totalQuestions ? "Question Suivante" : "Voir le Résultat Final"}</span>
+                      <span>{currentIdx + 1 < totalQuestions ? "Épreuve Suivante" : "Voir le Palmarès Final"}</span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>

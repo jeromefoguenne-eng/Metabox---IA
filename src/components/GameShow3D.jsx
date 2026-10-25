@@ -43,7 +43,7 @@ const SHOW_THEMES = {
     emblem: 'ROUE'
   },
   concours: {
-    title: "LE GRAND CONCOURS DU CAMPUS",
+    title: "LE GRAND CONCOURS DE LA HECH",
     subtitle: "RÈGLEMENTS, DROITS & VIE ÉTUDIANTE",
     bgHex: 0x030c14,
     ambientHex: 0x083344,
@@ -268,14 +268,62 @@ export default function GameShow3D({
     podBase.castShadow = true;
     podiumGroup.add(podBase);
 
-    // Illuminated Acrylic Front Shield with Show Color
+    // Illuminated Acrylic Front Shield with OFFICIAL HECH LOGO
     const podFrontGeo = new THREE.CylinderGeometry(0.54, 0.64, 0.75, 28, 1, true, -Math.PI * 0.38, Math.PI * 0.76);
+    
+    const hechPodCanvas = document.createElement('canvas');
+    hechPodCanvas.width = 512;
+    hechPodCanvas.height = 256;
+    const pCtx = hechPodCanvas.getContext('2d');
+
+    pCtx.fillStyle = '#090d1a';
+    pCtx.fillRect(0, 0, 512, 256);
+
+    // Glowing border
+    pCtx.strokeStyle = themeCfg.primaryColor;
+    pCtx.lineWidth = 6;
+    pCtx.strokeRect(6, 6, 500, 244);
+
+    // HECh Red Shield
+    pCtx.fillStyle = '#e11d48';
+    pCtx.beginPath();
+    pCtx.roundRect(40, 52, 105, 105, [24]);
+    pCtx.fill();
+
+    // Gold Accent
+    pCtx.fillStyle = '#f59e0b';
+    pCtx.beginPath();
+    pCtx.arc(120, 132, 18, 0, Math.PI * 2);
+    pCtx.fill();
+
+    // H inside shield
+    pCtx.fillStyle = '#ffffff';
+    pCtx.font = '900 68px sans-serif';
+    pCtx.fillText('H', 70, 134);
+
+    // "HECh" bold text
+    pCtx.fillStyle = '#ffffff';
+    pCtx.font = '900 62px sans-serif';
+    pCtx.fillText('HECh', 170, 112);
+
+    pCtx.fillStyle = '#fb7185';
+    pCtx.font = 'bold 18px sans-serif';
+    pCtx.fillText('HAUTE ÉCOLE CHARLEMAGNE', 172, 145);
+
+    pCtx.fillStyle = themeCfg.primaryColor;
+    pCtx.font = 'bold 15px sans-serif';
+    pCtx.fillText('SAR · Service Réussite', 172, 172);
+
+    const hechPodTexture = new THREE.CanvasTexture(hechPodCanvas);
+
     const podFrontMat = new THREE.MeshPhysicalMaterial({
-      color: new THREE.Color(themeCfg.primaryColor),
-      emissive: new THREE.Color(themeCfg.primaryColor),
-      emissiveIntensity: 0.6,
+      map: hechPodTexture,
+      color: 0xffffff,
+      emissive: 0xffffff,
+      emissiveMap: hechPodTexture,
+      emissiveIntensity: 0.9,
       transparent: true,
-      opacity: 0.85,
+      opacity: 0.95,
       roughness: 0.1
     });
     const podFront = new THREE.Mesh(podFrontGeo, podFrontMat);
@@ -692,6 +740,26 @@ export default function GameShow3D({
           screenCtx.fillRect(120 + b * 28, 380 - barH / 2, 18, barH);
         }
       }
+
+      // HECh Official Badge on giant LED broadcast screen
+      screenCtx.fillStyle = '#e11d48';
+      screenCtx.beginPath();
+      screenCtx.roundRect(40, 35, 60, 60, [14]);
+      screenCtx.fill();
+      screenCtx.fillStyle = '#f59e0b';
+      screenCtx.beginPath();
+      screenCtx.arc(88, 80, 10, 0, Math.PI * 2);
+      screenCtx.fill();
+      screenCtx.fillStyle = '#ffffff';
+      screenCtx.font = '900 38px sans-serif';
+      screenCtx.fillText('H', 56, 80);
+
+      screenCtx.fillStyle = '#ffffff';
+      screenCtx.font = '900 24px sans-serif';
+      screenCtx.fillText('HECh', 112, 64);
+      screenCtx.fillStyle = '#fb7185';
+      screenCtx.font = 'bold 12px sans-serif';
+      screenCtx.fillText('HAUTE ÉCOLE CHARLEMAGNE', 112, 82);
 
       // SHOW NAME WRITTEN LARGE IN GLOWING TYPOGRAPHY
       screenCtx.font = '900 48px sans-serif';

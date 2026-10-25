@@ -430,7 +430,7 @@ export const GLOSSARY_ITEMS = [
 ];
 
 export const QUIZ_DATABASE = {
-  // Exercice 2 de la Tuile Langagière
+  // Exercice 2 de la Tuile Langagière (Ordonné par graduation de difficulté croissante pour Qui veut gagner des crédits)
   "exo-verbes-1": {
     id: "exo-verbes-1",
     tileId: "tile-lang",
@@ -438,65 +438,98 @@ export const QUIZ_DATABASE = {
     source: "Gilson, G. (s.d.). Comprendre et appliquer des consignes. Ludum Invaders / Moodle HECh",
     instruction: "Pour chaque verbe de consigne proposé, sélectionnez la correspondance exacte.",
     questions: [
+      // Palier 1 : Tâches mécaniques directes (Facile - Paliers 6, 12, 18 ECTS)
       {
         id: "q1",
-        verb: "Biffer",
-        options: ["Barrer", "Gommer", "Tracer un trait sous le mot"],
-        correctIndex: 0,
-        explanation: "Biffer signifie barrer ou rayer un mot d'un trait (souvent pour l'annuler ou l'éliminer)."
-      },
-      {
-        id: "q2",
-        verb: "Définir",
-        options: ["Expliquer le sens", "Terminer le tout en une fois", "Donner les caractéristiques"],
-        correctIndex: 0,
-        explanation: "Définir consiste à formuler avec exactitude la signification d'un terme ou d'un concept."
-      },
-      {
-        id: "q3",
-        verb: "Citer",
-        options: ["Expliquer", "Numéroter", "Nommer"],
-        correctIndex: 2,
-        explanation: "Citer consiste à nommer, énoncer ou reproduire textuellement un élément sans nécessairement le développer."
-      },
-      {
-        id: "q4",
-        verb: "Cocher",
-        options: ["Assembler", "Placer un petit trait dans une case en face d'une proposition", "Effacer"],
-        correctIndex: 1,
-        explanation: "Cocher signifie marquer d'un signe (croix ou coche) une case prédéfinie."
-      },
-      {
-        id: "q5",
         verb: "Souligner",
+        difficulty: "Facile",
+        tier: 1,
+        rewardEcts: 6,
         options: ["Tracer un trait sous le mot", "Tracer un ovale autour de...", "Séparer par des traits"],
         correctIndex: 0,
         explanation: "Souligner signifie tracer une ligne continue directement sous les mots désignés."
       },
       {
-        id: "q6",
+        id: "q2",
+        verb: "Cocher",
+        difficulty: "Facile",
+        tier: 1,
+        rewardEcts: 12,
+        options: ["Assembler", "Placer un petit trait dans une case en face d'une proposition", "Effacer"],
+        correctIndex: 1,
+        explanation: "Cocher signifie marquer d'un signe (croix ou coche) une case prédéfinie."
+      },
+      {
+        id: "q3",
+        verb: "Biffer",
+        difficulty: "Facile",
+        tier: 1,
+        rewardEcts: 18,
+        options: ["Barrer", "Gommer", "Tracer un trait sous le mot"],
+        correctIndex: 0,
+        explanation: "Biffer signifie barrer ou rayer un mot d'un trait (pour l'annuler ou l'éliminer)."
+      },
+
+      // Palier 2 : Organisation & Traitement intermédiaire (Intermédiaire - Paliers 24, 30, 36, 42 ECTS)
+      {
+        id: "q4",
         verb: "Relier",
+        difficulty: "Intermédiaire",
+        tier: 2,
+        isSafetyTier: true, // PALIER DE SÉCURITÉ GARANTI !
+        rewardEcts: 24,
         options: ["Placer deux éléments l'un à côté de l'autre", "Tracer une ligne allant d'un élément à un autre", "Lire une seconde fois"],
         correctIndex: 1,
         explanation: "Relier consiste à établir une connexion visible (flèche ou trait) entre deux correspondances."
       },
       {
-        id: "q7",
-        verb: "Classer",
-        options: ["Ranger dans un certain ordre ou selon des catégories", "Recopier au propre", "Organiser son classeur"],
-        correctIndex: 0,
-        explanation: "Classer implique de regrouper ou d'ordonner des éléments selon un critère logique explicite."
+        id: "q5",
+        verb: "Citer",
+        difficulty: "Intermédiaire",
+        tier: 2,
+        rewardEcts: 30,
+        options: ["Expliquer", "Numéroter", "Nommer"],
+        correctIndex: 2,
+        explanation: "Citer consiste à nommer, énoncer ou reproduire textuellement un élément sans nécessairement le développer."
       },
       {
-        id: "q8",
+        id: "q6",
         verb: "Énumérer",
+        difficulty: "Intermédiaire",
+        tier: 2,
+        rewardEcts: 36,
         options: ["Citer des éléments les uns après les autres", "Donner une longue explication", "Donner le nombre total"],
         correctIndex: 0,
         explanation: "Énumérer consiste à énoncer une liste ordonnée ou à puces de données ou d'arguments."
       },
       {
+        id: "q7",
+        verb: "Classer",
+        difficulty: "Intermédiaire",
+        tier: 2,
+        rewardEcts: 42,
+        options: ["Ranger dans un certain ordre ou selon des catégories", "Recopier au propre", "Organiser son classeur"],
+        correctIndex: 0,
+        explanation: "Classer implique de regrouper ou d'ordonner des éléments selon un critère logique explicite."
+      },
+
+      // Palier 3 : Haute Exigence Conceptuelle (Difficile - Paliers 48, 54, 60 ECTS)
+      {
+        id: "q8",
+        verb: "Définir",
+        difficulty: "Haute Exigence",
+        tier: 3,
+        rewardEcts: 48,
+        options: ["Expliquer le sens avec rigueur", "Terminer le tout en une fois", "Donner les caractéristiques"],
+        correctIndex: 0,
+        explanation: "Définir consiste à formuler avec exactitude la signification d'un terme ou d'un concept."
+      },
+      {
         id: "q9",
         verb: "Compléter",
+        difficulty: "Haute Exigence",
+        tier: 3,
+        rewardEcts: 54,
         options: ["Ajouter ce qui manque pour rendre complet", "Choisir la bonne réponse au hasard", "Tout réécrire"],
         correctIndex: 0,
         explanation: "Compléter consiste à insérer l'information manquante dans un texte à trous ou un schéma incomplet."
@@ -504,6 +537,9 @@ export const QUIZ_DATABASE = {
       {
         id: "q10",
         verb: "Comparer",
+        difficulty: "Haute Exigence",
+        tier: 3,
+        rewardEcts: 60,
         options: ["Assembler parallèlement deux éléments", "Utiliser un instrument de mesure", "Trouver les ressemblances et les différences entre deux éléments"],
         correctIndex: 2,
         explanation: "Comparer exige obligatoirement de mettre en regard deux objets en dégageant points communs ET divergences."
@@ -614,13 +650,13 @@ export const QUIZ_DATABASE = {
     ]
   },
 
-  // Quiz Étudiant & Vie Universitaire
+  // Quiz Étudiant & Vie Universitaire - Le Grand Concours de la HECh
   "exo-student-quiz": {
     id: "exo-student-quiz",
     tileId: "tile-student",
-    title: "Quiz : Métier d'Étudiant & Règles Académiques HECh",
+    title: "Le Grand Concours de la HECh : Règlements, Décret Paysage & Statuts",
     source: "Service d'Accompagnement à la Réussite HECh",
-    instruction: "Testez votre connaissance du fonctionnement de l'enseignement supérieur.",
+    instruction: "Affrontez les meilleurs étudiants des campus Rivageois, Huy, Verviers et Outremeuse sur le métier d'étudiant !",
     questions: [
       {
         id: "sq1",
