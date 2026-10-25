@@ -15,12 +15,47 @@ import {
   CheckCircle2,
   XCircle,
   Zap,
-  Award,
+  Play,
   Timer
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import GameShow3D from './GameShow3D';
 import { sounds } from '../utils/soundEffects';
+
+const SHOW_META = {
+  millionnaire: {
+    title: "Qui veut gagner des Crédits ?",
+    subtitle: "Ascension vers les 60 Crédits ECTS · Verbes de Consigne",
+    badge: "GRAND JEU DU PALIER ACADÉMIQUE",
+    primaryGradient: "from-sky-500 via-indigo-600 to-amber-500",
+    themeBg: "bg-slate-900/90 border-sky-500/40",
+    glowColor: "text-amber-400"
+  },
+  champion: {
+    title: "Questions pour un Major",
+    subtitle: "Sciences Cognitives, Neuro-Éducation & Courbe d'Oubli",
+    badge: "CHRONO 12 SECONDES · BUZZER EN DIRECT",
+    primaryGradient: "from-amber-500 via-orange-600 to-cyan-500",
+    themeBg: "bg-stone-900/90 border-amber-500/40",
+    glowColor: "text-amber-300"
+  },
+  roue: {
+    title: "La Roue des Accords",
+    subtitle: "Conjugaisons Pièges & Orthographe du Supérieur",
+    badge: "ROUE TOURNANTE · VALIDATION ORTHO'EXPRESS",
+    primaryGradient: "from-fuchsia-500 via-purple-600 to-pink-500",
+    themeBg: "bg-purple-950/90 border-pink-500/40",
+    glowColor: "text-pink-400"
+  },
+  concours: {
+    title: "Le Grand Concours du Campus",
+    subtitle: "Règlements, Statuts PEPS & Décret Paysage",
+    badge: "ÉPREUVE EN DIRECT DU MÉTIER D'ÉTUDIANT",
+    primaryGradient: "from-cyan-400 via-blue-600 to-violet-600",
+    themeBg: "bg-cyan-950/90 border-cyan-500/40",
+    glowColor: "text-cyan-300"
+  }
+};
 
 export default function TvGameShowArena({ 
   quiz, 
@@ -29,6 +64,11 @@ export default function TvGameShowArena({
   onFinishGame,
   onClose
 }) {
+  const meta = SHOW_META[showType] || SHOW_META.millionnaire;
+
+  // TV Intro / Générique State
+  const [isShowingIntro, setIsShowingIntro] = useState(true);
+
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [isAnswerLocked, setIsAnswerLocked] = useState(false);
@@ -58,6 +98,37 @@ export default function TvGameShowArena({
   const totalQuestions = quiz.questions.length;
   const isMultipleChoice = currentQ?.options && currentQ.options.length > 0;
 
+  // 1. Play Opening Theme (Générique TV) on mount
+  useEffect(() => {
+    if (isShowingIntro) {
+      setReaction('speaking');
+      setHostDialogue(`🎬 Générique TV : « ${meta.title} » en direct du studio !`);
+      
+      // Play show theme music
+      sounds.playTheme(showType);
+      
+      // Play host vocal greeting
+      const timerVoice = setTimeout(() => {
+        sounds.playVoice(`intro_${showType}`);
+      }, 700);
+
+      // Auto-start after 4.2s if not clicked
+      const timerAutoStart = setTimeout(() => {
+        setIsShowingIntro(false);
+      }, 4300);
+
+      return () => {
+        clearTimeout(timerVoice);
+        clearTimeout(timerAutoStart);
+      };
+    }
+  }, [isShowingIntro, showType]);
+
+  const handleStartFromIntro = () => {
+    sounds.playPop();
+    setIsShowingIntro(false);
+  };
+
   // Toggle browser fullscreen
   const toggleNativeFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -84,7 +155,7 @@ export default function TvGameShowArena({
 
   // Question announce by TV Host with realistic neural voice
   useEffect(() => {
-    if (!currentQ || gameOver) return;
+    if (isShowingIntro || !currentQ || gameOver) return;
 
     setSelectedOption(null);
     setIsAnswerLocked(false);
@@ -117,11 +188,11 @@ export default function TvGameShowArena({
     setHostDialogue(dialogueText);
     sounds.playVoice(voiceKey);
 
-  }, [currentIdx, showType, gameOver]);
+  }, [currentIdx, showType, gameOver, isShowingIntro]);
 
   // Countdown for Champion & Grand Concours
   useEffect(() => {
-    if (gameOver || isAnswerLocked || showType === 'millionnaire' || showType === 'roue') return;
+    if (isShowingIntro || gameOver || isAnswerLocked || showType === 'millionnaire' || showType === 'roue') return;
 
     if (timeLeft <= 0) {
       handleTimeOut();
@@ -133,7 +204,7 @@ export default function TvGameShowArena({
     }, 1000);
 
     return () => clearInterval(t);
-  }, [timeLeft, isAnswerLocked, gameOver, showType]);
+  }, [timeLeft, isAnswerLocked, gameOver, showType, isShowingIntro]);
 
   const handleTimeOut = () => {
     setIsAnswerLocked(true);
@@ -167,7 +238,7 @@ export default function TvGameShowArena({
 
     const poll = currentQ.options.map((_, idx) => {
       if (idx === currentQ.correctIndex) {
-        return Math.floor(Math.random() * 20) + 68; // 68% to 88% for correct
+        return Math.floor(Math.random() * 20) + 68;
       }
       return Math.floor(Math.random() * 12) + 4;
     });
@@ -186,7 +257,6 @@ export default function TvGameShowArena({
     setSarTip(tip);
     setHostDialogue("📞 « Liaison établie avec le SAR de la HECh ! Écoutons le conseil pédagogique en direct ! »");
     
-    // Play host intro then Belgian female advisor tip
     sounds.playVoice("joker_sar", () => {
       const tipVoice = showType === 'champion' ? "sar_tip_ebbinghaus" : "sar_tip_default";
       sounds.playVoice(tipVoice);
@@ -295,6 +365,7 @@ export default function TvGameShowArena({
 
   const handleRestart = () => {
     sounds.playPop();
+    setIsShowingIntro(true);
     setCurrentIdx(0);
     setScoreEcts(0);
     setGameOver(false);
@@ -314,7 +385,7 @@ export default function TvGameShowArena({
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
             </span>
-            <span className="px-2 py-0.5 rounded-md bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] font-black uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 rounded-md bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] font-black uppercase tracking-wider">
               EN DIRECT · STUDIO 3D
             </span>
           </div>
@@ -324,10 +395,7 @@ export default function TvGameShowArena({
           <div className="flex items-center gap-2">
             <Trophy className="w-5 h-5 text-amber-400" />
             <span className="font-outfit font-black text-sm tracking-wide text-white uppercase hidden sm:inline">
-              {showType === 'millionnaire' && "Qui veut gagner des Crédits ?"}
-              {showType === 'champion' && "Questions pour un Major"}
-              {showType === 'roue' && "La Roue des Accords"}
-              {showType === 'concours' && "Le Grand Concours du Campus"}
+              {meta.title}
             </span>
           </div>
         </div>
@@ -383,28 +451,63 @@ export default function TvGameShowArena({
         </div>
       </header>
 
-      {/* 2. Main Studio Viewport (Split: 3D Stage on top, Broadcast HUD on bottom) */}
+      {/* 2. Main Studio Viewport */}
       <div className="flex-1 flex flex-col relative overflow-hidden">
         
-        {/* Upper Half: 3D TV Studio Scene */}
-        <div className="h-[50vh] min-h-[280px] w-full relative bg-slate-950">
+        {/* Upper Half: 3D TV Studio Scene with Specific Show Identity */}
+        <div className="h-[52vh] min-h-[300px] w-full relative bg-slate-950">
           <GameShow3D 
             reaction={reaction} 
             theme={showType}
             themeColor={themeColor}
           />
 
-          {/* Host Prompter / Teleprompter Subtitle Banner Overlay */}
-          <div className="absolute bottom-3 left-4 right-4 max-w-4xl mx-auto z-10 pointer-events-none">
-            <div className="bg-slate-900/90 backdrop-blur-md border border-indigo-500/40 rounded-2xl px-5 py-3 shadow-2xl flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center shrink-0 shadow-md">
-                <Sparkles className="w-5 h-5 text-amber-300" />
+          {/* DYNAMIC OPENING GENERIQUE TV OVERLAY */}
+          {isShowingIntro && (
+            <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-md z-30 flex flex-col items-center justify-center p-6 text-center animate-in fade-in zoom-in-95 duration-500">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/20 text-red-400 border border-red-500/40 text-[11px] font-black uppercase tracking-widest mb-3">
+                <span className="animate-pulse">🔴</span> {meta.badge}
               </div>
-              <p className="text-sm font-lexend text-white font-medium leading-relaxed drop-shadow-sm">
-                {hostDialogue}
+
+              <h1 className="text-3xl sm:text-5xl font-outfit font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-amber-200 to-white tracking-wide uppercase drop-shadow-2xl mb-2">
+                {meta.title}
+              </h1>
+
+              <p className="text-sm sm:text-base font-lexend text-slate-300 max-w-xl mx-auto mb-6 leading-relaxed">
+                {meta.subtitle}
               </p>
+
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                <button
+                  onClick={handleStartFromIntro}
+                  className="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:scale-105 transition-all text-white font-outfit font-black text-sm tracking-wider uppercase shadow-xl shadow-indigo-600/40 flex items-center gap-2.5 cursor-pointer"
+                >
+                  <Play className="w-4 h-4 fill-current" />
+                  <span>Entrer sur le Plateau (C'est parti !)</span>
+                </button>
+                <button
+                  onClick={handleStartFromIntro}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition cursor-pointer"
+                >
+                  Passer le générique →
+                </button>
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Host Prompter Banner */}
+          {!isShowingIntro && (
+            <div className="absolute bottom-3 left-4 right-4 max-w-4xl mx-auto z-10 pointer-events-none">
+              <div className="bg-slate-900/90 backdrop-blur-md border border-indigo-500/40 rounded-2xl px-5 py-3 shadow-2xl flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center shrink-0 shadow-md">
+                  <Sparkles className="w-5 h-5 text-amber-300" />
+                </div>
+                <p className="text-sm font-lexend text-white font-medium leading-relaxed drop-shadow-sm">
+                  {hostDialogue}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Lower Half: Broadcast HUD & Interactive Answers Panel */}
@@ -593,7 +696,6 @@ export default function TvGameShowArena({
                             </span>
                           </div>
 
-                          {/* Audience poll indicator */}
                           {audiencePoll && (
                             <span className="text-xs font-mono font-black text-indigo-300 bg-indigo-950/80 px-2 py-0.5 rounded border border-indigo-700/50 shrink-0">
                               {audiencePoll[idx]}%
@@ -634,7 +736,7 @@ export default function TvGameShowArena({
                   </form>
                 )}
 
-                {/* Next Question Button if answer locked */}
+                {/* Next Question Button */}
                 {isAnswerLocked && (
                   <div className="mt-5 flex justify-end animate-in fade-in duration-300">
                     <button

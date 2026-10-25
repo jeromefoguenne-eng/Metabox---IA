@@ -129,6 +129,33 @@ class SoundManager {
     }
   }
 
+  // Générique musical d'ouverture de l'émission TV
+  playTheme(themeType = 'millionnaire', onEndedCallback) {
+    if (this.muted) {
+      if (onEndedCallback) setTimeout(onEndedCallback, 1500);
+      return null;
+    }
+
+    const themePath = `/audio/sfx/theme_${themeType}.mp3`;
+    try {
+      const audio = new Audio(themePath);
+      audio.volume = 0.9;
+      audio.onended = () => {
+        if (onEndedCallback) onEndedCallback();
+      };
+      const p = audio.play();
+      if (p !== undefined) {
+        p.catch(() => {
+          if (onEndedCallback) onEndedCallback();
+        });
+      }
+      return audio;
+    } catch {
+      if (onEndedCallback) onEndedCallback();
+      return null;
+    }
+  }
+
   // --- Bruitages de Studio Télévisé ---
   playApplause() {
     if (this.muted) return;
