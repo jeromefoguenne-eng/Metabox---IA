@@ -11,7 +11,11 @@ import {
   Smile,
   Frown,
   Brain,
-  ShieldCheck
+  ShieldCheck,
+  GraduationCap,
+  Users,
+  Compass,
+  ArrowRight
 } from 'lucide-react';
 import { sounds } from '../utils/soundEffects';
 
@@ -20,6 +24,8 @@ import { sounds } from '../utils/soundEffects';
  * Visual Novel / Jeu de Survie Académique (« HECh 2026 : Le Guide du Survivant Connecté »).
  * Fiction interactive à embranchements avec jauges d'énergie, éthique, réputation et ECTS
  * couvrant une année d'études complète (Septembre à Juin).
+ * 
+ * Graphismes Haute Définition : Scénographie animée, portraits d'interlocuteurs, badges d'impacts.
  */
 export default function GameSurvivantNovel({ onComplete }) {
   const [currentChapterIdx, setCurrentChapterIdx] = useState(0);
@@ -40,8 +46,12 @@ export default function GameSurvivantNovel({ onComplete }) {
     {
       id: "ch1",
       period: "Septembre · Rentrée & Premier Dossier",
+      location: "Grand Amphithéâtre Rivageois · Quai de Rome",
+      characterName: "Julien (Camarade de Promo)",
+      avatarGradient: "from-blue-500 to-indigo-600",
+      avatarEmoji: "🧑‍🎓",
       title: "La Tentation de la Synthèse Automatique",
-      description: "Vous devez rendre une fiche de synthèse de 3 pages sur le Décret Paysage pour vendredi. Un camarade vous propose un prompt 'magique' qui génère tout le dossier en 12 secondes sans fatigue.",
+      description: "Vous devez rendre une fiche de synthèse de 3 pages sur le Décret Paysage pour vendredi. Julien s'approche à la pause et vous chuchote : « Regarde ce prompt magique, ça te génère tout le dossier en 12 secondes sans fatigue ! »",
       choices: [
         {
           text: "1. Copier-coller le prompt brut sans relire pour aller boire un verre aux Guillemins.",
@@ -54,7 +64,7 @@ export default function GameSurvivantNovel({ onComplete }) {
           feedback: "Excellente démarche socratique ! Vous avez mémorisé les principes clés et obtenu la note maximale au contrôle continu."
         },
         {
-          text: "3. Refuser catégoriquement tout outil numérique et tout taper à la machine à écrire.",
+          text: "3. Refuser catégoriquement tout outil numérique et tout taper manuellement sans assistance.",
           impact: { energy: -35, ethics: +10, competence: +5, ects: +6 },
           feedback: "Démarche respectable mais épuisante. Vous accumulez du retard sur le reste de vos cours."
         }
@@ -63,8 +73,12 @@ export default function GameSurvivantNovel({ onComplete }) {
     {
       id: "ch2",
       period: "Janvier · Session de Blocus d'Hiver",
+      location: "Bibliothèque Universitaire · Salle de Blocus",
+      characterName: "Hélène (Conseillère SAR)",
+      avatarGradient: "from-emerald-500 to-teal-600",
+      avatarEmoji: "👩‍🏫",
       title: "Le Mur de la Mémorisation & Panique Réseau",
-      description: "La courbe de l'oubli frappe de plein fouet à 48 heures de l'examen de méthodologie. Des rumeurs de fuites circulent sur TikTok avec un prétendu questionnaire d'examen complet généré par IA.",
+      description: "La courbe de l'oubli frappe de plein fouet à 48 heures de l'examen de méthodologie. Des rumeurs de fuites circulent sur TikTok avec un prétendu questionnaire d'examen complet généré par IA. Vous hésitez sur votre méthode de révision finale.",
       choices: [
         {
           text: "1. Abandonner les révisions et mémoriser uniquement le faux questionnaire viral de TikTok.",
@@ -81,16 +95,20 @@ export default function GameSurvivantNovel({ onComplete }) {
     {
       id: "ch3",
       period: "Mai · Projet de Groupe & TP Transversal",
+      location: "Laboratoire Collaboratif · Salle Multimédia",
+      characterName: "Léa (Déléguée d'Équipe)",
+      avatarGradient: "from-pink-500 to-rose-600",
+      avatarEmoji: "👩‍💻",
       title: "Le Dilemme du Passager Clandestin",
-      description: "Un membre de votre groupe n'a rien fait pendant 3 semaines et soumet à la dernière minute un chapitre entier manifestement plagié via ChatGPT sans aucune source réelle.",
+      description: "Un membre de votre groupe n'a rien fait pendant 3 semaines et soumet à la dernière minute un chapitre entier manifestement plagié via ChatGPT sans aucune source réelle. Le dépôt officiel sur Moodle est fixé dans 3 heures.",
       choices: [
         {
-          text: "1. Laisser passer pour éviter le conflit dans le groupe.",
+          text: "1. Laisser passer pour éviter le conflit dans le groupe et espérer que personne ne vérifie.",
           impact: { energy: 0, ethics: -30, competence: -10, ects: 0 },
           feedback: "Le logiciel de détection et le jury repèrent immédiatement la fraude. Tout le groupe est ajourné !"
         },
         {
-          text: "2. Organiser une séance d'arbitrage, isoler les parties suspectes et obliger le camarade à expliciter ses sources.",
+          text: "2. Organiser une séance d'arbitrage d'urgence, isoler les parties suspectes et obliger le camarade à expliciter ses sources.",
           impact: { energy: -15, ethics: +25, competence: +20, ects: +18 },
           feedback: "Posture exemplaire d'adulte apprenant ! Le jury salue l'intégrité de la démarche collective."
         }
@@ -99,8 +117,12 @@ export default function GameSurvivantNovel({ onComplete }) {
     {
       id: "ch4",
       period: "Juin · Grand Oral de Délibération",
+      location: "Salle des Délibérations · Présidence du Jury",
+      characterName: "Prof. Lambert (Président du Jury)",
+      avatarGradient: "from-amber-500 to-orange-600",
+      avatarEmoji: "👨‍⚖️",
       title: "La Soutenance devant le Jury de Bloc 1",
-      description: "Le jury vous demande d'expliciter comment vous avez articulé les outils numériques avec votre propre réflexion tout au long de votre parcours académique.",
+      description: "Le jury vous demande d'expliciter comment vous avez articulé les outils numériques avec votre propre réflexion tout au long de votre parcours académique à la Haute École.",
       choices: [
         {
           text: "1. Expliquer que l'IA a été un partenaire d'entraînement critique, jamais un substitut de votre pensée.",
@@ -147,114 +169,173 @@ export default function GameSurvivantNovel({ onComplete }) {
   };
 
   return (
-    <div className="w-full h-full min-h-[520px] rounded-2xl bg-[#031f18] border-2 border-emerald-500/50 shadow-2xl flex flex-col font-['Lexend'] text-white overflow-hidden animate-in fade-in">
+    <div className="w-full h-full min-h-[540px] rounded-3xl bg-[#031b14] border-2 border-emerald-500/40 shadow-2xl flex flex-col font-['Lexend'] text-white overflow-hidden animate-in fade-in select-none">
       
       {/* Top Status & Gauges Bar */}
-      <div className="h-14 bg-slate-950 border-b border-emerald-900/60 px-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <BookOpen className="w-5 h-5 text-emerald-400" />
-          <strong className="font-['Outfit'] font-black text-xs sm:text-sm text-emerald-300 uppercase tracking-wide">
-            LE GUIDE DU SURVIVANT CONNECTÉ (BAC 1 HECh)
-          </strong>
+      <div className="h-14 bg-slate-950/90 backdrop-blur-md border-b border-emerald-900/60 px-5 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/30">
+            <BookOpen className="w-5 h-5" />
+          </div>
+          <div>
+            <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest block">
+              VISUAL NOVEL ACADÉMIQUE · HECH 2026
+            </span>
+            <strong className="font-['Outfit'] font-black text-sm text-emerald-100">
+              Le Guide du Survivant Connecté (Bloc 1)
+            </strong>
+          </div>
         </div>
 
         {/* 4 Survivant Gauges */}
-        <div className="flex items-center gap-4 text-xs font-mono">
-          <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-3 text-xs font-mono">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-900 border border-slate-800">
             <Heart className={`w-3.5 h-3.5 ${stats.energy < 30 ? 'text-rose-500 animate-pulse' : 'text-emerald-400'}`} />
-            <span>Énergie : {stats.energy}%</span>
+            <span className="text-slate-300 font-bold">{stats.energy}%</span>
           </div>
-          <div className="flex items-center gap-1.5">
+
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-900 border border-slate-800">
             <Sparkles className={`w-3.5 h-3.5 ${stats.ethics < 35 ? 'text-amber-500 animate-pulse' : 'text-cyan-400'}`} />
-            <span>Éthique : {stats.ethics}%</span>
+            <span className="text-slate-300 font-bold">{stats.ethics}%</span>
           </div>
-          <div className="flex items-center gap-1.5">
+
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-900 border border-slate-800">
             <Brain className="w-3.5 h-3.5 text-purple-400" />
-            <span>Compétence : {stats.competence}%</span>
+            <span className="text-slate-300 font-bold">{stats.competence}%</span>
           </div>
-          <div className="px-2.5 py-1 rounded-lg bg-emerald-950 border border-emerald-500/50 text-amber-300 font-bold">
+
+          <div className="px-3 py-1 rounded-xl bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 font-bold">
             {stats.ects} / 60 ECTS
           </div>
         </div>
       </div>
 
       {/* Main Visual Novel Narrative Screen */}
-      <div className="flex-1 p-5 sm:p-7 flex flex-col justify-between overflow-y-auto max-w-4xl mx-auto w-full space-y-4">
+      <div className="flex-1 p-5 sm:p-7 flex flex-col justify-between overflow-y-auto max-w-4xl mx-auto w-full gap-4">
         
         {!isGameOver && !isVictory ? (
           <>
-            {/* Story Card */}
-            <div className="p-5 rounded-3xl bg-slate-950/80 border border-emerald-500/40 shadow-xl space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold">
+            {/* Visual Scene Card with Character Dialogue */}
+            <div className="p-6 rounded-3xl bg-slate-950/90 border border-emerald-500/40 shadow-2xl space-y-4 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+              
+              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div className="flex items-center gap-2 text-xs font-mono text-emerald-300">
+                  <Compass className="w-4 h-4 text-emerald-400" />
+                  <span>{currentChapter.location}</span>
+                </div>
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-mono font-bold">
                   {currentChapter.period}
                 </span>
-                <span className="text-xs text-slate-400 font-mono">Chapitre {currentChapterIdx + 1} / {CHAPTERS.length}</span>
               </div>
 
-              <h3 className="text-xl font-['Outfit'] font-bold text-white">
-                {currentChapter.title}
-              </h3>
+              {/* Character Avatar & Dialogue */}
+              <div className="flex items-start gap-4 pt-1">
+                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-tr ${currentChapter.avatarGradient} flex items-center justify-center text-3xl shadow-lg shadow-emerald-500/20 flex-shrink-0 border-2 border-white/20`}>
+                  {currentChapter.avatarEmoji}
+                </div>
 
-              <p className="text-sm text-slate-200 leading-relaxed font-serif">
-                « {currentChapter.description} »
-              </p>
+                <div className="space-y-1.5 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-['Outfit'] font-black text-xs text-emerald-400 uppercase tracking-wide">
+                      {currentChapter.characterName}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-['Outfit'] font-bold text-white">
+                    {currentChapter.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+                    « {currentChapter.description} »
+                  </p>
+                </div>
+              </div>
             </div>
 
-            {/* Interactive Choices Grid */}
-            <div className="space-y-2.5">
-              <span className="text-xs font-bold text-emerald-300 uppercase font-mono block">
-                Que décidez-vous de faire ?
+            {/* Interactive Choices Grid with Stat Badges */}
+            <div className="space-y-3">
+              <span className="text-xs font-bold text-emerald-300 uppercase font-mono flex items-center gap-1.5">
+                <ArrowRight className="w-4 h-4" /> Quelle démarche décidez-vous d'adopter ?
               </span>
 
               {currentChapter.choices.map((c, i) => (
                 <button
                   key={i}
                   onClick={() => handleChoice(c)}
-                  className="w-full p-4 rounded-2xl bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-500/30 hover:border-emerald-400 text-left text-xs sm:text-sm text-slate-200 transition-all duration-200 cursor-pointer shadow-md hover:scale-[1.01]"
+                  className="w-full p-4 rounded-2xl bg-slate-950/80 hover:bg-emerald-950/60 border border-emerald-500/30 hover:border-emerald-400 text-left transition-all duration-300 cursor-pointer shadow-lg hover:scale-[1.01] flex flex-col sm:flex-row sm:items-center justify-between gap-3 group"
                 >
-                  {c.text}
+                  <span className="text-xs sm:text-sm text-slate-200 group-hover:text-white leading-relaxed">
+                    {c.text}
+                  </span>
+                  
+                  {/* Impact preview pill */}
+                  <div className="flex items-center gap-2 self-end sm:self-center flex-shrink-0 text-[10px] font-mono">
+                    {c.impact.ects > 0 && (
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                        +{c.impact.ects} ECTS
+                      </span>
+                    )}
+                    {c.impact.ethics > 0 ? (
+                      <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+                        +{c.impact.ethics}% Éthique
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                        {c.impact.ethics}% Éthique
+                      </span>
+                    )}
+                  </div>
                 </button>
               ))}
             </div>
-
-            {/* Feedback History Log */}
-            {historyLog.length > 0 && (
-              <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400 font-mono">
-                <strong className="text-emerald-400 block mb-0.5">Dernier résultat :</strong>
-                {historyLog[0].feedback}
-              </div>
-            )}
           </>
         ) : isGameOver ? (
-          <div className="my-auto text-center space-y-4 animate-in zoom-in-95">
-            <Frown className="w-16 h-16 text-rose-500 mx-auto animate-bounce" />
-            <h3 className="text-2xl font-bold text-white">Conseil de Discipline : Échec Académique</h3>
-            <p className="text-xs text-slate-300 max-w-md mx-auto leading-relaxed">
-              Votre jauge d'éthique est tombée trop bas. L'accumulation de raccourcis faciles et de délégation aveugle a annulé votre session.
+          /* Game Over Screen */
+          <div className="my-auto p-6 rounded-3xl bg-slate-950/95 border-2 border-rose-500 text-center space-y-4 shadow-2xl animate-in zoom-in-95">
+            <div className="w-16 h-16 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto border border-rose-500/40 shadow-lg shadow-rose-500/30">
+              <Frown className="w-8 h-8" />
+            </div>
+            <h2 className="text-xl font-['Outfit'] font-black text-rose-200">
+              Échec : Ajournement par le Jury d'Éthique
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300 max-w-md mx-auto leading-relaxed">
+              Votre jauge d'intégrité est tombée trop bas. La délégation aveugle de vos travaux aux modèles génératifs a détruit votre capacité d'apprentissage critique.
             </p>
             <button
               onClick={() => {
                 setStats({ energy: 80, ethics: 75, competence: 50, ects: 12 });
                 setCurrentChapterIdx(0);
                 setIsGameOver(false);
-                setHistoryLog([]);
               }}
-              className="px-6 py-2.5 rounded-xl bg-rose-600 text-white font-bold text-xs uppercase"
+              className="px-6 py-3 rounded-2xl bg-gradient-to-r from-rose-600 to-amber-600 hover:scale-105 text-white font-bold text-xs uppercase transition shadow-lg cursor-pointer"
             >
-              Recommencer l'Année Académique
+              Recommencer l'Année Académique ↺
             </button>
           </div>
         ) : (
-          <div className="my-auto text-center space-y-4 animate-in zoom-in-95">
-            <ShieldCheck className="w-16 h-16 text-emerald-400 mx-auto animate-bounce" />
-            <h3 className="text-2xl font-bold text-white">Survivant Connecté d'Excellence !</h3>
-            <p className="text-xs text-slate-300 max-w-md mx-auto leading-relaxed">
-              Vous avez traversé l'année en utilisant le numérique comme catalyseur d'autonomie sans jamais brader votre esprit critique.
-            </p>
-            <div className="p-3 bg-emerald-950/80 rounded-xl border border-emerald-500 text-xs font-mono font-bold text-emerald-300">
-              CLÉ GAMMA (SOBRIÉTÉ & MÉTHODE ACADÉMIQUE) DÉBLOQUÉE !
+          /* Victory Screen */
+          <div className="my-auto p-6 rounded-3xl bg-slate-950/95 border-2 border-emerald-400 text-center space-y-4 shadow-2xl animate-in zoom-in-95">
+            <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center mx-auto border border-emerald-400/50 shadow-lg shadow-emerald-500/40">
+              <GraduationCap className="w-9 h-9" />
             </div>
+            <h2 className="text-2xl font-['Outfit'] font-black text-emerald-200">
+              Félicitations : Diplôme du Bloc 1 Validé !
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300 max-w-lg mx-auto leading-relaxed">
+              Vous avez franchi toutes les étapes de l'année en conservant une posture éthique et éclairée. Les 60 crédits ECTS sont validés avec mention.
+            </p>
+            <div className="p-3 rounded-2xl bg-emerald-950/50 border border-emerald-500/40 text-emerald-300 text-xs font-mono font-bold max-w-sm mx-auto">
+              🏆 CLÉ GAMMA (SOBRIÉTÉ & RGPD) ACQUISE
+            </div>
+          </div>
+        )}
+
+        {/* History Log Snippets */}
+        {historyLog.length > 0 && !isGameOver && !isVictory && (
+          <div className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800 text-[11px] font-sans text-slate-400">
+            <strong className="text-emerald-400 font-mono block text-[10px] uppercase mb-1">
+              Dernier retour pédagogique :
+            </strong>
+            <p className="italic">« {historyLog[0].feedback} »</p>
           </div>
         )}
 

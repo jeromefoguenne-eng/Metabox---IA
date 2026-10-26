@@ -111,39 +111,68 @@ export default function Courtroom3DCanvas({
 
     container.appendChild(renderer.domElement);
 
-    // 2. Éclairage Studio & Volumétrique TV
-    const ambientLight = new THREE.AmbientLight(0xffeedd, 0.85);
+    // 2. Éclairage Studio & Volumétrique TV Haute Fidélité
+    const ambientLight = new THREE.AmbientLight(0xffeedd, 0.95);
     scene.add(ambientLight);
 
     // Projecteur Principal (Soleil zénithal chaud)
-    const keySpot = new THREE.SpotLight(0xfff5e6, 2.4);
-    keySpot.position.set(2, 9, 5);
-    keySpot.angle = Math.PI / 4.5;
-    keySpot.penumbra = 0.6;
+    const keySpot = new THREE.SpotLight(0xfff5e6, 3.2);
+    keySpot.position.set(2, 10, 6);
+    keySpot.angle = Math.PI / 4.2;
+    keySpot.penumbra = 0.55;
     keySpot.castShadow = true;
     keySpot.shadow.mapSize.width = 1024;
     keySpot.shadow.mapSize.height = 1024;
     scene.add(keySpot);
 
     // Éclairage de bordure (Cyan Rim Light TV)
-    const rimLight = new THREE.DirectionalLight(0x38bdf8, 1.2);
-    rimLight.position.set(-6, 4, -4);
+    const rimLight = new THREE.DirectionalLight(0x38bdf8, 1.6);
+    rimLight.position.set(-7, 5, -3);
     scene.add(rimLight);
 
-    // Éclairage violet solennel sur le fond
-    const backFill = new THREE.PointLight(0xa855f7, 1.0, 15);
-    backFill.position.set(0, 5, -8);
+    // Éclairage chaud d'ambiance sur l'estrade du Juge
+    const judgeSpot = new THREE.SpotLight(0xfef08a, 2.0);
+    judgeSpot.position.set(0, 8, -3);
+    judgeSpot.target.position.set(0, 3, -5);
+    scene.add(judgeSpot);
+    scene.add(judgeSpot.target);
+
+    // Éclairage violet/indigo solennel sur le fond
+    const backFill = new THREE.PointLight(0x818cf8, 1.4, 20);
+    backFill.position.set(0, 6, -8);
     scene.add(backFill);
 
-    // 3. Matériaux Partagés
-    const woodMahogany = new THREE.MeshStandardMaterial({ color: 0x451a14, roughness: 0.45, metalness: 0.1 });
-    const woodLight = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.5, metalness: 0.05 });
-    const floorParquet = new THREE.MeshStandardMaterial({ color: 0x1e1512, roughness: 0.35, metalness: 0.15 });
-    const goldMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.25, metalness: 0.85 });
-    const clothBlack = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.85, metalness: 0.05 });
-    const clothWhite = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.6 });
-    const skinTone = new THREE.MeshStandardMaterial({ color: 0xfbcfe8, roughness: 0.6 });
-    const metalDark = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.3, metalness: 0.7 });
+    // Particules de poussière atmosphérique / Rayons volumétriques
+    const dustCount = 140;
+    const dustGeo = new THREE.BufferGeometry();
+    const dustPositions = new Float32Array(dustCount * 3);
+    for (let i = 0; i < dustCount * 3; i += 3) {
+      dustPositions[i] = (Math.random() - 0.5) * 16;
+      dustPositions[i + 1] = Math.random() * 8 + 0.5;
+      dustPositions[i + 2] = (Math.random() - 0.5) * 14 - 1;
+    }
+    dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
+    const dustMat = new THREE.PointsMaterial({
+      color: 0xfde047,
+      size: 0.06,
+      transparent: true,
+      opacity: 0.45,
+      blending: THREE.AdditiveBlending
+    });
+    const dustParticles = new THREE.Points(dustGeo, dustMat);
+    scene.add(dustParticles);
+
+    // 3. Matériaux Partagés Haute Fidélité
+    const woodMahogany = new THREE.MeshStandardMaterial({ color: 0x3b140e, roughness: 0.35, metalness: 0.15 });
+    const woodLight = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.4, metalness: 0.08 });
+    const floorParquet = new THREE.MeshStandardMaterial({ color: 0x18100e, roughness: 0.22, metalness: 0.32 });
+    const goldMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.2, metalness: 0.92 });
+    const clothBlack = new THREE.MeshStandardMaterial({ color: 0x090d16, roughness: 0.85, metalness: 0.05 });
+    const clothWhite = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.5 });
+    const clothRed = new THREE.MeshStandardMaterial({ color: 0x991b1b, roughness: 0.35, metalness: 0.1 });
+    const clothNavy = new THREE.MeshStandardMaterial({ color: 0x1e1b4b, roughness: 0.6, metalness: 0.1 });
+    const skinTone = new THREE.MeshStandardMaterial({ color: 0xfbcfe8, roughness: 0.55 });
+    const metalDark = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.25, metalness: 0.85 });
 
     // 4. Architecture de la Salle d'Audience (Tribunal HECh 2030)
     // Sol Parquet
@@ -218,7 +247,7 @@ export default function Courtroom3DCanvas({
     scaleBeam.position.set(-1.4, 3.1, -4.2);
     scene.add(scaleBeam);
 
-    // 6. Personnage 3D : LE JUGE (Animé)
+    // 6. Personnage 3D : LE JUGE (Animé Haute Définition)
     const judgeGroup = new THREE.Group();
     judgeGroup.position.set(0, 0.9, -5.2);
 
@@ -234,12 +263,29 @@ export default function Courtroom3DCanvas({
     collar.position.set(0, 2.3, 0.2);
     judgeGroup.add(collar);
 
+    // Rabat de Magistrat (Jabot plissé blanc)
+    const jabotGeo = new THREE.BoxGeometry(0.28, 0.5, 0.06);
+    const jabot = new THREE.Mesh(jabotGeo, clothWhite);
+    jabot.position.set(0, 1.9, 0.42);
+    jabot.rotation.x = 0.1;
+    judgeGroup.add(jabot);
+
     // Tête du Juge
     const judgeHeadGroup = new THREE.Group();
     judgeHeadGroup.position.set(0, 2.8, 0);
     const headGeo = new THREE.BoxGeometry(0.5, 0.55, 0.5);
     const head = new THREE.Mesh(headGeo, skinTone);
     judgeHeadGroup.add(head);
+
+    // Yeux expressifs du Juge
+    const eyeGeo = new THREE.SphereGeometry(0.035, 8, 8);
+    const eyeMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
+    const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
+    eyeL.position.set(-0.12, 0.08, 0.26);
+    judgeHeadGroup.add(eyeL);
+    const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
+    eyeR.position.set(0.12, 0.08, 0.26);
+    judgeHeadGroup.add(eyeR);
 
     // Cheveux blancs / perruque magistrate
     const hairGeo = new THREE.BoxGeometry(0.56, 0.35, 0.54);
@@ -250,7 +296,7 @@ export default function Courtroom3DCanvas({
     // Lunettes dorées
     const glassesGeo = new THREE.BoxGeometry(0.42, 0.1, 0.1);
     const glasses = new THREE.Mesh(glassesGeo, goldMat);
-    glasses.position.set(0, 0.05, 0.26);
+    glasses.position.set(0, 0.05, 0.27);
     judgeHeadGroup.add(glasses);
 
     // Bouche expressive du Juge (Sourire vs Moue)
@@ -367,21 +413,34 @@ export default function Courtroom3DCanvas({
     defBench.rotation.y = -Math.PI / 6;
     scene.add(defBench);
 
+    // Tablette / Dossier numérique de la Défense sur le pupitre
+    const defTabletGeo = new THREE.BoxGeometry(0.5, 0.03, 0.35);
+    const defTabletMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+    const defTablet = new THREE.Mesh(defTabletGeo, defTabletMat);
+    defTablet.position.set(4.4, 1.15, 0.5);
+    defTablet.rotation.y = -Math.PI / 6;
+    scene.add(defTablet);
+
     // Avocat de la Défense (Joueur)
     const defGroup = new THREE.Group();
     defGroup.position.set(4.3, 0, -0.2);
     defGroup.rotation.y = -Math.PI / 6;
 
-    const defLawyer = new THREE.Mesh(new THREE.BoxGeometry(0.55, 1.2, 0.4), new THREE.MeshStandardMaterial({ color: 0x475569 }));
+    const defLawyer = new THREE.Mesh(new THREE.BoxGeometry(0.55, 1.2, 0.4), clothNavy);
     defLawyer.position.y = 1.35;
     defGroup.add(defLawyer);
+
+    // Cravate bleue défense
+    const defTie = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.4, 0.05), new THREE.MeshStandardMaterial({ color: 0x0284c7 }));
+    defTie.position.set(0, 1.5, 0.22);
+    defGroup.add(defTie);
 
     const defHead = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.45, 0.4), skinTone);
     defHead.position.y = 2.15;
     defGroup.add(defHead);
     defHeadRef.current = defHead;
 
-    const defArm = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.65, 0.18), new THREE.MeshStandardMaterial({ color: 0x475569 }));
+    const defArm = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.65, 0.18), clothNavy);
     defArm.position.set(-0.35, 1.4, 0.1);
     defGroup.add(defArm);
     defArmRef.current = defArm;
@@ -394,23 +453,48 @@ export default function Courtroom3DCanvas({
     prosBench.rotation.y = Math.PI / 6;
     scene.add(prosBench);
 
+    // Dossier d'accusation rouge scellé du Ministère Public
+    const prosDossierGeo = new THREE.BoxGeometry(0.55, 0.08, 0.4);
+    const prosDossier = new THREE.Mesh(prosDossierGeo, clothRed);
+    prosDossier.position.set(-4.4, 1.15, 0.5);
+    prosDossier.rotation.y = Math.PI / 6;
+    scene.add(prosDossier);
+
     const prosGroup = new THREE.Group();
     prosGroup.position.set(-4.3, 0, -0.2);
     prosGroup.rotation.y = Math.PI / 6;
 
-    const prosLawyer = new THREE.Mesh(new THREE.BoxGeometry(0.55, 1.2, 0.4), new THREE.MeshStandardMaterial({ color: 0x1e1b4b }));
+    const prosLawyer = new THREE.Mesh(new THREE.BoxGeometry(0.55, 1.2, 0.4), clothBlack);
     prosLawyer.position.y = 1.35;
     prosGroup.add(prosLawyer);
+
+    // Cravate rouge bordeaux accusatrice du Procureur
+    const prosTie = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.45, 0.05), clothRed);
+    prosTie.position.set(0, 1.5, 0.22);
+    prosGroup.add(prosTie);
 
     const prosHead = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.45, 0.4), skinTone);
     prosHead.position.y = 2.15;
     prosGroup.add(prosHead);
     prosHeadRef.current = prosHead;
 
-    const prosArm = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.65, 0.18), new THREE.MeshStandardMaterial({ color: 0x1e1b4b }));
-    prosArm.position.set(0.35, 1.4, 0.1);
-    prosGroup.add(prosArm);
-    prosArmRef.current = prosArm;
+    // Bras articulé avec doigt accusateur pointé
+    const prosArmGroup = new THREE.Group();
+    prosArmGroup.position.set(0.35, 1.7, 0.1);
+
+    const prosArm = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.65, 0.18), clothBlack);
+    prosArm.position.set(0, -0.3, 0);
+    prosArmGroup.add(prosArm);
+
+    // Doigt accusateur tendu
+    const fingerGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.2, 6);
+    const finger = new THREE.Mesh(fingerGeo, skinTone);
+    finger.position.set(0, -0.65, 0.15);
+    finger.rotation.x = Math.PI / 3;
+    prosArmGroup.add(finger);
+
+    prosGroup.add(prosArmGroup);
+    prosArmRef.current = prosArmGroup;
 
     scene.add(prosGroup);
 
@@ -422,11 +506,18 @@ export default function Courtroom3DCanvas({
     const holoScreenMat = new THREE.MeshBasicMaterial({
       color: 0x06b6d4,
       transparent: true,
-      opacity: 0.28,
+      opacity: 0.32,
       side: THREE.DoubleSide
     });
     const holoScreen = new THREE.Mesh(holoScreenGeo, holoScreenMat);
     holoGroup.add(holoScreen);
+
+    // Ligne de balayage laser holographique (Scanner)
+    const scanLaserGeo = new THREE.PlaneGeometry(2.7, 0.04);
+    const scanLaserMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, side: THREE.DoubleSide, transparent: true, opacity: 0.8 });
+    const scanLaser = new THREE.Mesh(scanLaserGeo, scanLaserMat);
+    scanLaser.position.z = 0.02;
+    holoGroup.add(scanLaser);
 
     // Cadre cyber lumineux
     const holoFrameGeo = new THREE.RingGeometry(1.4, 1.45, 4);
@@ -443,7 +534,7 @@ export default function Courtroom3DCanvas({
     holoGroup.add(dataCube);
 
     scene.add(holoGroup);
-    holoScreenRef.current = { group: holoGroup, cube: dataCube };
+    holoScreenRef.current = { group: holoGroup, cube: dataCube, laser: scanLaser };
 
     // 12. Gouttes de sueur 3D (pour état stressé/objection)
     const sweatGeo = new THREE.SphereGeometry(0.04, 6, 6);
@@ -503,12 +594,15 @@ export default function Courtroom3DCanvas({
       currentLookTarget.lerp(targetCamLook.current, 0.06);
       camera.lookAt(currentLookTarget);
 
-      // Animation Hologramme (rotation douce + pulsation)
+      // Animation Hologramme (rotation douce + pulsation + scan laser)
       if (holoScreenRef.current) {
         holoScreenRef.current.group.rotation.y = Math.sin(elapsedTime * 0.8) * 0.12;
         holoScreenRef.current.group.position.y = 3.8 + Math.sin(elapsedTime * 1.5) * 0.08;
         holoScreenRef.current.cube.rotation.x += 0.02;
         holoScreenRef.current.cube.rotation.y += 0.03;
+        if (holoScreenRef.current.laser) {
+          holoScreenRef.current.laser.position.y = Math.sin(elapsedTime * 3) * 0.7;
+        }
       }
 
       // Animation du Témoin selon son état émotionnel

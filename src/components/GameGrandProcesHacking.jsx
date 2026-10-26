@@ -82,8 +82,8 @@ export default function GameGrandProcesHacking({ onComplete }) {
       title: 'Assaut 1/6 : Sabotage Énergétique & Coût du Réseau',
       prosecutorVoice: 'proces_procureur_assaut_1',
       maximeVoice: 'proces_maxime_defense_1',
-      charge: 'Le Procureur accuse Maxime d avoir paralysé l infrastructure par pur vandalisme d adolescent.',
-      prosecutorQuote: "« Monsieur le Juge ! Ce prévenu a coupé brutalement les serveurs du campus en pleine semaine de cours ! Il a causé une désorganisation totale par pur vandalisme ! Je réclame l'exclusion définitive immédiate ! »",
+      charge: 'Le Procureur accuse Maxime d avoir paralysé l infrastructure par vandalisme et réclame son incarcération pour trouble grave à l ordre public.',
+      prosecutorQuote: "« Monsieur le Juge ! Ce prévenu a coupé brutalement les serveurs du campus en pleine semaine de cours ! Il a causé une désorganisation totale et un trouble intolérable à l'ordre public ! Je réclame un mandat de dépôt et son incarcération ferme immédiate pour trouble à l'ordre public ! »",
       maximeDefenseQuote: "« Ce n'était pas du vandalisme. Regardez les compteurs : en seulement 24 heures sans IA, le campus a économisé 45 000 litres d'eau de refroidissement et des mégawatts d'électricité gaspillés pour des requêtes futiles ! »",
       requiredType: 'eco',
       arguments: [
@@ -636,7 +636,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
 
                 <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-slate-300 space-y-2">
                   <div className="text-rose-400 font-bold">L'Accusation (Procureur du Roi) :</div>
-                  <p>Réclame l'exclusion immédiate et la prison ferme pour sabotage et cyber-terrorisme.</p>
+                  <p>Réclame un mandat de dépôt et son incarcération immédiate pour trouble grave à l'ordre public et cyber-sabotage.</p>
                   <div className="text-cyan-400 font-bold pt-1">Votre Mission (Avocat de la Défense) :</div>
                   <p>Invoquer les bons arguments parmi les QCM pour convaincre le juge (observez ses sourires et ses moues en direct !).</p>
                 </div>
