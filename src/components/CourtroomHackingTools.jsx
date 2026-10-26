@@ -82,11 +82,11 @@ export default function CourtroomHackingTools({
               onClick={() => setSliderEnergy(0)}
               className={`p-2.5 rounded-xl border text-xs font-mono transition text-left cursor-pointer ${
                 sliderEnergy === 0
-                  ? 'bg-rose-500/20 border-rose-500 text-rose-200'
-                  : 'bg-slate-900 border-slate-800 text-slate-400'
+                  ? 'bg-slate-800/90 border-cyan-500 text-slate-200 shadow-md ring-1 ring-cyan-500/30'
+                  : 'bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800/60'
               }`}
             >
-              <span className="block font-bold text-rose-300">Régime Normal (IA Active)</span>
+              <span className="block font-bold text-slate-200">Régime Normal (IA Active)</span>
               <span className="text-[10px] block mt-1">⚡ 14 200 kWh / sem</span>
               <span className="text-[10px] block">💧 48 500 L eau évaporée</span>
             </button>
@@ -103,13 +103,13 @@ export default function CourtroomHackingTools({
               }}
               className={`p-2.5 rounded-xl border text-xs font-mono transition text-left cursor-pointer ${
                 sliderEnergy === 1
-                  ? 'bg-emerald-500/20 border-emerald-500 text-emerald-200 shadow-md'
-                  : 'bg-slate-900 border-slate-800 text-slate-400'
+                  ? 'bg-slate-800/90 border-cyan-500 text-slate-200 shadow-md ring-1 ring-cyan-500/30'
+                  : 'bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800/60'
               }`}
             >
-              <span className="block font-bold text-emerald-300">Blackout 24h (Maxime)</span>
+              <span className="block font-bold text-slate-200">Blackout 24h (Maxime)</span>
               <span className="text-[10px] block mt-1">⚡ 0 kWh gaspillé</span>
-              <span className="text-[10px] block font-bold text-emerald-400">💧 45 000 L d'eau épargnés !</span>
+              <span className="text-[10px] block">💧 45 000 L d'eau épargnés</span>
             </button>
           </div>
         </div>
@@ -197,26 +197,26 @@ export default function CourtroomHackingTools({
               }}
               className={`flex-1 p-2.5 rounded-xl border text-xs font-mono transition text-left cursor-pointer ${
                 readingMode === 'NO_AI'
-                  ? 'bg-purple-500/20 border-purple-400 text-purple-200'
-                  : 'bg-slate-900 border-slate-800 text-slate-400'
+                  ? 'bg-slate-800/90 border-purple-400 text-purple-200 shadow-md ring-1 ring-purple-400/30'
+                  : 'bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800/60'
               }`}
             >
-              <span className="block font-bold text-purple-300">Pendant le Blackout</span>
+              <span className="block font-bold text-slate-200">Pendant le Blackout</span>
               <span className="text-[10px] block mt-1">📚 Débats en groupe : +140%</span>
-              <span className="text-[10px] block text-emerald-400">✨ Réveil de la réflexion humaine</span>
+              <span className="text-[10px] block text-cyan-400">Réveil de la réflexion humaine</span>
             </button>
 
             <button
               onClick={() => setReadingMode('PROMPT')}
               className={`flex-1 p-2.5 rounded-xl border text-xs font-mono transition text-left cursor-pointer ${
                 readingMode === 'PROMPT'
-                  ? 'bg-rose-500/20 border-rose-400 text-rose-200'
-                  : 'bg-slate-900 border-slate-800 text-slate-400'
+                  ? 'bg-slate-800/90 border-purple-400 text-purple-200 shadow-md ring-1 ring-purple-400/30'
+                  : 'bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800/60'
               }`}
             >
-              <span className="block font-bold text-rose-300">Sous Dépendance IA</span>
+              <span className="block font-bold text-slate-200">Sous Dépendance IA</span>
               <span className="text-[10px] block mt-1">🤖 Délégation cognitive : 88%</span>
-              <span className="text-[10px] block text-rose-400">⚠️ Incapacité de rédiger seul</span>
+              <span className="text-[10px] block text-slate-400">Incapacité de rédiger seul</span>
             </button>
           </div>
         </div>

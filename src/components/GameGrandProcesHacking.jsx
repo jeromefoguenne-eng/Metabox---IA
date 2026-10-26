@@ -57,6 +57,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
   const [prosecutorPanic, setProsecutorPanic] = useState(10);
   const [currentEvidenceReady, setCurrentEvidenceReady] = useState(null);
   const [selectedArgument, setSelectedArgument] = useState(null);
+  const [isPleadingConfirmed, setIsPleadingConfirmed] = useState(false);
 
   // Tableau des 6 piliers validés ou non (pour la cinématique finale)
   const [elementsProven, setElementsProven] = useState({
@@ -405,6 +406,8 @@ export default function GameGrandProcesHacking({ onComplete }) {
     setCameraView('PROSECUTION');
     setProsecutorState('attacking');
     setJudgeReaction('neutral');
+    setSelectedArgument(null);
+    setIsPleadingConfirmed(false);
     sounds.playAudioFile(`/audio/voices/${currentAssault.prosecutorVoice}.mp3`, 1.0);
 
     // Dans l'assaut 1, après l'emportement du procureur qui réclame la prison, le juge tape du marteau et exige le silence
@@ -424,6 +427,8 @@ export default function GameGrandProcesHacking({ onComplete }) {
     setCameraView('TV_WIDE');
     setProsecutorState('idle');
     setJudgeReaction('neutral');
+    setSelectedArgument(null);
+    setIsPleadingConfirmed(false);
     sounds.playTensionHeartbeat();
   };
 
@@ -439,43 +444,36 @@ export default function GameGrandProcesHacking({ onComplete }) {
     setCameraView('DEFENSE');
     setDefenseState('pleading');
     setJudgeReaction('neutral');
+    setSelectedArgument(null);
+    setIsPleadingConfirmed(false);
     sounds.playObjectionImpact();
   };
 
-  // Choix d'un argument dans le QCM à 4 options (Pré-visualisation de la réaction du juge)
+  // Choix d'un argument dans le QCM : SELECTION STRICTEMENT NEUTRE SANS DÉVOILER ROUGE OU VERT
   const handleSelectArgument = (arg) => {
-    sounds.stopAllVoice();
+    if (isPleadingConfirmed) return; // Verrouillé après confirmation
+    sounds.playPop();
     setSelectedArgument(arg);
+    setDefenseState('pleading');
+    // Le juge et la cour restent neutres : aucun spoil visuel ou sonore
+    setJudgeReaction('neutral');
+  };
 
-    if (arg.isCorrect) {
-      // Effet positif : Sourire approbateur du Juge + Hochement de tête 3D
+  // Confirmation solennelle de la plaidoirie devant la Cour : MOMENT DE L'ÉVALUATION ET DE LA RÉVÉLATION
+  const handleConfirmPleading = () => {
+    if (!selectedArgument || isPleadingConfirmed) return;
+    setIsPleadingConfirmed(true);
+    sounds.stopAllVoice();
+
+    if (selectedArgument.isCorrect) {
+      // 1. Révélation Favorable : Sourire approbateur du Juge + Hochement de tête 3D
       setJudgeReaction('smile');
       setCameraView('JUDGE');
       setWitnessState('confident');
       setProsecutorState('idle');
       sounds.playSuccess();
       sounds.playAudioFile('/audio/voices/proces_judge_approbation.mp3', 1.0);
-    } else {
-      // Effet négatif : Moue du Juge + Secouement de tête + Murmure du public + Inquiétude de Maxime
-      setJudgeReaction('frown');
-      setCameraView('JUDGE');
-      setWitnessState('stressed');
-      setProsecutorState('attacking');
-      sounds.playWrong();
-      sounds.playCourtroomMurmur(2.5);
-      sounds.playAudioFile('/audio/voices/proces_judge_reprimande.mp3', 1.0);
-    }
-  };
 
-  // Confirmation définitive de la plaidoirie choisie par l'avocat (bonne ou mauvaise !)
-  const handleConfirmArgument = () => {
-    if (!selectedArgument) return;
-    sounds.stopAllVoice();
-
-    if (selectedArgument.isCorrect) {
-      // Validation du bon argument
-      sounds.playSuccess();
-      sounds.playAudioFile('/audio/voices/proces_judge_approbation.mp3', 1.0);
       setJudgeConviction(prev => Math.min(100, prev + selectedArgument.gain));
       setCriticalScore(prev => Math.min(100, prev + 10));
       setProsecutorPanic(prev => Math.min(100, prev + 15));
@@ -491,42 +489,43 @@ export default function GameGrandProcesHacking({ onComplete }) {
         setCameraView('WITNESS');
         setWitnessState('confident');
         sounds.playAudioFile(`/audio/voices/${currentAssault.maximeVoice}.mp3`, 1.0);
-      }, 1400);
+      }, 1800);
     } else {
-      // L'avocat assume sa mauvaise solution : Conséquences réelles !
+      // 2. Révélation Défavorable : Moue réprobatrice du Juge + Coup de marteau + Rejet
+      setJudgeReaction('frown');
+      setJudgeState('gavel');
+      setCameraView('JUDGE');
+      setWitnessState('stressed');
+      setProsecutorState('attacking');
+      sounds.playWrong();
       sounds.playGavelStrike();
+      sounds.playCourtroomMurmur(2.5);
       sounds.playAudioFile('/audio/voices/proces_judge_reprimande.mp3', 1.0);
+
       setJudgeConviction(prev => Math.max(5, prev + selectedArgument.gain));
       setCriticalScore(prev => Math.max(5, prev - 8));
       setProsecutorPanic(prev => Math.max(0, prev - 12));
 
-      // Le motif est définitivement ÉCARTÉ du grand livre !
+      // Le motif est définitivement ÉCARTÉ du grand livre
       setElementsProven(prev => ({
         ...prev,
         [currentAssault.requiredType]: false
       }));
 
-      // Basculer vers l'écran de réprimande judiciaire (reaction_fail)
-      setStage('reaction_fail');
-      setCameraView('JUDGE');
-      setJudgeState('speaking');
+      // Basculer vers l'écran de réprimande judiciaire
+      sounds.scheduleTimeout(() => {
+        setStage('reaction_fail');
+        setCameraView('JUDGE');
+        setJudgeState('speaking');
+      }, 2000);
     }
-  };
-
-  // Annuler le choix sélectionné pour réfléchir à nouveau
-  const handleCancelSelectedArgument = () => {
-    sounds.playPop();
-    setSelectedArgument(null);
-    setJudgeReaction('neutral');
-    setWitnessState('idle');
-    setProsecutorState('idle');
-    setCameraView('DEFENSE');
   };
 
   // Passer à l'assaut suivant ou démarrer la grande cinématique du Juge
   const handleNextAssault = () => {
     sounds.stopAllVoice();
     setSelectedArgument(null);
+    setIsPleadingConfirmed(false);
     setCurrentEvidenceReady(null);
     setJudgeReaction('neutral');
 
@@ -798,7 +797,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
               <div className="space-y-2.5">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                   <span className="text-xs font-mono text-cyan-400 font-bold uppercase">
-                    QCM de Défense (4 Options)
+                    Plaidoirie de la Défense (4 Options)
                   </span>
                   <span className="text-[10px] font-mono text-amber-300">
                     Preuve : {currentEvidenceReady?.title}
@@ -806,52 +805,72 @@ export default function GameGrandProcesHacking({ onComplete }) {
                 </div>
 
                 <p className="text-xs text-slate-300 leading-relaxed font-sans">
-                  Choisissez une argumentation juridique (observez en direct les réactions du Juge 3D) :
+                  Sélectionnez votre ligne de défense puis soumettez-la solennellement au Tribunal :
                 </p>
 
                 <div className="space-y-2.5">
                   {currentAssault.arguments.map((arg, idx) => {
                     const isSelected = selectedArgument?.id === arg.id;
                     const letterBadges = ['A', 'B', 'C', 'D'];
+
+                    // Styles strictement neutres avant confirmation (zéro indice rouge/vert)
+                    let cardStyle = 'bg-slate-950/90 hover:bg-slate-800/80 border-slate-800 text-slate-300';
+                    let badgeStyle = 'bg-slate-800 text-slate-300';
+
+                    if (isSelected && !isPleadingConfirmed) {
+                      cardStyle = 'bg-indigo-950/70 border-indigo-500 text-indigo-100 ring-2 ring-indigo-500/40 shadow-xl';
+                      badgeStyle = 'bg-indigo-600 text-white font-bold';
+                    } else if (isSelected && isPleadingConfirmed) {
+                      if (arg.isCorrect) {
+                        cardStyle = 'bg-emerald-950/90 border-emerald-500 text-emerald-100 ring-2 ring-emerald-500/50 shadow-xl';
+                        badgeStyle = 'bg-emerald-500 text-slate-950 font-black';
+                      } else {
+                        cardStyle = 'bg-rose-950/90 border-rose-500 text-rose-100 ring-2 ring-rose-500/50 shadow-xl';
+                        badgeStyle = 'bg-rose-500 text-white font-black';
+                      }
+                    }
+
                     return (
                       <div
                         key={arg.id}
                         onClick={() => handleSelectArgument(arg)}
-                        className={`p-3.5 rounded-2xl border transition-all cursor-pointer text-left relative ${
-                          isSelected
-                            ? arg.isCorrect
-                              ? 'bg-emerald-950/80 border-emerald-500 text-emerald-100 shadow-xl ring-2 ring-emerald-500/30'
-                              : 'bg-rose-950/80 border-rose-500 text-rose-100 shadow-xl ring-2 ring-rose-500/30'
-                            : 'bg-slate-950/90 hover:bg-slate-800/80 border-slate-800 text-slate-300'
-                        }`}
+                        className={`p-3.5 rounded-2xl border transition-all text-left relative ${
+                          isPleadingConfirmed ? 'cursor-default' : 'cursor-pointer'
+                        } ${cardStyle}`}
                       >
                         <div className="flex items-center justify-between font-bold text-xs mb-1.5">
                           <div className="flex items-center gap-2">
-                            <span className={`w-5 h-5 rounded-md flex items-center justify-center font-mono text-[10px] font-black ${
-                              isSelected
-                                ? arg.isCorrect ? 'bg-emerald-500 text-slate-950' : 'bg-rose-500 text-white'
-                                : 'bg-slate-800 text-slate-300'
-                            }`}>
+                            <span className={`w-5 h-5 rounded-md flex items-center justify-center font-mono text-[10px] ${badgeStyle}`}>
                               {letterBadges[idx]}
                             </span>
                             <span className="text-slate-100 font-semibold">{arg.title}</span>
                           </div>
-                          {isSelected && (
+
+                          {/* Statut neutre avant confirmation / Révélé après délibération */}
+                          {isSelected && !isPleadingConfirmed && (
+                            <span className="text-[10px] font-mono text-indigo-300 font-bold bg-indigo-950/60 px-2 py-0.5 rounded-full border border-indigo-500/40">
+                              Ligne Sélectionnée
+                            </span>
+                          )}
+                          {isSelected && isPleadingConfirmed && (
                             arg.isCorrect ? (
-                              <span className="flex items-center gap-1 text-[10px] font-mono text-emerald-400 font-bold bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/40">
-                                <CheckCircle2 className="w-3.5 h-3.5" /> Favorable au Juge
+                              <span className="flex items-center gap-1 text-[10px] font-mono text-emerald-400 font-bold bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-500/50">
+                                <CheckCircle2 className="w-3.5 h-3.5" /> Favorable au Juge (+15%)
                               </span>
                             ) : (
-                              <span className="flex items-center gap-1 text-[10px] font-mono text-rose-400 font-bold bg-rose-950/60 px-2 py-0.5 rounded-full border border-rose-500/40">
-                                <AlertTriangle className="w-3.5 h-3.5" /> Moue Réprobatrice
+                              <span className="flex items-center gap-1 text-[10px] font-mono text-rose-400 font-bold bg-rose-950/80 px-2 py-0.5 rounded-full border border-rose-500/50">
+                                <AlertTriangle className="w-3.5 h-3.5" /> Moue Réprobatrice (-5%)
                               </span>
                             )
                           )}
                         </div>
+
                         <p className="text-[12px] opacity-85 font-sans leading-relaxed pl-7">
                           {arg.text}
                         </p>
-                        {isSelected && (
+
+                        {/* Révélation du verdict et feedback UNIQUEMENT après confirmation */}
+                        {isSelected && isPleadingConfirmed && (
                           <p className={`mt-2 ml-7 text-[11px] font-mono font-bold border-t border-slate-700/50 pt-1.5 ${
                             arg.isCorrect ? 'text-emerald-300' : 'text-rose-300'
                           }`}>
@@ -864,32 +883,30 @@ export default function GameGrandProcesHacking({ onComplete }) {
                 </div>
               </div>
 
-              {/* Barre d'Action : Confirmer la plaidoirie (bonne ou mauvaise) ou réviser */}
-              {selectedArgument && (
-                <div className="pt-2 border-t border-slate-800 space-y-2 animate-in fade-in">
+              {/* Bouton d'Action : Complètement neutre avant confirmation */}
+              {selectedArgument && !isPleadingConfirmed && (
+                <div className="pt-2 border-t border-slate-800 animate-in fade-in">
                   <button
-                    onClick={handleConfirmArgument}
-                    className={`w-full py-3 rounded-2xl font-black text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition shadow-lg ${
-                      selectedArgument.isCorrect
-                        ? 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 text-slate-950 shadow-emerald-500/20'
-                        : 'bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 text-white shadow-rose-600/30'
-                    }`}
+                    onClick={handleConfirmPleading}
+                    className="w-full py-3.5 rounded-2xl font-black text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition shadow-lg bg-gradient-to-r from-indigo-600 via-cyan-600 to-indigo-600 hover:from-indigo-500 hover:to-cyan-500 text-white shadow-indigo-600/30"
                   >
-                    {selectedArgument.isCorrect ? (
-                      <>⚖️ Valider cette Plaidoirie Approuvée →</>
-                    ) : (
-                      <>⚠️ Assumer cette Plaidoirie malgré la Moue du Juge →</>
-                    )}
+                    <Scale className="w-4 h-4" /> Plaider cette ligne de défense devant la Cour →
                   </button>
+                </div>
+              )}
 
-                  {!selectedArgument.isCorrect && (
-                    <button
-                      onClick={handleCancelSelectedArgument}
-                      className="w-full py-2 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-300 text-xs font-mono transition cursor-pointer"
-                    >
-                      ← Choisir une autre formulation
-                    </button>
-                  )}
+              {/* Message de délibération pendant l'évaluation */}
+              {isPleadingConfirmed && (
+                <div className="pt-2 border-t border-slate-800 animate-in fade-in">
+                  <div className={`w-full py-3 rounded-2xl font-mono text-xs font-bold uppercase text-center flex items-center justify-center gap-2 border ${
+                    selectedArgument.isCorrect
+                      ? 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300'
+                      : 'bg-rose-950/80 border-rose-500/50 text-rose-300'
+                  }`}>
+                    {selectedArgument.isCorrect
+                      ? '⚖️ Délibération : Argument Validé par le Tribunal...'
+                      : '⚖️ Délibération : Objection Retenue par la Cour...'}
+                  </div>
                 </div>
               )}
             </div>
