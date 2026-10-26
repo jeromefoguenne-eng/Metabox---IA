@@ -117,8 +117,10 @@ export default function Courtroom3DCanvas({
   defenseState = 'idle',     // 'idle' | 'pleading'
   judgeState = 'idle',       // 'idle' | 'speaking' | 'gavel'
   judgeReaction = 'neutral', // 'neutral' | 'smile' | 'frown'
+  audienceState = 'idle',    // 'idle' | 'cheer' | 'boo' | 'shout_maxime' | 'uproar'
+  audienceShoutText = '',
   onGavelComplete,
-  cameraView = 'TV_WIDE',    // 'TV_WIDE' | 'JUDGE' | 'WITNESS' | 'DEFENSE' | 'PROSECUTION'
+  cameraView = 'TV_WIDE',    // 'TV_WIDE' | 'JUDGE' | 'WITNESS' | 'DEFENSE' | 'PROSECUTION' | 'AUDIENCE'
   onCameraChange
 }) {
   const mountRef = useRef(null);
@@ -154,6 +156,7 @@ export default function Courtroom3DCanvas({
   const defHeadRef = useRef(null);
   const shockwaveRef = useRef(null);
   const sweatParticlesRef = useRef([]);
+  const audienceMembersRef = useRef([]);
 
   // Refs dynamiques pour l'animation à 60 FPS sans recréation du canvas
   const witnessStateRef = useRef(witnessState);
@@ -161,12 +164,14 @@ export default function Courtroom3DCanvas({
   const defenseStateRef = useRef(defenseState);
   const judgeStateRef = useRef(judgeState);
   const judgeReactionRef = useRef(judgeReaction);
+  const audienceStateRef = useRef(audienceState);
 
   useEffect(() => { witnessStateRef.current = witnessState; }, [witnessState]);
   useEffect(() => { prosecutorStateRef.current = prosecutorState; }, [prosecutorState]);
   useEffect(() => { defenseStateRef.current = defenseState; }, [defenseState]);
   useEffect(() => { judgeStateRef.current = judgeState; }, [judgeState]);
   useEffect(() => { judgeReactionRef.current = judgeReaction; }, [judgeReaction]);
+  useEffect(() => { audienceStateRef.current = audienceState; }, [audienceState]);
 
   // État de la caméra cible pour interpolation fluide (Lerp)
   const targetCamPos = useRef(new THREE.Vector3(0, 5.5, 11));
@@ -181,7 +186,8 @@ export default function Courtroom3DCanvas({
     JUDGE: { pos: [0, 3.4, -2.4], look: [0, 3.8, -5.2] },
     WITNESS: { pos: [0, 2.2, 1.8], look: [0, 2.0, -0.65] },
     DEFENSE: { pos: [2.6, 2.4, 1.4], look: [4.4, 2.2, -0.2] },
-    PROSECUTION: { pos: [-2.6, 2.4, 1.4], look: [-4.4, 2.2, -0.2] }
+    PROSECUTION: { pos: [-2.6, 2.4, 1.4], look: [-4.4, 2.2, -0.2] },
+    AUDIENCE: { pos: [0, 2.5, 3.2], look: [0, 1.9, 7.8] } // Plan Caméra sur le Banc du Public
   };
 
   useEffect(() => {
@@ -440,6 +446,151 @@ export default function Courtroom3DCanvas({
     velvetRope.position.set(0, 0.95, 6.1);
     velvetRope.rotation.z = Math.PI / 2;
     scene.add(velvetRope);
+
+    // =========================================================================
+    // 4b. GRADINS & PUBLIC D'AUDIENCE DU TRIBUNAL (12 Spectateurs Expressifs)
+    // =========================================================================
+    // Gradin Rangée 1 (Élévation 0.35m)
+    const tier1Platform = new THREE.Mesh(new THREE.BoxGeometry(17, 0.40, 1.4), woodDarkOak);
+    tier1Platform.position.set(0, 0.20, 7.1);
+    tier1Platform.receiveShadow = true;
+    scene.add(tier1Platform);
+
+    const bench1 = new THREE.Mesh(new THREE.BoxGeometry(15.5, 0.45, 0.48), woodMahogany);
+    bench1.position.set(0, 0.62, 7.1);
+    scene.add(bench1);
+
+    const backrest1 = new THREE.Mesh(new THREE.BoxGeometry(15.5, 0.55, 0.08), woodMahogany);
+    backrest1.position.set(0, 1.05, 7.32);
+    scene.add(backrest1);
+
+    // Gradin Rangée 2 (Élévation 0.85m)
+    const tier2Platform = new THREE.Mesh(new THREE.BoxGeometry(17, 0.85, 1.6), woodDarkOak);
+    tier2Platform.position.set(0, 0.425, 8.5);
+    tier2Platform.receiveShadow = true;
+    scene.add(tier2Platform);
+
+    const bench2 = new THREE.Mesh(new THREE.BoxGeometry(15.5, 0.45, 0.48), woodMahogany);
+    bench2.position.set(0, 1.08, 8.5);
+    scene.add(bench2);
+
+    const backrest2 = new THREE.Mesh(new THREE.BoxGeometry(15.5, 0.55, 0.08), woodMahogany);
+    backrest2.position.set(0, 1.52, 8.72);
+    scene.add(backrest2);
+
+    // Palette variée pour le public (vêtements et coiffures)
+    const crowdClothMats = [
+      new THREE.MeshStandardMaterial({ color: 0x059669, roughness: 0.6 }), // Vert émeraude
+      new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.6 }), // Rouge bordeaux
+      new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.6 }), // Moutarde
+      new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.6 }), // Bleu
+      new THREE.MeshStandardMaterial({ color: 0x7c3aed, roughness: 0.6 }), // Violet
+      new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.6 })  // Cyan
+    ];
+    const crowdHairMats = [
+      new THREE.MeshStandardMaterial({ color: 0x1c1917, roughness: 0.5 }), // Noir
+      new THREE.MeshStandardMaterial({ color: 0x451a14, roughness: 0.8 }), // Châtain
+      new THREE.MeshStandardMaterial({ color: 0xb45309, roughness: 0.7 }), // Roux
+      new THREE.MeshStandardMaterial({ color: 0xfef08a, roughness: 0.6 })  // Blond
+    ];
+
+    const audienceMembers = [];
+    const spectatorPositions = [
+      // Rangée 1 (devant)
+      { x: -5.2, z: 7.0, baseY: 0.85 },
+      { x: -3.1, z: 7.0, baseY: 0.85 },
+      { x: -1.0, z: 7.0, baseY: 0.85 },
+      { x: 1.0, z: 7.0, baseY: 0.85 },
+      { x: 3.1, z: 7.0, baseY: 0.85 },
+      { x: 5.2, z: 7.0, baseY: 0.85 },
+      // Rangée 2 (arrière surélevée)
+      { x: -4.5, z: 8.4, baseY: 1.30 },
+      { x: -2.3, z: 8.4, baseY: 1.30 },
+      { x: -0.2, z: 8.4, baseY: 1.30 },
+      { x: 1.9, z: 8.4, baseY: 1.30 },
+      { x: 3.8, z: 8.4, baseY: 1.30 },
+      { x: 5.6, z: 8.4, baseY: 1.30 },
+    ];
+
+    spectatorPositions.forEach((pos, idx) => {
+      const specGroup = new THREE.Group();
+      specGroup.position.set(pos.x, pos.baseY, pos.z);
+
+      const clothMat = crowdClothMats[idx % crowdClothMats.length];
+      const hairMat = crowdHairMats[idx % crowdHairMats.length];
+      const skinMat = idx % 3 === 0 ? skinToneWitness : idx % 3 === 1 ? skinToneJudge : skinTonePros;
+
+      // Torso assis sculpté
+      const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.20, 0.65, 16), clothMat);
+      torso.position.y = 0.32;
+      specGroup.add(torso);
+
+      // Épaules
+      const shoulderL = new THREE.Mesh(new THREE.SphereGeometry(0.10, 12, 12), clothMat);
+      shoulderL.position.set(-0.25, 0.58, 0);
+      specGroup.add(shoulderL);
+      const shoulderR = new THREE.Mesh(new THREE.SphereGeometry(0.10, 12, 12), clothMat);
+      shoulderR.position.set(0.25, 0.58, 0);
+      specGroup.add(shoulderR);
+
+      // Tête sculptée
+      const headGroup = new THREE.Group();
+      headGroup.position.set(0, 0.82, 0);
+      const cranium = new THREE.Mesh(new THREE.SphereGeometry(0.16, 20, 18), skinMat);
+      cranium.scale.set(0.98, 1.15, 1.02);
+      headGroup.add(cranium);
+
+      // Cheveux
+      const hair = new THREE.Mesh(new THREE.SphereGeometry(0.17, 20, 18), hairMat);
+      hair.scale.set(1.02, 0.85, 1.06);
+      hair.position.set(0, 0.08, -0.02);
+      headGroup.add(hair);
+
+      // Yeux
+      const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 8), eyeWhite);
+      eyeL.position.set(-0.06, 0.03, 0.15);
+      headGroup.add(eyeL);
+      const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 8), eyeWhite);
+      eyeR.position.set(0.06, 0.03, 0.15);
+      headGroup.add(eyeR);
+
+      specGroup.add(headGroup);
+
+      // Bras gauche articulé (Pivot à l'épaule)
+      const leftArmGroup = new THREE.Group();
+      leftArmGroup.position.set(-0.25, 0.58, 0);
+      const lArm = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.045, 0.42, 12), clothMat);
+      lArm.position.set(0, -0.20, 0.08);
+      lArm.rotation.x = 0.35;
+      leftArmGroup.add(lArm);
+      const lHand = new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 10), skinMat);
+      lHand.position.set(0, -0.40, 0.16);
+      leftArmGroup.add(lHand);
+      specGroup.add(leftArmGroup);
+
+      // Bras droit articulé (Pivot à l'épaule)
+      const rightArmGroup = new THREE.Group();
+      rightArmGroup.position.set(0.25, 0.58, 0);
+      const rArm = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.045, 0.42, 12), clothMat);
+      rArm.position.set(0, -0.20, 0.08);
+      rArm.rotation.x = 0.35;
+      rightArmGroup.add(rArm);
+      const rHand = new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 10), skinMat);
+      rHand.position.set(0, -0.40, 0.16);
+      rightArmGroup.add(rHand);
+      specGroup.add(rightArmGroup);
+
+      scene.add(specGroup);
+      audienceMembers.push({
+        group: specGroup,
+        head: headGroup,
+        leftArm: leftArmGroup,
+        rightArm: rightArmGroup,
+        baseY: pos.baseY,
+        phase: (idx * 1.3) % 10
+      });
+    });
+    audienceMembersRef.current = audienceMembers;
 
     // 5. Estrade Surélevée & Pupitre Magistral du Juge
     const dais = new THREE.Mesh(new THREE.BoxGeometry(7.5, 0.9, 3.4), woodDarkOak);
@@ -1456,6 +1607,54 @@ export default function Courtroom3DCanvas({
         }
       }
 
+      // =========================================================================
+      // Animation Dynamique du Public (Applaudissements, Huées, Cris "Libérez Maxime")
+      // =========================================================================
+      const currentAudienceState = audienceStateRef.current;
+      audienceMembersRef.current.forEach((spec) => {
+        const p = spec.phase;
+        if (currentAudienceState === 'cheer') {
+          // Applaudissements nourris & ovation debout
+          spec.group.position.y = THREE.MathUtils.lerp(spec.group.position.y, spec.baseY + 0.18, 0.12);
+          spec.head.rotation.x = Math.sin(elapsedTime * 9 + p) * 0.14;
+          spec.head.rotation.y = Math.sin(elapsedTime * 4 + p) * 0.10;
+          // Bras levés qui applaudissent vigoureusement
+          spec.leftArm.rotation.x = -2.1 + Math.sin(elapsedTime * 14 + p) * 0.3;
+          spec.rightArm.rotation.x = -2.1 + Math.sin(elapsedTime * 14 + p) * 0.3;
+          spec.leftArm.rotation.z = 0.4 + Math.sin(elapsedTime * 14) * 0.25;
+          spec.rightArm.rotation.z = -0.4 - Math.sin(elapsedTime * 14) * 0.25;
+        } else if (currentAudienceState === 'boo') {
+          // Huées, réprobation et secouement de tête désapprobateur
+          spec.group.position.y = THREE.MathUtils.lerp(spec.group.position.y, spec.baseY, 0.1);
+          spec.head.rotation.y = Math.sin(elapsedTime * 14 + p) * 0.35; // "NON !"
+          spec.head.rotation.x = 0.15;
+          // Bras baissés agités de dépit
+          spec.leftArm.rotation.x = -1.1 + Math.sin(elapsedTime * 8 + p) * 0.25;
+          spec.rightArm.rotation.x = -1.1 + Math.sin(elapsedTime * 8 + p) * 0.25;
+          spec.leftArm.rotation.z = -0.2;
+          spec.rightArm.rotation.z = 0.2;
+        } else if (currentAudienceState === 'shout_maxime' || currentAudienceState === 'uproar') {
+          // Debout scandant : "Libérez Maxime !"
+          spec.group.position.y = THREE.MathUtils.lerp(spec.group.position.y, spec.baseY + 0.28, 0.15);
+          spec.head.rotation.x = -0.22; // Regard levé vers l'estrade du Juge
+          spec.head.rotation.y = Math.sin(elapsedTime * 5 + p) * 0.15;
+          // Poing droit levé avec ferveur
+          spec.rightArm.rotation.x = -2.5 + Math.sin(elapsedTime * 10 + p) * 0.45;
+          spec.leftArm.rotation.x = -1.4 + Math.sin(elapsedTime * 7 + p) * 0.2;
+          spec.rightArm.rotation.z = -0.2;
+          spec.leftArm.rotation.z = 0.2;
+        } else {
+          // État assis calme avec respiration naturelle
+          spec.group.position.y = THREE.MathUtils.lerp(spec.group.position.y, spec.baseY, 0.08);
+          spec.head.rotation.x = Math.sin(elapsedTime * 2 + p) * 0.04;
+          spec.head.rotation.y = Math.sin(elapsedTime * 1.5 + p) * 0.12;
+          spec.leftArm.rotation.x = 0.35 + Math.sin(elapsedTime * 2 + p) * 0.05;
+          spec.rightArm.rotation.x = 0.35 + Math.cos(elapsedTime * 2 + p) * 0.05;
+          spec.leftArm.rotation.z = 0;
+          spec.rightArm.rotation.z = 0;
+        }
+      });
+
       renderer.render(scene, camera);
     };
 
@@ -1498,7 +1697,8 @@ export default function Courtroom3DCanvas({
           { key: 'JUDGE', label: 'Le Juge', icon: ZoomIn },
           { key: 'WITNESS', label: 'Maxime', icon: Eye },
           { key: 'DEFENSE', label: 'Défense', icon: Sparkles },
-          { key: 'PROSECUTION', label: 'Procureur', icon: Camera }
+          { key: 'PROSECUTION', label: 'Procureur', icon: Camera },
+          { key: 'AUDIENCE', label: 'Public', icon: Sparkles }
         ].map((btn) => (
           <button
             key={btn.key}
@@ -1528,6 +1728,18 @@ export default function Courtroom3DCanvas({
           </div>
         )}
       </div>
+
+      {/* Bulle / Cri du Public dynamique */}
+      {audienceShoutText && (
+        <div className="absolute top-14 left-1/2 -translate-x-1/2 z-30 animate-in zoom-in-95 pointer-events-none max-w-[90%]">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-slate-950/95 border-2 border-amber-400 text-amber-200 shadow-2xl backdrop-blur-md">
+            <span className="text-base animate-pulse">📢</span>
+            <span className="text-xs sm:text-sm font-black font-['Outfit'] tracking-wide">
+              {audienceShoutText}
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

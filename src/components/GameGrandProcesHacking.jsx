@@ -50,6 +50,8 @@ export default function GameGrandProcesHacking({ onComplete }) {
   const [defenseState, setDefenseState] = useState('idle'); // 'idle' | 'pleading'
   const [judgeState, setJudgeState] = useState('idle'); // 'idle' | 'speaking' | 'gavel'
   const [judgeReaction, setJudgeReaction] = useState('neutral'); // 'neutral' | 'smile' | 'frown'
+  const [audienceState, setAudienceState] = useState('idle'); // 'idle' | 'cheer' | 'boo' | 'shout_maxime' | 'uproar'
+  const [audienceShoutText, setAudienceShoutText] = useState('');
 
   // Jauges judiciaires
   const [judgeConviction, setJudgeConviction] = useState(20); // 0 à 100%
@@ -80,6 +82,55 @@ export default function GameGrandProcesHacking({ onComplete }) {
       sounds.stopAllVoice();
     };
   }, []);
+
+  // Cris spontanés aléatoires du public "Libérez Maxime !" pendant le procès
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (stage === 'pleading' || stage === 'investigation' || stage === 'attack') {
+        const shoutTexts = [
+          'Public : « Libérez Maxime ! C\'est un lanceur d\'alerte ! »',
+          'Public : « Libérez Maxime ! Il a sauvé nos données ! »',
+          'Public : « Non au tout-IA ! Libérez-le ! »',
+          'Public : « Maxime est innocent ! Liberté pour Maxime ! »'
+        ];
+        const randomText = shoutTexts[Math.floor(Math.random() * shoutTexts.length)];
+        setAudienceState('shout_maxime');
+        setAudienceShoutText(randomText);
+        sounds.playPublicLiberez();
+
+        setTimeout(() => {
+          setAudienceState('idle');
+          setAudienceShoutText('');
+        }, 3600);
+      }
+    }, 28000);
+
+    return () => clearInterval(interval);
+  }, [stage]);
+
+  // Déclenchement spectaculaire : Le public crie et se soulève, PUIS le Juge tape du marteau et menace d'évacuer la salle
+  const triggerAudienceUproarAndJudgeSilence = () => {
+    sounds.stopAllVoice();
+    setAudienceState('shout_maxime');
+    setAudienceShoutText('Public : « Scandale ! Parodie de justice ! Libérez Maxime ! »');
+    setCameraView('AUDIENCE');
+
+    sounds.playPublicUproarAndJudgeSilence(
+      () => {
+        setAudienceState('shout_maxime');
+      },
+      () => {
+        setCameraView('JUDGE');
+        setJudgeState('gavel');
+        setAudienceState('idle');
+        setAudienceShoutText('Juge : « Silence ! Ou je fais évacuer la salle ! »');
+      },
+      () => {
+        setJudgeState('idle');
+        setAudienceShoutText('');
+      }
+    );
+  };
 
   const ASSAULTS = [
     {
@@ -410,12 +461,24 @@ export default function GameGrandProcesHacking({ onComplete }) {
     setIsPleadingConfirmed(false);
     sounds.playAudioFile(`/audio/voices/${currentAssault.prosecutorVoice}.mp3`, 1.0);
 
-    // Dans l'assaut 1, après l'emportement du procureur qui réclame la prison, le juge tape du marteau et exige le silence
+    // Dans l'assaut 1, après l'emportement du procureur qui réclame l'incarcération ferme :
+    // 1. Le public s'insurge et crie d'abord dans la salle !
+    // 2. Le Juge tape ensuite du marteau et menace d'évacuer la salle !
     if (currentAssaultIdx === 0) {
       setTimeout(() => {
-        sounds.playJudgeSilence();
-        setJudgeState('gavel');
-        setCameraView('JUDGE');
+        setAudienceState('shout_maxime');
+        setAudienceShoutText('Public : « Scandale ! Parodie de justice ! Libérez Maxime ! »');
+        setCameraView('AUDIENCE');
+        sounds.playVoice('proces_public_chahut_evacuation', () => {
+          setCameraView('JUDGE');
+          setJudgeState('gavel');
+          setAudienceState('idle');
+          setAudienceShoutText('Juge : « Silence ! Ou je fais évacuer la salle ! »');
+          sounds.playJudgeSilence();
+          setTimeout(() => {
+            setAudienceShoutText('');
+          }, 4500);
+        });
       }, 5500);
     }
   };
@@ -474,6 +537,15 @@ export default function GameGrandProcesHacking({ onComplete }) {
       sounds.playSuccess();
       sounds.playAudioFile('/audio/voices/proces_judge_approbation.mp3', 1.0);
 
+      // Le public applaudit et acclame la défense !
+      setAudienceState('cheer');
+      setAudienceShoutText('Public : « 👏 Bravo ! C\'est la vérité ! »');
+      sounds.playPublicCheer();
+      setTimeout(() => {
+        setAudienceState('idle');
+        setAudienceShoutText('');
+      }, 4500);
+
       setJudgeConviction(prev => Math.min(100, prev + selectedArgument.gain));
       setCriticalScore(prev => Math.min(100, prev + 10));
       setProsecutorPanic(prev => Math.min(100, prev + 15));
@@ -489,7 +561,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
         setCameraView('WITNESS');
         setWitnessState('confident');
         sounds.playAudioFile(`/audio/voices/${currentAssault.maximeVoice}.mp3`, 1.0);
-      }, 1800);
+      }, 2000);
     } else {
       // 2. Révélation Défavorable : Moue réprobatrice du Juge + Coup de marteau + Rejet
       setJudgeReaction('frown');
@@ -499,8 +571,16 @@ export default function GameGrandProcesHacking({ onComplete }) {
       setProsecutorState('attacking');
       sounds.playWrong();
       sounds.playGavelStrike();
-      sounds.playCourtroomMurmur(2.5);
       sounds.playAudioFile('/audio/voices/proces_judge_reprimande.mp3', 1.0);
+
+      // Le public hue la mauvaise défense !
+      setAudienceState('boo');
+      setAudienceShoutText('Public : « 👎 Bouuuuh ! C\'est lamentable ! »');
+      sounds.playPublicBoo();
+      setTimeout(() => {
+        setAudienceState('idle');
+        setAudienceShoutText('');
+      }, 4500);
 
       setJudgeConviction(prev => Math.max(5, prev + selectedArgument.gain));
       setCriticalScore(prev => Math.max(5, prev - 8));
@@ -517,7 +597,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
         setStage('reaction_fail');
         setCameraView('JUDGE');
         setJudgeState('speaking');
-      }, 2000);
+      }, 2200);
     }
   };
 
@@ -614,6 +694,16 @@ export default function GameGrandProcesHacking({ onComplete }) {
 
         {/* Jauges en Direct & Bouton Plein Écran */}
         <div className="flex items-center gap-3">
+          {/* Bouton Chahut du Public & Menace d'évacuation par le Juge */}
+          <button
+            onClick={triggerAudienceUproarAndJudgeSilence}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-xs font-mono font-bold text-amber-300 transition cursor-pointer shadow-md"
+            title="Le public se soulève en criant 'Libérez Maxime !' et le Juge tape du marteau pour menacer d'évacuer la salle"
+          >
+            <span>📢</span>
+            <span className="hidden sm:inline">Chahut du Public</span>
+          </button>
+
           {/* Bouton Plein Écran */}
           <button
             onClick={() => setIsFullscreen(prev => !prev)}
@@ -675,6 +765,8 @@ export default function GameGrandProcesHacking({ onComplete }) {
             defenseState={defenseState}
             judgeState={judgeState}
             judgeReaction={judgeReaction}
+            audienceState={audienceState}
+            audienceShoutText={audienceShoutText}
             cameraView={cameraView}
             onCameraChange={(view) => setCameraView(view)}
             onGavelComplete={() => setJudgeState('idle')}
@@ -687,6 +779,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
             {cameraView === 'WITNESS' && '🎥 Plan Barre : Témoignage de Maxime'}
             {cameraView === 'JUDGE' && '⚖️ Plan Solennel : Présidence du Tribunal'}
             {cameraView === 'TV_WIDE' && '📡 Vue Globale de l Audience'}
+            {cameraView === 'AUDIENCE' && '👥 Plan Serré : Banc & Réactions du Public'}
           </div>
         </div>
 

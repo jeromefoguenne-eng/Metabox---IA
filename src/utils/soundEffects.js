@@ -652,6 +652,46 @@ class SoundManager {
     }, 450);
   }
 
+  // Clameur du public / chahut suivi de la menace du Juge d'évacuer la salle
+  playPublicUproarAndJudgeSilence(onUproarStart, onJudgeSilenceStart, onComplete) {
+    const uproarTracks = ['proces_public_chahut_evacuation', 'proces_public_brouhaha'];
+    const track = uproarTracks[Math.floor(Math.random() * uproarTracks.length)];
+    if (onUproarStart) onUproarStart();
+    this.playVoice(track, () => {
+      this.playGavelStrike();
+      if (onJudgeSilenceStart) onJudgeSilenceStart();
+      this.scheduleTimeout(() => {
+        this.playVoice('proces_judge_silence', onComplete);
+      }, 550);
+    });
+  }
+
+  // Applaudissements et vivats du public après un argument brillant
+  playPublicCheer(onComplete) {
+    this.playApplause();
+    const cheerTracks = ['proces_public_cheer_1', 'proces_public_cheer_2'];
+    const track = cheerTracks[Math.floor(Math.random() * cheerTracks.length)];
+    this.scheduleTimeout(() => {
+      this.playVoice(track, onComplete);
+    }, 380);
+  }
+
+  // Huées et désapprobation du public après un argument erroné
+  playPublicBoo(onComplete) {
+    this.playGroan();
+    const booTracks = ['proces_public_boo_1', 'proces_public_boo_2'];
+    const track = booTracks[Math.floor(Math.random() * booTracks.length)];
+    this.scheduleTimeout(() => {
+      this.playVoice(track, onComplete);
+    }, 380);
+  }
+
+  // Cri spontané du public : "Libérez Maxime !"
+  playPublicLiberez(onComplete) {
+    const idx = Math.floor(Math.random() * 4) + 1;
+    this.playVoice(`proces_public_liberez_${idx}`, onComplete);
+  }
+
   // Voix synthèse de secours si jamais un texte dynamique non pré-enregistré est passé
   speakHost(text) {
     if (this.muted) return;
