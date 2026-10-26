@@ -29,7 +29,7 @@ import confetti from 'canvas-confetti';
 import PixarStyleScene3D from './PixarStyleScene3D';
 import CampusRivageoisMap from './CampusRivageoisMap';
 import GameInvestigationOS from './GameInvestigationOS';
-import GameTribunal2030 from './GameTribunal2030';
+import GameTribunal3D from './GameTribunal3D';
 import GameSurvivantNovel from './GameSurvivantNovel';
 import GamePromptWarsDeck from './GamePromptWarsDeck';
 import { sounds } from '../utils/soundEffects';
@@ -428,7 +428,7 @@ export default function EscapeGameAurore({ onClose }) {
               </div>
 
               <div className="flex-1">
-                <GameTribunal2030 
+                <GameTribunal3D 
                   onComplete={() => {
                     handleUnlockKey('west', 'Clé Beta (Intégrité Académique)');
                   }}

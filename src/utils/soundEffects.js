@@ -400,6 +400,117 @@ class SoundManager {
     osc.stop(now + 1.3);
   }
 
+  // --- Sons Réalistes de Tribunal 3D ---
+  playGavelStrike() {
+    this.init();
+    if (!this.ctx || this.muted) return;
+    const now = this.ctx.currentTime;
+
+    // 1. Coup d'impact sourd (bois lourd)
+    const subOsc = this.ctx.createOscillator();
+    const subGain = this.ctx.createGain();
+    subOsc.type = 'sine';
+    subOsc.frequency.setValueAtTime(160, now);
+    subOsc.frequency.exponentialRampToValueAtTime(38, now + 0.35);
+    subGain.gain.setValueAtTime(0.8, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+    subOsc.connect(subGain);
+    subGain.connect(this.ctx.destination);
+    subOsc.start(now);
+    subOsc.stop(now + 0.35);
+
+    // 2. Claquement sec du marteau sur le socle
+    const clickOsc = this.ctx.createOscillator();
+    const clickFilter = this.ctx.createBiquadFilter();
+    const clickGain = this.ctx.createGain();
+    clickOsc.type = 'triangle';
+    clickFilter.type = 'bandpass';
+    clickFilter.frequency.setValueAtTime(800, now);
+    clickFilter.Q.setValueAtTime(3, now);
+    clickOsc.frequency.setValueAtTime(950, now);
+    clickOsc.frequency.exponentialRampToValueAtTime(220, now + 0.08);
+    clickGain.gain.setValueAtTime(0.9, now);
+    clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+    clickOsc.connect(clickFilter);
+    clickFilter.connect(clickGain);
+    clickGain.connect(this.ctx.destination);
+    clickOsc.start(now);
+    clickOsc.stop(now + 0.1);
+
+    // 3. Réverbération de la salle d'audience
+    const noiseBuffer = this.ctx.createBuffer(1, this.ctx.sampleRate * 0.4, this.ctx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < noiseBuffer.length; i++) {
+      output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (this.ctx.sampleRate * 0.08));
+    }
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = noiseBuffer;
+    const noiseFilter = this.ctx.createBiquadFilter();
+    noiseFilter.type = 'lowpass';
+    noiseFilter.frequency.setValueAtTime(1200, now);
+    const noiseGain = this.ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.35, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+    noise.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(this.ctx.destination);
+    noise.start(now);
+  }
+
+  playObjectionImpact() {
+    this.init();
+    if (!this.ctx || this.muted) return;
+    const now = this.ctx.currentTime;
+
+    // Accord cuivres dramatique (D-minor brass hit)
+    const freqs = [293.66, 349.23, 440.00, 587.33];
+    freqs.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = idx % 2 === 0 ? 'sawtooth' : 'triangle';
+      osc.frequency.setValueAtTime(freq * 1.5, now);
+      osc.frequency.exponentialRampToValueAtTime(freq, now + 0.08);
+      gain.gain.setValueAtTime(0.3 / freqs.length, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.85);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.85);
+    });
+
+    // Swoosh d'impact
+    const sweep = this.ctx.createOscillator();
+    const sweepGain = this.ctx.createGain();
+    sweep.type = 'sine';
+    sweep.frequency.setValueAtTime(1400, now);
+    sweep.frequency.exponentialRampToValueAtTime(180, now + 0.3);
+    sweepGain.gain.setValueAtTime(0.4, now);
+    sweepGain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+    sweep.connect(sweepGain);
+    sweepGain.connect(this.ctx.destination);
+    sweep.start(now);
+    sweep.stop(now + 0.3);
+  }
+
+  playTensionHeartbeat() {
+    this.init();
+    if (!this.ctx || this.muted) return;
+    const now = this.ctx.currentTime;
+    [0, 0.22].forEach((offset) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(75, now + offset);
+      osc.frequency.exponentialRampToValueAtTime(40, now + offset + 0.15);
+      gain.gain.setValueAtTime(0.35, now + offset);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.16);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now + offset);
+      osc.stop(now + offset + 0.17);
+    });
+  }
+
   // Voix synthèse de secours si jamais un texte dynamique non pré-enregistré est passé
   speakHost(text) {
     if (this.muted) return;
