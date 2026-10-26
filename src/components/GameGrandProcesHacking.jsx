@@ -469,7 +469,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
         setAudienceState('shout_maxime');
         setAudienceShoutText('Public : « Scandale ! Parodie de justice ! Libérez Maxime ! »');
         setCameraView('AUDIENCE');
-        sounds.playVoice('proces_public_chahut_evacuation', () => {
+        sounds.playVoice('proces_public_chahut_poly', () => {
           setCameraView('JUDGE');
           setJudgeState('gavel');
           setAudienceState('idle');

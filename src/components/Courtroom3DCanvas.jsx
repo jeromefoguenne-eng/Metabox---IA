@@ -219,46 +219,58 @@ export default function Courtroom3DCanvas({
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.35; // Rendu chaud et vibrant style Pixar
     rendererRef.current = renderer;
 
     container.appendChild(renderer.domElement);
 
-    // 2. Éclairage Studio & Volumétrique
-    const ambientLight = new THREE.AmbientLight(0xffeedd, 0.95);
+    // 2. Éclairage Studio Cinéma Style Pixar (3-Points + Rebond Chaud au Sol)
+    const ambientLight = new THREE.AmbientLight(0xfff1e6, 1.15);
     scene.add(ambientLight);
 
-    // Projecteur Principal (Soleil zénithal chaud)
-    const keySpot = new THREE.SpotLight(0xfff5e6, 3.4);
-    keySpot.position.set(2, 10, 6);
-    keySpot.angle = Math.PI / 4.2;
-    keySpot.penumbra = 0.55;
+    // Key Light : Lumière dorée douce principale
+    const keySpot = new THREE.SpotLight(0xfff7ed, 3.8);
+    keySpot.position.set(3, 11, 7);
+    keySpot.angle = Math.PI / 4.0;
+    keySpot.penumbra = 0.75;
     keySpot.castShadow = true;
-    keySpot.shadow.mapSize.width = 1024;
-    keySpot.shadow.mapSize.height = 1024;
+    keySpot.shadow.mapSize.width = 2048;
+    keySpot.shadow.mapSize.height = 2048;
+    keySpot.shadow.bias = -0.0001;
+    keySpot.shadow.radius = 2.8; // Ombres douces veloutées Pixar
     scene.add(keySpot);
 
-    // Rim Light (Cyan TV)
-    const rimLight = new THREE.DirectionalLight(0x38bdf8, 1.8);
-    rimLight.position.set(-7, 6, -3);
-    scene.add(rimLight);
+    // Kicker / Rim Light Gauche : Cyan studio vibrant pour détacher les silhouettes
+    const rimCyan = new THREE.DirectionalLight(0x38bdf8, 2.4);
+    rimCyan.position.set(-8, 7, -2);
+    scene.add(rimCyan);
 
-    // Spot chaud doré sur l'estrade du Juge
-    const judgeSpot = new THREE.SpotLight(0xfef08a, 2.4);
-    judgeSpot.position.set(0, 9, -2.5);
+    // Kicker / Rim Light Droit : Rose ambré chaleureux
+    const rimWarm = new THREE.DirectionalLight(0xf472b6, 1.4);
+    rimWarm.position.set(8, 7, -2);
+    scene.add(rimWarm);
+
+    // Bounce Light Chaud au Sol : Rebond lumineux simulant la radiosité Pixar
+    const floorBounce = new THREE.PointLight(0xfde68a, 1.6, 20);
+    floorBounce.position.set(0, 0.8, 0);
+    scene.add(floorBounce);
+
+    // Spot or théâtral centré sur le Juge
+    const judgeSpot = new THREE.SpotLight(0xfef08a, 2.8);
+    judgeSpot.position.set(0, 9.5, -2.5);
     judgeSpot.target.position.set(0, 3.2, -4.8);
-    judgeSpot.angle = Math.PI / 5;
-    judgeSpot.penumbra = 0.5;
+    judgeSpot.angle = Math.PI / 4.5;
+    judgeSpot.penumbra = 0.6;
     scene.add(judgeSpot);
     scene.add(judgeSpot.target);
 
-    // Teinte violette solennelle en fond de cour
-    const backFill = new THREE.PointLight(0x818cf8, 1.6, 22);
-    backFill.position.set(0, 6, -8.5);
+    // Halo d'atmosphère violacé en fond de scène
+    const backFill = new THREE.PointLight(0xa78bfa, 1.8, 24);
+    backFill.position.set(0, 6.5, -8.5);
     scene.add(backFill);
 
     // Particules de poussière atmosphérique en suspension
-    const dustCount = 160;
+    const dustCount = 180;
     const dustGeo = new THREE.BufferGeometry();
     const dustPositions = new Float32Array(dustCount * 3);
     for (let i = 0; i < dustCount * 3; i += 3) {
@@ -277,53 +289,58 @@ export default function Courtroom3DCanvas({
     const dustParticles = new THREE.Points(dustGeo, dustMat);
     scene.add(dustParticles);
 
-    // 3. Matériaux Partagés Haute Définition & Rendu PBR
+    // 3. Matériaux Partagés Haute Définition & Rendu PBR Style Pixar
     const parquetTex = createParquetTexture();
     const marbleTex = createMarbleTexture();
     const mahoganyTex = createMahoganyTexture();
 
     const woodMahogany = new THREE.MeshStandardMaterial({ 
       map: mahoganyTex, 
-      roughness: 0.30, 
-      metalness: 0.12 
+      roughness: 0.22, 
+      metalness: 0.14 
     });
     const marblePillar = new THREE.MeshStandardMaterial({ 
       map: marbleTex, 
-      roughness: 0.20, 
-      metalness: 0.18 
+      roughness: 0.16, 
+      metalness: 0.20 
     });
-    const woodLight = new THREE.MeshStandardMaterial({ color: 0x854d0e, roughness: 0.35, metalness: 0.08 });
+    const woodLight = new THREE.MeshStandardMaterial({ color: 0x854d0e, roughness: 0.30, metalness: 0.08 });
     const woodDarkOak = new THREE.MeshStandardMaterial({ 
       map: mahoganyTex, 
       color: 0x24120c, 
-      roughness: 0.42, 
-      metalness: 0.1 
+      roughness: 0.38, 
+      metalness: 0.12 
     });
     const floorParquet = new THREE.MeshStandardMaterial({ 
       map: parquetTex, 
-      roughness: 0.18, 
-      metalness: 0.25 
+      roughness: 0.15, 
+      metalness: 0.28 
     });
-    const goldMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.18, metalness: 0.92 });
+    const goldMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.15, metalness: 0.95 });
     const clothBlack = new THREE.MeshStandardMaterial({ color: 0x0a0f1d, roughness: 0.82, metalness: 0.04 });
-    const clothWhite = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.5 });
-    const clothRed = new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.28, metalness: 0.15 });
-    const clothNavy = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.52, metalness: 0.1 });
+    const clothWhite = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.45 });
+    const clothRed = new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.24, metalness: 0.18 });
+    const clothNavy = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.48, metalness: 0.12 });
     
-    // Peaux réalistes nuancées par personnage
-    const skinToneJudge = new THREE.MeshStandardMaterial({ color: 0xfed7aa, roughness: 0.52 });
-    const skinToneWitness = new THREE.MeshStandardMaterial({ color: 0xfde2d0, roughness: 0.46 });
-    const skinTonePros = new THREE.MeshStandardMaterial({ color: 0xfce7d2, roughness: 0.42 });
-    const skinToneDef = new THREE.MeshStandardMaterial({ color: 0xfed7aa, roughness: 0.48 });
-    const skinTone = skinToneWitness; // Rétro-compatibilité
+    // Peaux soyeuses style Pixar (Subsurface scattering simulé)
+    const skinToneJudge = new THREE.MeshStandardMaterial({ color: 0xfed7aa, roughness: 0.48 });
+    const skinToneWitness = new THREE.MeshStandardMaterial({ color: 0xfde2d0, roughness: 0.42 });
+    const skinTonePros = new THREE.MeshStandardMaterial({ color: 0xfce7d2, roughness: 0.40 });
+    const skinToneDef = new THREE.MeshStandardMaterial({ color: 0xfed7aa, roughness: 0.45 });
+    const skinTone = skinToneWitness;
 
-    const eyeWhite = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    // Éléments oculaires Pixar (Blanc d'œil doux, Reflets cornéens scintillants, Joues rosées)
+    const eyeWhite = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.15 });
     const eyePupil = new THREE.MeshBasicMaterial({ color: 0x090d16 });
-    const eyeIrisJudge = new THREE.MeshStandardMaterial({ color: 0x3b82f6, roughness: 0.3 });
-    const eyeIrisWitness = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.3 });
-    const metalDark = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.22, metalness: 0.85 });
-    const brassMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.22, metalness: 0.90 });
-    const velvetRed = new THREE.MeshStandardMaterial({ color: 0x881337, roughness: 0.72, metalness: 0.06 });
+    const eyeGlintMat = new THREE.MeshBasicMaterial({ color: 0xffffff }); // Étincelle de vie Pixar
+    const cheekBlushMat = new THREE.MeshStandardMaterial({ color: 0xf472b6, roughness: 0.8, transparent: true, opacity: 0.28 });
+    const glassLensMat = new THREE.MeshStandardMaterial({ color: 0xe0f2fe, roughness: 0.05, metalness: 0.1, transparent: true, opacity: 0.35 });
+
+    const eyeIrisJudge = new THREE.MeshStandardMaterial({ color: 0x3b82f6, roughness: 0.25 });
+    const eyeIrisWitness = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.25 });
+    const metalDark = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.20, metalness: 0.88 });
+    const brassMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.18, metalness: 0.94 });
+    const velvetRed = new THREE.MeshStandardMaterial({ color: 0x881337, roughness: 0.68, metalness: 0.08 });
     const ermineSpotMat = new THREE.MeshStandardMaterial({ color: 0x020617, roughness: 0.85 });
 
     // 4. Architecture de la Salle d'Audience
@@ -385,6 +402,19 @@ export default function Courtroom3DCanvas({
       const mullionH2 = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.08, 0.05), metalDark);
       mullionH2.position.set(x, 7.6, -8.65);
       scene.add(mullionH2);
+
+      // Faisceau volumétrique de soleil coloré style Pixar
+      const beamMat = new THREE.MeshBasicMaterial({
+        color: windowColors[idx],
+        transparent: true,
+        opacity: 0.07,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide
+      });
+      const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 2.4, 10.5, 24), beamMat);
+      beam.position.set(x * 0.85, 4.2, -4.2);
+      beam.rotation.x = Math.PI / 4.8;
+      scene.add(beam);
     });
 
     // Grand Écusson de la Justice HECh au-dessus du Juge
@@ -546,13 +576,25 @@ export default function Courtroom3DCanvas({
       hair.position.set(0, 0.08, -0.02);
       headGroup.add(hair);
 
-      // Yeux
-      const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 8), eyeWhite);
+      // Yeux et étincelles cornéennes style Pixar pour chaque spectateur
+      const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.026, 12, 12), eyeWhite);
       eyeL.position.set(-0.06, 0.03, 0.15);
       headGroup.add(eyeL);
-      const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 8), eyeWhite);
+      const glintSpecL = new THREE.Mesh(new THREE.SphereGeometry(0.005, 6, 6), eyeGlintMat);
+      glintSpecL.position.set(-0.054, 0.038, 0.172);
+      headGroup.add(glintSpecL);
+
+      const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.026, 12, 12), eyeWhite);
       eyeR.position.set(0.06, 0.03, 0.15);
       headGroup.add(eyeR);
+      const glintSpecR = new THREE.Mesh(new THREE.SphereGeometry(0.005, 6, 6), eyeGlintMat);
+      glintSpecR.position.set(0.066, 0.038, 0.172);
+      headGroup.add(glintSpecR);
+
+      // Bouche expressive sculptée
+      const mouthSpec = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.015, 0.02), new THREE.MeshBasicMaterial({ color: 0x881337 }));
+      mouthSpec.position.set(0, -0.05, 0.15);
+      headGroup.add(mouthSpec);
 
       specGroup.add(headGroup);
 
@@ -786,7 +828,7 @@ export default function Courtroom3DCanvas({
     nostrilR.position.set(0.032, -0.05, 0.30);
     judgeHeadGroup.add(nostrilR);
 
-    // Yeux expressifs haute fidélité (Blanc + Iris noisette/bleu + Pupille + Paupière)
+    // Yeux expressifs haute fidélité (Blanc + Iris noisette/bleu + Pupille + Étincelle de vie Pixar)
     const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.046, 20, 20), eyeWhite);
     eyeL.position.set(-0.12, 0.07, 0.24);
     judgeHeadGroup.add(eyeL);
@@ -797,6 +839,9 @@ export default function Courtroom3DCanvas({
     const pupilL = new THREE.Mesh(new THREE.SphereGeometry(0.016, 12, 12), eyePupil);
     pupilL.position.set(-0.12, 0.07, 0.288);
     judgeHeadGroup.add(pupilL);
+    const glintL = new THREE.Mesh(new THREE.SphereGeometry(0.007, 8, 8), eyeGlintMat);
+    glintL.position.set(-0.112, 0.082, 0.295);
+    judgeHeadGroup.add(glintL);
 
     const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.046, 20, 20), eyeWhite);
     eyeR.position.set(0.12, 0.07, 0.24);
@@ -808,17 +853,35 @@ export default function Courtroom3DCanvas({
     const pupilR = new THREE.Mesh(new THREE.SphereGeometry(0.016, 12, 12), eyePupil);
     pupilR.position.set(0.12, 0.07, 0.288);
     judgeHeadGroup.add(pupilR);
-    judgeEyesRef.current = [eyeL, irisL, pupilL, eyeR, irisR, pupilR];
+    const glintR = new THREE.Mesh(new THREE.SphereGeometry(0.007, 8, 8), eyeGlintMat);
+    glintR.position.set(0.128, 0.082, 0.295);
+    judgeHeadGroup.add(glintR);
+    judgeEyesRef.current = [eyeL, irisL, pupilL, glintL, eyeR, irisR, pupilR, glintR];
 
-    // Lunettes demi-lunes dorées fines (Torus haute résolution + Pont courbé)
+    // Pommettes chaleureuses style Pixar (Blush doux)
+    const judgeBlushL = new THREE.Mesh(new THREE.SphereGeometry(0.045, 12, 12), cheekBlushMat);
+    judgeBlushL.position.set(-0.16, -0.04, 0.23);
+    judgeHeadGroup.add(judgeBlushL);
+    const judgeBlushR = new THREE.Mesh(new THREE.SphereGeometry(0.045, 12, 12), cheekBlushMat);
+    judgeBlushR.position.set(0.16, -0.04, 0.23);
+    judgeHeadGroup.add(judgeBlushR);
+
+    // Lunettes demi-lunes dorées fines (Torus haute résolution + Verres translucides + Pont courbé)
     const glassesGroup = new THREE.Group();
     glassesGroup.position.set(0, 0.06, 0.28);
     const rimL = new THREE.Mesh(new THREE.TorusGeometry(0.062, 0.007, 16, 28), goldMat);
     rimL.position.x = -0.12;
     glassesGroup.add(rimL);
+    const lensL = new THREE.Mesh(new THREE.CircleGeometry(0.060, 20), glassLensMat);
+    lensL.position.x = -0.12;
+    glassesGroup.add(lensL);
+
     const rimR = new THREE.Mesh(new THREE.TorusGeometry(0.062, 0.007, 16, 28), goldMat);
     rimR.position.x = 0.12;
     glassesGroup.add(rimR);
+    const lensR = new THREE.Mesh(new THREE.CircleGeometry(0.060, 20), glassLensMat);
+    lensR.position.x = 0.12;
+    glassesGroup.add(lensR);
     const gBridge = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.08, 12), goldMat);
     gBridge.rotation.z = Math.PI / 2;
     glassesGroup.add(gBridge);
@@ -1079,7 +1142,7 @@ export default function Courtroom3DCanvas({
     witNose.rotation.x = Math.PI / 2.3;
     witHeadGroup.add(witNose);
 
-    // Yeux de Maxime (Blanc + Iris marron chaud + Pupille réaliste)
+    // Yeux de Maxime (Blanc + Iris marron chaud + Pupille + Étincelle de vie Pixar)
     const witEyeL = new THREE.Mesh(new THREE.SphereGeometry(0.044, 20, 20), eyeWhite);
     witEyeL.position.set(-0.11, 0.06, 0.22);
     witHeadGroup.add(witEyeL);
@@ -1090,6 +1153,9 @@ export default function Courtroom3DCanvas({
     const witPupilL = new THREE.Mesh(new THREE.SphereGeometry(0.016, 12, 12), eyePupil);
     witPupilL.position.set(-0.11, 0.06, 0.268);
     witHeadGroup.add(witPupilL);
+    const witGlintL = new THREE.Mesh(new THREE.SphereGeometry(0.007, 8, 8), eyeGlintMat);
+    witGlintL.position.set(-0.104, 0.072, 0.278);
+    witHeadGroup.add(witGlintL);
 
     const witEyeR = new THREE.Mesh(new THREE.SphereGeometry(0.044, 20, 20), eyeWhite);
     witEyeR.position.set(0.11, 0.06, 0.22);
@@ -1101,7 +1167,18 @@ export default function Courtroom3DCanvas({
     const witPupilR = new THREE.Mesh(new THREE.SphereGeometry(0.016, 12, 12), eyePupil);
     witPupilR.position.set(0.11, 0.06, 0.268);
     witHeadGroup.add(witPupilR);
-    witnessEyesRef.current = [witEyeL, witIrisL, witPupilL, witEyeR, witIrisR, witPupilR];
+    const witGlintR = new THREE.Mesh(new THREE.SphereGeometry(0.007, 8, 8), eyeGlintMat);
+    witGlintR.position.set(0.116, 0.072, 0.278);
+    witHeadGroup.add(witGlintR);
+    witnessEyesRef.current = [witEyeL, witIrisL, witPupilL, witGlintL, witEyeR, witIrisR, witPupilR, witGlintR];
+
+    // Pommettes rosées chaleureuses style Pixar sur Maxime
+    const witBlushL = new THREE.Mesh(new THREE.SphereGeometry(0.038, 12, 12), cheekBlushMat);
+    witBlushL.position.set(-0.14, -0.04, 0.22);
+    witHeadGroup.add(witBlushL);
+    const witBlushR = new THREE.Mesh(new THREE.SphereGeometry(0.038, 12, 12), cheekBlushMat);
+    witBlushR.position.set(0.14, -0.04, 0.22);
+    witHeadGroup.add(witBlushR);
 
     // Bouche articulée de Maxime
     const witMouth = new THREE.Mesh(
@@ -1287,17 +1364,23 @@ export default function Courtroom3DCanvas({
     prosHair.position.set(0, 0.12, -0.02);
     prosHeadGroup.add(prosHair);
 
-    // Yeux plissés et perçants du Procureur
+    // Yeux plissés et perçants du Procureur avec étincelle Pixar
     const prosEyeL = new THREE.Mesh(new THREE.SphereGeometry(0.040, 16, 16), eyePupil);
     prosEyeL.scale.set(1.2, 0.5, 1.0);
     prosEyeL.position.set(-0.10, 0.05, 0.22);
     prosHeadGroup.add(prosEyeL);
+    const prosGlintL = new THREE.Mesh(new THREE.SphereGeometry(0.006, 8, 8), eyeGlintMat);
+    prosGlintL.position.set(-0.092, 0.062, 0.235);
+    prosHeadGroup.add(prosGlintL);
 
     const prosEyeR = new THREE.Mesh(new THREE.SphereGeometry(0.040, 16, 16), eyePupil);
     prosEyeR.scale.set(1.2, 0.5, 1.0);
     prosEyeR.position.set(0.10, 0.05, 0.22);
     prosHeadGroup.add(prosEyeR);
-    prosEyesRef.current = [prosEyeL, prosEyeR];
+    const prosGlintR = new THREE.Mesh(new THREE.SphereGeometry(0.006, 8, 8), eyeGlintMat);
+    prosGlintR.position.set(0.108, 0.062, 0.235);
+    prosHeadGroup.add(prosGlintR);
+    prosEyesRef.current = [prosEyeL, prosGlintL, prosEyeR, prosGlintR];
 
     // Bouche articulée du Procureur
     const prosMouth = new THREE.Mesh(

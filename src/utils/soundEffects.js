@@ -652,12 +652,10 @@ class SoundManager {
     }, 450);
   }
 
-  // Clameur du public / chahut suivi de la menace du Juge d'évacuer la salle
+  // Clameur polyphonique du public / chahut suivi de la menace du Juge d'évacuer la salle
   playPublicUproarAndJudgeSilence(onUproarStart, onJudgeSilenceStart, onComplete) {
-    const uproarTracks = ['proces_public_chahut_evacuation', 'proces_public_brouhaha'];
-    const track = uproarTracks[Math.floor(Math.random() * uproarTracks.length)];
     if (onUproarStart) onUproarStart();
-    this.playVoice(track, () => {
+    this.playVoice('proces_public_chahut_poly', () => {
       this.playGavelStrike();
       if (onJudgeSilenceStart) onJudgeSilenceStart();
       this.scheduleTimeout(() => {
@@ -666,30 +664,26 @@ class SoundManager {
     });
   }
 
-  // Applaudissements et vivats du public après un argument brillant
+  // Applaudissements et vivats polyphoniques de la foule après un argument brillant
   playPublicCheer(onComplete) {
     this.playApplause();
-    const cheerTracks = ['proces_public_cheer_1', 'proces_public_cheer_2'];
-    const track = cheerTracks[Math.floor(Math.random() * cheerTracks.length)];
     this.scheduleTimeout(() => {
-      this.playVoice(track, onComplete);
-    }, 380);
+      this.playVoice('proces_public_cheer_poly', onComplete);
+    }, 250);
   }
 
-  // Huées et désapprobation du public après un argument erroné
+  // Huées polyphoniques et désapprobation de la foule après un argument erroné
   playPublicBoo(onComplete) {
     this.playGroan();
-    const booTracks = ['proces_public_boo_1', 'proces_public_boo_2'];
-    const track = booTracks[Math.floor(Math.random() * booTracks.length)];
     this.scheduleTimeout(() => {
-      this.playVoice(track, onComplete);
-    }, 380);
+      this.playVoice('proces_public_boo_poly', onComplete);
+    }, 250);
   }
 
-  // Cri spontané du public : "Libérez Maxime !"
+  // Cri spontané polyphonique du public en chœur : "Libérez Maxime !"
   playPublicLiberez(onComplete) {
-    const idx = Math.floor(Math.random() * 4) + 1;
-    this.playVoice(`proces_public_liberez_${idx}`, onComplete);
+    const idx = Math.floor(Math.random() * 3) + 1;
+    this.playVoice(`proces_public_liberez_poly_${idx}`, onComplete);
   }
 
   // Voix synthèse de secours si jamais un texte dynamique non pré-enregistré est passé
