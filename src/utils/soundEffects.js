@@ -598,6 +598,60 @@ class SoundManager {
     });
   }
 
+  // Bruitage d'ambiance et rumeur du public dans le tribunal (brouhaha, chuchotements)
+  playCourtroomMurmur(duration = 2.5) {
+    this.init();
+    if (!this.ctx || this.muted) return;
+    const now = this.ctx.currentTime;
+
+    try {
+      // Bruit rose filtré simulant des murmures et froissements de papiers dans la salle
+      const bufferSize = this.ctx.sampleRate * duration;
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      let b0 = 0, b1 = 0, b2 = 0;
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        const pink = b0 + b1 + b2 + white * 0.5362;
+        // Modulation d'amplitude sinusoïdale simulant des voix qui chuchotent par vagues
+        const mod = 0.5 + 0.5 * Math.sin(i / 3200) * Math.cos(i / 5400);
+        data[i] = pink * 0.08 * mod;
+      }
+
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = buffer;
+
+      // Filtre passe-bande vocal formant (300Hz - 1800Hz)
+      const bandpass = this.ctx.createBiquadFilter();
+      bandpass.type = 'bandpass';
+      bandpass.frequency.setValueAtTime(450, now);
+      bandpass.Q.setValueAtTime(1.8, now);
+
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(0.01, now);
+      gain.gain.linearRampToValueAtTime(0.28, now + 0.4);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+      noise.connect(bandpass);
+      bandpass.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      noise.start(now);
+      noise.stop(now + duration);
+    } catch {}
+  }
+
+  // Coup de marteau solennel du Juge exigeant le silence
+  playJudgeSilence() {
+    this.playGavelStrike();
+    this.scheduleTimeout(() => {
+      this.playAudioFile('/audio/voices/proces_judge_silence.mp3', 1.0);
+    }, 450);
+  }
+
   // Voix synthèse de secours si jamais un texte dynamique non pré-enregistré est passé
   speakHost(text) {
     if (this.muted) return;

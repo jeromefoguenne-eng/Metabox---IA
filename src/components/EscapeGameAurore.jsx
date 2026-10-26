@@ -180,13 +180,17 @@ export default function EscapeGameAurore({ onClose }) {
 
   const handleUnlockKey = (wingKey, keyName) => {
     sounds.playSuccess();
-    confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
+    confetti({ particleCount: 90, spread: 80, origin: { y: 0.5 } });
     setKeysUnlocked(prev => ({ ...prev, [wingKey]: true }));
     setEthicalScore(prev => Math.min(100, prev + 15));
     setDialogueLog(prev => [
       { speaker: 'SYSTÈME', text: `✨ ${keyName} déverrouillée avec succès ! Intégrité restaurée.` },
       ...prev
     ]);
+    // Retour automatique et garanti au plan d'orientation du campus
+    setTimeout(() => {
+      handleBackToHub();
+    }, 1200);
   };
 
   const totalKeysObtained = Object.values(keysUnlocked).filter(Boolean).length;

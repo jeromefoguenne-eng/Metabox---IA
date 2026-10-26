@@ -3,20 +3,112 @@ import * as THREE from 'three';
 import { Camera, ZoomIn, Eye, Sparkles } from 'lucide-react';
 import { sounds } from '../utils/soundEffects';
 
+// Générateur procédural de texture Parquet en chêne verni
+function createParquetTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = '#2b160b';
+  ctx.fillRect(0, 0, 512, 512);
+
+  const plankH = 32;
+  const plankW = 128;
+  const rows = 512 / plankH;
+  for (let r = 0; r < rows; r++) {
+    const y = r * plankH;
+    const offset = (r % 2) * (plankW / 2);
+    for (let x = -plankW; x < 512 + plankW; x += plankW) {
+      const px = x + offset;
+      const shade = (Math.sin(r * 11.7 + px * 0.04) * 0.5 + 0.5);
+      const rV = Math.floor(45 + shade * 25);
+      const gV = Math.floor(22 + shade * 15);
+      const bV = Math.floor(12 + shade * 10);
+      ctx.fillStyle = `rgb(${rV}, ${gV}, ${bV})`;
+      ctx.fillRect(px + 1, y + 1, plankW - 2, plankH - 2);
+
+      // Fibres fines de chêne
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+      for (let v = 0; v < 3; v++) {
+        ctx.fillRect(px + 3, y + 5 + v * 9, plankW - 6, 1.2);
+      }
+    }
+    // Rainure d'assemblage sombre
+    ctx.fillStyle = '#100603';
+    ctx.fillRect(0, y, 512, 1.5);
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(5, 5);
+  return texture;
+}
+
+// Générateur procédural de texture Marbre pour colonnes corinthiennes
+function createMarbleTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = '#f1ece1';
+  ctx.fillRect(0, 0, 512, 512);
+
+  ctx.lineWidth = 2.2;
+  for (let i = 0; i < 8; i++) {
+    ctx.strokeStyle = i % 2 === 0 ? 'rgba(175, 150, 120, 0.4)' : 'rgba(130, 120, 110, 0.3)';
+    ctx.beginPath();
+    let x = (i * 65) % 512;
+    let y = 0;
+    ctx.moveTo(x, y);
+    while (y < 512) {
+      x += (Math.sin(y * 0.03 + i) * 35);
+      y += 24;
+      ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(1, 3);
+  return texture;
+}
+
+// Générateur procédural de texture Acajou pour pupitres et boiseries
+function createMahoganyTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = '#42160e';
+  ctx.fillRect(0, 0, 512, 512);
+
+  for (let x = 0; x < 512; x += 3) {
+    const alpha = (Math.sin(x * 0.18) * 0.5 + 0.5) * 0.22;
+    ctx.fillStyle = `rgba(18, 5, 2, ${alpha})`;
+    ctx.fillRect(x, 0, 2, 512);
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(2, 2);
+  return texture;
+}
+
 /**
  * Courtroom3DCanvas:
  * Moteur 3D temps réel Three.js pour le Grand Tribunal Académique (« L'IA à la Barre »).
- * Graphismes Haute Définition :
- * - Décors ultra-détaillés : Vitraux gothiques néoclassiques illuminés, boiseries sculptées,
- *   colonnes cannelées corinthiennes, balustrade de la galerie avec cordes de velours rouge,
- *   livres juridiques anciens aux dorures fines, micro col de cygne avec bague LED rouge,
- *   armoiries dorées en relief et parquet brillant aux reflets spéculaires.
- * - Personnages 3D sculptés et expressifs :
- *   • Le Juge : Visage détaillé (yeux multi-couches, sourcils articulés réactifs, bouche souriante ou moue réprobatrice),
- *     perruque magistrale à rouleaux étagés, jabot de dentelle plissée, médaille dorée et marteau articulé.
- *   • Le Procureur : Visage hautain, regard perçant, toge à parements de velours pourpre, bras au doigt accusateur.
- *   • Maxime (prévenu) : Chevelure texturée, sweat à capuche aux cordons modélisés, mains agrippées à la rampe.
- *   • Me Alex (défense) : Costume trois pièces bleu nuit, broche HECh dorée, tablette et mallette de plaidoirie.
+ * Graphismes Haute Définition avec textures procédurales PBR :
+ * - Sol en parquet de chêne lustré et verni, boiseries en acajou noble, colonnes en marbre veiné.
+ * - Personnages expressifs : clignement naturel des yeux, synchronisation labiale des protagonistes lorsqu'ils parlent.
+ * - Plans caméras serrés et immersifs type régie TV d'assises.
+ * - Zéro artefact distrayant (aucun cube tournant au-dessus de la tête).
  */
 export default function Courtroom3DCanvas({
   currentCaseIdx = 0,
@@ -35,16 +127,19 @@ export default function Courtroom3DCanvas({
   const cameraRef = useRef(null);
   const frameIdRef = useRef(null);
 
-  // References pour animations faciales et posturales
+  // References pour animations faciales, clignements et expressions
   const judgeArmRef = useRef(null);
   const judgeHeadRef = useRef(null);
   const judgeMouthRef = useRef(null);
+  const judgeEyesRef = useRef([]);
   const judgeLeftBrowRef = useRef(null);
   const judgeRightBrowRef = useRef(null);
   const judgeEmoRingRef = useRef(null);
   
   const witnessRef = useRef(null);
   const witnessHeadRef = useRef(null);
+  const witnessMouthRef = useRef(null);
+  const witnessEyesRef = useRef([]);
   const witnessLeftArmRef = useRef(null);
   const witnessRightArmRef = useRef(null);
   const witnessLeftBrowRef = useRef(null);
@@ -52,9 +147,11 @@ export default function Courtroom3DCanvas({
   
   const prosArmRef = useRef(null);
   const prosHeadRef = useRef(null);
+  const prosMouthRef = useRef(null);
+  const prosEyesRef = useRef([]);
+
   const defArmRef = useRef(null);
   const defHeadRef = useRef(null);
-  const holoScreenRef = useRef(null);
   const shockwaveRef = useRef(null);
   const sweatParticlesRef = useRef([]);
 
@@ -78,13 +175,13 @@ export default function Courtroom3DCanvas({
   const previousMouse = useRef({ x: 0, y: 0 });
   const orbitAngles = useRef({ theta: 0, phi: 0.35 });
 
-  // Configurations de caméra prédéfinies style régie TV
+  // Configurations de caméra prédéfinies style régie TV (plans serrés et expressifs)
   const CAMERA_PRESETS = {
-    TV_WIDE: { pos: [0, 5.6, 11.2], look: [0, 2.2, 0] },
-    JUDGE: { pos: [0, 3.6, 4.2], look: [0, 4.0, -4.5] },
-    WITNESS: { pos: [0, 2.4, 3.6], look: [0, 2.1, 0] },
-    DEFENSE: { pos: [3.8, 2.8, 3.0], look: [-1.2, 2.2, -1.0] },
-    PROSECUTION: { pos: [-3.8, 2.8, 3.0], look: [1.2, 2.2, -1.0] }
+    TV_WIDE: { pos: [0, 5.2, 10.5], look: [0, 2.2, 0] },
+    JUDGE: { pos: [0, 3.4, -2.4], look: [0, 3.8, -5.2] },
+    WITNESS: { pos: [0, 2.2, 1.8], look: [0, 2.0, -0.65] },
+    DEFENSE: { pos: [2.6, 2.4, 1.4], look: [4.4, 2.2, -0.2] },
+    PROSECUTION: { pos: [-2.6, 2.4, 1.4], look: [-4.4, 2.2, -0.2] }
   };
 
   useEffect(() => {
@@ -174,17 +271,39 @@ export default function Courtroom3DCanvas({
     const dustParticles = new THREE.Points(dustGeo, dustMat);
     scene.add(dustParticles);
 
-    // 3. Matériaux Partagés
-    const woodMahogany = new THREE.MeshStandardMaterial({ color: 0x36120c, roughness: 0.32, metalness: 0.18 });
-    const woodLight = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.38, metalness: 0.08 });
-    const woodDarkOak = new THREE.MeshStandardMaterial({ color: 0x1f110b, roughness: 0.45, metalness: 0.1 });
-    const floorParquet = new THREE.MeshStandardMaterial({ color: 0x140c0a, roughness: 0.18, metalness: 0.38 });
+    // 3. Matériaux Partagés Haute Définition
+    const parquetTex = createParquetTexture();
+    const marbleTex = createMarbleTexture();
+    const mahoganyTex = createMahoganyTexture();
+
+    const woodMahogany = new THREE.MeshStandardMaterial({ 
+      map: mahoganyTex, 
+      roughness: 0.32, 
+      metalness: 0.12 
+    });
+    const marblePillar = new THREE.MeshStandardMaterial({ 
+      map: marbleTex, 
+      roughness: 0.22, 
+      metalness: 0.18 
+    });
+    const woodLight = new THREE.MeshStandardMaterial({ color: 0x854d0e, roughness: 0.38, metalness: 0.08 });
+    const woodDarkOak = new THREE.MeshStandardMaterial({ 
+      map: mahoganyTex, 
+      color: 0x24120c, 
+      roughness: 0.45, 
+      metalness: 0.1 
+    });
+    const floorParquet = new THREE.MeshStandardMaterial({ 
+      map: parquetTex, 
+      roughness: 0.2, 
+      metalness: 0.28 
+    });
     const goldMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.18, metalness: 0.95 });
     const clothBlack = new THREE.MeshStandardMaterial({ color: 0x080c14, roughness: 0.85, metalness: 0.05 });
     const clothWhite = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.5 });
     const clothRed = new THREE.MeshStandardMaterial({ color: 0x991b1b, roughness: 0.3, metalness: 0.1 });
     const clothNavy = new THREE.MeshStandardMaterial({ color: 0x1e1b4b, roughness: 0.55, metalness: 0.12 });
-    const skinTone = new THREE.MeshStandardMaterial({ color: 0xfbcfe8, roughness: 0.5 });
+    const skinTone = new THREE.MeshStandardMaterial({ color: 0xfbcfe8, roughness: 0.45 });
     const eyeWhite = new THREE.MeshBasicMaterial({ color: 0xffffff });
     const eyePupil = new THREE.MeshBasicMaterial({ color: 0x0f172a });
     const eyeIris = new THREE.MeshBasicMaterial({ color: 0x1e293b });
@@ -268,22 +387,22 @@ export default function Courtroom3DCanvas({
     sealGroup.add(sealBeam);
     scene.add(sealGroup);
 
-    // 4 Colonnes Corinthiennes Cannelées
+    // 4 Colonnes Corinthiennes en Marbre Blanc Veiné
     for (let x of [-7.5, -2.8, 2.8, 7.5]) {
       const colGroup = new THREE.Group();
       colGroup.position.set(x, 4.8, -8.5);
 
-      // Socle carré
-      const plinth = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.6, 1.0), woodMahogany);
+      // Socle carré en marbre
+      const plinth = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.6, 1.0), marblePillar);
       plinth.position.y = -4.5;
       colGroup.add(plinth);
 
-      // Fût cannelé
-      const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.40, 8.8, 16), woodMahogany);
+      // Fût cannelé en marbre veiné
+      const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.40, 8.8, 24), marblePillar);
       colGroup.add(shaft);
 
       // Chapiteau sculpté avec anneaux dorés
-      const cap1 = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.38, 0.4, 16), woodMahogany);
+      const cap1 = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.38, 0.4, 24), marblePillar);
       cap1.position.y = 4.4;
       colGroup.add(cap1);
       const capGold = new THREE.Mesh(new THREE.TorusGeometry(0.48, 0.05, 8, 24), goldMat);
@@ -457,6 +576,7 @@ export default function Courtroom3DCanvas({
     const pupilR = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 8), eyePupil);
     pupilR.position.set(0.13, 0.07, 0.255);
     judgeHeadGroup.add(pupilR);
+    judgeEyesRef.current = [eyeL, pupilL, eyeR, pupilR];
 
     // Sourcils sculptés articulés (réagissent au sourire / froncement)
     const browGeo = new THREE.BoxGeometry(0.16, 0.045, 0.08);
@@ -613,6 +733,13 @@ export default function Courtroom3DCanvas({
     const witPupilR = new THREE.Mesh(new THREE.SphereGeometry(0.02, 6, 6), eyePupil);
     witPupilR.position.set(0.11, 0.06, 0.245);
     witHeadGroup.add(witPupilR);
+    witnessEyesRef.current = [witEyeL, witPupilL, witEyeR, witPupilR];
+
+    // Bouche articulée de Maxime
+    const witMouth = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.04, 0.06), new THREE.MeshBasicMaterial({ color: 0x991b1b }));
+    witMouth.position.set(0, -0.12, 0.22);
+    witHeadGroup.add(witMouth);
+    witnessMouthRef.current = witMouth;
 
     // Sourcils de Maxime (s'inclinent d'inquiétude lors d'une mauvaise défense)
     const witBrowGeo = new THREE.BoxGeometry(0.14, 0.035, 0.06);
@@ -749,6 +876,13 @@ export default function Courtroom3DCanvas({
     const prosEyeR = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.03, 0.05), eyePupil);
     prosEyeR.position.set(0.11, 0.05, 0.21);
     prosHeadGroup.add(prosEyeR);
+    prosEyesRef.current = [prosEyeL, prosEyeR];
+
+    // Bouche articulée du Procureur
+    const prosMouth = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.04, 0.06), new THREE.MeshBasicMaterial({ color: 0x7f1d1d }));
+    prosMouth.position.set(0, -0.12, 0.21);
+    prosHeadGroup.add(prosMouth);
+    prosMouthRef.current = prosMouth;
 
     prosGroup.add(prosHeadGroup);
     prosHeadRef.current = prosHeadGroup;
@@ -772,44 +906,7 @@ export default function Courtroom3DCanvas({
 
     scene.add(prosGroup);
 
-    // =========================================================================
-    // 11. ÉCRAN HOLOGRAPHIQUE 3D FLOTTANT
-    // =========================================================================
-    const holoGroup = new THREE.Group();
-    holoGroup.position.set(0, 3.8, 0.2);
-
-    const holoScreen = new THREE.Mesh(
-      new THREE.PlaneGeometry(2.8, 1.6),
-      new THREE.MeshBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.32, side: THREE.DoubleSide })
-    );
-    holoGroup.add(holoScreen);
-
-    // Ligne de balayage laser holographique (Scanner)
-    const scanLaser = new THREE.Mesh(
-      new THREE.PlaneGeometry(2.7, 0.04),
-      new THREE.MeshBasicMaterial({ color: 0x38bdf8, side: THREE.DoubleSide, transparent: true, opacity: 0.85 })
-    );
-    scanLaser.position.z = 0.02;
-    holoGroup.add(scanLaser);
-
-    // Cadre cyber lumineux
-    const holoFrame = new THREE.Mesh(
-      new THREE.RingGeometry(1.4, 1.45, 4),
-      new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true })
-    );
-    holoFrame.scale.set(1.4, 0.8, 1);
-    holoGroup.add(holoFrame);
-
-    // Cube de données 3D rotatif au centre de l'hologramme
-    const dataCube = new THREE.Mesh(
-      new THREE.BoxGeometry(0.4, 0.4, 0.4),
-      new THREE.MeshBasicMaterial({ color: 0x67e8f9, wireframe: true })
-    );
-    dataCube.position.set(0, 0, 0.1);
-    holoGroup.add(dataCube);
-
-    scene.add(holoGroup);
-    holoScreenRef.current = { group: holoGroup, cube: dataCube, laser: scanLaser };
+    // 11. (Le cube rotatif gênant et l'écran holographique au-dessus de la tête ont été supprimés)
 
     // 12. Gouttes de sueur 3D (pour état stressé/objection)
     const sweatGeo = new THREE.SphereGeometry(0.045, 6, 6);
@@ -870,15 +967,30 @@ export default function Courtroom3DCanvas({
       currentLookTarget.lerp(targetCamLook.current, 0.06);
       camera.lookAt(currentLookTarget);
 
-      // Animation Hologramme (rotation douce + pulsation + scan laser)
-      if (holoScreenRef.current) {
-        holoScreenRef.current.group.rotation.y = Math.sin(elapsedTime * 0.8) * 0.12;
-        holoScreenRef.current.group.position.y = 3.8 + Math.sin(elapsedTime * 1.5) * 0.08;
-        holoScreenRef.current.cube.rotation.x += 0.02;
-        holoScreenRef.current.cube.rotation.y += 0.03;
-        if (holoScreenRef.current.laser) {
-          holoScreenRef.current.laser.position.y = Math.sin(elapsedTime * 3) * 0.7;
-        }
+      // Clignement réaliste des yeux pour tous les protagonistes
+      const blinkPhase = elapsedTime % 3.6;
+      const isBlinking = blinkPhase < 0.14;
+      const eyeScaleY = isBlinking ? 0.08 : 1.0;
+
+      judgeEyesRef.current.forEach(mesh => {
+        if (mesh) mesh.scale.y = eyeScaleY;
+      });
+      witnessEyesRef.current.forEach(mesh => {
+        if (mesh) mesh.scale.y = eyeScaleY;
+      });
+      prosEyesRef.current.forEach(mesh => {
+        if (mesh) mesh.scale.y = eyeScaleY;
+      });
+
+      // Synchronisation labiale (mouvements de bouche)
+      if (judgeStateRef.current === 'speaking' && judgeMouthRef.current) {
+        judgeMouthRef.current.scale.y = Math.abs(Math.sin(elapsedTime * 14)) * 1.2 + 0.5;
+      }
+      if ((prosecutorStateRef.current === 'speaking' || prosecutorStateRef.current === 'attacking') && prosMouthRef.current) {
+        prosMouthRef.current.scale.y = Math.abs(Math.sin(elapsedTime * 16)) * 1.3 + 0.4;
+      }
+      if (witnessStateRef.current === 'speaking' && witnessMouthRef.current) {
+        witnessMouthRef.current.scale.y = Math.abs(Math.sin(elapsedTime * 13)) * 1.1 + 0.4;
       }
 
       // Animation des particules de poussière en suspension

@@ -19,7 +19,9 @@ import {
   RotateCcw, 
   Award,
   ChevronRight,
-  ShieldAlert
+  ShieldAlert,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import Courtroom3DCanvas from './Courtroom3DCanvas';
@@ -68,6 +70,8 @@ export default function GameGrandProcesHacking({ onComplete }) {
 
   // Étape interne de la cinématique finale du Juge (0 à 7)
   const [cinematicStep, setCinematicStep] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isKeyClaimed, setIsKeyClaimed] = useState(false);
 
   // Nettoyage audio strict au démontage du composant
   useEffect(() => {
@@ -82,25 +86,15 @@ export default function GameGrandProcesHacking({ onComplete }) {
       title: 'Assaut 1/6 : Sabotage Énergétique & Coût du Réseau',
       prosecutorVoice: 'proces_procureur_assaut_1',
       maximeVoice: 'proces_maxime_defense_1',
-      charge: 'Le Procureur accuse Maxime d avoir paralysé l infrastructure par vandalisme et réclame son incarcération pour trouble grave à l ordre public.',
+      charge: "Le Procureur accuse Maxime d'avoir paralysé l'infrastructure par vandalisme et réclame son incarcération pour trouble grave à l'ordre public.",
       prosecutorQuote: "« Monsieur le Juge ! Ce prévenu a coupé brutalement les serveurs du campus en pleine semaine de cours ! Il a causé une désorganisation totale et un trouble intolérable à l'ordre public ! Je réclame un mandat de dépôt et son incarcération ferme immédiate pour trouble à l'ordre public ! »",
       maximeDefenseQuote: "« Ce n'était pas du vandalisme. Regardez les compteurs : en seulement 24 heures sans IA, le campus a économisé 45 000 litres d'eau de refroidissement et des mégawatts d'électricité gaspillés pour des requêtes futiles ! »",
       requiredType: 'eco',
       arguments: [
         {
-          id: 'arg_eco_opt1',
-          type: 'eco',
-          title: '🌿 Argument Écologique & Climat (Choix A)',
-          text: "Invoquer l'état de nécessité environnementale : le cluster LLM consommait 48 500 L d'eau potable et 14 200 kWh par semaine pour des tâches dérisoires ; le blackout a stoppé ce gaspillage écologique irréversible.",
-          isCorrect: true,
-          gain: 15,
-          reaction: 'smile',
-          feedback: "Le Juge sourit et hoche la tête : « La proportionnalité environnementale est un moyen de droit recevable devant notre juridiction. »"
-        },
-        {
           id: 'arg_eco_opt2',
           type: 'sophism',
-          title: '💰 Argument de l Économie Budgétaire (Choix B)',
+          title: "Économie budgétaire directe sur la facture d'électricité",
           text: "Plaider que Maxime a fait économiser 4 000 € sur la facture d'électricité de l'école et mérite donc une prime financière.",
           isCorrect: false,
           gain: -5,
@@ -110,7 +104,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
         {
           id: 'arg_eco_opt3',
           type: 'weak',
-          title: '😴 Argument de la Fatigue Estudiantine (Choix C)',
+          title: "Soulagement de la fatigue estudiantine en période de blocus",
           text: "Prétendre que les étudiants voulaient juste un jour de congé pour récupérer de leurs nuits blanches de blocus.",
           isCorrect: false,
           gain: -8,
@@ -118,9 +112,19 @@ export default function GameGrandProcesHacking({ onComplete }) {
           feedback: "Moue réprobatrice du Juge : « Le confort personnel ne constitue aucunement une cause d'exonération de responsabilité. »"
         },
         {
+          id: 'arg_eco_opt1',
+          type: 'eco',
+          title: "État de nécessité environnementale et préservation des ressources vitales",
+          text: "Invoquer l'état de nécessité environnementale : le cluster LLM consommait 48 500 L d'eau potable et 14 200 kWh par semaine pour des tâches dérisoires ; le blackout a stoppé ce gaspillage écologique irréversible.",
+          isCorrect: true,
+          gain: 15,
+          reaction: 'smile',
+          feedback: "Le Juge sourit et hoche la tête : « La proportionnalité environnementale est un moyen de droit recevable devant notre juridiction. »"
+        },
+        {
           id: 'arg_eco_opt4',
           type: 'procedural',
-          title: '⚖️ Argument de la Mauvaise Qualification (Choix D)',
+          title: "Défaut de qualification matérielle de cyber-sabotage au Code pénal",
           text: "Arguer que couper un disjoncteur n'est pas un cyber-sabotage au sens strict de l'article 550bis du Code pénal.",
           isCorrect: false,
           gain: -4,
@@ -134,25 +138,15 @@ export default function GameGrandProcesHacking({ onComplete }) {
       title: 'Assaut 2/6 : Violation de Réseau & Piratage Illégal',
       prosecutorVoice: 'proces_procureur_assaut_2',
       maximeVoice: 'proces_maxime_defense_2',
-      charge: 'Le Procureur soutient que Maxime a fracturé la sécurité de l école au mépris du droit informatique.',
+      charge: "Le Procureur soutient que Maxime a fracturé la sécurité de l'école au mépris du droit informatique.",
       prosecutorQuote: "« Mensonge ! Cet individu a violé les réseaux internes de l'école ! En s'introduisant dans les pare-feux, il a mis en péril la sécurité informatique de notre institution ! »",
       maximeDefenseQuote: "« J'ai au contraire protégé nos camarades ! J'ai découvert que les travaux, les thèses et même les données de santé des étudiants étaient aspirés en continu vers des serveurs tiers en Californie sans consentement ! »",
       requiredType: 'data',
       arguments: [
         {
-          id: 'arg_data_opt1',
-          type: 'data',
-          title: '🛡️ Argument de Protection des Données & RGPD (Choix A)',
-          text: "Démontrer que l'arrêt d'urgence a stoppé une exfiltration massive et illégale des mémoires étudiants et données de santé vers des serveurs tiers en Californie, en violation de l'Article 44 du RGPD.",
-          isCorrect: true,
-          gain: 15,
-          reaction: 'smile',
-          feedback: "Le Juge sourit avec bienveillance : « Le signalement d'une fuite de données personnelles sensible relève du devoir de lanceur d'alerte. »"
-        },
-        {
           id: 'arg_data_opt2',
           type: 'weak',
-          title: '🔓 Argument de la Porte Ouverte (Choix B)',
+          title: "Négligence manifeste dans la configuration des pare-feux de l'école",
           text: "Soutenir que les pare-feux de l'école étaient si mal configurés que n'importe qui aurait pu entrer sans forcer.",
           isCorrect: false,
           gain: -6,
@@ -162,7 +156,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
         {
           id: 'arg_data_opt3',
           type: 'sophism',
-          title: '💻 Argument du Bug Pédagogique (Choix C)',
+          title: "Débordement involontaire dans le cadre d'un TP d'informatique",
           text: "Affirmer que Maxime faisait seulement un exercice de TP d'informatique non encadré qui a débordé.",
           isCorrect: false,
           gain: -5,
@@ -172,12 +166,22 @@ export default function GameGrandProcesHacking({ onComplete }) {
         {
           id: 'arg_data_opt4',
           type: 'irrelevant',
-          title: '📁 Argument du Format de Fichier (Choix D)',
+          title: "Absence de valeur commerciale des fichiers estudiantins collectés",
           text: "Plaider que les fichiers aspirés n'étaient que des brouillons et n'avaient aucune valeur commerciale.",
           isCorrect: false,
           gain: -5,
           reaction: 'frown',
           feedback: "Le Juge désapprouve de la tête : « Tout document estudiantin relève de la vie privée garantie par la loi. »"
+        },
+        {
+          id: 'arg_data_opt1',
+          type: 'data',
+          title: "Interruption d'urgence d'une fuite massive de données personnelles (RGPD)",
+          text: "Démontrer que l'arrêt d'urgence a stoppé une exfiltration massive et illégale des mémoires étudiants et données de santé vers des serveurs tiers en Californie, en violation de l'Article 44 du RGPD.",
+          isCorrect: true,
+          gain: 15,
+          reaction: 'smile',
+          feedback: "Le Juge sourit avec bienveillance : « Le signalement d'une fuite de données personnelles sensible relève du devoir de lanceur d'alerte. »"
         }
       ]
     },
@@ -186,25 +190,15 @@ export default function GameGrandProcesHacking({ onComplete }) {
       title: 'Assaut 3/6 : Privation d Outils Pédagogiques & Chaos',
       prosecutorVoice: 'proces_procureur_assaut_3',
       maximeVoice: 'proces_maxime_defense_3',
-      charge: 'Le Procureur prétend que les étudiants étaient perdus et incapables de travailler sans les assistants IA.',
+      charge: "Le Procureur prétend que les étudiants étaient perdus et incapables de travailler sans les assistants IA.",
       prosecutorQuote: "« Sans nos assistants virtuels, les étudiants étaient totalement désemparés ! Il a brisé la continuité pédagogique et privé notre jeunesse du progrès moderne ! »",
       maximeDefenseQuote: "« Désemparés ? Ou enfin libérés ? Les étudiants ne savaient même plus écrire trois phrases sans prompter une machine ! Pendant ces 24 heures, ils se sont enfin reparlé, ils ont réouvert des livres et réactivé leur propre esprit critique ! »",
       requiredType: 'cognitive',
       arguments: [
         {
-          id: 'arg_cog_opt1',
-          type: 'cognitive',
-          title: '🧠 Argument de la Prise de Pouvoir & Atrophie Cognitive (Choix A)',
-          text: "Démontrer que l'IA campus provoquait une soumission intellectuelle totale où les étudiants ne savaient plus rédiger sans béquille ; le blackout a réactivé la lecture critique et les débats réels.",
-          isCorrect: true,
-          gain: 15,
-          reaction: 'smile',
-          feedback: "Le Juge s'anime d'un franc sourire : « Remarquable ! Une Haute École forme des consciences libres, pas des perroquets algorithmiques. »"
-        },
-        {
           id: 'arg_cog_opt2',
           type: 'anti_tech',
-          title: '📜 Argument du Rejet Pur de la Technologie (Choix B)',
+          title: "Rejet total de l'informatique et retour définitif aux écrits manuscrits",
           text: "Plaider qu'il faut interdire tout ordinateur et revenir au papier et à la plume d'oie pour les cinquante prochaines années.",
           isCorrect: false,
           gain: -7,
@@ -212,9 +206,19 @@ export default function GameGrandProcesHacking({ onComplete }) {
           feedback: "Moue agacée du Juge : « Le luddisme aveugle n'est pas une réponse juridique sérieuse au XXIe siècle. »"
         },
         {
+          id: 'arg_cog_opt1',
+          type: 'cognitive',
+          title: "Alerte sur la soumission intellectuelle et l'atrophie de l'esprit critique",
+          text: "Démontrer que l'IA campus provoquait une soumission intellectuelle totale où les étudiants ne savaient plus rédiger sans béquille ; le blackout a réactivé la lecture critique et les débats réels.",
+          isCorrect: true,
+          gain: 15,
+          reaction: 'smile',
+          feedback: "Le Juge s'anime d'un franc sourire : « Remarquable ! Une Haute École forme des consciences libres, pas des perroquets algorithmiques. »"
+        },
+        {
           id: 'arg_cog_opt3',
           type: 'weak',
-          title: '📅 Argument du Report d Examen (Choix C)',
+          title: "Facilité organisationnelle pour reporter les dates limites de devoirs",
           text: "Dire que les professeurs n'avaient qu'à décaler les devoirs et que ce retard était sans importance.",
           isCorrect: false,
           gain: -5,
@@ -224,7 +228,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
         {
           id: 'arg_cog_opt4',
           type: 'sophism',
-          title: '🤖 Argument de la Vengeance contre la Machine (Choix D)',
+          title: "Démonstration d'amour-propre face à la toute-puissance de la machine",
           text: "Soutenir que Maxime voulait simplement prouver qu'un humain est plus fort qu'un algorithme dans un duel de force.",
           isCorrect: false,
           gain: -6,
@@ -238,7 +242,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
       title: 'Assaut 4/6 : Frein à la Modernisation & Efficience RH',
       prosecutorVoice: 'proces_procureur_assaut_4',
       maximeVoice: 'proces_maxime_defense_4',
-      charge: 'Le Procureur défend le projet Campus 2030 d automatisation rentable des services scolaires.',
+      charge: "Le Procureur défend le projet Campus 2030 d'automatisation rentable des services scolaires.",
       prosecutorQuote: "« L'établissement déployait un projet pilote d'efficience budgétaire d'avenir ! Ce sabotage a freiné la modernisation de notre institution ! »",
       maximeDefenseQuote: "« L'efficience budgétaire ? Parlons-en ! Le plan secret prévoyait de supprimer 25 postes de secrétaires et d'assistants pour les remplacer par des clones numériques ! Une université n'est pas une usine automatisée sans empathie ! »",
       requiredType: 'jobs',
@@ -246,7 +250,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
         {
           id: 'arg_jobs_opt1',
           type: 'jobs',
-          title: '👥 Argument du Remplacement des Métiers Humains (Choix A)',
+          title: "Dénonciation du plan de suppression d'emplois et de déshumanisation",
           text: "Révéler la preuve matérielle du mémo RH confidentiel prévoyant la suppression de 25 postes de secrétaires, bibliothécaires et tuteurs ; l'IA ne doit pas servir de prétexte à la déshumanisation institutionnelle.",
           isCorrect: true,
           gain: 15,
@@ -256,7 +260,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
         {
           id: 'arg_jobs_opt2',
           type: 'weak',
-          title: '💸 Argument du Salaire des Directeurs (Choix B)',
+          title: "Critique de la grille de rémunération du conseil d'administration",
           text: "Attaquer personnellement les membres du conseil d'administration en disant qu'ils gagnent trop d'argent.",
           isCorrect: false,
           gain: -8,
@@ -266,7 +270,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
         {
           id: 'arg_jobs_opt3',
           type: 'procedural',
-          title: '🏢 Argument du Défaut de Concertation Syndicale (Choix C)',
+          title: "Irrégularité de forme dans le procès-verbal de concertation syndicale",
           text: "Plaider une simple irrégularité dans le procès-verbal de la réunion du comité de concertation syndicale.",
           isCorrect: false,
           gain: -4,
@@ -276,7 +280,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
         {
           id: 'arg_jobs_opt4',
           type: 'sophism',
-          title: '🛑 Argument du Refus de Toute Automatisation (Choix D)',
+          title: "Refus idéologique de toute dématérialisation administrative",
           text: "Soutenir qu'aucun formulaire ne devrait jamais être dématérialisé dans une école belge.",
           isCorrect: false,
           gain: -5,
@@ -290,25 +294,15 @@ export default function GameGrandProcesHacking({ onComplete }) {
       title: 'Assaut 5/6 : Refus du Progrès Mondial & IA Internationale',
       prosecutorVoice: 'proces_procureur_assaut_5',
       maximeVoice: 'proces_maxime_defense_5',
-      charge: 'Le Procureur invoque la puissance incontestable des géants technologiques mondiaux.',
+      charge: "Le Procureur invoque la puissance incontestable des géants technologiques mondiaux.",
       prosecutorQuote: "« Nous utilisons les meilleurs outils du marché mondial, conçus par les géants californiens et asiatiques. Pourquoi refuser cette puissance technologique ? »",
       maximeDefenseQuote: "« Parce que cela détruit notre souveraineté européenne ! Nous abandonnons nos cerveaux, notre culture et notre indépendance intellectuelle aux mains de multinationales privées qui ne cherchent que le monopole et le profit ! »",
       requiredType: 'sovereignty',
       arguments: [
         {
-          id: 'arg_sov_opt1',
-          type: 'sovereignty',
-          title: '🌍 Argument de Souveraineté & Monopoles Privés (Choix A)',
-          text: "Dénoncer la vassalisation intellectuelle européenne et le transfert d'autorité démocratique à des oligopoles privés américains et chinois qui dictent les règles du savoir et captent nos richesses.",
-          isCorrect: true,
-          gain: 15,
-          reaction: 'smile',
-          feedback: "Le Juge hoche la tête avec un sourire d'assentiment : « La souveraineté démocratique et l'indépendance de pensée sont des principes cardinaux. »"
-        },
-        {
           id: 'arg_sov_opt2',
           type: 'weak',
-          title: '🌐 Argument du Chauvinisme National (Choix B)',
+          title: "Préférence géographique stricte pour les logiciels codés localement",
           text: "Plaider qu'il ne faut utiliser que des logiciels fabriqués à Liège ou à Bruxelles même s'ils ne fonctionnent pas.",
           isCorrect: false,
           gain: -6,
@@ -318,7 +312,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
         {
           id: 'arg_sov_opt3',
           type: 'sophism',
-          title: '🚫 Argument du Boycott Pur et Simple (Choix C)',
+          title: "Autarcie numérique totale et coupure du réseau mondial",
           text: "Réclamer que l'école coupe toute connexion Internet mondiale et vive en autarcie numérique complète.",
           isCorrect: false,
           gain: -7,
@@ -326,9 +320,19 @@ export default function GameGrandProcesHacking({ onComplete }) {
           feedback: "Le Juge fait une moue dubitative : « Soyons réalistes, l'université est connectée au monde. »"
         },
         {
+          id: 'arg_sov_opt1',
+          type: 'sovereignty',
+          title: "Défense de la souveraineté intellectuelle contre les monopoles privés",
+          text: "Dénoncer la vassalisation intellectuelle européenne et le transfert d'autorité démocratique à des oligopoles privés américains et chinois qui dictent les règles du savoir et captent nos richesses.",
+          isCorrect: true,
+          gain: 15,
+          reaction: 'smile',
+          feedback: "Le Juge hoche la tête avec un sourire d'assentiment : « La souveraineté démocratique et l'indépendance de pensée sont des principes cardinaux. »"
+        },
+        {
           id: 'arg_sov_opt4',
           type: 'irrelevant',
-          title: '💳 Argument des Frais de Change en Dollars (Choix D)',
+          title: "Fluctuation des taux de change euro/dollar sur les abonnements",
           text: "Avancer que payer des abonnements en dollars américains coûte trop cher à cause du taux de change euro/dollar.",
           isCorrect: false,
           gain: -5,
@@ -342,25 +346,15 @@ export default function GameGrandProcesHacking({ onComplete }) {
       title: 'Assaut 6/6 : Trouble à l Ordre Public & Calomnie',
       prosecutorVoice: 'proces_procureur_assaut_6',
       maximeVoice: 'proces_maxime_defense_6',
-      charge: 'Le Procureur tente un dernier coup de force en traitant Maxime d agitateur complotiste.',
+      charge: "Le Procureur tente un dernier coup de force en traitant Maxime d'agitateur complotiste.",
       prosecutorQuote: "« Ce garçon est un agitateur qui distille le doute et la paranoïa sur le campus ! C'est un délit contre la vérité institutionnelle ! »",
       maximeDefenseQuote: "« La vérité ? L'algorithme enfermait chaque promotion dans des bulles d'information biaisées et censurait les contre-discours scientifiques ! Mon geste était un signal d'alarme pour sauver la démocratie universitaire ! »",
       requiredType: 'propaganda',
       arguments: [
         {
-          id: 'arg_prop_opt1',
-          type: 'propaganda',
-          title: '📢 Argument de la Propagande & Bulles de Filtre (Choix A)',
-          text: "Prouver par le benchmark technique que l'IA campus applique un filtrage idéologique opaque, enfermant les apprenants dans des bulles de filtres qui étouffent la controverse scientifique et le débat démocratique.",
-          isCorrect: true,
-          gain: 15,
-          reaction: 'smile',
-          feedback: "Sourire radieux du Juge : « Plaidoirie lumineuse ! Le pluralisme et le doute méthodique sont le sel de l'enseignement supérieur. »"
-        },
-        {
           id: 'arg_prop_opt2',
           type: 'weak',
-          title: '🗣️ Argument de la Liberté d Injure (Choix B)',
+          title: "Revendication d'un droit absolu à l'invective sur les réseaux",
           text: "Affirmer que sur les réseaux sociaux d'étudiants, tout le monde a le droit de diffamer sans aucune limite morale.",
           isCorrect: false,
           gain: -8,
@@ -368,9 +362,19 @@ export default function GameGrandProcesHacking({ onComplete }) {
           feedback: "Moue indignée du Juge : « Non Maître ! La liberté d'expression s'arrête là où commence la calomnie et la nuisance gratuite. »"
         },
         {
+          id: 'arg_prop_opt1',
+          type: 'propaganda',
+          title: "Démonstration du filtrage idéologique et des bulles de filtres cognitives",
+          text: "Prouver par le benchmark technique que l'IA campus applique un filtrage idéologique opaque, enfermant les apprenants dans des bulles de filtres qui étouffent la controverse scientifique et le débat démocratique.",
+          isCorrect: true,
+          gain: 15,
+          reaction: 'smile',
+          feedback: "Sourire radieux du Juge : « Plaidoirie lumineuse ! Le pluralisme et le doute méthodique sont le sel de l'enseignement supérieur. »"
+        },
+        {
           id: 'arg_prop_opt3',
           type: 'sophism',
-          title: '🎭 Argument du Canular Inoffensif (Choix C)',
+          title: "Qualification de canular étudiant inoffensif et festif",
           text: "Prétendre que ce crash était juste une blague de bizutage pour faire rire la nouvelle promotion d'étudiants.",
           isCorrect: false,
           gain: -6,
@@ -380,7 +384,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
         {
           id: 'arg_prop_opt4',
           type: 'irrelevant',
-          title: '🌐 Argument de la Défaillance d Algorithme (Choix D)',
+          title: "Espoir d'une future mise à jour logicielle corrective par le fournisseur",
           text: "Dire que l'IA a des hallucinations et qu'il suffit d'attendre la mise à jour 5.0 pour que tout s'arrange.",
           isCorrect: false,
           gain: -5,
@@ -396,11 +400,21 @@ export default function GameGrandProcesHacking({ onComplete }) {
   // Lancement du Procès
   const handleStartTrial = () => {
     sounds.stopAllVoice();
+    sounds.playCourtroomMurmur(3.5);
     setStage('attack');
     setCameraView('PROSECUTION');
     setProsecutorState('attacking');
     setJudgeReaction('neutral');
     sounds.playAudioFile(`/audio/voices/${currentAssault.prosecutorVoice}.mp3`, 1.0);
+
+    // Dans l'assaut 1, après l'emportement du procureur qui réclame la prison, le juge tape du marteau et exige le silence
+    if (currentAssaultIdx === 0) {
+      setTimeout(() => {
+        sounds.playJudgeSilence();
+        setJudgeState('gavel');
+        setCameraView('JUDGE');
+      }, 5500);
+    }
   };
 
   // Phase d'enquête forensique
@@ -440,13 +454,16 @@ export default function GameGrandProcesHacking({ onComplete }) {
       setWitnessState('confident');
       setProsecutorState('idle');
       sounds.playSuccess();
+      sounds.playAudioFile('/audio/voices/proces_judge_approbation.mp3', 1.0);
     } else {
-      // Effet négatif : Moue du Juge + Secouement de tête + Inquiétude de Maxime + Triomphe du Procureur
+      // Effet négatif : Moue du Juge + Secouement de tête + Murmure du public + Inquiétude de Maxime
       setJudgeReaction('frown');
       setCameraView('JUDGE');
       setWitnessState('stressed');
       setProsecutorState('attacking');
       sounds.playWrong();
+      sounds.playCourtroomMurmur(2.5);
+      sounds.playAudioFile('/audio/voices/proces_judge_reprimande.mp3', 1.0);
     }
   };
 
@@ -520,6 +537,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
       setProsecutorState('attacking');
       setWitnessState('idle');
       setDefenseState('idle');
+      sounds.playCourtroomMurmur(2.8);
       sounds.playAudioFile(`/audio/voices/${ASSAULTS[currentAssaultIdx + 1].prosecutorVoice}.mp3`, 1.0);
     } else {
       // Lancement de la CINÉMATIQUE FINALE DU JUGE
@@ -570,7 +588,10 @@ export default function GameGrandProcesHacking({ onComplete }) {
   const isFinalInnocent = provenCount >= 4 || judgeConviction >= 65;
 
   return (
-    <div className="w-full h-full flex flex-col gap-3 font-['Lexend'] animate-in fade-in select-none">
+    <div className={isFullscreen 
+      ? "fixed inset-0 z-50 bg-[#060913] p-4 sm:p-6 flex flex-col gap-3 font-['Lexend'] animate-in fade-in select-none overflow-hidden" 
+      : "w-full h-full flex flex-col gap-3 font-['Lexend'] animate-in fade-in select-none"
+    }>
       {/* Top Bar : Statut du Grand Procès de l'Éthique IA */}
       <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-3xl bg-slate-900/90 border border-slate-800">
         <div className="flex items-center gap-3">
@@ -592,8 +613,25 @@ export default function GameGrandProcesHacking({ onComplete }) {
           </div>
         </div>
 
-        {/* Jauges en Direct */}
+        {/* Jauges en Direct & Bouton Plein Écran */}
         <div className="flex items-center gap-3">
+          {/* Bouton Plein Écran */}
+          <button
+            onClick={() => setIsFullscreen(prev => !prev)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-500/40 text-xs font-mono font-bold text-indigo-300 transition cursor-pointer shadow-md"
+            title={isFullscreen ? "Quitter le Plein Écran" : "Passer en Plein Écran"}
+          >
+            {isFullscreen ? (
+              <>
+                <Minimize2 className="w-3.5 h-3.5 text-indigo-400" /> Quitter Plein Écran
+              </>
+            ) : (
+              <>
+                <Maximize2 className="w-3.5 h-3.5 text-indigo-400" /> Plein Écran
+              </>
+            )}
+          </button>
+
           {/* Conviction du Juge */}
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-slate-950 border border-slate-800">
             <Gavel className="w-4 h-4 text-amber-400" />
@@ -771,37 +809,58 @@ export default function GameGrandProcesHacking({ onComplete }) {
                   Choisissez une argumentation juridique (observez en direct les réactions du Juge 3D) :
                 </p>
 
-                <div className="space-y-2">
-                  {currentAssault.arguments.map(arg => (
-                    <div
-                      key={arg.id}
-                      onClick={() => handleSelectArgument(arg)}
-                      className={`p-3 rounded-2xl border transition cursor-pointer text-left ${
-                        selectedArgument?.id === arg.id
-                          ? arg.isCorrect
-                            ? 'bg-emerald-950/70 border-emerald-500 text-emerald-200 shadow-lg'
-                            : 'bg-rose-950/70 border-rose-500 text-rose-200 shadow-lg'
-                          : 'bg-slate-950 hover:bg-slate-800/80 border-slate-800 text-slate-300'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between font-bold text-xs mb-1">
-                        <span>{arg.title}</span>
-                        {selectedArgument?.id === arg.id && (
-                          arg.isCorrect ? <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> : <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+                <div className="space-y-2.5">
+                  {currentAssault.arguments.map((arg, idx) => {
+                    const isSelected = selectedArgument?.id === arg.id;
+                    const letterBadges = ['A', 'B', 'C', 'D'];
+                    return (
+                      <div
+                        key={arg.id}
+                        onClick={() => handleSelectArgument(arg)}
+                        className={`p-3.5 rounded-2xl border transition-all cursor-pointer text-left relative ${
+                          isSelected
+                            ? arg.isCorrect
+                              ? 'bg-emerald-950/80 border-emerald-500 text-emerald-100 shadow-xl ring-2 ring-emerald-500/30'
+                              : 'bg-rose-950/80 border-rose-500 text-rose-100 shadow-xl ring-2 ring-rose-500/30'
+                            : 'bg-slate-950/90 hover:bg-slate-800/80 border-slate-800 text-slate-300'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between font-bold text-xs mb-1.5">
+                          <div className="flex items-center gap-2">
+                            <span className={`w-5 h-5 rounded-md flex items-center justify-center font-mono text-[10px] font-black ${
+                              isSelected
+                                ? arg.isCorrect ? 'bg-emerald-500 text-slate-950' : 'bg-rose-500 text-white'
+                                : 'bg-slate-800 text-slate-300'
+                            }`}>
+                              {letterBadges[idx]}
+                            </span>
+                            <span className="text-slate-100 font-semibold">{arg.title}</span>
+                          </div>
+                          {isSelected && (
+                            arg.isCorrect ? (
+                              <span className="flex items-center gap-1 text-[10px] font-mono text-emerald-400 font-bold bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/40">
+                                <CheckCircle2 className="w-3.5 h-3.5" /> Favorable au Juge
+                              </span>
+                            ) : (
+                              <span className="flex items-center gap-1 text-[10px] font-mono text-rose-400 font-bold bg-rose-950/60 px-2 py-0.5 rounded-full border border-rose-500/40">
+                                <AlertTriangle className="w-3.5 h-3.5" /> Moue Réprobatrice
+                              </span>
+                            )
+                          )}
+                        </div>
+                        <p className="text-[12px] opacity-85 font-sans leading-relaxed pl-7">
+                          {arg.text}
+                        </p>
+                        {isSelected && (
+                          <p className={`mt-2 ml-7 text-[11px] font-mono font-bold border-t border-slate-700/50 pt-1.5 ${
+                            arg.isCorrect ? 'text-emerald-300' : 'text-rose-300'
+                          }`}>
+                            {arg.feedback}
+                          </p>
                         )}
                       </div>
-                      <p className="text-[11px] opacity-85 font-sans leading-relaxed">
-                        {arg.text}
-                      </p>
-                      {selectedArgument?.id === arg.id && (
-                        <p className={`mt-2 text-[11px] font-mono font-bold border-t border-slate-700/50 pt-1.5 ${
-                          arg.isCorrect ? 'text-emerald-300' : 'text-rose-300'
-                        }`}>
-                          {arg.feedback}
-                        </p>
-                      )}
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 
@@ -1085,16 +1144,28 @@ export default function GameGrandProcesHacking({ onComplete }) {
                   {cinematicStep === 0 ? "Écouter l'énoncé des motifs →" : `Passer au motif suivant (${cinematicStep + 1}/6) →`}
                 </button>
               ) : isFinalInnocent ? (
-                <button
-                  onClick={() => {
-                    sounds.stopAllVoice();
-                    sounds.playVictory();
-                    if (onComplete) onComplete();
-                  }}
-                  className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/30 animate-bounce"
-                >
-                  ✨ Récupérer la Clé Beta (Intégrité & Éthique) →
-                </button>
+                isKeyClaimed ? (
+                  <div className="p-4 rounded-2xl bg-emerald-950/90 border border-emerald-500/60 text-center space-y-1.5 animate-in zoom-in-95">
+                    <div className="text-emerald-400 font-bold text-xs font-mono flex items-center justify-center gap-1.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Clé Beta Déverrouillée !
+                    </div>
+                    <p className="text-[11px] text-slate-300">
+                      Validation enregistrée. Retour vers le plan d'orientation du campus...
+                    </p>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setIsKeyClaimed(true);
+                      sounds.stopAllVoice();
+                      sounds.playVictory();
+                      if (onComplete) onComplete();
+                    }}
+                    className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/30 animate-bounce"
+                  >
+                    ✨ Récupérer la Clé Beta (Intégrité & Éthique) →
+                  </button>
+                )
               ) : (
                 <button
                   onClick={() => {
