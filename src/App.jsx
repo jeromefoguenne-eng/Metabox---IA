@@ -235,23 +235,35 @@ export default function App() {
                 const isActive = activeTileId === tile.id;
                 const isCompleted = completedTiles.includes(tile.id);
 
+                // Thèmes de couleurs spécifiques pour la sidebar
+                const SIDEBAR_COLOR_MAP = {
+                  1: { icon: "bg-sky-100 text-sky-700", active: "bg-sky-50/90 border-sky-500 text-sky-950 ring-1 ring-sky-500", hover: "hover:border-sky-300" },
+                  2: { icon: "bg-indigo-100 text-indigo-700", active: "bg-indigo-50/90 border-indigo-500 text-indigo-950 ring-1 ring-indigo-500", hover: "hover:border-indigo-300" },
+                  3: { icon: "bg-emerald-100 text-emerald-700", active: "bg-emerald-50/90 border-emerald-500 text-emerald-950 ring-1 ring-emerald-500", hover: "hover:border-emerald-300" },
+                  4: { icon: "bg-amber-100 text-amber-800", active: "bg-amber-50/90 border-amber-500 text-amber-950 ring-1 ring-amber-500", hover: "hover:border-amber-300" },
+                  5: { icon: "bg-violet-100 text-violet-700", active: "bg-violet-50/90 border-violet-500 text-violet-950 ring-1 ring-violet-500", hover: "hover:border-violet-300" },
+                  6: { icon: "bg-cyan-100 text-cyan-700", active: "bg-cyan-50/90 border-cyan-500 text-cyan-950 ring-1 ring-cyan-500", hover: "hover:border-cyan-300" },
+                  7: { icon: "bg-rose-100 text-rose-700", active: "bg-rose-50/90 border-rose-500 text-rose-950 ring-1 ring-rose-500", hover: "hover:border-rose-300" },
+                  8: { icon: "bg-fuchsia-100 text-fuchsia-700", active: "bg-gradient-to-r from-fuchsia-50 to-indigo-50 border-fuchsia-400 text-slate-900 ring-2 ring-fuchsia-400/40", hover: "hover:border-fuchsia-300" }
+                };
+
+                const colorStyle = SIDEBAR_COLOR_MAP[tile.number] || SIDEBAR_COLOR_MAP[1];
+
                 return (
                   <button
                     key={tile.id}
                     onClick={() => handleSelectTileWithSound(tile.id)}
                     className={`w-full text-left p-3 rounded-2xl border transition-all flex items-center justify-between gap-3 group ${
                       isActive
-                        ? tile.isNew
-                          ? 'bg-gradient-to-r from-cyan-50 to-indigo-50 border-cyan-400 text-slate-900 shadow-sm ring-2 ring-cyan-400/40'
-                          : 'bg-indigo-50/90 border-indigo-500 text-indigo-950 shadow-sm ring-1 ring-indigo-500'
-                        : 'bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700'
+                        ? colorStyle.active
+                        : `bg-white border-slate-200 hover:bg-slate-50/80 ${colorStyle.hover} text-slate-700`
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className={`p-2 rounded-xl shrink-0 ${
+                      <div className={`p-2 rounded-xl shrink-0 transition ${
                         isActive
-                          ? tile.isNew ? 'bg-cyan-600 text-white' : 'bg-indigo-600 text-white'
-                          : 'bg-slate-100 text-slate-500 group-hover:text-indigo-600'
+                          ? 'bg-slate-900 text-white shadow-sm'
+                          : colorStyle.icon
                       }`}>
                         <IconComponent className="w-4 h-4" />
                       </div>
