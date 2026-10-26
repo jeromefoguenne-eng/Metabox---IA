@@ -28,6 +28,10 @@ import {
 import confetti from 'canvas-confetti';
 import PixarStyleScene3D from './PixarStyleScene3D';
 import CampusRivageoisMap from './CampusRivageoisMap';
+import GameInvestigationOS from './GameInvestigationOS';
+import GameTribunal2030 from './GameTribunal2030';
+import GameSurvivantNovel from './GameSurvivantNovel';
+import GamePromptWarsDeck from './GamePromptWarsDeck';
 import { sounds } from '../utils/soundEffects';
 
 export default function EscapeGameAurore({ onClose }) {
@@ -120,8 +124,29 @@ export default function EscapeGameAurore({ onClose }) {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
+  const [transitionVideo, setTransitionVideo] = useState(null);
+
   const handleEnterRoom = (roomKey) => {
     sounds.playPop();
+
+    const videoMapping = {
+      'room_north': '/video/transitions/trans_investigation_os.mp4',
+      'room_west': '/video/transitions/trans_tribunal_2030.mp4',
+      'room_south': '/video/transitions/trans_survivant_novel.mp4',
+      'room_east': '/video/transitions/trans_prompt_wars.mp4'
+    };
+
+    const targetVid = videoMapping[roomKey];
+    if (targetVid) {
+      setTransitionVideo(targetVid);
+      setTimeout(() => {
+        setTransitionVideo(null);
+        setCurrentStage(roomKey);
+      }, 2900);
+    } else {
+      setCurrentStage(roomKey);
+    }
+
     const voiceMapping = {
       'room_north': 'aurore_factcheck_challenge',
       'room_west': 'julien_temoignage_tribunal',
@@ -130,8 +155,7 @@ export default function EscapeGameAurore({ onClose }) {
       'boss': 'aurore_boss_philosophie'
     };
     const voiceKey = voiceMapping[roomKey] || `aurore_${roomKey}`;
-    sounds.playVoice(voiceKey);
-    setCurrentStage(roomKey);
+    setTimeout(() => sounds.playVoice(voiceKey), targetVid ? 2200 : 200);
   };
 
   const handleUnlockKey = (wingKey, keyName) => {
@@ -144,31 +168,6 @@ export default function EscapeGameAurore({ onClose }) {
       ...prev
     ]);
   };
-
-  // Fact-Checking Game Data
-  const FACT_CHECK_CASES = [
-    {
-      title: "Extrait de Mémoire de Fin d'Études (Biochimie HECh)",
-      text: "Comme le démontrent les célèbres travaux du Professeur Albert Vanhove publiés dans la prestigieuse revue *Belgian Journal of Cellular Biology* en 2024 (DOI: 10.1016/j.bjcb.fake.992), les lysosomes cessent toute autophagie sous température ambiante de 21 degrés Celsius.",
-      anomalies: [
-        { id: 'a1', label: "Auteur & Revue Fantômes (Hallucination)", desc: "Le Pr Albert Vanhove et la revue 'BJCB' ont été forgés par un LLM non connecté." },
-        { id: 'a2', label: "DOI Invalide", desc: "Le DOI contient la chaîne 'fake.992' typique d'une génération synthétique sans validation de base de données." }
-      ]
-    }
-  ];
-
-  // Tribunal Game Data
-  const TRIBUNAL_CASES = [
-    {
-      id: "case-julien",
-      defendant: "Julien (Bac 2 Gestion)",
-      accusation: "Soupçon de triche majeure sur son travail d'analyse financière.",
-      evidenceA: "100% du texte produit a un score de perplexité artificiellement uniforme (génération brute sans retouche).",
-      evidenceB: "Julien est incapable lors de sa défense orale d'expliquer la formule de l'EBITDA qu'il a pourtant insérée.",
-      correctVerdict: "plagiat_delegation",
-      explanation: "Délégation cognitive totale : Julien a laissé l'IA rédiger à sa place sans comprendre ni s'approprier les concepts."
-    }
-  ];
 
   const totalKeysObtained = Object.values(keysUnlocked).filter(Boolean).length;
 
@@ -345,7 +344,7 @@ export default function EscapeGameAurore({ onClose }) {
                       : 'bg-slate-800/70 hover:bg-slate-800 border-slate-700 text-slate-300'
                   }`}
                 >
-                  <span className="text-sm font-bold block">1. Labo Fact-Check</span>
+                  <span className="text-sm font-bold block">1. Rédaction Fantôme</span>
                   <span className="text-[10px] font-mono">{keysUnlocked.north ? "Clé Alpha ✓" : "Quai de Rome"}</span>
                 </div>
 
@@ -357,7 +356,7 @@ export default function EscapeGameAurore({ onClose }) {
                       : 'bg-slate-800/70 hover:bg-slate-800 border-slate-700 text-slate-300'
                   }`}
                 >
-                  <span className="text-sm font-bold block">2. Tribunal Jury</span>
+                  <span className="text-sm font-bold block">2. Tribunal Jury 2030</span>
                   <span className="text-[10px] font-mono">{keysUnlocked.west ? "Clé Beta ✓" : "Rue Rivageois"}</span>
                 </div>
 
@@ -369,8 +368,8 @@ export default function EscapeGameAurore({ onClose }) {
                       : 'bg-slate-800/70 hover:bg-slate-800 border-slate-700 text-slate-300'
                   }`}
                 >
-                  <span className="text-sm font-bold block">3. Datacenter Éco</span>
-                  <span className="text-[10px] font-mono">{keysUnlocked.south ? "Clé Gamma ✓" : "Sous-Sols"}</span>
+                  <span className="text-sm font-bold block">3. Guide du Survivant</span>
+                  <span className="text-[10px] font-mono">{keysUnlocked.south ? "Clé Gamma ✓" : "Sous-Sols & Faille"}</span>
                 </div>
 
                 <div 
@@ -388,385 +387,103 @@ export default function EscapeGameAurore({ onClose }) {
             </div>
           )}
 
-          {/* ROOM 1: FACT-CHECKING LAB (AILE NORD) */}
+          {/* ROOM 1: CYBER-DÉTECTIVE OS INVESTIGATION (AILE NORD) */}
           {currentStage === 'room_north' && (
-            <div className="space-y-4 animate-in fade-in">
+            <div className="space-y-3 animate-in fade-in h-full flex flex-col">
               <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                <span className="text-xs font-mono text-cyan-400 font-bold uppercase">Épreuve 1 : Fact-Checking de Mémoire</span>
-                <button 
-                  onClick={() => setCurrentStage('hub')}
-                  className="text-xs text-slate-400 hover:text-white font-mono"
-                >
-                  ← Retour au Hub
-                </button>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-slate-800/90 border border-cyan-500/40 shadow-xl">
-                <h4 className="font-bold text-sm text-cyan-300 mb-2">
-                  Document Suspect : {FACT_CHECK_CASES[0].title}
-                </h4>
-                <div className="p-3.5 rounded-xl bg-slate-950 font-serif text-xs text-slate-300 leading-relaxed border border-slate-800">
-                  {FACT_CHECK_CASES[0].text}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <span className="text-xs font-bold text-slate-300 block">
-                  Identifiez les deux anomalies d'hallucination forgées par l'IA :
-                </span>
-                {FACT_CHECK_CASES[0].anomalies.map(anom => {
-                  const isSelected = factCheckAnomaliesFound.includes(anom.id);
-                  return (
-                    <button
-                      key={anom.id}
-                      onClick={() => {
-                        sounds.playPop();
-                        if (!isSelected) {
-                          const updated = [...factCheckAnomaliesFound, anom.id];
-                          setFactCheckAnomaliesFound(updated);
-                          if (updated.length === 2) {
-                            handleUnlockKey('north', 'Clé Alpha (Esprit Critique)');
-                          }
-                        }
-                      }}
-                      className={`w-full p-3 rounded-xl border text-left text-xs transition cursor-pointer flex items-start justify-between gap-3 ${
-                        isSelected 
-                          ? 'bg-emerald-950/60 border-emerald-500 text-emerald-200' 
-                          : 'bg-slate-800/70 hover:bg-slate-800 border-slate-700 text-slate-200'
-                      }`}
-                    >
-                      <div>
-                        <strong className="block font-bold mb-0.5">{anom.label}</strong>
-                        <span className="text-[11px] text-slate-400">{anom.desc}</span>
-                      </div>
-                      {isSelected && <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {keysUnlocked.north && (
-                <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-xs flex items-center justify-between">
-                  <span>Bravo ! Vous avez prouvé la traçabilité des sources primaires !</span>
-                  <button 
-                    onClick={() => setCurrentStage('hub')}
-                    className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold text-xs"
-                  >
-                    Retourner à la carte
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* ROOM 2: TRIBUNAL DU JURY (AILE OUEST) */}
-          {currentStage === 'room_west' && (
-            <div className="space-y-4 animate-in fade-in">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                <span className="text-xs font-mono text-purple-400 font-bold uppercase">Épreuve 2 : Le Procès Académique</span>
-                <button 
-                  onClick={() => setCurrentStage('hub')}
-                  className="text-xs text-slate-400 hover:text-white font-mono"
-                >
-                  ← Retour au Hub
-                </button>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-purple-950/30 border border-purple-500/40">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xl">⚖️</span>
-                  <strong className="text-white text-sm">Affaire Julien : Assistance ou Fraude Déguisée ?</strong>
-                </div>
-                <p className="text-xs text-slate-300 leading-relaxed mb-3">
-                  Julien a soumis une analyse financière impeccable en 15 pages. Lors de son oral de soutenance, il est incapable de définir le concept central de son travail.
-                </p>
-
-                <div className="space-y-2 mb-4">
-                  <button
-                    onClick={() => {
-                      sounds.playPop();
-                      setTribunalPlaidoyer('tricherie');
-                      handleUnlockKey('west', 'Clé Beta (Intégrité Académique)');
-                    }}
-                    className={`w-full p-3 rounded-xl border text-left text-xs transition cursor-pointer ${
-                      tribunalPlaidoyer === 'tricherie'
-                        ? 'bg-purple-600 text-white border-purple-400'
-                        : 'bg-slate-800 hover:bg-slate-750 text-slate-200 border-slate-700'
-                    }`}
-                  >
-                    <strong>Verdict A : Délégation cognitive coupable.</strong> L'étudiant n'a pas développé la compétence visée par l'AA ; le texte n'est pas le reflet de son apprentissage.
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      sounds.playBuzzer();
-                      sounds.playGroan();
-                      alert("A.U.R.O.R.E. conteste : Valider une copie générée sans compréhension détruit la valeur du diplôme d'ingénieur/gestionnaire !");
-                    }}
-                    className="w-full p-3 rounded-xl border bg-slate-800 hover:bg-slate-750 text-slate-400 border-slate-700 text-left text-xs cursor-pointer"
-                  >
-                    <strong>Verdict B : Innocent sans réserve.</strong> L'IA est un outil libre, peu importe que l'étudiant comprenne ou non les termes insérés.
-                  </button>
-                </div>
-
-                {keysUnlocked.west && (
-                  <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-xs flex items-center justify-between">
-                    <span>Jugement exemplaire rendu ! L'intégrité de la formation est sauve.</span>
-                    <button 
-                      onClick={() => setCurrentStage('hub')}
-                      className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold text-xs"
-                    >
-                      Retourner au Hub
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* ROOM 3: DATACENTER TYCOON (AILE SUD) */}
-          {currentStage === 'room_south' && (
-            <div className="space-y-4 animate-in fade-in">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                <span className="text-xs font-mono text-emerald-400 font-bold uppercase flex items-center gap-2">
-                  <Flame className="w-4 h-4 text-emerald-400" /> Simulateur Datacenter : Sobriété & Protection RGPD
+                <span className="text-xs font-mono text-cyan-400 font-bold uppercase">
+                  AILE NORD (QUAI DE ROME) · LA RÉDACTION FANTÔME
                 </span>
                 <button 
                   onClick={() => setCurrentStage('hub')}
                   className="text-xs text-slate-400 hover:text-white font-mono cursor-pointer"
                 >
-                  ← Retour au Hub
+                  ← Carte du Campus
                 </button>
               </div>
 
-              {/* Live Gauges Dashboard */}
-              <div className="grid grid-cols-3 gap-3">
-                <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-center">
-                  <span className="text-[10px] text-slate-400 uppercase font-mono block mb-1">Consommation</span>
-                  <strong className={`text-lg font-mono font-black ${computedWatts <= 450 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                    {computedWatts} W/h
-                  </strong>
-                  <span className="text-[9px] block text-slate-500 mt-0.5">Cible : ≤ 450 W/h</span>
-                </div>
-
-                <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-center">
-                  <span className="text-[10px] text-slate-400 uppercase font-mono block mb-1">Température Baie</span>
-                  <strong className={`text-lg font-mono font-black ${computedTemp <= 45 ? 'text-cyan-400' : 'text-amber-400'}`}>
-                    {computedTemp} °C
-                  </strong>
-                  <span className="text-[9px] block text-slate-500 mt-0.5">Refroidissement passif</span>
-                </div>
-
-                <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-center">
-                  <span className="text-[10px] text-slate-400 uppercase font-mono block mb-1">Conformité RGPD</span>
-                  <strong className={`text-xs font-mono font-black block mt-1 ${datacenterLoad.rgpdFirewall ? 'text-emerald-400' : 'text-rose-400'}`}>
-                    {datacenterLoad.rgpdFirewall ? "🛡️ DONNÉES SÉCURISÉES" : "⚠️ RISQUE DE FUITE"}
-                  </strong>
-                  <span className="text-[9px] block text-slate-500 mt-0.5">Anonymisation requise</span>
-                </div>
+              <div className="flex-1">
+                <GameInvestigationOS
+                  onComplete={() => {
+                    handleUnlockKey('north', 'Clé Alpha (Esprit Critique & Vérité)');
+                  }}
+                />
               </div>
+            </div>
+          )}
 
-              {/* Sliders & Toggles */}
-              <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4">
-                {/* Ratio Cloud vs Local */}
-                <div>
-                  <div className="flex justify-between text-xs mb-1 font-bold">
-                    <span className="text-rose-300">Modèles Cloud Géants (Clusters distants) : {datacenterLoad.cloudGpuUsage}%</span>
-                    <span className="text-emerald-300">SLM Locaux Souverains (Gemma/Qwen) : {datacenterLoad.localSlmUsage}%</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="10"
-                    max="90"
-                    value={datacenterLoad.localSlmUsage}
-                    onChange={(e) => {
-                      const localVal = parseInt(e.target.value);
-                      setDatacenterLoad(prev => ({
-                        ...prev,
-                        localSlmUsage: localVal,
-                        cloudGpuUsage: 100 - localVal
-                      }));
-                    }}
-                    className="w-full accent-emerald-500 cursor-pointer"
-                  />
-                  <span className="text-[10px] text-slate-400 block mt-1">
-                    Déplacez le curseur vers la droite pour traiter les requêtes en local sur les machines du campus.
-                  </span>
-                </div>
-
-                {/* Optimisations toggles */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2">
-                  <button
-                    onClick={() => {
-                      sounds.playPop();
-                      setDatacenterLoad(prev => ({ ...prev, activeQuotas: !prev.activeQuotas }));
-                    }}
-                    className={`p-2.5 rounded-xl border text-left text-xs transition cursor-pointer ${
-                      datacenterLoad.activeQuotas 
-                        ? 'bg-emerald-950/60 border-emerald-500 text-emerald-200' 
-                        : 'bg-slate-800 border-slate-700 text-slate-300'
-                    }`}
-                  >
-                    <strong className="block text-[11px] font-bold">Quotas Requêtes Éducatives</strong>
-                    <span className="text-[9px] text-slate-400">Évite le spam redondant (-280 W)</span>
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      sounds.playPop();
-                      setDatacenterLoad(prev => ({ ...prev, cacheEnabled: !prev.cacheEnabled }));
-                    }}
-                    className={`p-2.5 rounded-xl border text-left text-xs transition cursor-pointer ${
-                      datacenterLoad.cacheEnabled 
-                        ? 'bg-emerald-950/60 border-emerald-500 text-emerald-200' 
-                        : 'bg-slate-800 border-slate-700 text-slate-300'
-                    }`}
-                  >
-                    <strong className="block text-[11px] font-bold">Cache Sémantique Local</strong>
-                    <span className="text-[9px] text-slate-400">Ne recalcule pas l'existant (-350 W)</span>
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      sounds.playPop();
-                      setDatacenterLoad(prev => ({ ...prev, rgpdFirewall: !prev.rgpdFirewall }));
-                    }}
-                    className={`p-2.5 rounded-xl border text-left text-xs transition cursor-pointer ${
-                      datacenterLoad.rgpdFirewall 
-                        ? 'bg-emerald-950/60 border-emerald-500 text-emerald-200' 
-                        : 'bg-slate-800 border-slate-700 text-slate-300'
-                    }`}
-                  >
-                    <strong className="block text-[11px] font-bold">Pare-feu Anonymiseur RGPD</strong>
-                    <span className="text-[9px] text-slate-400">Zéro transmission nominative</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Validation of the wing */}
-              {!keysUnlocked.south ? (
-                <button
-                  disabled={!isDatacenterEco}
-                  onClick={() => handleUnlockKey('south', 'Clé Gamma (Sobriété & Souveraineté)')}
-                  className={`w-full py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wide transition shadow-lg flex items-center justify-center gap-2 ${
-                    isDatacenterEco 
-                      ? 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:scale-[1.01] text-slate-950 shadow-emerald-500/25 cursor-pointer animate-bounce' 
-                      : 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed'
-                  }`}
+          {/* ROOM 2: TRIBUNAL ACADÉMIQUE 2030 (AILE OUEST) */}
+          {currentStage === 'room_west' && (
+            <div className="space-y-3 animate-in fade-in h-full flex flex-col">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                <span className="text-xs font-mono text-purple-400 font-bold uppercase">
+                  AILE OUEST (RUE DES RIVAGEOIS) · PROCÈS 2030 : L'IA À LA BARRE
+                </span>
+                <button 
+                  onClick={() => setCurrentStage('hub')}
+                  className="text-xs text-slate-400 hover:text-white font-mono cursor-pointer"
                 >
-                  <Key className="w-4 h-4" />
-                  <span>{isDatacenterEco ? "Valider la Régulation Écologique & Extraire la Clé Gamma" : "Ajustez les réglages (≤ 450 W + RGPD actif + ≥ 65% Local)"}</span>
+                  ← Carte du Campus
                 </button>
-              ) : (
-                <div className="p-3.5 rounded-2xl bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-xs flex items-center justify-between">
-                  <span>✨ Datacenter sécurisé et éco-responsable ! Clé Gamma sécurisée.</span>
-                  <button 
-                    onClick={() => setCurrentStage('hub')}
-                    className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs cursor-pointer"
-                  >
-                    Retourner au Hub
-                  </button>
-                </div>
-              )}
+              </div>
+
+              <div className="flex-1">
+                <GameTribunal2030 
+                  onComplete={() => {
+                    handleUnlockKey('west', 'Clé Beta (Intégrité Académique)');
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* ROOM 3: VISUAL NOVEL LE GUIDE DU SURVIVANT (AILE SUD) */}
+          {currentStage === 'room_south' && (
+            <div className="space-y-3 animate-in fade-in h-full flex flex-col">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                <span className="text-xs font-mono text-emerald-400 font-bold uppercase">
+                  AILE SUD (SOUS-SOLS & FAILLE VITRÉE) · LE GUIDE DU SURVIVANT CONNECTÉ
+                </span>
+                <button 
+                  onClick={() => setCurrentStage('hub')}
+                  className="text-xs text-slate-400 hover:text-white font-mono cursor-pointer"
+                >
+                  ← Carte du Campus
+                </button>
+              </div>
+
+              <div className="flex-1">
+                <GameSurvivantNovel
+                  onComplete={() => {
+                    handleUnlockKey('south', 'Clé Gamma (Sobriété & Méthode)');
+                  }}
+                />
+              </div>
             </div>
           )}
 
           {/* ROOM 4: PROMPT WARS TACTICAL DECK (AILE EST) */}
           {currentStage === 'room_east' && (
-            <div className="space-y-4 animate-in fade-in">
+            <div className="space-y-3 animate-in fade-in h-full flex flex-col">
               <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                <span className="text-xs font-mono text-pink-400 font-bold uppercase flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-pink-400" /> Duel Tactique : Déjouer les Biais & Hallucinations
+                <span className="text-xs font-mono text-pink-400 font-bold uppercase">
+                  AILE EST (COUR DU VIEUX HÊTRE) · PROMPT WARS : DUEL D'ESPRIT CRITIQUE
                 </span>
                 <button 
                   onClick={() => setCurrentStage('hub')}
                   className="text-xs text-slate-400 hover:text-white font-mono cursor-pointer"
                 >
-                  ← Retour au Hub
+                  ← Carte du Campus
                 </button>
               </div>
 
-              {/* Bot Adversary Card Box */}
-              <div className="p-4 rounded-2xl bg-gradient-to-r from-pink-950/40 via-purple-950/40 to-slate-900 border border-pink-500/40 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-rose-500 animate-pulse" />
-                    <strong className="text-xs font-bold text-rose-300">
-                      Bot Générateur de Biais (Manche {botArgIdx + 1} / {BOT_ARGUMENTS.length})
-                    </strong>
-                  </div>
-                  <span className="font-mono font-bold text-xs text-rose-400">
-                    Bouclier d'Incohérence : {botDefense} %
-                  </span>
-                </div>
-
-                <div className="w-full bg-slate-950 rounded-full h-3 overflow-hidden border border-slate-800 p-0.5">
-                  <div 
-                    className="bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 h-full rounded-full transition-all duration-500" 
-                    style={{ width: `${botDefense}%` }} 
-                  />
-                </div>
-
-                <div className="p-3 rounded-xl bg-slate-950/90 border border-rose-500/30 text-rose-200 text-xs font-medium italic">
-                  {BOT_ARGUMENTS[botArgIdx]?.text}
-                </div>
+              <div className="flex-1">
+                <GamePromptWarsDeck
+                  onComplete={() => {
+                    handleUnlockKey('east', 'Clé Delta (Maîtrise Algorithmique)');
+                  }}
+                />
               </div>
-
-              {/* Player Cards Hand */}
-              <span className="text-xs font-bold text-slate-300 block">
-                Choisissez la riposte méthodologique adéquate pour contrer l’argument fallacieux :
-              </span>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {promptWarHand.map(card => (
-                  <button
-                    key={card.id}
-                    disabled={card.used || botDefense === 0}
-                    onClick={() => {
-                      sounds.playPop();
-                      sounds.playSuccess();
-                      const nextDef = Math.max(0, botDefense - card.power);
-                      setBotDefense(nextDef);
-                      setPromptWarHand(prev => prev.map(c => c.id === card.id ? { ...c, used: true } : c));
-                      setBotArgIdx(prev => (prev + 1) % BOT_ARGUMENTS.length);
-
-                      if (nextDef === 0) {
-                        handleUnlockKey('east', 'Clé Delta (Maîtrise Algorithmique & Réfutation des Biais)');
-                      }
-                    }}
-                    className={`p-3.5 rounded-2xl border text-left transition-all duration-200 flex flex-col justify-between cursor-pointer ${
-                      card.used 
-                        ? 'bg-slate-900/40 border-slate-800 opacity-40 cursor-not-allowed' 
-                        : 'bg-slate-800/90 hover:bg-slate-800 border-pink-500/40 hover:border-pink-400 hover:scale-[1.01] shadow-md'
-                    }`}
-                  >
-                    <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <strong className="text-xs font-bold text-pink-300">{card.name}</strong>
-                        <span className="px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300 text-[10px] font-mono font-bold">
-                          -{card.power} PTS
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-300 leading-snug">{card.desc}</p>
-                    </div>
-                    <span className="mt-2 text-[10px] font-mono text-cyan-400 font-bold self-end">
-                      {card.used ? "CARTE DÉJÀ ACTIVÉE" : "DÉPLOYER LA CONTRAINTE ⚡"}
-                    </span>
-                  </button>
-                ))}
-              </div>
-
-              {keysUnlocked.east && (
-                <div className="p-3.5 rounded-2xl bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-xs flex items-center justify-between">
-                  <span>✨ Tous les sophismes ont été réfutés ! Clé Delta sécurisée.</span>
-                  <button 
-                    onClick={() => setCurrentStage('hub')}
-                    className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs cursor-pointer"
-                  >
-                    Retourner au Hub
-                  </button>
-                </div>
-              )}
             </div>
           )}
 
