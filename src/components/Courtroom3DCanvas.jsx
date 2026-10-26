@@ -20,6 +20,7 @@ export default function Courtroom3DCanvas({
   prosecutorState = 'idle',  // 'idle' | 'speaking' | 'attacking'
   defenseState = 'idle',     // 'idle' | 'pleading'
   judgeState = 'idle',       // 'idle' | 'speaking' | 'gavel'
+  judgeReaction = 'neutral', // 'neutral' | 'smile' | 'frown'
   onGavelComplete,
   cameraView = 'TV_WIDE',    // 'TV_WIDE' | 'JUDGE' | 'WITNESS' | 'DEFENSE' | 'PROSECUTION'
   onCameraChange
@@ -33,6 +34,8 @@ export default function Courtroom3DCanvas({
   // References pour animations
   const judgeArmRef = useRef(null);
   const judgeHeadRef = useRef(null);
+  const judgeMouthRef = useRef(null);
+  const judgeEmoRingRef = useRef(null);
   const witnessRef = useRef(null);
   const witnessHeadRef = useRef(null);
   const witnessLeftArmRef = useRef(null);
@@ -44,6 +47,19 @@ export default function Courtroom3DCanvas({
   const holoScreenRef = useRef(null);
   const shockwaveRef = useRef(null);
   const sweatParticlesRef = useRef([]);
+
+  // Refs dynamiques pour l'animation à 60 FPS sans recréation du canvas
+  const witnessStateRef = useRef(witnessState);
+  const prosecutorStateRef = useRef(prosecutorState);
+  const defenseStateRef = useRef(defenseState);
+  const judgeStateRef = useRef(judgeState);
+  const judgeReactionRef = useRef(judgeReaction);
+
+  useEffect(() => { witnessStateRef.current = witnessState; }, [witnessState]);
+  useEffect(() => { prosecutorStateRef.current = prosecutorState; }, [prosecutorState]);
+  useEffect(() => { defenseStateRef.current = defenseState; }, [defenseState]);
+  useEffect(() => { judgeStateRef.current = judgeState; }, [judgeState]);
+  useEffect(() => { judgeReactionRef.current = judgeReaction; }, [judgeReaction]);
 
   // État de la caméra cible pour interpolation fluide (Lerp)
   const targetCamPos = useRef(new THREE.Vector3(0, 5.5, 11));
@@ -236,6 +252,22 @@ export default function Courtroom3DCanvas({
     const glasses = new THREE.Mesh(glassesGeo, goldMat);
     glasses.position.set(0, 0.05, 0.26);
     judgeHeadGroup.add(glasses);
+
+    // Bouche expressive du Juge (Sourire vs Moue)
+    const mouthGeo = new THREE.BoxGeometry(0.22, 0.04, 0.08);
+    const mouthMat = new THREE.MeshBasicMaterial({ color: 0x475569 });
+    const mouth = new THREE.Mesh(mouthGeo, mouthMat);
+    mouth.position.set(0, -0.15, 0.26);
+    judgeHeadGroup.add(mouth);
+    judgeMouthRef.current = mouth;
+
+    // Anneau d'émotion réactif au-dessus de la perruque
+    const emoRingGeo = new THREE.RingGeometry(0.18, 0.24, 16);
+    const emoRingMat = new THREE.MeshBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0, side: THREE.DoubleSide });
+    const emoRing = new THREE.Mesh(emoRingGeo, emoRingMat);
+    emoRing.position.set(0, 0.65, 0.1);
+    judgeHeadGroup.add(emoRing);
+    judgeEmoRingRef.current = emoRing;
 
     judgeGroup.add(judgeHeadGroup);
     judgeHeadRef.current = judgeHeadGroup;
@@ -480,8 +512,9 @@ export default function Courtroom3DCanvas({
       }
 
       // Animation du Témoin selon son état émotionnel
+      const currentWitnessState = witnessStateRef.current;
       if (witnessHeadRef.current && witnessLeftArmRef.current && witnessRightArmRef.current) {
-        if (witnessState === 'stressed' || witnessState === 'broken') {
+        if (currentWitnessState === 'stressed' || currentWitnessState === 'broken') {
           // Tremblements et sueur
           witnessHeadRef.current.rotation.z = Math.sin(elapsedTime * 25) * 0.06;
           witnessHeadRef.current.rotation.x = 0.2 + Math.sin(elapsedTime * 18) * 0.04;
@@ -498,7 +531,7 @@ export default function Courtroom3DCanvas({
               witnessGroup.position.z + 0.3
             );
           });
-        } else if (witnessState === 'speaking' || witnessState === 'confident') {
+        } else if (currentWitnessState === 'speaking' || currentWitnessState === 'confident') {
           // Gesticulation d'explication ou assurance
           witnessHeadRef.current.rotation.y = Math.sin(elapsedTime * 3) * 0.15;
           witnessHeadRef.current.rotation.x = Math.sin(elapsedTime * 4) * 0.08;
@@ -514,8 +547,9 @@ export default function Courtroom3DCanvas({
       }
 
       // Animation du Procureur du Roi
+      const currentProsState = prosecutorStateRef.current;
       if (prosArmRef.current && prosHeadRef.current) {
-        if (prosecutorState === 'attacking' || prosecutorState === 'speaking') {
+        if (currentProsState === 'attacking' || currentProsState === 'speaking') {
           // Pointage agressif vers le prévenu / défense
           prosArmRef.current.rotation.x = -1.2 + Math.sin(elapsedTime * 5) * 0.25;
           prosArmRef.current.rotation.z = -0.3;
@@ -527,8 +561,9 @@ export default function Courtroom3DCanvas({
       }
 
       // Animation de l'Avocat de la Défense (Joueur)
+      const currentDefState = defenseStateRef.current;
       if (defArmRef.current && defHeadRef.current) {
-        if (defenseState === 'pleading') {
+        if (currentDefState === 'pleading') {
           // Geste solennel vers le juge
           defArmRef.current.rotation.x = -1.4 + Math.sin(elapsedTime * 3.5) * 0.18;
           defArmRef.current.rotation.z = 0.3;
@@ -536,6 +571,47 @@ export default function Courtroom3DCanvas({
         } else {
           defArmRef.current.rotation.set(0, 0, 0);
           defHeadRef.current.rotation.set(0, 0, 0);
+        }
+      }
+
+      // Réaction Faciale du Juge (Sourire approbateur vs Moue sceptique)
+      const currentJudgeReaction = judgeReactionRef.current;
+      if (judgeHeadRef.current && judgeMouthRef.current) {
+        if (currentJudgeReaction === 'smile') {
+          // Sourire approbateur + hochement bienveillant
+          judgeHeadRef.current.rotation.x = 0.12 + Math.sin(elapsedTime * 6) * 0.08;
+          judgeHeadRef.current.rotation.y = 0;
+          judgeHeadRef.current.rotation.z = 0;
+          judgeMouthRef.current.position.y = -0.13 + Math.sin(elapsedTime * 4) * 0.01;
+          judgeMouthRef.current.scale.set(1.4, 1.5, 1);
+          judgeMouthRef.current.material.color.setHex(0x10b981); // Vert approbation
+          if (judgeEmoRingRef.current) {
+            judgeEmoRingRef.current.material.color.setHex(0x10b981);
+            judgeEmoRingRef.current.material.opacity = 0.85;
+            judgeEmoRingRef.current.rotation.z += 0.03;
+          }
+        } else if (currentJudgeReaction === 'frown') {
+          // Moue sceptique + secouement de tête
+          judgeHeadRef.current.rotation.x = -0.05;
+          judgeHeadRef.current.rotation.y = Math.sin(elapsedTime * 7) * 0.16; // Secoue la tête "Non"
+          judgeHeadRef.current.rotation.z = -0.06;
+          judgeMouthRef.current.position.y = -0.17;
+          judgeMouthRef.current.scale.set(0.9, 1.2, 1);
+          judgeMouthRef.current.material.color.setHex(0xf43f5e); // Rose / rouge moue
+          if (judgeEmoRingRef.current) {
+            judgeEmoRingRef.current.material.color.setHex(0xf43f5e);
+            judgeEmoRingRef.current.material.opacity = 0.85;
+            judgeEmoRingRef.current.rotation.z -= 0.03;
+          }
+        } else {
+          // Neutre
+          judgeHeadRef.current.rotation.set(0, 0, 0);
+          judgeMouthRef.current.position.y = -0.15;
+          judgeMouthRef.current.scale.set(1, 1, 1);
+          judgeMouthRef.current.material.color.setHex(0x475569);
+          if (judgeEmoRingRef.current) {
+            judgeEmoRingRef.current.material.opacity = 0;
+          }
         }
       }
 
@@ -645,9 +721,29 @@ export default function Courtroom3DCanvas({
             cameraView === 'DEFENSE' ? 'bg-cyan-500 text-slate-950 font-black' : 'text-slate-300 hover:bg-slate-800'
           }`}
         >
-          Défense
+          Défense 🛡️
+        </button>
+        <button
+          onClick={() => onCameraChange('PROSECUTION')}
+          className={`px-2.5 py-1 rounded-xl text-xs font-mono transition cursor-pointer ${
+            cameraView === 'PROSECUTION' ? 'bg-cyan-500 text-slate-950 font-black' : 'text-slate-300 hover:bg-slate-800'
+          }`}
+        >
+          Procureur ⚔️
         </button>
       </div>
+
+      {/* Badge Flottant d'Émotion du Juge (Sourire vs Moue) */}
+      {judgeReaction === 'smile' && (
+        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-30 px-4 py-2 rounded-2xl bg-emerald-600/95 text-white backdrop-blur-md border border-emerald-400 font-mono font-bold text-xs flex items-center gap-2 shadow-xl shadow-emerald-600/40 animate-bounce">
+          <span>😊 Sourire approbateur du Juge : « Argument pertinent et éclairé ! »</span>
+        </div>
+      )}
+      {judgeReaction === 'frown' && (
+        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-30 px-4 py-2 rounded-2xl bg-rose-600/95 text-white backdrop-blur-md border border-rose-400 font-mono font-bold text-xs flex items-center gap-2 shadow-xl shadow-rose-600/40 animate-pulse">
+          <span>🤨 Moue sceptique du Juge : « Argument trop faible ou spécieux ! »</span>
+        </div>
+      )}
 
       {/* Guide d'interaction 3D */}
       <div className="absolute bottom-4 left-4 z-20 pointer-events-none hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-950/70 backdrop-blur-sm border border-slate-800 text-[11px] text-slate-400 font-mono">

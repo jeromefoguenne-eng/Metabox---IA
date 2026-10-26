@@ -5,18 +5,21 @@ import {
   ShieldCheck, 
   AlertTriangle, 
   CheckCircle2, 
+  XCircle,
   Sparkles, 
   Volume2, 
-  ArrowRight,
-  UserCheck,
-  Flame,
-  Globe2,
-  Users,
-  BrainCircuit,
-  Droplets,
-  Radio,
-  RotateCcw,
-  Award
+  ArrowRight, 
+  UserCheck, 
+  Flame, 
+  Globe2, 
+  Users, 
+  BrainCircuit, 
+  Droplets, 
+  Radio, 
+  RotateCcw, 
+  Award,
+  ChevronRight,
+  ShieldAlert
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import Courtroom3DCanvas from './Courtroom3DCanvas';
@@ -26,20 +29,17 @@ import { sounds } from '../utils/soundEffects';
 /**
  * GameGrandProcesHacking:
  * Le Grand Procès de l'Éthique IA : « L'Affaire du Blackout de 24h ».
- * Le joueur incarne l'Avocat de la Défense (Me Alex) et défend l'étudiant Maxime,
- * qui a fait crasher tous les systèmes IA du campus pendant 24h pour alerter la communauté.
  * 
- * Affronte les 6 assauts du Procureur du Roi avec les 6 arguments d'esprit critique :
- * 1. Écologie (refroidissement & mégawatts)
- * 2. Données & RGPD (exfiltration vers serveurs tiers)
- * 3. Prise de pouvoir de l'IA & atrophie cognitive
- * 4. Remplacement des emplois (professeurs & secrétaires)
- * 5. Monopole des multinationales US et chinoises
- * 6. Propagande & bulles d'information
+ * Le joueur incarne l'Avocat de la Défense (Me Alex) et défend Maxime.
+ * - Système de Choix Multiple (QCM 4 choix par assaut)
+ * - Réactions visibles en direct sur le Juge 3D (Sourire vs Moue sceptique)
+ * - Cinématique solennelle du Juge énumérant les motifs retenus avant le verdict
+ * - Proclamation d'Innocence (Lanceur d'alerte) ou de Culpabilité
+ * - Anti-superposition audio stricte
  */
 export default function GameGrandProcesHacking({ onComplete }) {
   const [currentAssaultIdx, setCurrentAssaultIdx] = useState(0);
-  const [stage, setStage] = useState('intro'); // 'intro' | 'attack' | 'investigation' | 'pleading' | 'reaction' | 'verdict'
+  const [stage, setStage] = useState('intro'); // 'intro' | 'attack' | 'investigation' | 'pleading' | 'reaction' | 'verdict_cinematic'
   const [cameraView, setCameraView] = useState('TV_WIDE');
 
   // États 3D
@@ -47,19 +47,39 @@ export default function GameGrandProcesHacking({ onComplete }) {
   const [prosecutorState, setProsecutorState] = useState('idle'); // 'idle' | 'speaking' | 'attacking'
   const [defenseState, setDefenseState] = useState('idle'); // 'idle' | 'pleading'
   const [judgeState, setJudgeState] = useState('idle'); // 'idle' | 'speaking' | 'gavel'
+  const [judgeReaction, setJudgeReaction] = useState('neutral'); // 'neutral' | 'smile' | 'frown'
 
   // Jauges judiciaires
-  const [judgeConviction, setJudgeConviction] = useState(25); // 0 à 100%
+  const [judgeConviction, setJudgeConviction] = useState(20); // 0 à 100%
   const [criticalScore, setCriticalScore] = useState(50);
   const [prosecutorPanic, setProsecutorPanic] = useState(10);
   const [currentEvidenceReady, setCurrentEvidenceReady] = useState(null);
   const [selectedArgument, setSelectedArgument] = useState(null);
-  const [assaultResolved, setAssaultResolved] = useState([false, false, false, false, false, false]);
+
+  // Tableau des 6 piliers validés ou non (pour la cinématique finale)
+  const [elementsProven, setElementsProven] = useState({
+    eco: false,
+    data: false,
+    cognition: false,
+    jobs: false,
+    sovereignty: false,
+    propaganda: false
+  });
+
+  // Étape interne de la cinématique finale du Juge (0 à 7)
+  const [cinematicStep, setCinematicStep] = useState(0);
+
+  // Nettoyage audio strict au démontage du composant
+  useEffect(() => {
+    return () => {
+      sounds.stopAllVoice();
+    };
+  }, []);
 
   const ASSAULTS = [
     {
       id: 'assault_1',
-      title: 'Assaut 1/6 : Sabotage Énergétique & Désorganisation',
+      title: 'Assaut 1/6 : Sabotage Énergétique & Coût du Réseau',
       prosecutorVoice: 'proces_procureur_assaut_1',
       maximeVoice: 'proces_maxime_defense_1',
       charge: 'Le Procureur accuse Maxime d avoir paralysé l infrastructure par pur vandalisme d adolescent.',
@@ -68,22 +88,44 @@ export default function GameGrandProcesHacking({ onComplete }) {
       requiredType: 'eco',
       arguments: [
         {
-          id: 'arg_eco',
+          id: 'arg_eco_opt1',
           type: 'eco',
-          title: '🌿 Argument Écologique & Climat',
-          text: "Prouver l'état de nécessité environnementale : le cluster LLM du campus vaporisait 48 500 L d'eau potable et 14 200 kWh par semaine pour des tâches dérisoires.",
+          title: '🌿 Argument Écologique & Climat (Choix A)',
+          text: "Invoquer l'état de nécessité environnementale : le cluster LLM consommait 48 500 L d'eau potable et 14 200 kWh par semaine pour des tâches dérisoires ; le blackout a stoppé ce gaspillage écologique irréversible.",
           isCorrect: true,
           gain: 15,
-          feedback: "Plaidoirie imparable ! Le Juge reconnaît que l'urgence climatique justifie un signal d'alarme proportionné."
+          reaction: 'smile',
+          feedback: "Le Juge sourit et hoche la tête : « La proportionnalité environnementale est un moyen de droit recevable devant notre juridiction. »"
         },
         {
-          id: 'arg_fatigue',
-          type: 'weak',
-          title: '😴 Argument du Droit au Repos',
-          text: "Plaider que mon client et ses camarades étaient fatigués du blocus et avaient besoin de dormir une journée.",
+          id: 'arg_eco_opt2',
+          type: 'sophism',
+          title: '💰 Argument de l Économie Budgétaire (Choix B)',
+          text: "Plaider que Maxime a fait économiser 4 000 € sur la facture d'électricité de l'école et mérite donc une prime financière.",
           isCorrect: false,
           gain: -5,
-          feedback: "Rejeté par la Cour ! La fatigue individuelle n'est pas un motif de blackout général."
+          reaction: 'frown',
+          feedback: "Moue sceptique du Juge : « Le tribunal ne marchande pas les infractions pénales en primes financières. »"
+        },
+        {
+          id: 'arg_eco_opt3',
+          type: 'weak',
+          title: '😴 Argument de la Fatigue Estudiantine (Choix C)',
+          text: "Prétendre que les étudiants voulaient juste un jour de congé pour récupérer de leurs nuits blanches de blocus.",
+          isCorrect: false,
+          gain: -8,
+          reaction: 'frown',
+          feedback: "Moue réprobatrice du Juge : « Le confort personnel ne constitue aucunement une cause d'exonération de responsabilité. »"
+        },
+        {
+          id: 'arg_eco_opt4',
+          type: 'procedural',
+          title: '⚖️ Argument de la Mauvaise Qualification (Choix D)',
+          text: "Arguer que couper un disjoncteur n'est pas un cyber-sabotage au sens strict de l'article 550bis du Code pénal.",
+          isCorrect: false,
+          gain: -4,
+          reaction: 'frown',
+          feedback: "Le Juge secoue la tête : « L'entrave logicielle est juridiquement établie. Défendez le fond et l'intérêt public ! »"
         }
       ]
     },
@@ -98,22 +140,44 @@ export default function GameGrandProcesHacking({ onComplete }) {
       requiredType: 'data',
       arguments: [
         {
-          id: 'arg_data',
+          id: 'arg_data_opt1',
           type: 'data',
-          title: '🛡️ Argument de Protection des Données & RGPD',
-          text: "Démontrer que l'arrêt d'urgence a stoppé une exfiltration massive et illégale des mémoires étudiants vers des serveurs tiers en Californie sans consentement RGPD.",
+          title: '🛡️ Argument de Protection des Données & RGPD (Choix A)',
+          text: "Démontrer que l'arrêt d'urgence a stoppé une exfiltration massive et illégale des mémoires étudiants et données de santé vers des serveurs tiers en Californie, en violation de l'Article 44 du RGPD.",
           isCorrect: true,
           gain: 15,
-          feedback: "Impact maximal ! Le Juge note la violation de l'Article 44 du RGPD par l'infrastructure du campus."
+          reaction: 'smile',
+          feedback: "Le Juge sourit avec bienveillance : « Le signalement d'une fuite de données personnelles sensible relève du devoir de lanceur d'alerte. »"
         },
         {
-          id: 'arg_bug',
+          id: 'arg_data_opt2',
           type: 'weak',
-          title: '🐛 Argument de la Faille Matérielle',
-          text: "Soutenir que les pare-feux de l'école étaient mal configurés et que c'est la faute de l'administrateur système.",
+          title: '🔓 Argument de la Porte Ouverte (Choix B)',
+          text: "Soutenir que les pare-feux de l'école étaient si mal configurés que n'importe qui aurait pu entrer sans forcer.",
+          isCorrect: false,
+          gain: -6,
+          reaction: 'frown',
+          feedback: "Moue sévère du Juge : « La négligence de la victime n'annule jamais la culpabilité de l'intrus. »"
+        },
+        {
+          id: 'arg_data_opt3',
+          type: 'sophism',
+          title: '💻 Argument du Bug Pédagogique (Choix C)',
+          text: "Affirmer que Maxime faisait seulement un exercice de TP d'informatique non encadré qui a débordé.",
           isCorrect: false,
           gain: -5,
-          feedback: "Inopérant ! Une serrure fragile n'autorise pas l'effraction."
+          reaction: 'frown',
+          feedback: "Moue dubitative du Juge : « Ne mentez pas à cette Cour. Nous savons que l'acte était prémédité. »"
+        },
+        {
+          id: 'arg_data_opt4',
+          type: 'irrelevant',
+          title: '📁 Argument du Format de Fichier (Choix D)',
+          text: "Plaider que les fichiers aspirés n'étaient que des brouillons et n'avaient aucune valeur commerciale.",
+          isCorrect: false,
+          gain: -5,
+          reaction: 'frown',
+          feedback: "Le Juge désapprouve de la tête : « Tout document estudiantin relève de la vie privée garantie par la loi. »"
         }
       ]
     },
@@ -128,22 +192,44 @@ export default function GameGrandProcesHacking({ onComplete }) {
       requiredType: 'cognitive',
       arguments: [
         {
-          id: 'arg_cognitive',
+          id: 'arg_cog_opt1',
           type: 'cognitive',
-          title: '🧠 Argument de la Prise de Pouvoir & Atrophie Cognitive',
-          text: "Prouver que l'IA devenait une aliénation cognitive totale privant les jeunes de leur capacité à penser par eux-mêmes ; le blackout a réactivé l'intelligence humaine et les débats.",
+          title: '🧠 Argument de la Prise de Pouvoir & Atrophie Cognitive (Choix A)',
+          text: "Démontrer que l'IA campus provoquait une soumission intellectuelle totale où les étudiants ne savaient plus rédiger sans béquille ; le blackout a réactivé la lecture critique et les débats réels.",
           isCorrect: true,
           gain: 15,
-          feedback: "Magistral ! La Cour rappelle que le rôle d'une Haute École est de former des esprits libres, non des opérateurs de prompts."
+          reaction: 'smile',
+          feedback: "Le Juge s'anime d'un franc sourire : « Remarquable ! Une Haute École forme des consciences libres, pas des perroquets algorithmiques. »"
         },
         {
-          id: 'arg_retard',
+          id: 'arg_cog_opt2',
+          type: 'anti_tech',
+          title: '📜 Argument du Rejet Pur de la Technologie (Choix B)',
+          text: "Plaider qu'il faut interdire tout ordinateur et revenir au papier et à la plume d'oie pour les cinquante prochaines années.",
+          isCorrect: false,
+          gain: -7,
+          reaction: 'frown',
+          feedback: "Moue agacée du Juge : « Le luddisme aveugle n'est pas une réponse juridique sérieuse au XXIe siècle. »"
+        },
+        {
+          id: 'arg_cog_opt3',
           type: 'weak',
-          title: '⏳ Argument du Report de Calendrier',
-          text: "Dire que les professeurs n'avaient qu'à décaler les dates d'examens d'une journée.",
+          title: '📅 Argument du Report d Examen (Choix C)',
+          text: "Dire que les professeurs n'avaient qu'à décaler les devoirs et que ce retard était sans importance.",
           isCorrect: false,
           gain: -5,
-          feedback: "Objection retenue ! L'avocat ne peut s'arroger les prérogatives du conseil pédagogique."
+          reaction: 'frown',
+          feedback: "Le Juge fronce les sourcils : « L'ordre académique mérite le respect de tous les justiciables. »"
+        },
+        {
+          id: 'arg_cog_opt4',
+          type: 'sophism',
+          title: '🤖 Argument de la Vengeance contre la Machine (Choix D)',
+          text: "Soutenir que Maxime voulait simplement prouver qu'un humain est plus fort qu'un algorithme dans un duel de force.",
+          isCorrect: false,
+          gain: -6,
+          reaction: 'frown',
+          feedback: "Moue sceptique : « La justice ne juge pas un jeu vidéo d'ego mais des responsabilités civiques. »"
         }
       ]
     },
@@ -158,28 +244,50 @@ export default function GameGrandProcesHacking({ onComplete }) {
       requiredType: 'jobs',
       arguments: [
         {
-          id: 'arg_jobs',
+          id: 'arg_jobs_opt1',
           type: 'jobs',
-          title: '👥 Argument du Remplacement des Métiers Humains (Profs & Secrétaires)',
-          text: "Révéler le plan secret de suppression de 25 postes de secrétaires, bibliothécaires et tuteurs ; l'automatisation sacrificielle détruit la dimension humaine indispensable à la transmission du savoir.",
+          title: '👥 Argument du Remplacement des Métiers Humains (Choix A)',
+          text: "Révéler la preuve matérielle du mémo RH confidentiel prévoyant la suppression de 25 postes de secrétaires, bibliothécaires et tuteurs ; l'IA ne doit pas servir de prétexte à la déshumanisation institutionnelle.",
           isCorrect: true,
           gain: 15,
-          feedback: "Coup de théâtre ! Le public applaudit, le Juge ordonne le versement du mémo secret au dossier d'instruction."
+          reaction: 'smile',
+          feedback: "Le Juge sourit gravement en acquiesçant : « La préservation du corps social et de la présence humaine est au cœur du pacte éducatif. »"
         },
         {
-          id: 'arg_prix',
+          id: 'arg_jobs_opt2',
           type: 'weak',
-          title: '💸 Argument du Coût des Licences',
-          text: "Affirmer que le logiciel était trop cher pour le budget de l'école.",
+          title: '💸 Argument du Salaire des Directeurs (Choix B)',
+          text: "Attaquer personnellement les membres du conseil d'administration en disant qu'ils gagnent trop d'argent.",
+          isCorrect: false,
+          gain: -8,
+          reaction: 'frown',
+          feedback: "Moue réprobatrice immédiate : « Maître, cessez immédiatement les attaques ad hominem inadmissibles ! »"
+        },
+        {
+          id: 'arg_jobs_opt3',
+          type: 'procedural',
+          title: '🏢 Argument du Défaut de Concertation Syndicale (Choix C)',
+          text: "Plaider une simple irrégularité dans le procès-verbal de la réunion du comité de concertation syndicale.",
+          isCorrect: false,
+          gain: -4,
+          reaction: 'frown',
+          feedback: "Le Juge secoue la tête : « Ce moyen de pure forme administrative n'efface pas la matérialité de l'acte de Maxime. »"
+        },
+        {
+          id: 'arg_jobs_opt4',
+          type: 'sophism',
+          title: '🛑 Argument du Refus de Toute Automatisation (Choix D)',
+          text: "Soutenir qu'aucun formulaire ne devrait jamais être dématérialisé dans une école belge.",
           isCorrect: false,
           gain: -5,
-          feedback: "Hors sujet ! La gestion financière ne constitue pas un moyen de défense pénale."
+          reaction: 'frown',
+          feedback: "Moue sceptique : « L'outil informatique en soi n'est pas le coupable, c'est la substitution humaine aveugle qui l'est. »"
         }
       ]
     },
     {
       id: 'assault_5',
-      title: 'Assaut 5/6 : Refus du Progrès & Dépendance Technologique',
+      title: 'Assaut 5/6 : Refus du Progrès Mondial & IA Internationale',
       prosecutorVoice: 'proces_procureur_assaut_5',
       maximeVoice: 'proces_maxime_defense_5',
       charge: 'Le Procureur invoque la puissance incontestable des géants technologiques mondiaux.',
@@ -188,22 +296,44 @@ export default function GameGrandProcesHacking({ onComplete }) {
       requiredType: 'sovereignty',
       arguments: [
         {
-          id: 'arg_sovereignty',
+          id: 'arg_sov_opt1',
           type: 'sovereignty',
-          title: '🌍 Argument de Souveraineté & Impérialisme Numérique (US/Chine)',
-          text: "Dénoncer la vassalisation intellectuelle européenne et l'abandon de notre autonomie stratégique à des conglomérats privés hors d'atteinte de la loi démocratique.",
+          title: '🌍 Argument de Souveraineté & Monopoles Privés (Choix A)',
+          text: "Dénoncer la vassalisation intellectuelle européenne et le transfert d'autorité démocratique à des oligopoles privés américains et chinois qui dictent les règles du savoir et captent nos richesses.",
           isCorrect: true,
           gain: 15,
-          feedback: "Adhésion solennelle du Tribunal ! La souveraineté académique et culturelle est un bien commun inaliénable."
+          reaction: 'smile',
+          feedback: "Le Juge hoche la tête avec un sourire d'assentiment : « La souveraineté démocratique et l'indépendance de pensée sont des principes cardinaux. »"
         },
         {
-          id: 'arg_code',
+          id: 'arg_sov_opt2',
           type: 'weak',
-          title: '💻 Argument de la Préférence Open-Source Pure',
-          text: "Plaider que Maxime voulait juste que l'école installe Linux et code son propre modèle en PHP.",
+          title: '🌐 Argument du Chauvinisme National (Choix B)',
+          text: "Plaider qu'il ne faut utiliser que des logiciels fabriqués à Liège ou à Bruxelles même s'ils ne fonctionnent pas.",
+          isCorrect: false,
+          gain: -6,
+          reaction: 'frown',
+          feedback: "Moue déçue du Juge : « Le repli identitaire étroit n'a rien à voir avec une souveraineté éthique universelle. »"
+        },
+        {
+          id: 'arg_sov_opt3',
+          type: 'sophism',
+          title: '🚫 Argument du Boycott Pur et Simple (Choix C)',
+          text: "Réclamer que l'école coupe toute connexion Internet mondiale et vive en autarcie numérique complète.",
+          isCorrect: false,
+          gain: -7,
+          reaction: 'frown',
+          feedback: "Le Juge fait une moue dubitative : « Soyons réalistes, l'université est connectée au monde. »"
+        },
+        {
+          id: 'arg_sov_opt4',
+          type: 'irrelevant',
+          title: '💳 Argument des Frais de Change en Dollars (Choix D)',
+          text: "Avancer que payer des abonnements en dollars américains coûte trop cher à cause du taux de change euro/dollar.",
           isCorrect: false,
           gain: -5,
-          feedback: "Argument trop technique et réducteur face aux enjeux géopolitiques."
+          reaction: 'frown',
+          feedback: "Moue sceptique : « Nous débattons de liberté intellectuelle, pas de taux de change bancaire. »"
         }
       ]
     },
@@ -218,22 +348,44 @@ export default function GameGrandProcesHacking({ onComplete }) {
       requiredType: 'propaganda',
       arguments: [
         {
-          id: 'arg_propaganda',
+          id: 'arg_prop_opt1',
           type: 'propaganda',
-          title: '📢 Argument de la Propagande & Bulles d Information Algorithmiques',
-          text: "Prouver que l'IA campus formatait l'opinion des étudiants en censurant les données contradictoires et en créant des chambres d'écho destructrices du débat démocratique.",
+          title: '📢 Argument de la Propagande & Bulles de Filtre (Choix A)',
+          text: "Prouver par le benchmark technique que l'IA campus applique un filtrage idéologique opaque, enfermant les apprenants dans des bulles de filtres qui étouffent la controverse scientifique et le débat démocratique.",
           isCorrect: true,
           gain: 15,
-          feedback: "Victoire de la Défense ! Le Procureur est réduit au silence, la vérité algorithmique est démontée."
+          reaction: 'smile',
+          feedback: "Sourire radieux du Juge : « Plaidoirie lumineuse ! Le pluralisme et le doute méthodique sont le sel de l'enseignement supérieur. »"
         },
         {
-          id: 'arg_humeur',
+          id: 'arg_prop_opt2',
           type: 'weak',
-          title: '🗣️ Argument de la Liberté d Expression Brute',
-          text: "Dire que chacun a le droit de dire ce qu'il veut sans censure sur les réseaux.",
+          title: '🗣️ Argument de la Liberté d Injure (Choix B)',
+          text: "Affirmer que sur les réseaux sociaux d'étudiants, tout le monde a le droit de diffamer sans aucune limite morale.",
+          isCorrect: false,
+          gain: -8,
+          reaction: 'frown',
+          feedback: "Moue indignée du Juge : « Non Maître ! La liberté d'expression s'arrête là où commence la calomnie et la nuisance gratuite. »"
+        },
+        {
+          id: 'arg_prop_opt3',
+          type: 'sophism',
+          title: '🎭 Argument du Canular Inoffensif (Choix C)',
+          text: "Prétendre que ce crash était juste une blague de bizutage pour faire rire la nouvelle promotion d'étudiants.",
+          isCorrect: false,
+          gain: -6,
+          reaction: 'frown',
+          feedback: "Le Juge secoue la tête : « Ne trahissez pas la sincérité de votre propre client. Maxime n'est pas un farceur mais un lanceur d'alerte. »"
+        },
+        {
+          id: 'arg_prop_opt4',
+          type: 'irrelevant',
+          title: '🌐 Argument de la Défaillance d Algorithme (Choix D)',
+          text: "Dire que l'IA a des hallucinations et qu'il suffit d'attendre la mise à jour 5.0 pour que tout s'arrange.",
           isCorrect: false,
           gain: -5,
-          feedback: "Insuffisant ! La liberté d'expression ne protège pas les actes de sabotage non motivés par l'intérêt général."
+          reaction: 'frown',
+          feedback: "Moue sceptique : « Attendre passivement une mise à jour d'entreprise privée ne garantit en rien la déontologie. »"
         }
       ]
     }
@@ -241,71 +393,84 @@ export default function GameGrandProcesHacking({ onComplete }) {
 
   const currentAssault = ASSAULTS[currentAssaultIdx];
 
-  // Gestion du démarrage d'audience
+  // Lancement du Procès
   const handleStartTrial = () => {
+    sounds.stopAllVoice();
     setStage('attack');
     setCameraView('PROSECUTION');
     setProsecutorState('attacking');
-    sounds.stopAllVoice();
+    setJudgeReaction('neutral');
     sounds.playAudioFile(`/audio/voices/${currentAssault.prosecutorVoice}.mp3`, 1.0);
   };
 
-  // Passage à la phase d'investigation
+  // Phase d'enquête forensique
   const handleOpenForensics = () => {
+    sounds.stopAllVoice();
     setStage('investigation');
     setCameraView('TV_WIDE');
     setProsecutorState('idle');
-    sounds.stopAllVoice();
+    setJudgeReaction('neutral');
     sounds.playTensionHeartbeat();
   };
 
-  // Réception de la preuve issue des outils médico-légaux
+  // Preuve technique débloquée
   const handleEvidenceReady = (ev) => {
     setCurrentEvidenceReady(ev);
   };
 
-  // Lancement de la plaidoirie
+  // Lancement du QCM de plaidoirie
   const handleStartPleading = () => {
+    sounds.stopAllVoice();
     setStage('pleading');
     setCameraView('DEFENSE');
     setDefenseState('pleading');
-    sounds.stopAllVoice();
+    setJudgeReaction('neutral');
     sounds.playObjectionImpact();
   };
 
-  // Choix d'un argument par le joueur
+  // Choix d'un argument dans le QCM à 4 options
   const handleSelectArgument = (arg) => {
-    setSelectedArgument(arg);
     sounds.stopAllVoice();
+    setSelectedArgument(arg);
 
     if (arg.isCorrect) {
+      // Effet positif : Sourire du Juge + Hochement de tête 3D
+      setJudgeReaction('smile');
+      setCameraView('JUDGE');
       sounds.playSuccess();
       setJudgeConviction(prev => Math.min(100, prev + arg.gain));
       setCriticalScore(prev => Math.min(100, prev + 10));
       setProsecutorPanic(prev => Math.min(100, prev + 15));
-      setAssaultResolved(prev => {
-        const next = [...prev];
-        next[currentAssaultIdx] = true;
-        return next;
-      });
 
-      // Maxime prend la parole en 3D
-      setStage('reaction');
-      setCameraView('WITNESS');
-      setWitnessState('confident');
-      sounds.playAudioFile(`/audio/voices/${currentAssault.maximeVoice}.mp3`, 1.0);
+      // Enregistrer le motif comme prouvé
+      setElementsProven(prev => ({
+        ...prev,
+        [currentAssault.requiredType]: true
+      }));
+
+      // Réaction de Maxime après l'approbation du juge
+      sounds.scheduleTimeout(() => {
+        setStage('reaction');
+        setCameraView('WITNESS');
+        setWitnessState('confident');
+        sounds.playAudioFile(`/audio/voices/${currentAssault.maximeVoice}.mp3`, 1.0);
+      }, 1600);
     } else {
+      // Effet négatif : Moue du Juge + Secouement de tête
+      setJudgeReaction('frown');
+      setCameraView('JUDGE');
       sounds.playWrong();
       setJudgeConviction(prev => Math.max(10, prev + arg.gain));
       setCriticalScore(prev => Math.max(10, prev - 5));
     }
   };
 
-  // Passer à l'assaut suivant ou au verdict final
+  // Passer à l'assaut suivant ou démarrer la grande cinématique du Juge
   const handleNextAssault = () => {
     sounds.stopAllVoice();
     setSelectedArgument(null);
     setCurrentEvidenceReady(null);
+    setJudgeReaction('neutral');
 
     if (currentAssaultIdx < ASSAULTS.length - 1) {
       setCurrentAssaultIdx(prev => prev + 1);
@@ -316,25 +481,52 @@ export default function GameGrandProcesHacking({ onComplete }) {
       setDefenseState('idle');
       sounds.playAudioFile(`/audio/voices/${ASSAULTS[currentAssaultIdx + 1].prosecutorVoice}.mp3`, 1.0);
     } else {
-      // Déclenchement de la cinématique finale du Juge
-      setStage('verdict');
+      // Lancement de la CINÉMATIQUE FINALE DU JUGE
+      setStage('verdict_cinematic');
       setCameraView('JUDGE');
-      setJudgeState('gavel');
-      setProsecutorState('idle');
-      setWitnessState('confident');
-
-      setTimeout(() => {
-        sounds.playGavelStrike();
-        const isInnocent = judgeConviction >= 65;
-        const verdictVoice = isInnocent ? 'proces_judge_verdict_innocent' : 'proces_judge_verdict_guilty';
-        sounds.playAudioFile(`/audio/voices/${verdictVoice}.mp3`, 1.0);
-
-        if (isInnocent) {
-          confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
-        }
-      }, 1500);
+      setJudgeState('speaking');
+      setCinematicStep(0);
+      sounds.playGavelStrike();
+      sounds.playAudioFile('/audio/voices/proces_judge_cinematic_intro.mp3', 1.0);
     }
   };
+
+  // Avancement séquentiel des éléments dans la cinématique finale du Juge
+  const handleAdvanceCinematic = () => {
+    sounds.stopAllVoice();
+    const nextStep = cinematicStep + 1;
+    setCinematicStep(nextStep);
+
+    const stepVoiceMap = {
+      1: 'proces_judge_cinematic_eco_ok',
+      2: 'proces_judge_cinematic_data_ok',
+      3: 'proces_judge_cinematic_cognition_ok',
+      4: 'proces_judge_cinematic_jobs_ok',
+      5: 'proces_judge_cinematic_sovereignty_ok',
+      6: 'proces_judge_cinematic_propaganda_ok'
+    };
+
+    if (nextStep >= 1 && nextStep <= 6) {
+      sounds.playAudioFile(`/audio/voices/${stepVoiceMap[nextStep]}.mp3`, 1.0);
+    } else if (nextStep === 7) {
+      // Proclamation finale solennelle avec marteau de justice
+      setJudgeState('gavel');
+      sounds.playGavelStrike();
+      const provenCount = Object.values(elementsProven).filter(Boolean).length;
+      const isInnocent = provenCount >= 4 || judgeConviction >= 65;
+
+      const finalVoice = isInnocent ? 'proces_judge_cinematic_innocent' : 'proces_judge_cinematic_guilty';
+      sounds.scheduleTimeout(() => {
+        sounds.playAudioFile(`/audio/voices/${finalVoice}.mp3`, 1.0);
+        if (isInnocent) {
+          confetti({ particleCount: 160, spread: 110, origin: { y: 0.6 } });
+        }
+      }, 900);
+    }
+  };
+
+  const provenCount = Object.values(elementsProven).filter(Boolean).length;
+  const isFinalInnocent = provenCount >= 4 || judgeConviction >= 65;
 
   return (
     <div className="w-full h-full flex flex-col gap-3 font-['Lexend'] animate-in fade-in select-none">
@@ -354,20 +546,20 @@ export default function GameGrandProcesHacking({ onComplete }) {
               </h2>
             </div>
             <p className="text-[11px] text-slate-400">
-              Vous incarnez : <span className="text-cyan-300 font-bold">Me Alex (Avocat de la Défense)</span> · Prévenu : <span className="text-emerald-300 font-semibold">Maxime (Lanceur d'alerte)</span>
+              Vous incarnez : <span className="text-cyan-300 font-bold">Me Alex (Avocat de la Défense)</span> · Prévenu : <span className="text-emerald-300 font-semibold">Maxime</span>
             </p>
           </div>
         </div>
 
         {/* Jauges en Direct */}
         <div className="flex items-center gap-3">
-          {/* Jauge de Conviction du Juge */}
+          {/* Conviction du Juge */}
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-slate-950 border border-slate-800">
             <Gavel className="w-4 h-4 text-amber-400" />
             <div className="flex flex-col">
               <div className="flex justify-between text-[10px] font-mono font-bold text-slate-300">
                 <span>Conviction du Juge</span>
-                <span className={judgeConviction >= 65 ? 'text-emerald-400' : 'text-amber-400'}>{judgeConviction}%</span>
+                <span className={judgeConviction >= 65 ? 'text-emerald-400 font-black' : 'text-amber-400'}>{judgeConviction}%</span>
               </div>
               <div className="w-24 bg-slate-800 rounded-full h-1.5 overflow-hidden">
                 <div 
@@ -380,23 +572,23 @@ export default function GameGrandProcesHacking({ onComplete }) {
             </div>
           </div>
 
-          {/* Score Esprit Critique */}
+          {/* Éléments prouvés */}
           <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-slate-950 border border-slate-800">
-            <BrainCircuit className="w-4 h-4 text-purple-400" />
-            <span className="text-xs font-mono font-bold text-purple-300">{criticalScore} Esprit Critique</span>
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span className="text-xs font-mono font-bold text-emerald-300">{provenCount} / 6 Motifs prouvés</span>
           </div>
 
-          {/* Affolement du Procureur */}
+          {/* Stress du Procureur */}
           <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-slate-950 border border-slate-800">
             <Flame className="w-4 h-4 text-rose-500 animate-bounce" />
-            <span className="text-xs font-mono font-bold text-rose-300">Procureur : {prosecutorPanic}% stress</span>
+            <span className="text-xs font-mono font-bold text-rose-300">Procureur : {prosecutorPanic}% panique</span>
           </div>
         </div>
       </div>
 
-      {/* Zone Centrale : Scène 3D (Three.js) + Pupitre de Plaidoirie et Console */}
+      {/* Zone Centrale : Scène 3D (Three.js) + Pupitre Judiciaire QCM */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 flex-1 min-h-[460px]">
-        {/* Scène 3D Three.js (7 colonnes sur Desktop) */}
+        {/* Scène 3D Three.js avec expressions et caméras dynamiques */}
         <div className="lg:col-span-7 h-[330px] sm:h-[400px] lg:h-full relative rounded-3xl overflow-hidden">
           <Courtroom3DCanvas
             currentCaseIdx={0}
@@ -404,6 +596,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
             prosecutorState={prosecutorState}
             defenseState={defenseState}
             judgeState={judgeState}
+            judgeReaction={judgeReaction}
             cameraView={cameraView}
             onCameraChange={(view) => setCameraView(view)}
             onGavelComplete={() => setJudgeState('idle')}
@@ -419,10 +612,10 @@ export default function GameGrandProcesHacking({ onComplete }) {
           </div>
         </div>
 
-        {/* Pupitre d'Intervention Judiciaire (5 colonnes) */}
+        {/* Pupitre d'Intervention Judiciaire QCM (5 colonnes) */}
         <div className="lg:col-span-5 flex flex-col gap-3 h-full overflow-y-auto pr-1">
           {/* =========================================================================
-              ÉTAPE 0 : INTRODUCTION DE L'AUDIENCE
+              ÉTAPE 0 : INTRODUCTION
           ========================================================================= */}
           {stage === 'intro' && (
             <div className="p-5 rounded-3xl bg-slate-900/90 border border-slate-800 flex flex-col justify-between h-full gap-4 animate-in fade-in">
@@ -445,7 +638,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
                   <div className="text-rose-400 font-bold">L'Accusation (Procureur du Roi) :</div>
                   <p>Réclame l'exclusion immédiate et la prison ferme pour sabotage et cyber-terrorisme.</p>
                   <div className="text-cyan-400 font-bold pt-1">Votre Mission (Avocat de la Défense) :</div>
-                  <p>Prouver l'état de nécessité et le statut de <strong>Lanceur d'Alerte</strong> en mobilisant les 6 arguments éthiques et critiques sur l'IA.</p>
+                  <p>Invoquer les bons arguments parmi les QCM pour convaincre le juge (observez ses sourires et ses moues en direct !).</p>
                 </div>
               </div>
 
@@ -497,7 +690,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
           )}
 
           {/* =========================================================================
-              ÉTAPE 2 : INVESTIGATION FORENSIQUE & RECHERCHE DE PREUVES
+              ÉTAPE 2 : INVESTIGATION FORENSIQUE
           ========================================================================= */}
           {stage === 'investigation' && (
             <div className="flex flex-col gap-3 h-full animate-in fade-in">
@@ -512,55 +705,57 @@ export default function GameGrandProcesHacking({ onComplete }) {
                   onClick={handleStartPleading}
                   className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 transition cursor-pointer shadow-lg shadow-amber-500/25 animate-bounce"
                 >
-                  <Gavel className="w-4 h-4" /> Porter la Réplique au Procureur !
+                  <Gavel className="w-4 h-4" /> Ouvrir le QCM de Plaidoirie !
                 </button>
               )}
             </div>
           )}
 
           {/* =========================================================================
-              ÉTAPE 3 : PLAIDOIRIE DE LA DÉFENSE (CHOIX DES ARGUMENTS CRITIQUES)
+              ÉTAPE 3 : SYSTÈME DE CHOIX MULTIPLE (QCM À 4 OPTIONS)
           ========================================================================= */}
           {stage === 'pleading' && (
             <div className="p-4 rounded-3xl bg-slate-900/90 border border-slate-800 flex flex-col justify-between h-full gap-3 animate-in fade-in">
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                   <span className="text-xs font-mono text-cyan-400 font-bold uppercase">
-                    Plaidoirie de la Défense (Me Alex)
+                    QCM de Défense (4 Options)
                   </span>
-                  <span className="text-[10px] font-mono text-slate-400">
+                  <span className="text-[10px] font-mono text-amber-300">
                     Preuve prête : {currentEvidenceReady?.title}
                   </span>
                 </div>
 
                 <p className="text-xs text-slate-300 leading-relaxed font-sans">
-                  Choisissez l'argument d'esprit critique percutant pour démolir l'accusation du Procureur du Roi :
+                  Sélectionnez l'argument d'esprit critique le plus rigoureux :
                 </p>
 
-                <div className="space-y-2.5">
+                <div className="space-y-2">
                   {currentAssault.arguments.map(arg => (
                     <div
                       key={arg.id}
                       onClick={() => handleSelectArgument(arg)}
-                      className={`p-3.5 rounded-2xl border transition cursor-pointer text-left ${
+                      className={`p-3 rounded-2xl border transition cursor-pointer text-left ${
                         selectedArgument?.id === arg.id
                           ? arg.isCorrect
-                            ? 'bg-emerald-950/60 border-emerald-500 text-emerald-200 shadow-lg'
-                            : 'bg-rose-950/60 border-rose-500 text-rose-200'
+                            ? 'bg-emerald-950/70 border-emerald-500 text-emerald-200 shadow-lg'
+                            : 'bg-rose-950/70 border-rose-500 text-rose-200 shadow-lg'
                           : 'bg-slate-950 hover:bg-slate-800/80 border-slate-800 text-slate-300'
                       }`}
                     >
                       <div className="flex items-center justify-between font-bold text-xs mb-1">
                         <span>{arg.title}</span>
                         {selectedArgument?.id === arg.id && (
-                          arg.isCorrect ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <AlertTriangle className="w-4 h-4 text-rose-400" />
+                          arg.isCorrect ? <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> : <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
                         )}
                       </div>
-                      <p className="text-[11px] opacity-80 font-sans leading-relaxed">
+                      <p className="text-[11px] opacity-85 font-sans leading-relaxed">
                         {arg.text}
                       </p>
                       {selectedArgument?.id === arg.id && (
-                        <p className="mt-2 text-[11px] font-mono font-bold text-amber-300 border-t border-slate-700/50 pt-1.5">
+                        <p className={`mt-2 text-[11px] font-mono font-bold border-t border-slate-700/50 pt-1.5 ${
+                          arg.isCorrect ? 'text-emerald-300' : 'text-rose-300'
+                        }`}>
                           {arg.feedback}
                         </p>
                       )}
@@ -572,14 +767,14 @@ export default function GameGrandProcesHacking({ onComplete }) {
           )}
 
           {/* =========================================================================
-              ÉTAPE 4 : RÉACTION DE MAXIME À LA BARRE & DÉSTABILISATION DU PROCUREUR
+              ÉTAPE 4 : TÉMOIGNAGE DE MAXIME APRÈS APPROBATION DU JUGE
           ========================================================================= */}
           {stage === 'reaction' && (
             <div className="p-4 rounded-3xl bg-slate-900/90 border border-emerald-500/30 flex flex-col justify-between h-full gap-3 animate-in fade-in">
               <div className="space-y-3">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                   <span className="text-xs font-mono text-emerald-400 font-bold uppercase flex items-center gap-1.5">
-                    <UserCheck className="w-4 h-4" /> Témoignage de Maxime (Lanceur d'Alerte)
+                    <UserCheck className="w-4 h-4" /> Maxime à la Barre (Lanceur d'Alerte)
                   </span>
                   <button
                     onClick={() => sounds.playAudioFile(`/audio/voices/${currentAssault.maximeVoice}.mp3`, 1.0)}
@@ -595,10 +790,10 @@ export default function GameGrandProcesHacking({ onComplete }) {
 
                 <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800 text-xs space-y-1">
                   <div className="text-emerald-400 font-bold flex items-center gap-1">
-                    <Sparkles className="w-3.5 h-3.5" /> Le Juge acquiesce et annote son grand livre !
+                    <Sparkles className="w-3.5 h-3.5" /> Sourire du Juge : Motif retenu au grand livre !
                   </div>
                   <p className="text-[11px] text-slate-400">
-                    Le Procureur du Roi perd contenance. La légitimité du geste de Maxime est établie pour cet assaut.
+                    Le Procureur du Roi est déstabilisé. L'accusation recule sur ce point.
                   </p>
                 </div>
               </div>
@@ -610,84 +805,191 @@ export default function GameGrandProcesHacking({ onComplete }) {
                 {currentAssaultIdx < ASSAULTS.length - 1 ? (
                   <>Passer à l'Assaut Suivant ({currentAssaultIdx + 2}/6) <ArrowRight className="w-4 h-4" /></>
                 ) : (
-                  <>⚖️ Demander la Clôture des Débats & le Jugement !</>
+                  <>⚖️ Lancer la Cinématique du Jugement !</>
                 )}
               </button>
             </div>
           )}
 
           {/* =========================================================================
-              ÉTAPE 5 : CINÉMATIQUE FINALE DU JUGE & ARRÊT SOLENNEL
+              ÉTAPE 5 : CINÉMATIQUE SÉQUENTIELLE DU VERDICT DU JUGE
           ========================================================================= */}
-          {stage === 'verdict' && (
-            <div className="p-5 rounded-3xl bg-slate-900/90 border border-amber-500/40 flex flex-col justify-between h-full gap-4 animate-in fade-in">
+          {stage === 'verdict_cinematic' && (
+            <div className="p-4 rounded-3xl bg-slate-900/90 border border-amber-500/40 flex flex-col justify-between h-full gap-3 animate-in fade-in">
               <div className="space-y-3">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                   <span className="text-xs font-mono text-amber-400 font-bold uppercase flex items-center gap-1.5">
-                    <Gavel className="w-4 h-4" /> Arrêt Solennel de la Cour d'Assises Numérique
+                    <Gavel className="w-4 h-4" /> Cinématique du Délibéré du Juge
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-400">
+                    Étape {cinematicStep + 1} / 8
                   </span>
                 </div>
 
-                <div className="text-center py-2">
-                  {judgeConviction >= 65 ? (
-                    <div className="space-y-2">
-                      <div className="inline-flex p-3 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
-                        <Award className="w-8 h-8" />
-                      </div>
-                      <h3 className="font-['Outfit'] font-black text-xl text-emerald-300">
-                        MAXIME EST PLEINEMENT ACQUITTÉ !
-                      </h3>
-                      <p className="text-xs font-mono text-slate-300 uppercase tracking-wider">
-                        Reconnaissance de l'État de Nécessité & Statut de Lanceur d'Alerte
-                      </p>
+                {/* ÉTAPE 0 : INTRODUCTION DU JUGE */}
+                {cinematicStep === 0 && (
+                  <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-xs sm:text-sm text-slate-200 font-serif italic leading-relaxed space-y-2">
+                    <div className="font-['Outfit'] font-bold text-amber-300 text-base not-italic">
+                      « Silence dans la salle ! La Cour a délibéré. »
                     </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <div className="inline-flex p-3 rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/40">
-                        <AlertTriangle className="w-8 h-8" />
-                      </div>
-                      <h3 className="font-['Outfit'] font-black text-xl text-rose-300">
-                        CONDAMNATION PRONONCÉE
-                      </h3>
-                      <p className="text-xs font-mono text-slate-300 uppercase tracking-wider">
-                        Arguments insuffisants pour caractériser l'état de nécessité
-                      </p>
-                    </div>
-                  )}
-                </div>
+                    <p>
+                      « Voici la lecture intégrale des motifs ayant guidé l'arrêt du Tribunal sur les six questions fondamentales posées par ce procès... »
+                    </p>
+                  </div>
+                )}
 
-                <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-slate-300 leading-relaxed font-serif italic">
-                  {judgeConviction >= 65 ? (
-                    "« Attendu que l'arrêt temporaire de 24h a permis d'épargner les ressources écologiques, d'interrompre l'aspiration clandestine de données RGPD, d'empêcher la liquidation silencieuse d'emplois humains et de réveiller la pensée critique des étudiants face aux monopoles étrangers : La Cour ordonne l'acquittement immédiat de Maxime ! »"
-                  ) : (
-                    "« Attendu que la défense n'a pas su établir la proportionnalité entre le dommage causé aux cours et les motifs invoqués, la Cour retient l'infraction de cyber-entrave. »"
-                  )}
-                </div>
+                {/* ÉTAPE 1 : ÉCOLOGIE */}
+                {cinematicStep === 1 && (
+                  <div className={`p-4 rounded-2xl border text-xs sm:text-sm font-serif italic leading-relaxed space-y-2 ${
+                    elementsProven.eco ? 'bg-emerald-950/50 border-emerald-500/60 text-emerald-100' : 'bg-rose-950/50 border-rose-500/60 text-rose-100'
+                  }`}>
+                    <div className="font-['Outfit'] font-bold text-xs not-italic font-mono uppercase tracking-wider flex items-center gap-2">
+                      {elementsProven.eco ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <XCircle className="w-4 h-4 text-rose-400" />}
+                      1. Motif Écologique & Climat : {elementsProven.eco ? 'RETENU' : 'ÉCARTÉ'}
+                    </div>
+                    <p>
+                      « Attendu que gaspiller 48 500 L d'eau potable pour des prompts futiles caractérise une dérive écologique majeure, le Tribunal retient le bien-fondé de l'alerte environnementale. »
+                    </p>
+                  </div>
+                )}
+
+                {/* ÉTAPE 2 : DONNÉES RGPD */}
+                {cinematicStep === 2 && (
+                  <div className={`p-4 rounded-2xl border text-xs sm:text-sm font-serif italic leading-relaxed space-y-2 ${
+                    elementsProven.data ? 'bg-emerald-950/50 border-emerald-500/60 text-emerald-100' : 'bg-rose-950/50 border-rose-500/60 text-rose-100'
+                  }`}>
+                    <div className="font-['Outfit'] font-bold text-xs not-italic font-mono uppercase tracking-wider flex items-center gap-2">
+                      {elementsProven.data ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <XCircle className="w-4 h-4 text-rose-400" />}
+                      2. Motif Protection des Données : {elementsProven.data ? 'RETENU' : 'ÉCARTÉ'}
+                    </div>
+                    <p>
+                      « Attendu que l'aspiration clandestine de travaux étudiants vers des serveurs californiens violait l'Article 44 du RGPD, la défense a prouvé l'utilité du blocage conservatoire. »
+                    </p>
+                  </div>
+                )}
+
+                {/* ÉTAPE 3 : COGNITION */}
+                {cinematicStep === 3 && (
+                  <div className={`p-4 rounded-2xl border text-xs sm:text-sm font-serif italic leading-relaxed space-y-2 ${
+                    elementsProven.cognition ? 'bg-emerald-950/50 border-emerald-500/60 text-emerald-100' : 'bg-rose-950/50 border-rose-500/60 text-rose-100'
+                  }`}>
+                    <div className="font-['Outfit'] font-bold text-xs not-italic font-mono uppercase tracking-wider flex items-center gap-2">
+                      {elementsProven.cognition ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <XCircle className="w-4 h-4 text-rose-400" />}
+                      3. Motif Autonomie Cognitive : {elementsProven.cognition ? 'RETENU' : 'ÉCARTÉ'}
+                    </div>
+                    <p>
+                      « Attendu que le rôle d'une Haute École est de cultiver l'esprit critique libre et non de favoriser l'atrophie intellectuelle humaine par délégation aveugle à la machine. »
+                    </p>
+                  </div>
+                )}
+
+                {/* ÉTAPE 4 : EMPLOI */}
+                {cinematicStep === 4 && (
+                  <div className={`p-4 rounded-2xl border text-xs sm:text-sm font-serif italic leading-relaxed space-y-2 ${
+                    elementsProven.jobs ? 'bg-emerald-950/50 border-emerald-500/60 text-emerald-100' : 'bg-rose-950/50 border-rose-500/60 text-rose-100'
+                  }`}>
+                    <div className="font-['Outfit'] font-bold text-xs not-italic font-mono uppercase tracking-wider flex items-center gap-2">
+                      {elementsProven.jobs ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <XCircle className="w-4 h-4 text-rose-400" />}
+                      4. Motif Emploi Humain (Profs & Secrétaires) : {elementsProven.jobs ? 'RETENU' : 'ÉCARTÉ'}
+                    </div>
+                    <p>
+                      « Attendu que la liquidation clandestine de 25 postes humains au profit de chatbots déshumanise l'institution et justifie la révélation d'intérêt public. »
+                    </p>
+                  </div>
+                )}
+
+                {/* ÉTAPE 5 : SOUVERAINETÉ */}
+                {cinematicStep === 5 && (
+                  <div className={`p-4 rounded-2xl border text-xs sm:text-sm font-serif italic leading-relaxed space-y-2 ${
+                    elementsProven.sovereignty ? 'bg-emerald-950/50 border-emerald-500/60 text-emerald-100' : 'bg-rose-950/50 border-rose-500/60 text-rose-100'
+                  }`}>
+                    <div className="font-['Outfit'] font-bold text-xs not-italic font-mono uppercase tracking-wider flex items-center gap-2">
+                      {elementsProven.sovereignty ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <XCircle className="w-4 h-4 text-rose-400" />}
+                      5. Motif Souveraineté face aux Multinationales : {elementsProven.sovereignty ? 'RETENU' : 'ÉCARTÉ'}
+                    </div>
+                    <p>
+                      « Attendu que la dépendance cognitive envers des oligopoles privés américains ou chinois aliène notre démocratie et notre indépendance de pensée. »
+                    </p>
+                  </div>
+                )}
+
+                {/* ÉTAPE 6 : PROPAGANDE */}
+                {cinematicStep === 6 && (
+                  <div className={`p-4 rounded-2xl border text-xs sm:text-sm font-serif italic leading-relaxed space-y-2 ${
+                    elementsProven.propaganda ? 'bg-emerald-950/50 border-emerald-500/60 text-emerald-100' : 'bg-rose-950/50 border-rose-500/60 text-rose-100'
+                  }`}>
+                    <div className="font-['Outfit'] font-bold text-xs not-italic font-mono uppercase tracking-wider flex items-center gap-2">
+                      {elementsProven.propaganda ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <XCircle className="w-4 h-4 text-rose-400" />}
+                      6. Motif Propagande & Bulles de Filtre : {elementsProven.propaganda ? 'RETENU' : 'ÉCARTÉ'}
+                    </div>
+                    <p>
+                      « Attendu que le formatage algorithmique d'opinion et la censure des controverses scientifiques menaçaient le débat démocratique au sein du campus. »
+                    </p>
+                  </div>
+                )}
+
+                {/* ÉTAPE 7 : PROCLAMATION FINALE DU VERDICT */}
+                {cinematicStep === 7 && (
+                  <div className="text-center py-2 space-y-3">
+                    <div className={`inline-flex p-3 rounded-2xl border ${
+                      isFinalInnocent ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' : 'bg-rose-500/20 text-rose-400 border-rose-500/40'
+                    }`}>
+                      {isFinalInnocent ? <Award className="w-8 h-8" /> : <AlertTriangle className="w-8 h-8" />}
+                    </div>
+
+                    <h3 className={`font-['Outfit'] font-black text-xl ${
+                      isFinalInnocent ? 'text-emerald-300' : 'text-rose-300'
+                    }`}>
+                      {isFinalInnocent ? 'MAXIME EST PLEINEMENT INNOCENT ET ACQUITTÉ !' : 'CULPABILITÉ RETENUE (MOTIFS INSUFFISANTS)'}
+                    </h3>
+
+                    <p className="text-xs font-mono text-slate-300 uppercase tracking-wider">
+                      {provenCount} sur 6 piliers d'esprit critique validés par la Cour
+                    </p>
+
+                    <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-slate-300 leading-relaxed font-serif italic text-left">
+                      {isFinalInnocent ? (
+                        "« En conséquence, au vu de l'ensemble de ces motifs déterminants et de l'état de nécessité caractérisé, la Cour déclare Maxime pleinement innocent et lui confère le statut de lanceur d'alerte d'intérêt public. Que justice soit faite ! »"
+                      ) : (
+                        "« En conséquence, le nombre d'éléments d'intérêt général retenus étant insuffisant pour justifier une coupure totale des systèmes, la Cour retient la culpabilité de cyber-entrave. »"
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {judgeConviction >= 65 ? (
+              {/* Bouton de progression dans la cinématique */}
+              {cinematicStep < 7 ? (
+                <button
+                  onClick={handleAdvanceCinematic}
+                  className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-amber-500/20"
+                >
+                  {cinematicStep === 0 ? "Écouter l'énoncé des motifs →" : `Passer au motif suivant (${cinematicStep + 1}/6) →`}
+                </button>
+              ) : isFinalInnocent ? (
                 <button
                   onClick={() => {
                     sounds.stopAllVoice();
                     sounds.playVictory();
                     if (onComplete) onComplete();
                   }}
-                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 transition cursor-pointer shadow-lg shadow-emerald-500/30 animate-bounce"
+                  className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/30 animate-bounce"
                 >
                   ✨ Récupérer la Clé Beta (Intégrité & Éthique) →
                 </button>
               ) : (
                 <button
                   onClick={() => {
+                    sounds.stopAllVoice();
                     setCurrentAssaultIdx(0);
-                    setJudgeConviction(30);
+                    setJudgeConviction(25);
                     setStage('attack');
                     setCameraView('PROSECUTION');
-                    sounds.stopAllVoice();
+                    setCinematicStep(0);
                   }}
                   className="w-full py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <RotateCcw className="w-4 h-4" /> Reprendre la Défense du Procès
+                  <RotateCcw className="w-4 h-4" /> Reprendre le Procès avec de Meilleurs Arguments
                 </button>
               )}
             </div>

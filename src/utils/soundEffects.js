@@ -9,6 +9,8 @@ class SoundManager {
     this.currentVoiceAudio = null;
     this.suspenseAudio = null;
     this.audioCache = new Map();
+    this.activeVoicesSet = new Set();
+    this.voiceTimeouts = new Set();
 
     try {
       const saved = localStorage.getItem('metabox_sound_muted');
@@ -32,6 +34,16 @@ class SoundManager {
     }
   }
 
+  // Programmation d'un délai avec annulation automatique si une voix démarre
+  scheduleTimeout(fn, delayMs) {
+    const id = setTimeout(() => {
+      this.voiceTimeouts.delete(id);
+      fn();
+    }, delayMs);
+    this.voiceTimeouts.add(id);
+    return id;
+  }
+
   toggleMute() {
     this.muted = !this.muted;
     try {
@@ -51,12 +63,20 @@ class SoundManager {
     return this.muted;
   }
 
-  // --- Joueur Audio MP3 avec mise en cache & Anti-Superposition ---
+  // --- Joueur Audio MP3 avec mise en cache & Anti-Superposition Stricte ---
   playAudioFile(path, volume = 1.0, loop = false) {
     if (this.muted) return null;
 
-    // Si c'est une piste de voix, couper immédiatement toute autre voix en cours
-    const isVoiceTrack = path.includes('/voices/') || path.includes('voice') || path.includes('tribunal_') || path.includes('aurore_');
+    // Détection stricte de toute piste vocale
+    const isVoiceTrack = path.includes('/voices/') || 
+                         path.includes('voice') || 
+                         path.includes('tribunal_') || 
+                         path.includes('aurore_') || 
+                         path.includes('proces_') || 
+                         path.includes('doyen_') || 
+                         path.includes('julien_') || 
+                         path.includes('helene_');
+
     if (isVoiceTrack) {
       this.stopAllVoice();
     }
@@ -72,6 +92,13 @@ class SoundManager {
 
       if (isVoiceTrack) {
         this.currentVoiceAudio = audio;
+        this.activeVoicesSet.add(audio);
+        audio.onended = () => {
+          this.activeVoicesSet.delete(audio);
+          if (this.currentVoiceAudio === audio) {
+            this.currentVoiceAudio = null;
+          }
+        };
       }
 
       audio.volume = Math.max(0, Math.min(1, volume));
@@ -99,9 +126,11 @@ class SoundManager {
     try {
       const audio = new Audio(voicePath);
       this.currentVoiceAudio = audio;
+      this.activeVoicesSet.add(audio);
       audio.volume = 0.95;
 
       audio.onended = () => {
+        this.activeVoicesSet.delete(audio);
         if (this.currentVoiceAudio === audio) {
           this.currentVoiceAudio = null;
         }
@@ -109,7 +138,7 @@ class SoundManager {
       };
 
       audio.onerror = () => {
-        // Fallback to speech synthesis if file missing
+        this.activeVoicesSet.delete(audio);
         console.warn(`Voice file missing: ${voicePath}, falling back.`);
         this.currentVoiceAudio = null;
       };
@@ -117,6 +146,7 @@ class SoundManager {
       const p = audio.play();
       if (p !== undefined) {
         p.catch(() => {
+          this.activeVoicesSet.delete(audio);
           this.currentVoiceAudio = null;
         });
       }
@@ -126,20 +156,51 @@ class SoundManager {
   }
 
   stopAllVoice() {
-    // 1. Stopper la voix active
+    // 1. Annuler tous les timeouts enregistrés
+    if (this.voiceTimeouts) {
+      this.voiceTimeouts.forEach(id => clearTimeout(id));
+      this.voiceTimeouts.clear();
+    }
+
+    // 2. Stopper tous les audios actifs et effacer leurs callbacks pour éviter les chaînages fantômes
+    if (this.activeVoicesSet) {
+      this.activeVoicesSet.forEach(audio => {
+        try {
+          audio.onended = null;
+          audio.onerror = null;
+          audio.pause();
+          audio.currentTime = 0;
+        } catch {}
+      });
+      this.activeVoicesSet.clear();
+    }
+
+    // 3. Stopper la voix active courante
     if (this.currentVoiceAudio) {
       try {
+        this.currentVoiceAudio.onended = null;
+        this.currentVoiceAudio.onerror = null;
         this.currentVoiceAudio.pause();
         this.currentVoiceAudio.currentTime = 0;
       } catch {}
       this.currentVoiceAudio = null;
     }
 
-    // 2. Stopper tous les audios de voix mis en cache dans le Map
+    // 4. Stopper tous les audios de voix mis en cache dans le Map
     if (this.audioCache) {
       this.audioCache.forEach((audio, key) => {
-        if (key.includes('/voices/') || key.includes('voice') || key.includes('tribunal_') || key.includes('aurore_')) {
+        const isVoice = key.includes('/voices/') || 
+                        key.includes('voice') || 
+                        key.includes('tribunal_') || 
+                        key.includes('aurore_') || 
+                        key.includes('proces_') || 
+                        key.includes('doyen_') || 
+                        key.includes('julien_') || 
+                        key.includes('helene_');
+        if (isVoice) {
           try {
+            audio.onended = null;
+            audio.onerror = null;
             audio.pause();
             audio.currentTime = 0;
           } catch {}
@@ -147,7 +208,7 @@ class SoundManager {
       });
     }
 
-    // 3. Annuler toute synthèse vocale Web Speech en cours
+    // 5. Annuler toute synthèse vocale Web Speech en cours
     if ('speechSynthesis' in window) {
       try {
         window.speechSynthesis.cancel();
