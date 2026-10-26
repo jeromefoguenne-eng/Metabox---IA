@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import PixarStyleScene3D from './PixarStyleScene3D';
+import CampusRivageoisMap from './CampusRivageoisMap';
 import { sounds } from '../utils/soundEffects';
 
 export default function EscapeGameAurore({ onClose }) {
@@ -324,169 +325,65 @@ export default function EscapeGameAurore({ onClose }) {
             </div>
           )}
 
-          {/* STAGE: HUB CENTRAL (Exploration Libre des 4 Ailes) */}
+          {/* STAGE: HUB CENTRAL (Exploration Libre & Carte Dynamique Campus Rivageois) */}
           {currentStage === 'hub' && (
             <div className="space-y-6 animate-in fade-in">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-                <div>
-                  <h3 className="font-['Outfit'] text-xl font-black text-white flex items-center gap-2">
-                    <Layers className="w-5 h-5 text-cyan-400" /> Carte Interactive du Cyber-Campus
-                  </h3>
-                  <p className="text-xs text-slate-400">Choisissez votre itinéraire d'investigation en toute liberté.</p>
-                </div>
-                {totalKeysObtained === 4 && (
-                  <button
-                    onClick={() => {
-                      sounds.playPop();
-                      sounds.playVoice('aurore_boss_start');
-                      setCurrentStage('boss');
-                    }}
-                    className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-xs uppercase animate-bounce shadow-lg cursor-pointer flex items-center gap-1.5"
-                  >
-                    <Zap className="w-4 h-4" /> Entrer dans l'Amphi Final !
-                  </button>
-                )}
-              </div>
+              {/* Carte Interactive Dynamique du Campus Les Rivageois */}
+              <CampusRivageoisMap
+                keysUnlocked={keysUnlocked}
+                currentStage={currentStage}
+                onSelectWing={(wingId) => handleEnterRoom(wingId)}
+              />
 
-              {/* 4 Wings Cards Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                
-                {/* AILE NORD: FACT CHECKING */}
-                <div className={`p-5 rounded-3xl border transition-all duration-200 flex flex-col justify-between ${
-                  keysUnlocked.north 
-                    ? 'bg-emerald-950/40 border-emerald-500/60' 
-                    : 'bg-slate-800/80 hover:bg-slate-800 border-slate-700/80 hover:border-cyan-500/50'
-                }`}>
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="p-2.5 rounded-2xl bg-cyan-500/20 text-cyan-300">
-                        <Search className="w-5 h-5" />
-                      </span>
-                      {keysUnlocked.north ? (
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> Clé Alpha Détenue
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-mono text-cyan-400 font-bold">AILE NORD</span>
-                      )}
-                    </div>
-                    <h4 className="font-['Outfit'] text-base font-bold text-white mb-1">
-                      Labo Fact-Checking & Deepfakes
-                    </h4>
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      Détectez les hallucinations de sources, les faux DOI et les médias forgés par IA dans les mémoires de fin d'études.
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => handleEnterRoom('room_north')}
-                    className="mt-4 w-full py-2.5 rounded-xl bg-cyan-600/30 hover:bg-cyan-600 text-cyan-200 hover:text-white font-bold text-xs uppercase transition border border-cyan-500/40 cursor-pointer text-center"
-                  >
-                    {keysUnlocked.north ? "Réexaminer le Labo" : "Infiltrer le Labo"}
-                  </button>
+              {/* Résumé d'état rapide sous la carte */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+                <div 
+                  onClick={() => handleEnterRoom('room_north')}
+                  className={`p-3 rounded-2xl border transition cursor-pointer text-center ${
+                    keysUnlocked.north 
+                      ? 'bg-emerald-950/40 border-emerald-500/60 text-emerald-200' 
+                      : 'bg-slate-800/70 hover:bg-slate-800 border-slate-700 text-slate-300'
+                  }`}
+                >
+                  <span className="text-sm font-bold block">1. Labo Fact-Check</span>
+                  <span className="text-[10px] font-mono">{keysUnlocked.north ? "Clé Alpha ✓" : "Quai de Rome"}</span>
                 </div>
 
-                {/* AILE OUEST: TRIBUNAL ACADÉMIQUE */}
-                <div className={`p-5 rounded-3xl border transition-all duration-200 flex flex-col justify-between ${
-                  keysUnlocked.west 
-                    ? 'bg-emerald-950/40 border-emerald-500/60' 
-                    : 'bg-slate-800/80 hover:bg-slate-800 border-slate-700/80 hover:border-purple-500/50'
-                }`}>
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="p-2.5 rounded-2xl bg-purple-500/20 text-purple-300">
-                        <Scale className="w-5 h-5" />
-                      </span>
-                      {keysUnlocked.west ? (
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> Clé Beta Détenue
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-mono text-purple-400 font-bold">AILE OUEST</span>
-                      )}
-                    </div>
-                    <h4 className="font-['Outfit'] text-base font-bold text-white mb-1">
-                      Tribunal du Jury : Triche vs Copilotage
-                    </h4>
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      Distinguez la délégation cognitive passive du véritable accompagnement méthodologique éthique à la barre du conseil.
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => handleEnterRoom('room_west')}
-                    className="mt-4 w-full py-2.5 rounded-xl bg-purple-600/30 hover:bg-purple-600 text-purple-200 hover:text-white font-bold text-xs uppercase transition border border-purple-500/40 cursor-pointer text-center"
-                  >
-                    {keysUnlocked.west ? "Consulter les Archives" : "Participer au Procès"}
-                  </button>
+                <div 
+                  onClick={() => handleEnterRoom('room_west')}
+                  className={`p-3 rounded-2xl border transition cursor-pointer text-center ${
+                    keysUnlocked.west 
+                      ? 'bg-emerald-950/40 border-emerald-500/60 text-emerald-200' 
+                      : 'bg-slate-800/70 hover:bg-slate-800 border-slate-700 text-slate-300'
+                  }`}
+                >
+                  <span className="text-sm font-bold block">2. Tribunal Jury</span>
+                  <span className="text-[10px] font-mono">{keysUnlocked.west ? "Clé Beta ✓" : "Rue Rivageois"}</span>
                 </div>
 
-                {/* AILE SUD: DATACENTER & CARBONE */}
-                <div className={`p-5 rounded-3xl border transition-all duration-200 flex flex-col justify-between ${
-                  keysUnlocked.south 
-                    ? 'bg-emerald-950/40 border-emerald-500/60' 
-                    : 'bg-slate-800/80 hover:bg-slate-800 border-slate-700/80 hover:border-emerald-500/50'
-                }`}>
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="p-2.5 rounded-2xl bg-emerald-500/20 text-emerald-300">
-                        <Flame className="w-5 h-5" />
-                      </span>
-                      {keysUnlocked.south ? (
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> Clé Gamma Détenue
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-mono text-emerald-400 font-bold">AILE SUD</span>
-                      )}
-                    </div>
-                    <h4 className="font-['Outfit'] text-base font-bold text-white mb-1">
-                      Datacenter Sous-Sol : Climat & RGPD
-                    </h4>
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      Arbitrez entre serveurs géants énergivores et petits modèles locaux souverains tout en protégeant les données étudiantes.
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => handleEnterRoom('room_south')}
-                    className="mt-4 w-full py-2.5 rounded-xl bg-emerald-600/30 hover:bg-emerald-600 text-emerald-200 hover:text-white font-bold text-xs uppercase transition border border-emerald-500/40 cursor-pointer text-center"
-                  >
-                    {keysUnlocked.south ? "Régulation OK" : "Équilibrer le Datacenter"}
-                  </button>
+                <div 
+                  onClick={() => handleEnterRoom('room_south')}
+                  className={`p-3 rounded-2xl border transition cursor-pointer text-center ${
+                    keysUnlocked.south 
+                      ? 'bg-emerald-950/40 border-emerald-500/60 text-emerald-200' 
+                      : 'bg-slate-800/70 hover:bg-slate-800 border-slate-700 text-slate-300'
+                  }`}
+                >
+                  <span className="text-sm font-bold block">3. Datacenter Éco</span>
+                  <span className="text-[10px] font-mono">{keysUnlocked.south ? "Clé Gamma ✓" : "Sous-Sols"}</span>
                 </div>
 
-                {/* AILE EST: PROMPT WARS */}
-                <div className={`p-5 rounded-3xl border transition-all duration-200 flex flex-col justify-between ${
-                  keysUnlocked.east 
-                    ? 'bg-emerald-950/40 border-emerald-500/60' 
-                    : 'bg-slate-800/80 hover:bg-slate-800 border-slate-700/80 hover:border-pink-500/50'
-                }`}>
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="p-2.5 rounded-2xl bg-pink-500/20 text-pink-300">
-                        <Zap className="w-5 h-5" />
-                      </span>
-                      {keysUnlocked.east ? (
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> Clé Delta Détenue
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-mono text-pink-400 font-bold">AILE EST</span>
-                      )}
-                    </div>
-                    <h4 className="font-['Outfit'] text-base font-bold text-white mb-1">
-                      L'Arène des Réseaux : Prompt Wars
-                    </h4>
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      Combat tactique contre les biais d'entraînement, les bulles de filtres et les stéréotypes avec des cartes de contraintes.
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => handleEnterRoom('room_east')}
-                    className="mt-4 w-full py-2.5 rounded-xl bg-pink-600/30 hover:bg-pink-600 text-pink-200 hover:text-white font-bold text-xs uppercase transition border border-pink-500/40 cursor-pointer text-center"
-                  >
-                    {keysUnlocked.east ? "Arène Pacifiée" : "Défier les Algorithmes"}
-                  </button>
+                <div 
+                  onClick={() => handleEnterRoom('room_east')}
+                  className={`p-3 rounded-2xl border transition cursor-pointer text-center ${
+                    keysUnlocked.east 
+                      ? 'bg-emerald-950/40 border-emerald-500/60 text-emerald-200' 
+                      : 'bg-slate-800/70 hover:bg-slate-800 border-slate-700 text-slate-300'
+                  }`}
+                >
+                  <span className="text-sm font-bold block">4. Prompt Wars</span>
+                  <span className="text-[10px] font-mono">{keysUnlocked.east ? "Clé Delta ✓" : "Vieux Hêtre"}</span>
                 </div>
-
               </div>
             </div>
           )}
