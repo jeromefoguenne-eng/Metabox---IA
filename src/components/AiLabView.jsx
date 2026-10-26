@@ -13,10 +13,13 @@ import {
   Send,
   RefreshCw,
   PlusCircle,
-  Award
+  Award,
+  ShieldAlert,
+  Play
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import SpeedChallengeGame from './SpeedChallengeGame';
+import EscapeGameAurore from './EscapeGameAurore';
 import { sounds } from '../utils/soundEffects';
 
 const PRESET_CONSIGNES = [
@@ -35,7 +38,8 @@ const PRESET_CONSIGNES = [
 ];
 
 export default function AiLabView() {
-  const [activeTab, setActiveTab] = useState('analyzer'); // analyzer | simulator | games | creator
+  const [activeTab, setActiveTab] = useState('escape'); // escape | analyzer | simulator | games
+  const [isEscapeGameOpen, setIsEscapeGameOpen] = useState(false);
 
   // State for Consigne Analyzer
   const [inputConsigne, setInputConsigne] = useState(PRESET_CONSIGNES[0].text);
@@ -202,6 +206,17 @@ export default function AiLabView() {
         {/* Navigation Tabs inside IA Lab */}
         <div className="flex flex-wrap gap-2.5 mt-8 pt-6 border-t border-white/20">
           <button
+            onClick={() => handleTabChange('escape')}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-black tracking-wide transition shadow-lg ${
+              activeTab === 'escape'
+                ? 'bg-rose-500 text-white shadow-rose-500/40 animate-pulse'
+                : 'bg-rose-500/30 text-rose-100 hover:bg-rose-500/50 border border-rose-400/40'
+            }`}
+          >
+            <ShieldAlert className="w-4 h-4 text-rose-200" /> 🔐 Escape Game : Panique au Jury !
+          </button>
+
+          <button
             onClick={() => handleTabChange('analyzer')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition ${
               activeTab === 'analyzer'
@@ -246,6 +261,71 @@ export default function AiLabView() {
           </button>
         </div>
       </div>
+
+      {/* TAB 0: ESCAPE GAME PANIQUE AU JURY (FEATURED) */}
+      {activeTab === 'escape' && (
+        <div className="bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 border-2 border-rose-500/50 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden text-white">
+          <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+            <ShieldAlert className="w-96 h-96 text-rose-500" />
+          </div>
+
+          <div className="relative z-10 max-w-3xl space-y-6">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 font-mono text-xs font-bold uppercase tracking-widest">
+              <span className="w-2 h-2 rounded-full bg-rose-400 animate-ping" />
+              Nouveau Serious Game Immersif 3D
+            </div>
+
+            <h3 className="text-3xl sm:text-4xl font-['Outfit'] font-black text-white leading-tight">
+              Panique au Jury : L'Algorithme Fantôme
+            </h3>
+
+            <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+              À 45 minutes des délibérations, l'algorithme expérimental <strong>A.U.R.O.R.E.</strong> a gelé les 60 crédits ECTS du Bloc 1, convaincu que la triche et les hallucinations de l'IA ont dévalué les diplômes. Infiltrez le cyber-campus en 3D Pixar, déjouez les pièges du plagiat, réduisez l'empreinte carbone du datacenter et affrontez la machine au grand tribunal !
+            </p>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+              <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 text-center">
+                <span className="text-xl block mb-1">🔬</span>
+                <strong className="text-xs font-bold text-cyan-300 block">Fact-Checking</strong>
+                <span className="text-[10px] text-slate-400">Traque des faux DOI</span>
+              </div>
+              <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 text-center">
+                <span className="text-xl block mb-1">⚖️</span>
+                <strong className="text-xs font-bold text-purple-300 block">Tribunal Jury</strong>
+                <span className="text-[10px] text-slate-400">Plagiat vs Copilote</span>
+              </div>
+              <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 text-center">
+                <span className="text-xl block mb-1">⚡</span>
+                <strong className="text-xs font-bold text-emerald-300 block">Éco-Datacenter</strong>
+                <span className="text-[10px] text-slate-400">SLM & Climat RGPD</span>
+              </div>
+              <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 text-center">
+                <span className="text-xl block mb-1">🃏</span>
+                <strong className="text-xs font-bold text-pink-300 block">Prompt Wars</strong>
+                <span className="text-[10px] text-slate-400">Contre les biais</span>
+              </div>
+            </div>
+
+            <div className="pt-4 flex flex-wrap gap-4">
+              <button
+                onClick={() => {
+                  sounds.playPop();
+                  setIsEscapeGameOpen(true);
+                }}
+                className="px-8 py-4 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-600 to-indigo-600 hover:scale-[1.02] text-white font-['Outfit'] font-black text-sm uppercase tracking-wider shadow-xl shadow-rose-500/30 transition flex items-center gap-3 cursor-pointer"
+              >
+                <Play className="w-5 h-5 fill-current" />
+                <span>Lancer l'Escape Game en Plein Écran</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* FULLSCREEN ESCAPE GAME MODAL */}
+      {isEscapeGameOpen && (
+        <EscapeGameAurore onClose={() => setIsEscapeGameOpen(false)} />
+      )}
 
       {/* TAB 1: ANALYSEUR DE CONSIGNES */}
       {activeTab === 'analyzer' && (

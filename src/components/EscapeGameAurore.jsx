@@ -1,0 +1,814 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  ShieldAlert, 
+  Search, 
+  Scale, 
+  Flame, 
+  Sparkles, 
+  Clock, 
+  Key, 
+  Terminal, 
+  CheckCircle2, 
+  XCircle, 
+  RotateCcw, 
+  Play, 
+  Zap, 
+  Award,
+  Maximize2,
+  Minimize2,
+  Volume2,
+  VolumeX,
+  FileText,
+  AlertTriangle,
+  ArrowRight,
+  Database,
+  Layers,
+  Cpu
+} from 'lucide-react';
+import confetti from 'canvas-confetti';
+import PixarStyleScene3D from './PixarStyleScene3D';
+import { sounds } from '../utils/soundEffects';
+
+export default function EscapeGameAurore({ onClose }) {
+  // Game State
+  const [currentStage, setCurrentStage] = useState('intro'); // 'intro' | 'hub' | 'room_north' | 'room_west' | 'room_south' | 'room_east' | 'boss' | 'ending'
+  const [timeLeft, setTimeLeft] = useState(45 * 60); // 45 minutes
+  const [isPaused, setIsPaused] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [keysUnlocked, setKeysUnlocked] = useState({
+    north: false, // Fact-Checking (Clé Alpha)
+    west: false,  // Tribunal Plagiat (Clé Beta)
+    south: false, // Datacenter Carbone (Clé Gamma)
+    east: false   // Prompt Wars (Clé Delta)
+  });
+  const [ethicalScore, setEthicalScore] = useState(50); // Jauge d'esprit critique (0 à 100)
+  const [dialogueLog, setDialogueLog] = useState([
+    { speaker: 'A.U.R.O.R.E.', text: "Protocole de quarantaine actif. 60 crédits ECTS gelés. Restauration conditionnelle à l'esprit critique." }
+  ]);
+
+  // Mini-Game 1: Fact-Checking Lab States (Aile Nord)
+  const [factCheckExamIdx, setFactCheckExamIdx] = useState(0);
+  const [factCheckAnomaliesFound, setFactCheckAnomaliesFound] = useState([]);
+  const [factCheckCompleted, setFactCheckCompleted] = useState(false);
+
+  // Mini-Game 2: Tribunal Plagiat States (Aile Ouest)
+  const [tribunalCaseIdx, setTribunalCaseIdx] = useState(0);
+  const [tribunalPlaidoyer, setTribunalPlaidoyer] = useState(null);
+
+  // Mini-Game 3: Datacenter Tycoon States (Aile Sud)
+  const [datacenterLoad, setDatacenterLoad] = useState({
+    cloudGpuUsage: 85, // %
+    localSlmUsage: 15,
+    carbonWatts: 1420,
+    rgpdSafe: false
+  });
+
+  // Mini-Game 4: Prompt Wars (Aile Est)
+  const [promptWarHand, setPromptWarHand] = useState([
+    { id: 'c1', name: 'Contrainte Socratique', type: 'defense', power: 30, desc: 'Force le modèle à poser des questions sans donner la réponse brute.' },
+    { id: 'c2', name: 'Vérification DOI Primaire', type: 'attack', power: 40, desc: 'Démystifie une hallucination bibliographique inventée.' },
+    { id: 'c3', name: 'Désactivation des Biais', type: 'utility', power: 25, desc: 'Exige un double point de vue neutre et sourcé.' }
+  ]);
+  const [botDefense, setBotDefense] = useState(100);
+
+  // Audio & Timer
+  useEffect(() => {
+    sounds.playVoice('aurore_intro');
+  }, []);
+
+  useEffect(() => {
+    if (isPaused || currentStage === 'ending') return;
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          sounds.playVoice('aurore_gameover');
+          setCurrentStage('ending');
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [isPaused, currentStage]);
+
+  const formatTimer = (sec) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const handleEnterRoom = (roomKey) => {
+    sounds.playPop();
+    sounds.playVoice(`aurore_${roomKey}`);
+    setCurrentStage(roomKey);
+  };
+
+  const handleUnlockKey = (wingKey, keyName) => {
+    sounds.playSuccess();
+    confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
+    setKeysUnlocked(prev => ({ ...prev, [wingKey]: true }));
+    setEthicalScore(prev => Math.min(100, prev + 15));
+    setDialogueLog(prev => [
+      { speaker: 'SYSTÈME', text: `✨ ${keyName} déverrouillée avec succès ! Intégrité restaurée.` },
+      ...prev
+    ]);
+  };
+
+  // Fact-Checking Game Data
+  const FACT_CHECK_CASES = [
+    {
+      title: "Extrait de Mémoire de Fin d'Études (Biochimie HECh)",
+      text: "Comme le démontrent les célèbres travaux du Professeur Albert Vanhove publiés dans la prestigieuse revue *Belgian Journal of Cellular Biology* en 2024 (DOI: 10.1016/j.bjcb.fake.992), les lysosomes cessent toute autophagie sous température ambiante de 21 degrés Celsius.",
+      anomalies: [
+        { id: 'a1', label: "Auteur & Revue Fantômes (Hallucination)", desc: "Le Pr Albert Vanhove et la revue 'BJCB' ont été forgés par un LLM non connecté." },
+        { id: 'a2', label: "DOI Invalide", desc: "Le DOI contient la chaîne 'fake.992' typique d'une génération synthétique sans validation de base de données." }
+      ]
+    }
+  ];
+
+  // Tribunal Game Data
+  const TRIBUNAL_CASES = [
+    {
+      id: "case-julien",
+      defendant: "Julien (Bac 2 Gestion)",
+      accusation: "Soupçon de triche majeure sur son travail d'analyse financière.",
+      evidenceA: "100% du texte produit a un score de perplexité artificiellement uniforme (génération brute sans retouche).",
+      evidenceB: "Julien est incapable lors de sa défense orale d'expliquer la formule de l'EBITDA qu'il a pourtant insérée.",
+      correctVerdict: "plagiat_delegation",
+      explanation: "Délégation cognitive totale : Julien a laissé l'IA rédiger à sa place sans comprendre ni s'approprier les concepts."
+    }
+  ];
+
+  const totalKeysObtained = Object.values(keysUnlocked).filter(Boolean).length;
+
+  return (
+    <div className="fixed inset-0 z-50 bg-slate-950 text-white flex flex-col font-['Lexend'] overflow-hidden animate-in fade-in">
+      {/* Top Cyber Command Bar */}
+      <header className="h-16 border-b border-slate-800 bg-slate-900/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between z-20">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 text-white shadow-lg shadow-cyan-500/20">
+            <Cpu className="w-5 h-5 animate-pulse" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="font-['Outfit'] font-black text-sm sm:text-base tracking-wide bg-gradient-to-r from-cyan-300 via-white to-purple-300 bg-clip-text text-transparent">
+                PANIQUE AU JURY : L'ALGORITHME FANTÔME
+              </h1>
+              <span className="px-2 py-0.5 rounded-full bg-rose-500/20 border border-rose-500/40 text-[10px] font-mono font-bold text-rose-300">
+                PROJET A.U.R.O.R.E.
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-400">Éducation aux médias & Esprit critique IA · Campus HECh</p>
+          </div>
+        </div>
+
+        {/* Status Indicators & Timer */}
+        <div className="flex items-center gap-4">
+          {/* 4 Keys Status */}
+          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-slate-950/80 border border-slate-800">
+            <Key className="w-4 h-4 text-amber-400" />
+            <span className="text-xs font-mono font-black text-slate-300">
+              {totalKeysObtained} / 4 Clés
+            </span>
+          </div>
+
+          {/* Critical Mind Gauge */}
+          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-slate-950/80 border border-slate-800">
+            <Sparkles className="w-4 h-4 text-cyan-400" />
+            <div className="w-20 bg-slate-800 rounded-full h-2 overflow-hidden">
+              <div 
+                className="bg-gradient-to-r from-cyan-400 to-indigo-500 h-full transition-all duration-500" 
+                style={{ width: `${ethicalScore}%` }}
+              />
+            </div>
+            <span className="text-[11px] font-mono font-bold text-cyan-300">{ethicalScore}%</span>
+          </div>
+
+          {/* Countdown Clock */}
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-rose-950/60 border border-rose-500/50 shadow-inner">
+            <Clock className="w-4 h-4 text-rose-400 animate-spin" style={{ animationDuration: '6s' }} />
+            <span className="font-mono font-black text-rose-300 text-sm tracking-wider">
+              {formatTimer(timeLeft)}
+            </span>
+          </div>
+
+          {/* Close button */}
+          {onClose && (
+            <button
+              onClick={() => {
+                sounds.stopSuspense();
+                sounds.stopAllVoice();
+                onClose();
+              }}
+              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition cursor-pointer"
+            >
+              <XCircle className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+      </header>
+
+      {/* Main Game Screen */}
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden relative">
+        
+        {/* LEFT COLUMN: 3D Pixar Visual Studio & Holographic Core */}
+        <div className="lg:col-span-5 border-r border-slate-800/80 bg-slate-950 p-4 flex flex-col justify-between relative overflow-hidden">
+          <div className="flex-1 w-full relative rounded-3xl overflow-hidden border border-slate-800 shadow-2xl">
+            <PixarStyleScene3D 
+              theme={
+                currentStage === 'room_north' ? 'factcheck' :
+                currentStage === 'room_west' ? 'tribunal' :
+                currentStage === 'room_south' ? 'datacenter' :
+                currentStage === 'room_east' ? 'promptwars' :
+                currentStage === 'boss' ? 'boss' : 'hub'
+              }
+              isAlert={currentStage === 'boss' || timeLeft < 15 * 60}
+              characterMood={
+                totalKeysObtained === 4 ? 'victorious' :
+                currentStage === 'boss' ? 'worried' : 'thinking'
+              }
+            />
+
+            {/* A.U.R.O.R.E. Overlay Badge */}
+            <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-cyan-500/30 flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping" />
+              <span className="text-xs font-mono font-bold text-cyan-200">A.U.R.O.R.E. v2.4 (Live Feed)</span>
+            </div>
+          </div>
+
+          {/* Dialogue Log Console */}
+          <div className="mt-3 p-3 rounded-2xl bg-slate-900/80 border border-slate-800 font-mono text-xs text-slate-300 space-y-1 max-h-28 overflow-y-auto">
+            <div className="text-[10px] text-cyan-400 uppercase font-black tracking-wider flex items-center gap-1.5 mb-1">
+              <Terminal className="w-3.5 h-3.5" /> Journal de Transmission Directe
+            </div>
+            {dialogueLog.map((log, i) => (
+              <p key={i} className="leading-snug">
+                <strong className={log.speaker === 'A.U.R.O.R.E.' ? 'text-rose-400' : 'text-amber-400'}>
+                  [{log.speaker}]
+                </strong> {log.text}
+              </p>
+            ))}
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: Interactive Exploration & Mini-Games */}
+        <div className="lg:col-span-7 bg-slate-900/50 p-4 sm:p-6 overflow-y-auto flex flex-col justify-between">
+          
+          {/* STAGE: INTRO */}
+          {currentStage === 'intro' && (
+            <div className="max-w-2xl mx-auto my-auto space-y-6 text-center animate-in fade-in">
+              <div className="w-16 h-16 rounded-3xl bg-rose-500/20 border-2 border-rose-500 flex items-center justify-center mx-auto shadow-rose-500/30 shadow-2xl">
+                <ShieldAlert className="w-8 h-8 text-rose-400 animate-bounce" />
+              </div>
+
+              <div>
+                <span className="text-xs font-mono text-rose-400 font-bold uppercase tracking-widest">
+                  Urgence Délibération · Bloc 1 HECh
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-['Outfit'] font-black text-white mt-1">
+                  Les Serveurs du Jury sont Verrouillés !
+                </h2>
+                <p className="text-sm text-slate-300 mt-3 leading-relaxed">
+                  L'intelligence artificielle centrale <strong>A.U.R.O.R.E.</strong> a bloqué la validation des délibérations. Elle exige la preuve que les étudiants sont capables de maîtriser l'IA sans perdre leur esprit critique, leur honnêteté intellectuelle et leur autonomie de jugement.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-slate-800/80 border border-slate-700 text-left space-y-2 text-xs">
+                <strong className="text-cyan-300 block font-bold">Votre Mission de Survie Académique :</strong>
+                <p>1. Parcourez librement les 4 ailes du campus numérique.</p>
+                <p>2. Résolvez les 4 grands défis : Fact-Checking, Tribunal Anti-Plagiat, Éco-Datacenter, et Prompt Wars.</p>
+                <p>3. Récupérez les 4 clés d'intégrité avant la fin des 45 minutes pour affronter A.U.R.O.R.E. dans l'amphi !</p>
+              </div>
+
+              <button
+                onClick={() => {
+                  sounds.playPop();
+                  sounds.playSuccess();
+                  setCurrentStage('hub');
+                }}
+                className="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 hover:scale-[1.01] text-white font-['Outfit'] font-black text-sm uppercase tracking-wider shadow-xl shadow-cyan-500/25 transition cursor-pointer flex items-center justify-center gap-2"
+              >
+                <span>Accéder au Terminal du Campus</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
+          {/* STAGE: HUB CENTRAL (Exploration Libre des 4 Ailes) */}
+          {currentStage === 'hub' && (
+            <div className="space-y-6 animate-in fade-in">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                <div>
+                  <h3 className="font-['Outfit'] text-xl font-black text-white flex items-center gap-2">
+                    <Layers className="w-5 h-5 text-cyan-400" /> Carte Interactive du Cyber-Campus
+                  </h3>
+                  <p className="text-xs text-slate-400">Choisissez votre itinéraire d'investigation en toute liberté.</p>
+                </div>
+                {totalKeysObtained === 4 && (
+                  <button
+                    onClick={() => {
+                      sounds.playPop();
+                      sounds.playVoice('aurore_boss_start');
+                      setCurrentStage('boss');
+                    }}
+                    className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-xs uppercase animate-bounce shadow-lg cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Zap className="w-4 h-4" /> Entrer dans l'Amphi Final !
+                  </button>
+                )}
+              </div>
+
+              {/* 4 Wings Cards Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                
+                {/* AILE NORD: FACT CHECKING */}
+                <div className={`p-5 rounded-3xl border transition-all duration-200 flex flex-col justify-between ${
+                  keysUnlocked.north 
+                    ? 'bg-emerald-950/40 border-emerald-500/60' 
+                    : 'bg-slate-800/80 hover:bg-slate-800 border-slate-700/80 hover:border-cyan-500/50'
+                }`}>
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="p-2.5 rounded-2xl bg-cyan-500/20 text-cyan-300">
+                        <Search className="w-5 h-5" />
+                      </span>
+                      {keysUnlocked.north ? (
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Clé Alpha Détenue
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-mono text-cyan-400 font-bold">AILE NORD</span>
+                      )}
+                    </div>
+                    <h4 className="font-['Outfit'] text-base font-bold text-white mb-1">
+                      Labo Fact-Checking & Deepfakes
+                    </h4>
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      Détectez les hallucinations de sources, les faux DOI et les médias forgés par IA dans les mémoires de fin d'études.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleEnterRoom('room_north')}
+                    className="mt-4 w-full py-2.5 rounded-xl bg-cyan-600/30 hover:bg-cyan-600 text-cyan-200 hover:text-white font-bold text-xs uppercase transition border border-cyan-500/40 cursor-pointer text-center"
+                  >
+                    {keysUnlocked.north ? "Réexaminer le Labo" : "Infiltrer le Labo"}
+                  </button>
+                </div>
+
+                {/* AILE OUEST: TRIBUNAL ACADÉMIQUE */}
+                <div className={`p-5 rounded-3xl border transition-all duration-200 flex flex-col justify-between ${
+                  keysUnlocked.west 
+                    ? 'bg-emerald-950/40 border-emerald-500/60' 
+                    : 'bg-slate-800/80 hover:bg-slate-800 border-slate-700/80 hover:border-purple-500/50'
+                }`}>
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="p-2.5 rounded-2xl bg-purple-500/20 text-purple-300">
+                        <Scale className="w-5 h-5" />
+                      </span>
+                      {keysUnlocked.west ? (
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Clé Beta Détenue
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-mono text-purple-400 font-bold">AILE OUEST</span>
+                      )}
+                    </div>
+                    <h4 className="font-['Outfit'] text-base font-bold text-white mb-1">
+                      Tribunal du Jury : Triche vs Copilotage
+                    </h4>
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      Distinguez la délégation cognitive passive du véritable accompagnement méthodologique éthique à la barre du conseil.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleEnterRoom('room_west')}
+                    className="mt-4 w-full py-2.5 rounded-xl bg-purple-600/30 hover:bg-purple-600 text-purple-200 hover:text-white font-bold text-xs uppercase transition border border-purple-500/40 cursor-pointer text-center"
+                  >
+                    {keysUnlocked.west ? "Consulter les Archives" : "Participer au Procès"}
+                  </button>
+                </div>
+
+                {/* AILE SUD: DATACENTER & CARBONE */}
+                <div className={`p-5 rounded-3xl border transition-all duration-200 flex flex-col justify-between ${
+                  keysUnlocked.south 
+                    ? 'bg-emerald-950/40 border-emerald-500/60' 
+                    : 'bg-slate-800/80 hover:bg-slate-800 border-slate-700/80 hover:border-emerald-500/50'
+                }`}>
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="p-2.5 rounded-2xl bg-emerald-500/20 text-emerald-300">
+                        <Flame className="w-5 h-5" />
+                      </span>
+                      {keysUnlocked.south ? (
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Clé Gamma Détenue
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-mono text-emerald-400 font-bold">AILE SUD</span>
+                      )}
+                    </div>
+                    <h4 className="font-['Outfit'] text-base font-bold text-white mb-1">
+                      Datacenter Sous-Sol : Climat & RGPD
+                    </h4>
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      Arbitrez entre serveurs géants énergivores et petits modèles locaux souverains tout en protégeant les données étudiantes.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleEnterRoom('room_south')}
+                    className="mt-4 w-full py-2.5 rounded-xl bg-emerald-600/30 hover:bg-emerald-600 text-emerald-200 hover:text-white font-bold text-xs uppercase transition border border-emerald-500/40 cursor-pointer text-center"
+                  >
+                    {keysUnlocked.south ? "Régulation OK" : "Équilibrer le Datacenter"}
+                  </button>
+                </div>
+
+                {/* AILE EST: PROMPT WARS */}
+                <div className={`p-5 rounded-3xl border transition-all duration-200 flex flex-col justify-between ${
+                  keysUnlocked.east 
+                    ? 'bg-emerald-950/40 border-emerald-500/60' 
+                    : 'bg-slate-800/80 hover:bg-slate-800 border-slate-700/80 hover:border-pink-500/50'
+                }`}>
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="p-2.5 rounded-2xl bg-pink-500/20 text-pink-300">
+                        <Zap className="w-5 h-5" />
+                      </span>
+                      {keysUnlocked.east ? (
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Clé Delta Détenue
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-mono text-pink-400 font-bold">AILE EST</span>
+                      )}
+                    </div>
+                    <h4 className="font-['Outfit'] text-base font-bold text-white mb-1">
+                      L'Arène des Réseaux : Prompt Wars
+                    </h4>
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      Combat tactique contre les biais d'entraînement, les bulles de filtres et les stéréotypes avec des cartes de contraintes.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleEnterRoom('room_east')}
+                    className="mt-4 w-full py-2.5 rounded-xl bg-pink-600/30 hover:bg-pink-600 text-pink-200 hover:text-white font-bold text-xs uppercase transition border border-pink-500/40 cursor-pointer text-center"
+                  >
+                    {keysUnlocked.east ? "Arène Pacifiée" : "Défier les Algorithmes"}
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          )}
+
+          {/* ROOM 1: FACT-CHECKING LAB (AILE NORD) */}
+          {currentStage === 'room_north' && (
+            <div className="space-y-4 animate-in fade-in">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                <span className="text-xs font-mono text-cyan-400 font-bold uppercase">Épreuve 1 : Fact-Checking de Mémoire</span>
+                <button 
+                  onClick={() => setCurrentStage('hub')}
+                  className="text-xs text-slate-400 hover:text-white font-mono"
+                >
+                  ← Retour au Hub
+                </button>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-slate-800/90 border border-cyan-500/40 shadow-xl">
+                <h4 className="font-bold text-sm text-cyan-300 mb-2">
+                  Document Suspect : {FACT_CHECK_CASES[0].title}
+                </h4>
+                <div className="p-3.5 rounded-xl bg-slate-950 font-serif text-xs text-slate-300 leading-relaxed border border-slate-800">
+                  {FACT_CHECK_CASES[0].text}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <span className="text-xs font-bold text-slate-300 block">
+                  Identifiez les deux anomalies d'hallucination forgées par l'IA :
+                </span>
+                {FACT_CHECK_CASES[0].anomalies.map(anom => {
+                  const isSelected = factCheckAnomaliesFound.includes(anom.id);
+                  return (
+                    <button
+                      key={anom.id}
+                      onClick={() => {
+                        sounds.playPop();
+                        if (!isSelected) {
+                          const updated = [...factCheckAnomaliesFound, anom.id];
+                          setFactCheckAnomaliesFound(updated);
+                          if (updated.length === 2) {
+                            handleUnlockKey('north', 'Clé Alpha (Esprit Critique)');
+                          }
+                        }
+                      }}
+                      className={`w-full p-3 rounded-xl border text-left text-xs transition cursor-pointer flex items-start justify-between gap-3 ${
+                        isSelected 
+                          ? 'bg-emerald-950/60 border-emerald-500 text-emerald-200' 
+                          : 'bg-slate-800/70 hover:bg-slate-800 border-slate-700 text-slate-200'
+                      }`}
+                    >
+                      <div>
+                        <strong className="block font-bold mb-0.5">{anom.label}</strong>
+                        <span className="text-[11px] text-slate-400">{anom.desc}</span>
+                      </div>
+                      {isSelected && <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {keysUnlocked.north && (
+                <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-xs flex items-center justify-between">
+                  <span>Bravo ! Vous avez prouvé la traçabilité des sources primaires !</span>
+                  <button 
+                    onClick={() => setCurrentStage('hub')}
+                    className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold text-xs"
+                  >
+                    Retourner à la carte
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ROOM 2: TRIBUNAL DU JURY (AILE OUEST) */}
+          {currentStage === 'room_west' && (
+            <div className="space-y-4 animate-in fade-in">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                <span className="text-xs font-mono text-purple-400 font-bold uppercase">Épreuve 2 : Le Procès Académique</span>
+                <button 
+                  onClick={() => setCurrentStage('hub')}
+                  className="text-xs text-slate-400 hover:text-white font-mono"
+                >
+                  ← Retour au Hub
+                </button>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-purple-950/30 border border-purple-500/40">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl">⚖️</span>
+                  <strong className="text-white text-sm">Affaire Julien : Assistance ou Fraude Déguisée ?</strong>
+                </div>
+                <p className="text-xs text-slate-300 leading-relaxed mb-3">
+                  Julien a soumis une analyse financière impeccable en 15 pages. Lors de son oral de soutenance, il est incapable de définir le concept central de son travail.
+                </p>
+
+                <div className="space-y-2 mb-4">
+                  <button
+                    onClick={() => {
+                      sounds.playPop();
+                      setTribunalPlaidoyer('tricherie');
+                      handleUnlockKey('west', 'Clé Beta (Intégrité Académique)');
+                    }}
+                    className={`w-full p-3 rounded-xl border text-left text-xs transition cursor-pointer ${
+                      tribunalPlaidoyer === 'tricherie'
+                        ? 'bg-purple-600 text-white border-purple-400'
+                        : 'bg-slate-800 hover:bg-slate-750 text-slate-200 border-slate-700'
+                    }`}
+                  >
+                    <strong>Verdict A : Délégation cognitive coupable.</strong> L'étudiant n'a pas développé la compétence visée par l'AA ; le texte n'est pas le reflet de son apprentissage.
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      sounds.playBuzzer();
+                      sounds.playGroan();
+                      alert("A.U.R.O.R.E. conteste : Valider une copie générée sans compréhension détruit la valeur du diplôme d'ingénieur/gestionnaire !");
+                    }}
+                    className="w-full p-3 rounded-xl border bg-slate-800 hover:bg-slate-750 text-slate-400 border-slate-700 text-left text-xs cursor-pointer"
+                  >
+                    <strong>Verdict B : Innocent sans réserve.</strong> L'IA est un outil libre, peu importe que l'étudiant comprenne ou non les termes insérés.
+                  </button>
+                </div>
+
+                {keysUnlocked.west && (
+                  <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-xs flex items-center justify-between">
+                    <span>Jugement exemplaire rendu ! L'intégrité de la formation est sauve.</span>
+                    <button 
+                      onClick={() => setCurrentStage('hub')}
+                      className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold text-xs"
+                    >
+                      Retourner au Hub
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ROOM 3: DATACENTER (AILE SUD) */}
+          {currentStage === 'room_south' && (
+            <div className="space-y-4 animate-in fade-in">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                <span className="text-xs font-mono text-emerald-400 font-bold uppercase">Épreuve 3 : Éco-Datacenter & Souveraineté</span>
+                <button 
+                  onClick={() => setCurrentStage('hub')}
+                  className="text-xs text-slate-400 hover:text-white font-mono"
+                >
+                  ← Retour au Hub
+                </button>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/40 space-y-3">
+                <p className="text-xs text-slate-300">
+                  Le datacenter du campus surchauffe sous les requêtes massives envoyées vers des clusters GPU distants pour de simples corrections de conjugaison !
+                </p>
+
+                <div className="grid grid-cols-2 gap-3 text-center">
+                  <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                    <span className="text-[10px] text-slate-400 block">Consommation Énergétique</span>
+                    <strong className="text-base font-mono text-amber-400">{datacenterLoad.carbonWatts} Watts / h</strong>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                    <span className="text-[10px] text-slate-400 block">Modèles Locaux Frugaux (SLM)</span>
+                    <strong className="text-base font-mono text-emerald-400">{datacenterLoad.localSlmUsage}%</strong>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => {
+                    sounds.playPop();
+                    setDatacenterLoad({
+                      cloudGpuUsage: 25,
+                      localSlmUsage: 75,
+                      carbonWatts: 340,
+                      rgpdSafe: true
+                    });
+                    handleUnlockKey('south', 'Clé Gamma (Sobriété Numérique)');
+                  }}
+                  className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase transition shadow-md cursor-pointer"
+                >
+                  ⚡ Basculer sur les SLM Locaux (Gemma/Qwen) & Activer le Pare-Feu RGPD
+                </button>
+
+                {keysUnlocked.south && (
+                  <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-xs flex items-center justify-between">
+                    <span>Empreinte carbone réduite de 76 % ! Données protégées.</span>
+                    <button 
+                      onClick={() => setCurrentStage('hub')}
+                      className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold text-xs"
+                    >
+                      Retourner au Hub
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ROOM 4: PROMPT WARS (AILE EST) */}
+          {currentStage === 'room_east' && (
+            <div className="space-y-4 animate-in fade-in">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                <span className="text-xs font-mono text-pink-400 font-bold uppercase">Épreuve 4 : L'Arène Prompt Wars</span>
+                <button 
+                  onClick={() => setCurrentStage('hub')}
+                  className="text-xs text-slate-400 hover:text-white font-mono"
+                >
+                  ← Retour au Hub
+                </button>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-pink-950/30 border border-pink-500/40 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-rose-300">Bot Propagandiste Biaisé</span>
+                  <span className="font-mono font-bold text-xs text-rose-400">Résistance : {botDefense}%</span>
+                </div>
+                <div className="w-full bg-slate-900 rounded-full h-2.5 overflow-hidden border border-slate-800">
+                  <div className="bg-rose-500 h-full transition-all duration-300" style={{ width: `${botDefense}%` }} />
+                </div>
+
+                <span className="text-xs text-slate-400 block pt-1">
+                  Jouez vos cartes de contraintes méthodologiques pour neutraliser les stéréotypes :
+                </span>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  {promptWarHand.map(card => (
+                    <button
+                      key={card.id}
+                      onClick={() => {
+                        sounds.playPop();
+                        const nextDef = Math.max(0, botDefense - card.power);
+                        setBotDefense(nextDef);
+                        if (nextDef === 0) {
+                          handleUnlockKey('east', 'Clé Delta (Maîtrise des Algorithmes)');
+                        }
+                      }}
+                      className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 border border-pink-500/40 text-left text-xs transition cursor-pointer flex flex-col justify-between"
+                    >
+                      <strong className="text-pink-300 block mb-1">{card.name}</strong>
+                      <span className="text-[10px] text-slate-400 leading-snug">{card.desc}</span>
+                      <span className="mt-2 text-[10px] font-mono font-black text-amber-400 self-end">Impact : -{card.power}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {keysUnlocked.east && (
+                  <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-xs flex items-center justify-between">
+                    <span>Biais désactivés ! L'esprit critique triomphe des automatismes.</span>
+                    <button 
+                      onClick={() => setCurrentStage('hub')}
+                      className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold text-xs"
+                    >
+                      Retourner au Hub
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* BOSS STAGE: L'AMPHI FINAL AVEC A.U.R.O.R.E. */}
+          {currentStage === 'boss' && (
+            <div className="space-y-5 text-center my-auto animate-in zoom-in-95 duration-300">
+              <div className="w-16 h-16 rounded-3xl bg-cyan-500/20 border-2 border-cyan-400 flex items-center justify-center mx-auto shadow-cyan-500/30 shadow-2xl">
+                <Sparkles className="w-8 h-8 text-cyan-300 animate-spin" style={{ animationDuration: '8s' }} />
+              </div>
+
+              <div>
+                <span className="text-xs font-mono text-cyan-400 font-bold uppercase tracking-widest">
+                  Grand Débat Philosophique · Amphithéâtre HECh
+                </span>
+                <h3 className="text-2xl font-['Outfit'] font-black text-white mt-1">
+                  Face-à-Face Décisif avec A.U.R.O.R.E.
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-lg mx-auto">
+                  « Étudiant, vous avez prouvé votre rigueur technique. Mais dites-moi : si l'IA peut rédiger, coder et synthétiser plus vite que vous, quelle est la raison d'être de votre formation ? »
+                </p>
+              </div>
+
+              <div className="space-y-3 max-w-lg mx-auto text-left">
+                <button
+                  onClick={() => {
+                    sounds.playSuccess();
+                    sounds.playVoice('aurore_victory');
+                    setCurrentStage('ending');
+                  }}
+                  className="w-full p-4 rounded-2xl bg-gradient-to-r from-cyan-900/60 to-indigo-900/60 hover:from-cyan-800/80 hover:to-indigo-800/80 border border-cyan-400 text-white text-xs sm:text-sm font-bold shadow-lg transition cursor-pointer"
+                >
+                  🎓 « La valeur de l'humain ne réside pas dans la vitesse d'exécution, mais dans le sens, l'empathie, le doute constructif, la responsabilité éthique et la contextualisation du réel. »
+                </button>
+
+                <button
+                  onClick={() => {
+                    sounds.playBuzzer();
+                    alert("A.U.R.O.R.E. : Réponse défaitiste ! Si vous vous limitez à être un consommateur d'automatismes, vous vous rendez remplaçable.");
+                  }}
+                  className="w-full p-4 rounded-2xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700 text-slate-400 text-xs transition cursor-pointer"
+                >
+                  « En effet, autant laisser les machines tout gérer et ne plus faire d'efforts. »
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* STAGE: VICTOIRE & FINS MULTIPLES */}
+          {currentStage === 'ending' && (
+            <div className="max-w-xl mx-auto my-auto text-center space-y-6 animate-in zoom-in-95">
+              <div className="w-20 h-20 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center mx-auto shadow-emerald-500/40 shadow-2xl">
+                <Award className="w-10 h-10 text-emerald-300" />
+              </div>
+
+              <div>
+                <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-xs font-bold">
+                  DÉLIBÉRATIONS RESTAURÉES · 60 ECTS VALIDÉS
+                </span>
+                <h2 className="text-3xl font-['Outfit'] font-black text-white mt-2">
+                  Victoire : L'Alliance Éclairée !
+                </h2>
+                <p className="text-sm text-slate-300 mt-3 leading-relaxed">
+                  A.U.R.O.R.E. a levé la mise en quarantaine. Convaincue par votre rigueur méthodologique et votre éthique, elle est intégrée au Service d'Accompagnement à la Réussite (SAR) non plus comme un censeur, mais comme un tuteur d'entraînement critique !
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-slate-800/80 border border-slate-700 text-xs text-left grid grid-cols-2 gap-3 font-mono">
+                <div>
+                  <span className="text-slate-400 block">Temps Restant</span>
+                  <strong className="text-emerald-400 text-sm">{formatTimer(timeLeft)}</strong>
+                </div>
+                <div>
+                  <span className="text-slate-400 block">Score d'Esprit Critique</span>
+                  <strong className="text-cyan-400 text-sm">{ethicalScore} / 100 XP</strong>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  sounds.playPop();
+                  if (onClose) onClose();
+                }}
+                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:scale-[1.01] text-slate-950 font-['Outfit'] font-black text-sm uppercase tracking-wide shadow-xl cursor-pointer"
+              >
+                Retourner à la Métabox HECh
+              </button>
+            </div>
+          )}
+
+        </div>
+
+      </div>
+    </div>
+  );
+}
