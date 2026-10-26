@@ -73,7 +73,9 @@ export default function EscapeGameAurore({ onClose }) {
 
   // Audio & Timer
   useEffect(() => {
-    sounds.playVoice('aurore_intro');
+    sounds.playVoice('doyen_alert_intro', () => {
+      setTimeout(() => sounds.playVoice('aurore_intro_hd'), 600);
+    });
   }, []);
 
   useEffect(() => {
@@ -100,7 +102,15 @@ export default function EscapeGameAurore({ onClose }) {
 
   const handleEnterRoom = (roomKey) => {
     sounds.playPop();
-    sounds.playVoice(`aurore_${roomKey}`);
+    const voiceMapping = {
+      'room_north': 'aurore_factcheck_challenge',
+      'room_west': 'julien_temoignage_tribunal',
+      'room_south': 'aurore_datacenter_challenge',
+      'room_east': 'aurore_promptwars_challenge',
+      'boss': 'aurore_boss_philosophie'
+    };
+    const voiceKey = voiceMapping[roomKey] || `aurore_${roomKey}`;
+    sounds.playVoice(voiceKey);
     setCurrentStage(roomKey);
   };
 
