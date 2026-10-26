@@ -51,9 +51,15 @@ class SoundManager {
     return this.muted;
   }
 
-  // --- Joueur Audio MP3 avec mise en cache ---
+  // --- Joueur Audio MP3 avec mise en cache & Anti-Superposition ---
   playAudioFile(path, volume = 1.0, loop = false) {
     if (this.muted) return null;
+
+    // Si c'est une piste de voix, couper immédiatement toute autre voix en cours
+    const isVoiceTrack = path.includes('/voices/') || path.includes('voice') || path.includes('tribunal_') || path.includes('aurore_');
+    if (isVoiceTrack) {
+      this.stopAllVoice();
+    }
 
     try {
       let audio = this.audioCache.get(path);
@@ -63,6 +69,11 @@ class SoundManager {
       } else {
         audio.currentTime = 0;
       }
+
+      if (isVoiceTrack) {
+        this.currentVoiceAudio = audio;
+      }
+
       audio.volume = Math.max(0, Math.min(1, volume));
       audio.loop = loop;
       const playPromise = audio.play();
@@ -115,6 +126,7 @@ class SoundManager {
   }
 
   stopAllVoice() {
+    // 1. Stopper la voix active
     if (this.currentVoiceAudio) {
       try {
         this.currentVoiceAudio.pause();
@@ -122,6 +134,20 @@ class SoundManager {
       } catch {}
       this.currentVoiceAudio = null;
     }
+
+    // 2. Stopper tous les audios de voix mis en cache dans le Map
+    if (this.audioCache) {
+      this.audioCache.forEach((audio, key) => {
+        if (key.includes('/voices/') || key.includes('voice') || key.includes('tribunal_') || key.includes('aurore_')) {
+          try {
+            audio.pause();
+            audio.currentTime = 0;
+          } catch {}
+        }
+      });
+    }
+
+    // 3. Annuler toute synthèse vocale Web Speech en cours
     if ('speechSynthesis' in window) {
       try {
         window.speechSynthesis.cancel();

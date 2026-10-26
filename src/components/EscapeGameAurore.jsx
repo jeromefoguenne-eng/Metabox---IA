@@ -29,7 +29,7 @@ import confetti from 'canvas-confetti';
 import PixarStyleScene3D from './PixarStyleScene3D';
 import CampusRivageoisMap from './CampusRivageoisMap';
 import GameInvestigationOS from './GameInvestigationOS';
-import GameTribunal3D from './GameTribunal3D';
+import GameGrandProcesHacking from './GameGrandProcesHacking';
 import GameSurvivantNovel from './GameSurvivantNovel';
 import GamePromptWarsDeck from './GamePromptWarsDeck';
 import { sounds } from '../utils/soundEffects';
@@ -126,7 +126,14 @@ export default function EscapeGameAurore({ onClose }) {
 
   const [transitionVideo, setTransitionVideo] = useState(null);
 
+  const handleBackToHub = () => {
+    sounds.stopAllVoice();
+    sounds.playPop();
+    setCurrentStage('hub');
+  };
+
   const handleEnterRoom = (roomKey) => {
+    sounds.stopAllVoice();
     sounds.playPop();
 
     const videoMapping = {
@@ -147,15 +154,21 @@ export default function EscapeGameAurore({ onClose }) {
       setCurrentStage(roomKey);
     }
 
+    // Gestion stricte des voix sans chevauchement
     const voiceMapping = {
       'room_north': 'aurore_factcheck_challenge',
-      'room_west': 'julien_temoignage_tribunal',
+      // Pour le tribunal, la voix est gérée en interne par la scène 3D
       'room_south': 'aurore_datacenter_challenge',
       'room_east': 'aurore_promptwars_challenge',
       'boss': 'aurore_boss_philosophie'
     };
-    const voiceKey = voiceMapping[roomKey] || `aurore_${roomKey}`;
-    setTimeout(() => sounds.playVoice(voiceKey), targetVid ? 2200 : 200);
+    const voiceKey = voiceMapping[roomKey];
+    if (voiceKey) {
+      setTimeout(() => {
+        sounds.stopAllVoice();
+        sounds.playVoice(voiceKey);
+      }, targetVid ? 2950 : 200);
+    }
   };
 
   const handleUnlockKey = (wingKey, keyName) => {
@@ -356,7 +369,7 @@ export default function EscapeGameAurore({ onClose }) {
                       : 'bg-slate-800/70 hover:bg-slate-800 border-slate-700 text-slate-300'
                   }`}
                 >
-                  <span className="text-sm font-bold block">2. Tribunal Jury 2030</span>
+                  <span className="text-sm font-bold block">2. Procès Blackout 24h</span>
                   <span className="text-[10px] font-mono">{keysUnlocked.west ? "Clé Beta ✓" : "Rue Rivageois"}</span>
                 </div>
 
@@ -395,7 +408,7 @@ export default function EscapeGameAurore({ onClose }) {
                   AILE NORD (QUAI DE ROME) · LA RÉDACTION FANTÔME
                 </span>
                 <button 
-                  onClick={() => setCurrentStage('hub')}
+                  onClick={handleBackToHub}
                   className="text-xs text-slate-400 hover:text-white font-mono cursor-pointer"
                 >
                   ← Carte du Campus
@@ -417,10 +430,10 @@ export default function EscapeGameAurore({ onClose }) {
             <div className="space-y-3 animate-in fade-in h-full flex flex-col">
               <div className="flex items-center justify-between pb-2 border-b border-slate-800">
                 <span className="text-xs font-mono text-purple-400 font-bold uppercase">
-                  AILE OUEST (RUE DES RIVAGEOIS) · PROCÈS 2030 : L'IA À LA BARRE
+                  AILE OUEST (RUE DES RIVAGEOIS) · LE GRAND PROCÈS : L'AFFAIRE DU BLACKOUT 24H
                 </span>
                 <button 
-                  onClick={() => setCurrentStage('hub')}
+                  onClick={handleBackToHub}
                   className="text-xs text-slate-400 hover:text-white font-mono cursor-pointer"
                 >
                   ← Carte du Campus
@@ -428,9 +441,9 @@ export default function EscapeGameAurore({ onClose }) {
               </div>
 
               <div className="flex-1">
-                <GameTribunal3D 
+                <GameGrandProcesHacking 
                   onComplete={() => {
-                    handleUnlockKey('west', 'Clé Beta (Intégrité Académique)');
+                    handleUnlockKey('west', 'Clé Beta (Intégrité & Éthique Académique)');
                   }}
                 />
               </div>
@@ -445,7 +458,7 @@ export default function EscapeGameAurore({ onClose }) {
                   AILE SUD (SOUS-SOLS & FAILLE VITRÉE) · LE GUIDE DU SURVIVANT CONNECTÉ
                 </span>
                 <button 
-                  onClick={() => setCurrentStage('hub')}
+                  onClick={handleBackToHub}
                   className="text-xs text-slate-400 hover:text-white font-mono cursor-pointer"
                 >
                   ← Carte du Campus
@@ -470,7 +483,7 @@ export default function EscapeGameAurore({ onClose }) {
                   AILE EST (COUR DU VIEUX HÊTRE) · PROMPT WARS : DUEL D'ESPRIT CRITIQUE
                 </span>
                 <button 
-                  onClick={() => setCurrentStage('hub')}
+                  onClick={handleBackToHub}
                   className="text-xs text-slate-400 hover:text-white font-mono cursor-pointer"
                 >
                   ← Carte du Campus

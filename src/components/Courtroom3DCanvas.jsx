@@ -16,10 +16,12 @@ import { sounds } from '../utils/soundEffects';
  */
 export default function Courtroom3DCanvas({
   currentCaseIdx = 0,
-  witnessState = 'idle', // 'idle' | 'speaking' | 'stressed' | 'broken'
-  judgeState = 'idle',   // 'idle' | 'speaking' | 'gavel'
+  witnessState = 'idle',     // 'idle' | 'speaking' | 'stressed' | 'broken' | 'confident'
+  prosecutorState = 'idle',  // 'idle' | 'speaking' | 'attacking'
+  defenseState = 'idle',     // 'idle' | 'pleading'
+  judgeState = 'idle',       // 'idle' | 'speaking' | 'gavel'
   onGavelComplete,
-  cameraView = 'TV_WIDE', // 'TV_WIDE' | 'JUDGE' | 'WITNESS' | 'DEFENSE' | 'PROSECUTION'
+  cameraView = 'TV_WIDE',    // 'TV_WIDE' | 'JUDGE' | 'WITNESS' | 'DEFENSE' | 'PROSECUTION'
   onCameraChange
 }) {
   const mountRef = useRef(null);
@@ -35,6 +37,10 @@ export default function Courtroom3DCanvas({
   const witnessHeadRef = useRef(null);
   const witnessLeftArmRef = useRef(null);
   const witnessRightArmRef = useRef(null);
+  const prosArmRef = useRef(null);
+  const prosHeadRef = useRef(null);
+  const defArmRef = useRef(null);
+  const defHeadRef = useRef(null);
   const holoScreenRef = useRef(null);
   const shockwaveRef = useRef(null);
   const sweatParticlesRef = useRef([]);
@@ -51,8 +57,8 @@ export default function Courtroom3DCanvas({
     TV_WIDE: { pos: [0, 5.8, 11.5], look: [0, 2.2, 0] },
     JUDGE: { pos: [0, 3.8, 4.5], look: [0, 4.2, -4.5] },
     WITNESS: { pos: [0, 2.4, 3.8], look: [0, 2.1, 0] },
-    DEFENSE: { pos: [4.2, 3.2, 3.2], look: [-0.5, 2.2, 0] },
-    PROSECUTION: { pos: [-4.2, 3.2, 3.2], look: [0.5, 2.2, 0] }
+    DEFENSE: { pos: [3.8, 2.9, 3.2], look: [-1.2, 2.2, -1.0] },
+    PROSECUTION: { pos: [-3.8, 2.9, 3.2], look: [1.2, 2.2, -1.0] }
   };
 
   useEffect(() => {
@@ -329,27 +335,52 @@ export default function Courtroom3DCanvas({
     defBench.rotation.y = -Math.PI / 6;
     scene.add(defBench);
 
-    // Avocat de la Défense
-    const defLawyer = new THREE.Mesh(new THREE.BoxGeometry(0.55, 1.2, 0.4), new THREE.MeshStandardMaterial({ color: 0x475569 }));
-    defLawyer.position.set(4.5, 1.35, -0.2);
-    scene.add(defLawyer);
-    const defHead = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.45, 0.4), skinTone);
-    defHead.position.set(4.5, 2.15, -0.2);
-    scene.add(defHead);
+    // Avocat de la Défense (Joueur)
+    const defGroup = new THREE.Group();
+    defGroup.position.set(4.3, 0, -0.2);
+    defGroup.rotation.y = -Math.PI / 6;
 
-    // 10. Banc de l'Accusation / Ministère Public (À Gauche)
+    const defLawyer = new THREE.Mesh(new THREE.BoxGeometry(0.55, 1.2, 0.4), new THREE.MeshStandardMaterial({ color: 0x475569 }));
+    defLawyer.position.y = 1.35;
+    defGroup.add(defLawyer);
+
+    const defHead = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.45, 0.4), skinTone);
+    defHead.position.y = 2.15;
+    defGroup.add(defHead);
+    defHeadRef.current = defHead;
+
+    const defArm = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.65, 0.18), new THREE.MeshStandardMaterial({ color: 0x475569 }));
+    defArm.position.set(-0.35, 1.4, 0.1);
+    defGroup.add(defArm);
+    defArmRef.current = defArm;
+
+    scene.add(defGroup);
+
+    // 10. Banc de l'Accusation / Procureur du Roi (À Gauche)
     const prosBench = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.1, 1.2), woodMahogany);
     prosBench.position.set(-4.5, 0.55, 0.5);
     prosBench.rotation.y = Math.PI / 6;
     scene.add(prosBench);
 
-    // Procureur / Délégué intégrité
+    const prosGroup = new THREE.Group();
+    prosGroup.position.set(-4.3, 0, -0.2);
+    prosGroup.rotation.y = Math.PI / 6;
+
     const prosLawyer = new THREE.Mesh(new THREE.BoxGeometry(0.55, 1.2, 0.4), new THREE.MeshStandardMaterial({ color: 0x1e1b4b }));
-    prosLawyer.position.set(-4.5, 1.35, -0.2);
-    scene.add(prosLawyer);
+    prosLawyer.position.y = 1.35;
+    prosGroup.add(prosLawyer);
+
     const prosHead = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.45, 0.4), skinTone);
-    prosHead.position.set(-4.5, 2.15, -0.2);
-    scene.add(prosHead);
+    prosHead.position.y = 2.15;
+    prosGroup.add(prosHead);
+    prosHeadRef.current = prosHead;
+
+    const prosArm = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.65, 0.18), new THREE.MeshStandardMaterial({ color: 0x1e1b4b }));
+    prosArm.position.set(0.35, 1.4, 0.1);
+    prosGroup.add(prosArm);
+    prosArmRef.current = prosArm;
+
+    scene.add(prosGroup);
 
     // 11. Écran Holographique 3D Flottant (Pour projeter les preuves et les données)
     const holoGroup = new THREE.Group();
@@ -467,11 +498,11 @@ export default function Courtroom3DCanvas({
               witnessGroup.position.z + 0.3
             );
           });
-        } else if (witnessState === 'speaking') {
-          // Gesticulation d'explication
+        } else if (witnessState === 'speaking' || witnessState === 'confident') {
+          // Gesticulation d'explication ou assurance
           witnessHeadRef.current.rotation.y = Math.sin(elapsedTime * 3) * 0.15;
           witnessHeadRef.current.rotation.x = Math.sin(elapsedTime * 4) * 0.08;
-          witnessRightArmRef.current.rotation.x = -0.5 + Math.sin(elapsedTime * 4) * 0.25;
+          witnessRightArmRef.current.rotation.x = -0.4 + Math.sin(elapsedTime * 4) * 0.2;
           sweatParticlesRef.current.forEach(drop => (drop.visible = false));
         } else {
           // Respiration calme
@@ -479,6 +510,32 @@ export default function Courtroom3DCanvas({
           witnessLeftArmRef.current.rotation.set(0, 0, 0);
           witnessRightArmRef.current.rotation.set(0, 0, 0);
           sweatParticlesRef.current.forEach(drop => (drop.visible = false));
+        }
+      }
+
+      // Animation du Procureur du Roi
+      if (prosArmRef.current && prosHeadRef.current) {
+        if (prosecutorState === 'attacking' || prosecutorState === 'speaking') {
+          // Pointage agressif vers le prévenu / défense
+          prosArmRef.current.rotation.x = -1.2 + Math.sin(elapsedTime * 5) * 0.25;
+          prosArmRef.current.rotation.z = -0.3;
+          prosHeadRef.current.rotation.y = Math.PI / 4 + Math.sin(elapsedTime * 4) * 0.12;
+        } else {
+          prosArmRef.current.rotation.set(0, 0, 0);
+          prosHeadRef.current.rotation.set(0, 0, 0);
+        }
+      }
+
+      // Animation de l'Avocat de la Défense (Joueur)
+      if (defArmRef.current && defHeadRef.current) {
+        if (defenseState === 'pleading') {
+          // Geste solennel vers le juge
+          defArmRef.current.rotation.x = -1.4 + Math.sin(elapsedTime * 3.5) * 0.18;
+          defArmRef.current.rotation.z = 0.3;
+          defHeadRef.current.rotation.y = -Math.PI / 4 + Math.sin(elapsedTime * 3) * 0.08;
+        } else {
+          defArmRef.current.rotation.set(0, 0, 0);
+          defHeadRef.current.rotation.set(0, 0, 0);
         }
       }
 
