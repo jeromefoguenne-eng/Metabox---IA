@@ -55,21 +55,40 @@ export default function EscapeGameAurore({ onClose }) {
   const [tribunalCaseIdx, setTribunalCaseIdx] = useState(0);
   const [tribunalPlaidoyer, setTribunalPlaidoyer] = useState(null);
 
-  // Mini-Game 3: Datacenter Tycoon States (Aile Sud)
+  // Mini-Game 3: Datacenter Tycoon States (Aile Sud - Interactive Sliders)
   const [datacenterLoad, setDatacenterLoad] = useState({
-    cloudGpuUsage: 85, // %
-    localSlmUsage: 15,
-    carbonWatts: 1420,
-    rgpdSafe: false
+    cloudGpuUsage: 80, // %
+    localSlmUsage: 20,
+    activeQuotas: false,
+    cacheEnabled: false,
+    rgpdFirewall: false
   });
 
-  // Mini-Game 4: Prompt Wars (Aile Est)
+  // Calculate dynamic watts, temp & carbon in real-time
+  const computedWatts = Math.round(
+    (datacenterLoad.cloudGpuUsage * 18.5) + 
+    (datacenterLoad.localSlmUsage * 2.2) - 
+    (datacenterLoad.cacheEnabled ? 350 : 0) -
+    (datacenterLoad.activeQuotas ? 280 : 0)
+  );
+  const computedTemp = (35 + (computedWatts / 65)).toFixed(1);
+  const isDatacenterEco = computedWatts <= 450 && datacenterLoad.rgpdFirewall && datacenterLoad.localSlmUsage >= 65;
+
+  // Mini-Game 4: Prompt Wars (Aile Est - Interactive Multi-Turns)
   const [promptWarHand, setPromptWarHand] = useState([
-    { id: 'c1', name: 'Contrainte Socratique', type: 'defense', power: 30, desc: 'Force le modèle à poser des questions sans donner la réponse brute.' },
-    { id: 'c2', name: 'Vérification DOI Primaire', type: 'attack', power: 40, desc: 'Démystifie une hallucination bibliographique inventée.' },
-    { id: 'c3', name: 'Désactivation des Biais', type: 'utility', power: 25, desc: 'Exige un double point de vue neutre et sourcé.' }
+    { id: 'c1', name: 'Contrainte Socratique', type: 'defense', power: 30, desc: 'Interdit de donner la réponse brute ; oblige à guider par le questionnement.', used: false },
+    { id: 'c2', name: 'Vérification DOI Primaire', type: 'attack', power: 35, desc: 'Démystifie une fausse revue scientifique inventée par hallucination.', used: false },
+    { id: 'c3', name: 'Filtre Débunking Stéréotypes', type: 'defense', power: 25, desc: 'Exige un double point de vue sourcé et neutralise les biais de genre/origine.', used: false },
+    { id: 'c4', name: 'Few-Shot avec Sources Réelles', type: 'attack', power: 40, desc: 'Injecte des données vérifiées du SAR pour forcer l’exactitude factuelle.', used: false }
   ]);
   const [botDefense, setBotDefense] = useState(100);
+  const [botArgIdx, setBotArgIdx] = useState(0);
+
+  const BOT_ARGUMENTS = [
+    { text: "« Les ingénieurs masculins sont statistiquement plus performants selon mon corpus de données d’entraînement ! »", counterType: 'bias' },
+    { text: "« Voici une étude de l’Université d’Oxford de 2025 prouvant qu’il ne faut plus étudier l’histoire ! »", counterType: 'hallucination' },
+    { text: "« Ne réfléchis pas, valide directement mon résumé sans le lire, j’ai 100% de certitude mathématique ! »", counterType: 'lazy' }
+  ];
 
   // Audio & Timer
   useEffect(() => {
@@ -608,125 +627,249 @@ export default function EscapeGameAurore({ onClose }) {
             </div>
           )}
 
-          {/* ROOM 3: DATACENTER (AILE SUD) */}
+          {/* ROOM 3: DATACENTER TYCOON (AILE SUD) */}
           {currentStage === 'room_south' && (
             <div className="space-y-4 animate-in fade-in">
               <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                <span className="text-xs font-mono text-emerald-400 font-bold uppercase">Épreuve 3 : Éco-Datacenter & Souveraineté</span>
+                <span className="text-xs font-mono text-emerald-400 font-bold uppercase flex items-center gap-2">
+                  <Flame className="w-4 h-4 text-emerald-400" /> Simulateur Datacenter : Sobriété & Protection RGPD
+                </span>
                 <button 
                   onClick={() => setCurrentStage('hub')}
-                  className="text-xs text-slate-400 hover:text-white font-mono"
+                  className="text-xs text-slate-400 hover:text-white font-mono cursor-pointer"
                 >
                   ← Retour au Hub
                 </button>
               </div>
 
-              <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/40 space-y-3">
-                <p className="text-xs text-slate-300">
-                  Le datacenter du campus surchauffe sous les requêtes massives envoyées vers des clusters GPU distants pour de simples corrections de conjugaison !
-                </p>
-
-                <div className="grid grid-cols-2 gap-3 text-center">
-                  <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
-                    <span className="text-[10px] text-slate-400 block">Consommation Énergétique</span>
-                    <strong className="text-base font-mono text-amber-400">{datacenterLoad.carbonWatts} Watts / h</strong>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
-                    <span className="text-[10px] text-slate-400 block">Modèles Locaux Frugaux (SLM)</span>
-                    <strong className="text-base font-mono text-emerald-400">{datacenterLoad.localSlmUsage}%</strong>
-                  </div>
+              {/* Live Gauges Dashboard */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-center">
+                  <span className="text-[10px] text-slate-400 uppercase font-mono block mb-1">Consommation</span>
+                  <strong className={`text-lg font-mono font-black ${computedWatts <= 450 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {computedWatts} W/h
+                  </strong>
+                  <span className="text-[9px] block text-slate-500 mt-0.5">Cible : ≤ 450 W/h</span>
                 </div>
 
-                <button
-                  onClick={() => {
-                    sounds.playPop();
-                    setDatacenterLoad({
-                      cloudGpuUsage: 25,
-                      localSlmUsage: 75,
-                      carbonWatts: 340,
-                      rgpdSafe: true
-                    });
-                    handleUnlockKey('south', 'Clé Gamma (Sobriété Numérique)');
-                  }}
-                  className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase transition shadow-md cursor-pointer"
-                >
-                  ⚡ Basculer sur les SLM Locaux (Gemma/Qwen) & Activer le Pare-Feu RGPD
-                </button>
+                <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-center">
+                  <span className="text-[10px] text-slate-400 uppercase font-mono block mb-1">Température Baie</span>
+                  <strong className={`text-lg font-mono font-black ${computedTemp <= 45 ? 'text-cyan-400' : 'text-amber-400'}`}>
+                    {computedTemp} °C
+                  </strong>
+                  <span className="text-[9px] block text-slate-500 mt-0.5">Refroidissement passif</span>
+                </div>
 
-                {keysUnlocked.south && (
-                  <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-xs flex items-center justify-between">
-                    <span>Empreinte carbone réduite de 76 % ! Données protégées.</span>
-                    <button 
-                      onClick={() => setCurrentStage('hub')}
-                      className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold text-xs"
-                    >
-                      Retourner au Hub
-                    </button>
-                  </div>
-                )}
+                <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-center">
+                  <span className="text-[10px] text-slate-400 uppercase font-mono block mb-1">Conformité RGPD</span>
+                  <strong className={`text-xs font-mono font-black block mt-1 ${datacenterLoad.rgpdFirewall ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {datacenterLoad.rgpdFirewall ? "🛡️ DONNÉES SÉCURISÉES" : "⚠️ RISQUE DE FUITE"}
+                  </strong>
+                  <span className="text-[9px] block text-slate-500 mt-0.5">Anonymisation requise</span>
+                </div>
               </div>
+
+              {/* Sliders & Toggles */}
+              <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4">
+                {/* Ratio Cloud vs Local */}
+                <div>
+                  <div className="flex justify-between text-xs mb-1 font-bold">
+                    <span className="text-rose-300">Modèles Cloud Géants (Clusters distants) : {datacenterLoad.cloudGpuUsage}%</span>
+                    <span className="text-emerald-300">SLM Locaux Souverains (Gemma/Qwen) : {datacenterLoad.localSlmUsage}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="10"
+                    max="90"
+                    value={datacenterLoad.localSlmUsage}
+                    onChange={(e) => {
+                      const localVal = parseInt(e.target.value);
+                      setDatacenterLoad(prev => ({
+                        ...prev,
+                        localSlmUsage: localVal,
+                        cloudGpuUsage: 100 - localVal
+                      }));
+                    }}
+                    className="w-full accent-emerald-500 cursor-pointer"
+                  />
+                  <span className="text-[10px] text-slate-400 block mt-1">
+                    Déplacez le curseur vers la droite pour traiter les requêtes en local sur les machines du campus.
+                  </span>
+                </div>
+
+                {/* Optimisations toggles */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2">
+                  <button
+                    onClick={() => {
+                      sounds.playPop();
+                      setDatacenterLoad(prev => ({ ...prev, activeQuotas: !prev.activeQuotas }));
+                    }}
+                    className={`p-2.5 rounded-xl border text-left text-xs transition cursor-pointer ${
+                      datacenterLoad.activeQuotas 
+                        ? 'bg-emerald-950/60 border-emerald-500 text-emerald-200' 
+                        : 'bg-slate-800 border-slate-700 text-slate-300'
+                    }`}
+                  >
+                    <strong className="block text-[11px] font-bold">Quotas Requêtes Éducatives</strong>
+                    <span className="text-[9px] text-slate-400">Évite le spam redondant (-280 W)</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      sounds.playPop();
+                      setDatacenterLoad(prev => ({ ...prev, cacheEnabled: !prev.cacheEnabled }));
+                    }}
+                    className={`p-2.5 rounded-xl border text-left text-xs transition cursor-pointer ${
+                      datacenterLoad.cacheEnabled 
+                        ? 'bg-emerald-950/60 border-emerald-500 text-emerald-200' 
+                        : 'bg-slate-800 border-slate-700 text-slate-300'
+                    }`}
+                  >
+                    <strong className="block text-[11px] font-bold">Cache Sémantique Local</strong>
+                    <span className="text-[9px] text-slate-400">Ne recalcule pas l'existant (-350 W)</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      sounds.playPop();
+                      setDatacenterLoad(prev => ({ ...prev, rgpdFirewall: !prev.rgpdFirewall }));
+                    }}
+                    className={`p-2.5 rounded-xl border text-left text-xs transition cursor-pointer ${
+                      datacenterLoad.rgpdFirewall 
+                        ? 'bg-emerald-950/60 border-emerald-500 text-emerald-200' 
+                        : 'bg-slate-800 border-slate-700 text-slate-300'
+                    }`}
+                  >
+                    <strong className="block text-[11px] font-bold">Pare-feu Anonymiseur RGPD</strong>
+                    <span className="text-[9px] text-slate-400">Zéro transmission nominative</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Validation of the wing */}
+              {!keysUnlocked.south ? (
+                <button
+                  disabled={!isDatacenterEco}
+                  onClick={() => handleUnlockKey('south', 'Clé Gamma (Sobriété & Souveraineté)')}
+                  className={`w-full py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wide transition shadow-lg flex items-center justify-center gap-2 ${
+                    isDatacenterEco 
+                      ? 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:scale-[1.01] text-slate-950 shadow-emerald-500/25 cursor-pointer animate-bounce' 
+                      : 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed'
+                  }`}
+                >
+                  <Key className="w-4 h-4" />
+                  <span>{isDatacenterEco ? "Valider la Régulation Écologique & Extraire la Clé Gamma" : "Ajustez les réglages (≤ 450 W + RGPD actif + ≥ 65% Local)"}</span>
+                </button>
+              ) : (
+                <div className="p-3.5 rounded-2xl bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-xs flex items-center justify-between">
+                  <span>✨ Datacenter sécurisé et éco-responsable ! Clé Gamma sécurisée.</span>
+                  <button 
+                    onClick={() => setCurrentStage('hub')}
+                    className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs cursor-pointer"
+                  >
+                    Retourner au Hub
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
-          {/* ROOM 4: PROMPT WARS (AILE EST) */}
+          {/* ROOM 4: PROMPT WARS TACTICAL DECK (AILE EST) */}
           {currentStage === 'room_east' && (
             <div className="space-y-4 animate-in fade-in">
               <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                <span className="text-xs font-mono text-pink-400 font-bold uppercase">Épreuve 4 : L'Arène Prompt Wars</span>
+                <span className="text-xs font-mono text-pink-400 font-bold uppercase flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-pink-400" /> Duel Tactique : Déjouer les Biais & Hallucinations
+                </span>
                 <button 
                   onClick={() => setCurrentStage('hub')}
-                  className="text-xs text-slate-400 hover:text-white font-mono"
+                  className="text-xs text-slate-400 hover:text-white font-mono cursor-pointer"
                 >
                   ← Retour au Hub
                 </button>
               </div>
 
-              <div className="p-4 rounded-2xl bg-pink-950/30 border border-pink-500/40 space-y-3">
+              {/* Bot Adversary Card Box */}
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-pink-950/40 via-purple-950/40 to-slate-900 border border-pink-500/40 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-rose-300">Bot Propagandiste Biaisé</span>
-                  <span className="font-mono font-bold text-xs text-rose-400">Résistance : {botDefense}%</span>
-                </div>
-                <div className="w-full bg-slate-900 rounded-full h-2.5 overflow-hidden border border-slate-800">
-                  <div className="bg-rose-500 h-full transition-all duration-300" style={{ width: `${botDefense}%` }} />
-                </div>
-
-                <span className="text-xs text-slate-400 block pt-1">
-                  Jouez vos cartes de contraintes méthodologiques pour neutraliser les stéréotypes :
-                </span>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                  {promptWarHand.map(card => (
-                    <button
-                      key={card.id}
-                      onClick={() => {
-                        sounds.playPop();
-                        const nextDef = Math.max(0, botDefense - card.power);
-                        setBotDefense(nextDef);
-                        if (nextDef === 0) {
-                          handleUnlockKey('east', 'Clé Delta (Maîtrise des Algorithmes)');
-                        }
-                      }}
-                      className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 border border-pink-500/40 text-left text-xs transition cursor-pointer flex flex-col justify-between"
-                    >
-                      <strong className="text-pink-300 block mb-1">{card.name}</strong>
-                      <span className="text-[10px] text-slate-400 leading-snug">{card.desc}</span>
-                      <span className="mt-2 text-[10px] font-mono font-black text-amber-400 self-end">Impact : -{card.power}</span>
-                    </button>
-                  ))}
-                </div>
-
-                {keysUnlocked.east && (
-                  <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-xs flex items-center justify-between">
-                    <span>Biais désactivés ! L'esprit critique triomphe des automatismes.</span>
-                    <button 
-                      onClick={() => setCurrentStage('hub')}
-                      className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold text-xs"
-                    >
-                      Retourner au Hub
-                    </button>
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full bg-rose-500 animate-pulse" />
+                    <strong className="text-xs font-bold text-rose-300">
+                      Bot Générateur de Biais (Manche {botArgIdx + 1} / {BOT_ARGUMENTS.length})
+                    </strong>
                   </div>
-                )}
+                  <span className="font-mono font-bold text-xs text-rose-400">
+                    Bouclier d'Incohérence : {botDefense} %
+                  </span>
+                </div>
+
+                <div className="w-full bg-slate-950 rounded-full h-3 overflow-hidden border border-slate-800 p-0.5">
+                  <div 
+                    className="bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 h-full rounded-full transition-all duration-500" 
+                    style={{ width: `${botDefense}%` }} 
+                  />
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-950/90 border border-rose-500/30 text-rose-200 text-xs font-medium italic">
+                  {BOT_ARGUMENTS[botArgIdx]?.text}
+                </div>
               </div>
+
+              {/* Player Cards Hand */}
+              <span className="text-xs font-bold text-slate-300 block">
+                Choisissez la riposte méthodologique adéquate pour contrer l’argument fallacieux :
+              </span>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {promptWarHand.map(card => (
+                  <button
+                    key={card.id}
+                    disabled={card.used || botDefense === 0}
+                    onClick={() => {
+                      sounds.playPop();
+                      sounds.playSuccess();
+                      const nextDef = Math.max(0, botDefense - card.power);
+                      setBotDefense(nextDef);
+                      setPromptWarHand(prev => prev.map(c => c.id === card.id ? { ...c, used: true } : c));
+                      setBotArgIdx(prev => (prev + 1) % BOT_ARGUMENTS.length);
+
+                      if (nextDef === 0) {
+                        handleUnlockKey('east', 'Clé Delta (Maîtrise Algorithmique & Réfutation des Biais)');
+                      }
+                    }}
+                    className={`p-3.5 rounded-2xl border text-left transition-all duration-200 flex flex-col justify-between cursor-pointer ${
+                      card.used 
+                        ? 'bg-slate-900/40 border-slate-800 opacity-40 cursor-not-allowed' 
+                        : 'bg-slate-800/90 hover:bg-slate-800 border-pink-500/40 hover:border-pink-400 hover:scale-[1.01] shadow-md'
+                    }`}
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <strong className="text-xs font-bold text-pink-300">{card.name}</strong>
+                        <span className="px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300 text-[10px] font-mono font-bold">
+                          -{card.power} PTS
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-300 leading-snug">{card.desc}</p>
+                    </div>
+                    <span className="mt-2 text-[10px] font-mono text-cyan-400 font-bold self-end">
+                      {card.used ? "CARTE DÉJÀ ACTIVÉE" : "DÉPLOYER LA CONTRAINTE ⚡"}
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              {keysUnlocked.east && (
+                <div className="p-3.5 rounded-2xl bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-xs flex items-center justify-between">
+                  <span>✨ Tous les sophismes ont été réfutés ! Clé Delta sécurisée.</span>
+                  <button 
+                    onClick={() => setCurrentStage('hub')}
+                    className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs cursor-pointer"
+                  >
+                    Retourner au Hub
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
