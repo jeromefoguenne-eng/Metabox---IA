@@ -271,45 +271,54 @@ export default function Courtroom3DCanvas({
     const dustParticles = new THREE.Points(dustGeo, dustMat);
     scene.add(dustParticles);
 
-    // 3. Matériaux Partagés Haute Définition
+    // 3. Matériaux Partagés Haute Définition & Rendu PBR
     const parquetTex = createParquetTexture();
     const marbleTex = createMarbleTexture();
     const mahoganyTex = createMahoganyTexture();
 
     const woodMahogany = new THREE.MeshStandardMaterial({ 
       map: mahoganyTex, 
-      roughness: 0.32, 
+      roughness: 0.30, 
       metalness: 0.12 
     });
     const marblePillar = new THREE.MeshStandardMaterial({ 
       map: marbleTex, 
-      roughness: 0.22, 
+      roughness: 0.20, 
       metalness: 0.18 
     });
-    const woodLight = new THREE.MeshStandardMaterial({ color: 0x854d0e, roughness: 0.38, metalness: 0.08 });
+    const woodLight = new THREE.MeshStandardMaterial({ color: 0x854d0e, roughness: 0.35, metalness: 0.08 });
     const woodDarkOak = new THREE.MeshStandardMaterial({ 
       map: mahoganyTex, 
       color: 0x24120c, 
-      roughness: 0.45, 
+      roughness: 0.42, 
       metalness: 0.1 
     });
     const floorParquet = new THREE.MeshStandardMaterial({ 
       map: parquetTex, 
-      roughness: 0.2, 
-      metalness: 0.28 
+      roughness: 0.18, 
+      metalness: 0.25 
     });
-    const goldMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.18, metalness: 0.95 });
-    const clothBlack = new THREE.MeshStandardMaterial({ color: 0x080c14, roughness: 0.85, metalness: 0.05 });
+    const goldMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.18, metalness: 0.92 });
+    const clothBlack = new THREE.MeshStandardMaterial({ color: 0x0a0f1d, roughness: 0.82, metalness: 0.04 });
     const clothWhite = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.5 });
-    const clothRed = new THREE.MeshStandardMaterial({ color: 0x991b1b, roughness: 0.3, metalness: 0.1 });
-    const clothNavy = new THREE.MeshStandardMaterial({ color: 0x1e1b4b, roughness: 0.55, metalness: 0.12 });
-    const skinTone = new THREE.MeshStandardMaterial({ color: 0xfbcfe8, roughness: 0.45 });
+    const clothRed = new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.28, metalness: 0.15 });
+    const clothNavy = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.52, metalness: 0.1 });
+    
+    // Peaux réalistes nuancées par personnage
+    const skinToneJudge = new THREE.MeshStandardMaterial({ color: 0xfed7aa, roughness: 0.52 });
+    const skinToneWitness = new THREE.MeshStandardMaterial({ color: 0xfde2d0, roughness: 0.46 });
+    const skinTonePros = new THREE.MeshStandardMaterial({ color: 0xfce7d2, roughness: 0.42 });
+    const skinToneDef = new THREE.MeshStandardMaterial({ color: 0xfed7aa, roughness: 0.48 });
+    const skinTone = skinToneWitness; // Rétro-compatibilité
+
     const eyeWhite = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const eyePupil = new THREE.MeshBasicMaterial({ color: 0x0f172a });
-    const eyeIris = new THREE.MeshBasicMaterial({ color: 0x1e293b });
+    const eyePupil = new THREE.MeshBasicMaterial({ color: 0x090d16 });
+    const eyeIrisJudge = new THREE.MeshStandardMaterial({ color: 0x3b82f6, roughness: 0.3 });
+    const eyeIrisWitness = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.3 });
     const metalDark = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.22, metalness: 0.85 });
-    const brassMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.25, metalness: 0.88 });
-    const velvetRed = new THREE.MeshStandardMaterial({ color: 0x881337, roughness: 0.75, metalness: 0.05 });
+    const brassMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.22, metalness: 0.90 });
+    const velvetRed = new THREE.MeshStandardMaterial({ color: 0x881337, roughness: 0.72, metalness: 0.06 });
+    const ermineSpotMat = new THREE.MeshStandardMaterial({ color: 0x020617, roughness: 0.85 });
 
     // 4. Architecture de la Salle d'Audience
     // Sol Parquet à chevrons verni
@@ -515,117 +524,235 @@ export default function Courtroom3DCanvas({
     scene.add(micLed);
 
     // =========================================================================
-    // 6. PERSONNAGE 3D SCULPTÉ : LE JUGE (Animé Haute Définition)
+    // 6. PERSONNAGE 3D SCULPTÉ HAUTE DÉFINITION : LE JUGE (Président du Tribunal)
     // =========================================================================
     const judgeGroup = new THREE.Group();
     judgeGroup.position.set(0, 0.9, -5.2);
 
-    // Corps & Toge
-    const judgeBody = new THREE.Mesh(new THREE.CylinderGeometry(0.58, 0.75, 1.7, 16), clothBlack);
+    // Corps & Toge Magistrale fluide à 32 facettes (Pleats & Drapery)
+    const judgeBody = new THREE.Mesh(new THREE.CylinderGeometry(0.58, 0.85, 1.7, 32), clothBlack);
     judgeBody.position.y = 1.6;
+    judgeBody.castShadow = true;
     judgeGroup.add(judgeBody);
 
-    // Parements de velours et boutons dorés de la toge
-    const judgeStole = new THREE.Mesh(new THREE.BoxGeometry(0.35, 1.4, 0.06), clothRed);
-    judgeStole.position.set(0, 1.55, 0.48);
+    // Étole centrale solennelle en velours cramoisi
+    const judgeStole = new THREE.Mesh(new THREE.BoxGeometry(0.36, 1.45, 0.08), clothRed);
+    judgeStole.position.set(0, 1.55, 0.50);
     judgeGroup.add(judgeStole);
 
-    // Col d'Hermine blanc avec bordure mouchetée
-    const collar = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.28, 0.45), clothWhite);
-    collar.position.set(0, 2.3, 0.2);
-    judgeGroup.add(collar);
+    // Boutons dorés d'apparat sur l'étole
+    for (let b = 0; b < 4; b++) {
+      const btn = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.02, 16), goldMat);
+      btn.position.set(0, 1.95 - b * 0.22, 0.55);
+      btn.rotation.x = Math.PI / 2;
+      judgeGroup.add(btn);
+    }
 
-    // Rabat de Magistrat (Jabot plissé blanc à plusieurs niveaux)
-    const jabot1 = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.55, 0.08), clothWhite);
-    jabot1.position.set(0, 1.95, 0.46);
-    judgeGroup.add(jabot1);
-    const jabot2 = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.35, 0.06), clothWhite);
-    jabot2.position.set(0, 1.85, 0.5);
-    judgeGroup.add(jabot2);
+    // Col d'Hermine blanc sculpté et arrondi (Torus pelucheux)
+    const ermineCollar = new THREE.Mesh(new THREE.TorusGeometry(0.38, 0.12, 20, 32), clothWhite);
+    ermineCollar.position.set(0, 2.32, 0.12);
+    ermineCollar.rotation.x = Math.PI / 2.3;
+    judgeGroup.add(ermineCollar);
 
-    // Chaîne d'or et médaille de la Haute École
-    const judgeMedal = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.02, 16), goldMat);
-    judgeMedal.position.set(0, 1.7, 0.54);
+    // Mouchetures d'hermine noires cousues dans la fourrure
+    for (let s = 0; s < 7; s++) {
+      const angle = (s / 6) * Math.PI - Math.PI / 2;
+      const spot = new THREE.Mesh(new THREE.SphereGeometry(0.022, 10, 10), ermineSpotMat);
+      spot.position.set(Math.cos(angle) * 0.38, 2.32, 0.12 + Math.sin(angle) * 0.38 * 0.3);
+      judgeGroup.add(spot);
+    }
+
+    // Rabat de Magistrat (Jabot plissé blanc en 3 volants étagés)
+    const jabotGroup = new THREE.Group();
+    jabotGroup.position.set(0, 1.95, 0.48);
+    const jabot1 = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.26, 0.24, 24, 1, false, -1.2, 2.4), clothWhite);
+    jabot1.rotation.y = Math.PI;
+    jabotGroup.add(jabot1);
+    const jabot2 = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.22, 0.22, 24, 1, false, -1.2, 2.4), clothWhite);
+    jabot2.position.set(0, -0.12, 0.04);
+    jabot2.rotation.y = Math.PI;
+    jabotGroup.add(jabot2);
+    const jabot3 = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.17, 0.18, 24, 1, false, -1.2, 2.4), clothWhite);
+    jabot3.position.set(0, -0.24, 0.07);
+    jabot3.rotation.y = Math.PI;
+    jabotGroup.add(jabot3);
+    judgeGroup.add(jabotGroup);
+
+    // Collier d'or magistral et Médaille officielle de la Haute École
+    const chainOfOffice = new THREE.Mesh(new THREE.TorusGeometry(0.36, 0.022, 12, 32), goldMat);
+    chainOfOffice.position.set(0, 2.15, 0.18);
+    chainOfOffice.rotation.x = Math.PI / 2.3;
+    judgeGroup.add(chainOfOffice);
+
+    const judgeMedal = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.025, 24), goldMat);
+    judgeMedal.position.set(0, 1.62, 0.58);
     judgeMedal.rotation.x = Math.PI / 2;
     judgeGroup.add(judgeMedal);
+    const medalRelief = new THREE.Mesh(new THREE.TorusGeometry(0.065, 0.01, 8, 20), brassMat);
+    medalRelief.position.set(0, 1.62, 0.595);
+    judgeGroup.add(medalRelief);
 
-    // Tête du Juge sculptée
+    // ==========================================
+    // TÊTE DU JUGE HAUTE POLYGONE & SCULPTÉE
+    // ==========================================
     const judgeHeadGroup = new THREE.Group();
     judgeHeadGroup.position.set(0, 2.85, 0);
 
-    // Crâne & mâchoire
-    const head = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.52, 0.46), skinTone);
-    judgeHeadGroup.add(head);
+    // Crâne arrondi et expressif
+    const cranium = new THREE.Mesh(new THREE.SphereGeometry(0.26, 32, 24), skinToneJudge);
+    cranium.scale.set(1.0, 1.15, 1.05);
+    judgeHeadGroup.add(cranium);
 
-    // Nez sculpté
-    const nose = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.16, 0.12), skinTone);
-    nose.position.set(0, -0.02, 0.28);
-    judgeHeadGroup.add(nose);
+    // Mâchoire et bajoues solennelles de magistrat
+    const jaw = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.18, 0.26, 32), skinToneJudge);
+    jaw.position.set(0, -0.12, 0.04);
+    judgeHeadGroup.add(jaw);
 
-    // Yeux réalistes (Blanc + Iris foncé + Pupille)
-    const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 10), eyeWhite);
-    eyeL.position.set(-0.13, 0.07, 0.22);
+    // Menton affirmé sculpté
+    const chin = new THREE.Mesh(new THREE.SphereGeometry(0.09, 20, 20), skinToneJudge);
+    chin.position.set(0, -0.22, 0.22);
+    judgeHeadGroup.add(chin);
+
+    // Cou naturel
+    const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 0.22, 24), skinToneJudge);
+    neck.position.set(0, -0.28, 0);
+    judgeHeadGroup.add(neck);
+
+    // Nez magistral sculpté (arête effilée + bulbe + narines)
+    const noseBridge = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.042, 0.16, 16), skinToneJudge);
+    noseBridge.position.set(0, 0.03, 0.28);
+    noseBridge.rotation.x = 0.22;
+    judgeHeadGroup.add(noseBridge);
+
+    const noseTip = new THREE.Mesh(new THREE.SphereGeometry(0.040, 16, 16), skinToneJudge);
+    noseTip.position.set(0, -0.04, 0.32);
+    judgeHeadGroup.add(noseTip);
+
+    const nostrilL = new THREE.Mesh(new THREE.SphereGeometry(0.018, 12, 12), skinToneJudge);
+    nostrilL.position.set(-0.032, -0.05, 0.30);
+    judgeHeadGroup.add(nostrilL);
+    const nostrilR = new THREE.Mesh(new THREE.SphereGeometry(0.018, 12, 12), skinToneJudge);
+    nostrilR.position.set(0.032, -0.05, 0.30);
+    judgeHeadGroup.add(nostrilR);
+
+    // Yeux expressifs haute fidélité (Blanc + Iris noisette/bleu + Pupille + Paupière)
+    const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.046, 20, 20), eyeWhite);
+    eyeL.position.set(-0.12, 0.07, 0.24);
     judgeHeadGroup.add(eyeL);
-    const pupilL = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 8), eyePupil);
-    pupilL.position.set(-0.13, 0.07, 0.255);
+    const irisL = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 0.012, 20), eyeIrisJudge);
+    irisL.position.set(-0.12, 0.07, 0.28);
+    irisL.rotation.x = Math.PI / 2;
+    judgeHeadGroup.add(irisL);
+    const pupilL = new THREE.Mesh(new THREE.SphereGeometry(0.016, 12, 12), eyePupil);
+    pupilL.position.set(-0.12, 0.07, 0.288);
     judgeHeadGroup.add(pupilL);
 
-    const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 10), eyeWhite);
-    eyeR.position.set(0.13, 0.07, 0.22);
+    const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.046, 20, 20), eyeWhite);
+    eyeR.position.set(0.12, 0.07, 0.24);
     judgeHeadGroup.add(eyeR);
-    const pupilR = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 8), eyePupil);
-    pupilR.position.set(0.13, 0.07, 0.255);
+    const irisR = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 0.012, 20), eyeIrisJudge);
+    irisR.position.set(0.12, 0.07, 0.28);
+    irisR.rotation.x = Math.PI / 2;
+    judgeHeadGroup.add(irisR);
+    const pupilR = new THREE.Mesh(new THREE.SphereGeometry(0.016, 12, 12), eyePupil);
+    pupilR.position.set(0.12, 0.07, 0.288);
     judgeHeadGroup.add(pupilR);
-    judgeEyesRef.current = [eyeL, pupilL, eyeR, pupilR];
+    judgeEyesRef.current = [eyeL, irisL, pupilL, eyeR, irisR, pupilR];
 
-    // Sourcils sculptés articulés (réagissent au sourire / froncement)
-    const browGeo = new THREE.BoxGeometry(0.16, 0.045, 0.08);
-    const browMat = new THREE.MeshBasicMaterial({ color: 0x94a3b8 });
+    // Lunettes demi-lunes dorées fines (Torus haute résolution + Pont courbé)
+    const glassesGroup = new THREE.Group();
+    glassesGroup.position.set(0, 0.06, 0.28);
+    const rimL = new THREE.Mesh(new THREE.TorusGeometry(0.062, 0.007, 16, 28), goldMat);
+    rimL.position.x = -0.12;
+    glassesGroup.add(rimL);
+    const rimR = new THREE.Mesh(new THREE.TorusGeometry(0.062, 0.007, 16, 28), goldMat);
+    rimR.position.x = 0.12;
+    glassesGroup.add(rimR);
+    const gBridge = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.08, 12), goldMat);
+    gBridge.rotation.z = Math.PI / 2;
+    glassesGroup.add(gBridge);
+    const templeL = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.24, 8), goldMat);
+    templeL.position.set(-0.19, 0, -0.11);
+    templeL.rotation.x = Math.PI / 2;
+    glassesGroup.add(templeL);
+    const templeR = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.24, 8), goldMat);
+    templeR.position.set(0.19, 0, -0.11);
+    templeR.rotation.x = Math.PI / 2;
+    glassesGroup.add(templeR);
+    judgeHeadGroup.add(glassesGroup);
+
+    // Sourcils sculptés articulés (réagissent en direct au sourire / froncement)
+    const browGeo = new THREE.BoxGeometry(0.16, 0.038, 0.06);
+    const browMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.8 });
     const browL = new THREE.Mesh(browGeo, browMat);
-    browL.position.set(-0.13, 0.14, 0.24);
+    browL.position.set(-0.12, 0.15, 0.27);
     judgeHeadGroup.add(browL);
     judgeLeftBrowRef.current = browL;
 
     const browR = new THREE.Mesh(browGeo, browMat);
-    browR.position.set(0.13, 0.14, 0.24);
+    browR.position.set(0.12, 0.15, 0.27);
     judgeHeadGroup.add(browR);
     judgeRightBrowRef.current = browR;
 
-    // Lunettes demi-lunes dorées
-    const glasses = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.08, 0.1), goldMat);
-    glasses.position.set(0, 0.05, 0.27);
-    judgeHeadGroup.add(glasses);
-
-    // Bouche expressive articulée (Sourire vs Moue)
+    // Bouche expressive articulée (Sourire approbateur vert vs Moue réprobatrice rouge)
     const mouth = new THREE.Mesh(
-      new THREE.BoxGeometry(0.24, 0.045, 0.08),
+      new THREE.BoxGeometry(0.22, 0.044, 0.06),
       new THREE.MeshBasicMaterial({ color: 0x475569 })
     );
-    mouth.position.set(0, -0.16, 0.25);
+    mouth.position.set(0, -0.15, 0.28);
     judgeHeadGroup.add(mouth);
     judgeMouthRef.current = mouth;
 
-    // Perruque magistrale complète à rouleaux étagés
-    const wigTop = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.32, 0.54), clothWhite);
-    wigTop.position.set(0, 0.22, -0.02);
-    judgeHeadGroup.add(wigTop);
+    // =========================================================================
+    // GRANDE PERRUQUE BAROQUE ÉTAGÉE À 10 ROULEAUX DE BOUCLES (HAUTE POLYGONE)
+    // =========================================================================
+    const wigGroup = new THREE.Group();
+    wigGroup.position.set(0, 0.16, -0.03);
 
-    // 3 Rouleaux de boucles tombant sur chaque tempe
-    for (let r = 0; r < 3; r++) {
-      const curlL = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.35, 12), clothWhite);
-      curlL.position.set(-0.32, 0.1 - r * 0.16, 0.05);
-      curlL.rotation.z = 0.1;
-      judgeHeadGroup.add(curlL);
+    // Calotte crânienne de la perruque
+    const wigDome = new THREE.Mesh(new THREE.SphereGeometry(0.33, 32, 24), clothWhite);
+    wigDome.scale.set(1.06, 0.88, 1.12);
+    wigGroup.add(wigDome);
 
-      const curlR = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.35, 12), clothWhite);
-      curlR.position.set(0.32, 0.1 - r * 0.16, 0.05);
-      curlR.rotation.z = -0.1;
-      judgeHeadGroup.add(curlR);
+    // Rouleaux de boucles volumineux sur le front
+    for (let f = 0; f < 3; f++) {
+      const fCurl = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.18, 16), clothWhite);
+      fCurl.position.set(-0.16 + f * 0.16, 0.18, 0.26);
+      fCurl.rotation.z = Math.PI / 2;
+      wigGroup.add(fCurl);
     }
+
+    // 10 Rouleaux de boucles tombants (5 de chaque côté, étagés élégamment)
+    for (let r = 0; r < 5; r++) {
+      const curlL = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.050, 0.36, 16), clothWhite);
+      curlL.position.set(-0.33 - (r % 2) * 0.04, 0.08 - r * 0.14, 0.06 - (r > 2 ? 0.06 : 0));
+      curlL.rotation.z = 0.08;
+      wigGroup.add(curlL);
+      const capL = new THREE.Mesh(new THREE.SphereGeometry(0.052, 12, 12), clothWhite);
+      capL.position.set(curlL.position.x, curlL.position.y - 0.18, curlL.position.z);
+      wigGroup.add(capL);
+
+      const curlR = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.050, 0.36, 16), clothWhite);
+      curlR.position.set(0.33 + (r % 2) * 0.04, 0.08 - r * 0.14, 0.06 - (r > 2 ? 0.06 : 0));
+      curlR.rotation.z = -0.08;
+      wigGroup.add(curlR);
+      const capR = new THREE.Mesh(new THREE.SphereGeometry(0.052, 12, 12), clothWhite);
+      capR.position.set(curlR.position.x, curlR.position.y - 0.18, curlR.position.z);
+      wigGroup.add(capR);
+    }
+
+    // Boucles à l'arrière du cou
+    for (let b = 0; b < 4; b++) {
+      const bCurl = new THREE.Mesh(new THREE.CylinderGeometry(0.048, 0.045, 0.38, 14), clothWhite);
+      bCurl.position.set(-0.21 + b * 0.14, -0.12, -0.28);
+      wigGroup.add(bCurl);
+    }
+
+    judgeHeadGroup.add(wigGroup);
 
     // Anneau d'émotion lumineux réactif (Approbation verte vs Avertissement rouge)
     const emoRing = new THREE.Mesh(
-      new THREE.RingGeometry(0.20, 0.28, 24),
+      new THREE.RingGeometry(0.22, 0.30, 32),
       new THREE.MeshBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0, side: THREE.DoubleSide })
     );
     emoRing.position.set(0, 0.72, 0.1);
@@ -635,31 +762,41 @@ export default function Courtroom3DCanvas({
     judgeGroup.add(judgeHeadGroup);
     judgeHeadRef.current = judgeHeadGroup;
 
-    // Bras Droit avec Marteau de Justice (Gavel)
+    // Bras Droit Articulé avec Marteau de Justice (Gavel)
     const rightArmGroup = new THREE.Group();
     rightArmGroup.position.set(0.65, 2.2, 0);
 
-    const arm = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.65, 0.2), clothBlack);
+    // Épaule arrondie
+    const judgeShoulder = new THREE.Mesh(new THREE.SphereGeometry(0.15, 20, 20), clothBlack);
+    rightArmGroup.add(judgeShoulder);
+
+    // Manche de toge fluide
+    const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.16, 0.65, 20), clothBlack);
     arm.position.set(0, -0.3, 0);
     rightArmGroup.add(arm);
 
-    // Main tenant le marteau
-    const hand = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 10), skinTone);
-    hand.position.set(0, -0.62, 0.1);
+    // Poignet en dentelle blanche
+    const wristLace = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.11, 0.08, 18), clothWhite);
+    wristLace.position.set(0, -0.58, 0.04);
+    rightArmGroup.add(wristLace);
+
+    // Main sculptée tenant le marteau
+    const hand = new THREE.Mesh(new THREE.SphereGeometry(0.075, 16, 16), skinToneJudge);
+    hand.position.set(0, -0.65, 0.1);
     rightArmGroup.add(hand);
 
-    // Marteau de Justice sculpté avec bague dorée
-    const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.58, 12), woodLight);
+    // Marteau de Justice sculpté avec virole dorée et manche en bois précieux
+    const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.58, 16), woodLight);
     handle.position.set(0, -0.6, 0.24);
     handle.rotation.x = Math.PI / 4;
     rightArmGroup.add(handle);
 
-    const malletHead = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.34, 16), woodMahogany);
+    const malletHead = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.34, 24), woodMahogany);
     malletHead.position.set(0, -0.78, 0.42);
     malletHead.rotation.z = Math.PI / 2;
     rightArmGroup.add(malletHead);
 
-    const malletGoldRing = new THREE.Mesh(new THREE.TorusGeometry(0.115, 0.015, 8, 24), goldMat);
+    const malletGoldRing = new THREE.Mesh(new THREE.TorusGeometry(0.115, 0.015, 12, 28), goldMat);
     malletGoldRing.position.set(0, -0.78, 0.42);
     rightArmGroup.add(malletGoldRing);
 
@@ -669,112 +806,216 @@ export default function Courtroom3DCanvas({
     scene.add(judgeGroup);
 
     // =========================================================================
-    // 7. BARRE DES TÉMOINS (AU CENTRE)
+    // 7. BARRE DES TÉMOINS (AU CENTRE) EN BOIS D'ACAJOU & CUIVRE POLI
     // =========================================================================
-    const stand = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.4, 1.2), woodLight);
+    const stand = new THREE.Mesh(new THREE.BoxGeometry(2.5, 1.4, 1.2), woodMahogany);
     stand.position.set(0, 0.7, 0);
     stand.castShadow = true;
     stand.receiveShadow = true;
     scene.add(stand);
 
-    // Rampe en laiton où s'agrippe le témoin
-    const standRail = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 2.2, 12), brassMat);
-    standRail.position.set(0, 1.42, 0.55);
+    // Baguette moulurée en façade de la barre
+    const standMolding = new THREE.Mesh(new THREE.BoxGeometry(2.54, 0.08, 1.24), goldMat);
+    standMolding.position.set(0, 1.35, 0);
+    scene.add(standMolding);
+
+    // Rampe en laiton poli où s'agrippe le témoin avec montants et embouts sphériques
+    const standRail = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 2.3, 16), brassMat);
+    standRail.position.set(0, 1.44, 0.55);
     standRail.rotation.z = Math.PI / 2;
     scene.add(standRail);
 
+    const railBallL = new THREE.Mesh(new THREE.SphereGeometry(0.055, 16, 16), brassMat);
+    railBallL.position.set(-1.15, 1.44, 0.55);
+    scene.add(railBallL);
+    const railBallR = new THREE.Mesh(new THREE.SphereGeometry(0.055, 16, 16), brassMat);
+    railBallR.position.set(1.15, 1.44, 0.55);
+    scene.add(railBallR);
+
+    // Potelets verticaux de maintien en laiton
+    for (let px of [-0.75, 0, 0.75]) {
+      const post = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.18, 12), brassMat);
+      post.position.set(px, 1.35, 0.55);
+      scene.add(post);
+    }
+
     // Micro col de cygne du témoin
-    const witnessMic = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.4, 8), metalDark);
+    const witnessMic = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.4, 12), metalDark);
     witnessMic.position.set(0, 1.6, 0.35);
     witnessMic.rotation.x = 0.35;
     scene.add(witnessMic);
-    const witnessMicLed = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 8), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
+    const witnessMicLed = new THREE.Mesh(new THREE.SphereGeometry(0.025, 12, 12), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
     witnessMicLed.position.set(0, 1.78, 0.28);
     scene.add(witnessMicLed);
 
     // =========================================================================
-    // 8. PERSONNAGE 3D : MAXIME À LA BARRE (Animé)
+    // 8. PERSONNAGE 3D SCULPTÉ HAUTE DÉFINITION : MAXIME À LA BARRE
     // =========================================================================
     const witnessGroup = new THREE.Group();
     witnessGroup.position.set(0, 0, -0.65);
 
-    // Sweat à capuche étudiant (bleu canard / marine)
-    const witBodyMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.65 });
-    const witBody = new THREE.Mesh(new THREE.BoxGeometry(0.66, 1.15, 0.46), witBodyMat);
+    // Sweat à capuche étudiant (bleu canard / marine) sculpté et galbé
+    const witBodyMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.62 });
+    const witBody = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.31, 1.15, 32), witBodyMat);
     witBody.position.y = 1.35;
     witBody.castShadow = true;
     witnessGroup.add(witBody);
 
-    // Cordons de capuche modélisés
-    const stringL = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.3, 0.02), clothWhite);
-    stringL.position.set(-0.1, 1.65, 0.25);
-    witnessGroup.add(stringL);
-    const stringR = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.3, 0.02), clothWhite);
-    stringR.position.set(0.1, 1.65, 0.25);
-    witnessGroup.add(stringR);
+    // Épaules arrondies et naturelles
+    const shoulderL = new THREE.Mesh(new THREE.SphereGeometry(0.18, 20, 20), witBodyMat);
+    shoulderL.position.set(-0.35, 1.82, 0);
+    witnessGroup.add(shoulderL);
 
-    // Tête de Maxime
+    const shoulderR = new THREE.Mesh(new THREE.SphereGeometry(0.18, 20, 20), witBodyMat);
+    shoulderR.position.set(0.35, 1.82, 0);
+    witnessGroup.add(shoulderR);
+
+    // Anneau de capuche replié dans le dos
+    const hoodRing = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.075, 20, 32), witBodyMat);
+    hoodRing.position.set(0, 1.82, -0.06);
+    hoodRing.rotation.x = Math.PI / 2.5;
+    witnessGroup.add(hoodRing);
+
+    // Poche kangourou avant
+    const pocket = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.26, 0.08), witBodyMat);
+    pocket.position.set(0, 1.15, 0.30);
+    witnessGroup.add(pocket);
+
+    // Cordons de capuche modélisés avec embouts métalliques
+    const stringL = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.32, 12), clothWhite);
+    stringL.position.set(-0.1, 1.62, 0.32);
+    witnessGroup.add(stringL);
+    const agletL = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.04, 10), metalDark);
+    agletL.position.set(-0.1, 1.45, 0.32);
+    witnessGroup.add(agletL);
+
+    const stringR = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.32, 12), clothWhite);
+    stringR.position.set(0.1, 1.62, 0.32);
+    witnessGroup.add(stringR);
+    const agletR = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.04, 10), metalDark);
+    agletR.position.set(0.1, 1.45, 0.32);
+    witnessGroup.add(agletR);
+
+    // ==========================================
+    // TÊTE DE MAXIME SCULPTÉE HAUTE POLYGONE
+    // ==========================================
     const witHeadGroup = new THREE.Group();
     witHeadGroup.position.set(0, 2.22, 0);
-    const witHead = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.48, 0.42), skinTone);
-    witHeadGroup.add(witHead);
 
-    // Yeux de Maxime
-    const witEyeL = new THREE.Mesh(new THREE.SphereGeometry(0.04, 8, 8), eyeWhite);
-    witEyeL.position.set(-0.11, 0.06, 0.21);
+    // Crâne jeune arrondi
+    const witCranium = new THREE.Mesh(new THREE.SphereGeometry(0.24, 32, 24), skinToneWitness);
+    witCranium.scale.set(1.0, 1.14, 1.02);
+    witHeadGroup.add(witCranium);
+
+    // Mâchoire affinée et joues
+    const witJaw = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.15, 0.23, 32), skinToneWitness);
+    witJaw.position.set(0, -0.10, 0.03);
+    witHeadGroup.add(witJaw);
+
+    // Menton jeune
+    const witChin = new THREE.Mesh(new THREE.SphereGeometry(0.08, 20, 20), skinToneWitness);
+    witChin.position.set(0, -0.20, 0.19);
+    witHeadGroup.add(witChin);
+
+    // Cou
+    const witNeck = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.14, 0.22, 24), skinToneWitness);
+    witNeck.position.set(0, -0.26, 0);
+    witHeadGroup.add(witNeck);
+
+    // Nez jeune sculpté
+    const witNose = new THREE.Mesh(new THREE.ConeGeometry(0.038, 0.14, 16), skinToneWitness);
+    witNose.position.set(0, -0.02, 0.26);
+    witNose.rotation.x = Math.PI / 2.3;
+    witHeadGroup.add(witNose);
+
+    // Yeux de Maxime (Blanc + Iris marron chaud + Pupille réaliste)
+    const witEyeL = new THREE.Mesh(new THREE.SphereGeometry(0.044, 20, 20), eyeWhite);
+    witEyeL.position.set(-0.11, 0.06, 0.22);
     witHeadGroup.add(witEyeL);
-    const witPupilL = new THREE.Mesh(new THREE.SphereGeometry(0.02, 6, 6), eyePupil);
-    witPupilL.position.set(-0.11, 0.06, 0.245);
+    const witIrisL = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 0.01, 18), eyeIrisWitness);
+    witIrisL.position.set(-0.11, 0.06, 0.26);
+    witIrisL.rotation.x = Math.PI / 2;
+    witHeadGroup.add(witIrisL);
+    const witPupilL = new THREE.Mesh(new THREE.SphereGeometry(0.016, 12, 12), eyePupil);
+    witPupilL.position.set(-0.11, 0.06, 0.268);
     witHeadGroup.add(witPupilL);
 
-    const witEyeR = new THREE.Mesh(new THREE.SphereGeometry(0.04, 8, 8), eyeWhite);
-    witEyeR.position.set(0.11, 0.06, 0.21);
+    const witEyeR = new THREE.Mesh(new THREE.SphereGeometry(0.044, 20, 20), eyeWhite);
+    witEyeR.position.set(0.11, 0.06, 0.22);
     witHeadGroup.add(witEyeR);
-    const witPupilR = new THREE.Mesh(new THREE.SphereGeometry(0.02, 6, 6), eyePupil);
-    witPupilR.position.set(0.11, 0.06, 0.245);
+    const witIrisR = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 0.01, 18), eyeIrisWitness);
+    witIrisR.position.set(0.11, 0.06, 0.26);
+    witIrisR.rotation.x = Math.PI / 2;
+    witHeadGroup.add(witIrisR);
+    const witPupilR = new THREE.Mesh(new THREE.SphereGeometry(0.016, 12, 12), eyePupil);
+    witPupilR.position.set(0.11, 0.06, 0.268);
     witHeadGroup.add(witPupilR);
-    witnessEyesRef.current = [witEyeL, witPupilL, witEyeR, witPupilR];
+    witnessEyesRef.current = [witEyeL, witIrisL, witPupilL, witEyeR, witIrisR, witPupilR];
 
     // Bouche articulée de Maxime
-    const witMouth = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.04, 0.06), new THREE.MeshBasicMaterial({ color: 0x991b1b }));
-    witMouth.position.set(0, -0.12, 0.22);
+    const witMouth = new THREE.Mesh(
+      new THREE.BoxGeometry(0.18, 0.04, 0.06),
+      new THREE.MeshBasicMaterial({ color: 0x991b1b })
+    );
+    witMouth.position.set(0, -0.12, 0.25);
     witHeadGroup.add(witMouth);
     witnessMouthRef.current = witMouth;
 
     // Sourcils de Maxime (s'inclinent d'inquiétude lors d'une mauvaise défense)
-    const witBrowGeo = new THREE.BoxGeometry(0.14, 0.035, 0.06);
-    const witBrowMat = new THREE.MeshBasicMaterial({ color: 0x451a14 });
+    const witBrowGeo = new THREE.BoxGeometry(0.14, 0.035, 0.05);
+    const witBrowMat = new THREE.MeshStandardMaterial({ color: 0x3e2316, roughness: 0.8 });
     const witBrowL = new THREE.Mesh(witBrowGeo, witBrowMat);
-    witBrowL.position.set(-0.11, 0.12, 0.22);
+    witBrowL.position.set(-0.11, 0.13, 0.24);
     witHeadGroup.add(witBrowL);
     witnessLeftBrowRef.current = witBrowL;
 
     const witBrowR = new THREE.Mesh(witBrowGeo, witBrowMat);
-    witBrowR.position.set(0.11, 0.12, 0.22);
+    witBrowR.position.set(0.11, 0.13, 0.24);
     witHeadGroup.add(witBrowR);
     witnessRightBrowRef.current = witBrowR;
+    witnessRightBrowRef.current = witBrowR;
 
-    // Chevelure brune texturée
-    const witHairMat = new THREE.MeshStandardMaterial({ color: 0x451a14, roughness: 0.85 });
-    const witHair = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.26, 0.46), witHairMat);
-    witHair.position.set(0, 0.22, -0.02);
-    witHeadGroup.add(witHair);
-    // Mèche tombante
-    const tuft = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.12, 0.1), witHairMat);
-    tuft.position.set(-0.08, 0.18, 0.24);
-    witHeadGroup.add(tuft);
+    // Chevelure brune sculptée moderne (Calotte + 6 mèches dégradées et volumineuses)
+    const witHairMat = new THREE.MeshStandardMaterial({ color: 0x3e2316, roughness: 0.72 });
+    const witHairDome = new THREE.Mesh(new THREE.SphereGeometry(0.25, 32, 24), witHairMat);
+    witHairDome.scale.set(1.04, 0.88, 1.08);
+    witHairDome.position.set(0, 0.14, -0.02);
+    witHeadGroup.add(witHairDome);
+
+    // Mèches texturées sculptées
+    for (let m = 0; m < 5; m++) {
+      const lock = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.18, 12), witHairMat);
+      lock.position.set(-0.14 + m * 0.07, 0.22 - Math.abs(m - 2) * 0.03, 0.22);
+      lock.rotation.x = Math.PI / 3;
+      lock.rotation.z = (m - 2) * 0.15;
+      witHeadGroup.add(lock);
+    }
 
     witnessGroup.add(witHeadGroup);
     witnessHeadRef.current = witHeadGroup;
 
-    // Bras avec mains agrippées à la rampe
-    const witLeftArm = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.72, 0.2), witBodyMat);
-    witLeftArm.position.set(-0.45, 1.3, 0.1);
+    // Bras avec mains sculptées agrippées fermement à la rampe en laiton
+    const witLeftArm = new THREE.Group();
+    witLeftArm.position.set(-0.35, 1.82, 0);
+    const lBicep = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.075, 0.68, 18), witBodyMat);
+    lBicep.position.set(-0.08, -0.34, 0.22);
+    lBicep.rotation.x = -Math.PI / 4;
+    witLeftArm.add(lBicep);
+    const lHand = new THREE.Mesh(new THREE.SphereGeometry(0.065, 14, 14), skinToneWitness);
+    lHand.position.set(-0.08, -0.62, 0.48);
+    witLeftArm.add(lHand);
     witnessGroup.add(witLeftArm);
     witnessLeftArmRef.current = witLeftArm;
 
-    const witRightArm = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.72, 0.2), witBodyMat);
-    witRightArm.position.set(0.45, 1.3, 0.1);
+    const witRightArm = new THREE.Group();
+    witRightArm.position.set(0.35, 1.82, 0);
+    const rBicep = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.075, 0.68, 18), witBodyMat);
+    rBicep.position.set(0.08, -0.34, 0.22);
+    rBicep.rotation.x = -Math.PI / 4;
+    witRightArm.add(rBicep);
+    const rHand = new THREE.Mesh(new THREE.SphereGeometry(0.065, 14, 14), skinToneWitness);
+    rHand.position.set(0.08, -0.62, 0.48);
+    witRightArm.add(rHand);
     witnessGroup.add(witRightArm);
     witnessRightArmRef.current = witRightArm;
 
@@ -801,33 +1042,53 @@ export default function Courtroom3DCanvas({
     briefcase.rotation.y = -Math.PI / 6;
     scene.add(briefcase);
 
-    // Avocat de la Défense (Me Alex)
+    // Avocat de la Défense (Me Alex) sculpté
     const defGroup = new THREE.Group();
     defGroup.position.set(4.4, 0, -0.2);
     defGroup.rotation.y = -Math.PI / 6;
 
-    const defLawyer = new THREE.Mesh(new THREE.BoxGeometry(0.56, 1.25, 0.42), clothNavy);
+    const defLawyer = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.30, 1.25, 28), clothNavy);
     defLawyer.position.y = 1.38;
     defGroup.add(defLawyer);
 
-    const defTie = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.42, 0.05), new THREE.MeshStandardMaterial({ color: 0x0284c7 }));
-    defTie.position.set(0, 1.52, 0.23);
+    // Col de chemise blanc et cravate bleue
+    const defCollar = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.18, 0.12, 16), clothWhite);
+    defCollar.position.set(0, 1.95, 0.06);
+    defGroup.add(defCollar);
+
+    const defTie = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.46, 0.04), new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.3 }));
+    defTie.position.set(0, 1.68, 0.24);
     defGroup.add(defTie);
 
     // Broche dorée HECh au revers
-    const defPin = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 8), goldMat);
-    defPin.position.set(-0.18, 1.75, 0.22);
+    const defPin = new THREE.Mesh(new THREE.SphereGeometry(0.025, 12, 12), goldMat);
+    defPin.position.set(-0.16, 1.82, 0.22);
     defGroup.add(defPin);
 
-    const defHead = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.46, 0.4), skinTone);
-    defHead.position.y = 2.18;
-    defGroup.add(defHead);
-    defHeadRef.current = defHead;
+    // Tête de Me Alex
+    const defHeadGroup = new THREE.Group();
+    defHeadGroup.position.set(0, 2.24, 0);
 
-    const defArm = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.68, 0.18), clothNavy);
-    defArm.position.set(-0.35, 1.45, 0.1);
-    defGroup.add(defArm);
-    defArmRef.current = defArm;
+    const defCranium = new THREE.Mesh(new THREE.SphereGeometry(0.23, 28, 22), skinToneDef);
+    defCranium.scale.set(0.98, 1.15, 1.02);
+    defHeadGroup.add(defCranium);
+
+    const defHair = new THREE.Mesh(new THREE.SphereGeometry(0.24, 28, 22), new THREE.MeshStandardMaterial({ color: 0x1c1917, roughness: 0.5 }));
+    defHair.scale.set(1.02, 0.86, 1.06);
+    defHair.position.set(0, 0.12, -0.02);
+    defHeadGroup.add(defHair);
+
+    defGroup.add(defHeadGroup);
+    defHeadRef.current = defHeadGroup;
+
+    // Bras articulé pour la plaidoirie
+    const defArmGroup = new THREE.Group();
+    defArmGroup.position.set(-0.35, 1.75, 0.1);
+    const defArmMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.075, 0.68, 16), clothNavy);
+    defArmMesh.position.set(0, -0.3, 0);
+    defArmGroup.add(defArmMesh);
+    defGroup.add(defArmGroup);
+    defArmRef.current = defArmGroup;
 
     scene.add(defGroup);
 
@@ -849,38 +1110,50 @@ export default function Courtroom3DCanvas({
     prosGroup.position.set(-4.4, 0, -0.2);
     prosGroup.rotation.y = Math.PI / 6;
 
-    // Toge noire avec parements pourpres
-    const prosLawyer = new THREE.Mesh(new THREE.BoxGeometry(0.56, 1.25, 0.42), clothBlack);
+    // Toge noire d'accusateur public
+    const prosLawyer = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.31, 1.25, 28), clothBlack);
     prosLawyer.position.y = 1.38;
     prosGroup.add(prosLawyer);
 
-    const prosTie = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.48, 0.05), clothRed);
-    prosTie.position.set(0, 1.52, 0.23);
-    prosGroup.add(prosTie);
+    const prosStole = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.65, 0.05), clothRed);
+    prosStole.position.set(0, 1.55, 0.24);
+    prosGroup.add(prosStole);
 
     // Tête du Procureur (traits sévères et cheveux gominés)
     const prosHeadGroup = new THREE.Group();
-    prosHeadGroup.position.set(0, 2.18, 0);
+    prosHeadGroup.position.set(0, 2.22, 0);
 
-    const prosHead = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.46, 0.4), skinTone);
-    prosHeadGroup.add(prosHead);
+    const prosCranium = new THREE.Mesh(new THREE.SphereGeometry(0.23, 28, 22), skinTonePros);
+    prosCranium.scale.set(0.96, 1.16, 1.02);
+    prosHeadGroup.add(prosCranium);
 
-    const prosHair = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.22, 0.44), new THREE.MeshStandardMaterial({ color: 0x090d16, roughness: 0.2 }));
-    prosHair.position.set(0, 0.2, -0.02);
+    const prosJaw = new THREE.Mesh(new THREE.CylinderGeometry(0.20, 0.14, 0.22, 28), skinTonePros);
+    prosJaw.position.set(0, -0.10, 0.03);
+    prosHeadGroup.add(prosJaw);
+
+    const prosHair = new THREE.Mesh(new THREE.SphereGeometry(0.24, 28, 22), new THREE.MeshStandardMaterial({ color: 0x090d16, roughness: 0.22 }));
+    prosHair.scale.set(1.02, 0.88, 1.08);
+    prosHair.position.set(0, 0.12, -0.02);
     prosHeadGroup.add(prosHair);
 
-    // Yeux plissés et sourcils arqués sévères
-    const prosEyeL = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.03, 0.05), eyePupil);
-    prosEyeL.position.set(-0.11, 0.05, 0.21);
+    // Yeux plissés et perçants du Procureur
+    const prosEyeL = new THREE.Mesh(new THREE.SphereGeometry(0.040, 16, 16), eyePupil);
+    prosEyeL.scale.set(1.2, 0.5, 1.0);
+    prosEyeL.position.set(-0.10, 0.05, 0.22);
     prosHeadGroup.add(prosEyeL);
-    const prosEyeR = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.03, 0.05), eyePupil);
-    prosEyeR.position.set(0.11, 0.05, 0.21);
+
+    const prosEyeR = new THREE.Mesh(new THREE.SphereGeometry(0.040, 16, 16), eyePupil);
+    prosEyeR.scale.set(1.2, 0.5, 1.0);
+    prosEyeR.position.set(0.10, 0.05, 0.22);
     prosHeadGroup.add(prosEyeR);
     prosEyesRef.current = [prosEyeL, prosEyeR];
 
     // Bouche articulée du Procureur
-    const prosMouth = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.04, 0.06), new THREE.MeshBasicMaterial({ color: 0x7f1d1d }));
-    prosMouth.position.set(0, -0.12, 0.21);
+    const prosMouth = new THREE.Mesh(
+      new THREE.BoxGeometry(0.18, 0.038, 0.06),
+      new THREE.MeshBasicMaterial({ color: 0x7f1d1d })
+    );
+    prosMouth.position.set(0, -0.12, 0.24);
     prosHeadGroup.add(prosMouth);
     prosMouthRef.current = prosMouth;
 
@@ -891,13 +1164,17 @@ export default function Courtroom3DCanvas({
     const prosArmGroup = new THREE.Group();
     prosArmGroup.position.set(0.35, 1.75, 0.1);
 
-    const prosArmMesh = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.68, 0.18), clothBlack);
+    const prosArmMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.075, 0.68, 16), clothBlack);
     prosArmMesh.position.set(0, -0.3, 0);
     prosArmGroup.add(prosArmMesh);
 
-    // Main et doigt accusateur
-    const finger = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.24, 6), skinTone);
-    finger.position.set(0, -0.68, 0.18);
+    // Main et doigt accusateur pointé sur Maxime
+    const prosHand = new THREE.Mesh(new THREE.SphereGeometry(0.065, 14, 14), skinTonePros);
+    prosHand.position.set(0, -0.64, 0.10);
+    prosArmGroup.add(prosHand);
+
+    const finger = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.24, 12), skinTonePros);
+    finger.position.set(0, -0.72, 0.22);
     finger.rotation.x = Math.PI / 3;
     prosArmGroup.add(finger);
 

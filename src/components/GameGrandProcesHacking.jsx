@@ -665,9 +665,9 @@ export default function GameGrandProcesHacking({ onComplete }) {
       </div>
 
       {/* Zone Centrale : Scène 3D (Three.js) + Pupitre Judiciaire QCM */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 flex-1 min-h-[460px]">
-        {/* Scène 3D Three.js avec expressions et caméras dynamiques */}
-        <div className="lg:col-span-7 h-[330px] sm:h-[400px] lg:h-full relative rounded-3xl overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 flex-1 min-h-[500px] lg:min-h-[560px]">
+        {/* Scène 3D Three.js avec expressions et caméras dynamiques (Largeur renforcée plein écran) */}
+        <div className="lg:col-span-7 xl:col-span-8 h-[360px] sm:h-[420px] lg:h-full relative rounded-3xl overflow-hidden border border-slate-800 shadow-2xl">
           <Courtroom3DCanvas
             currentCaseIdx={0}
             witnessState={witnessState}
@@ -690,8 +690,8 @@ export default function GameGrandProcesHacking({ onComplete }) {
           </div>
         </div>
 
-        {/* Pupitre d'Intervention Judiciaire QCM (5 colonnes) */}
-        <div className="lg:col-span-5 flex flex-col gap-3 h-full overflow-y-auto pr-1">
+        {/* Pupitre d'Intervention Judiciaire QCM (4 colonnes sur grand écran) */}
+        <div className="lg:col-span-5 xl:col-span-4 flex flex-col gap-3 h-full overflow-y-auto pr-1">
           {/* =========================================================================
               ÉTAPE 0 : INTRODUCTION
           ========================================================================= */}

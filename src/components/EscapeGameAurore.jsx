@@ -265,48 +265,49 @@ export default function EscapeGameAurore({ onClose }) {
       {/* Main Game Screen */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden relative">
         
-        {/* LEFT COLUMN: 3D Pixar Visual Studio & Holographic Core */}
-        <div className="lg:col-span-5 border-r border-slate-800/80 bg-slate-950 p-4 flex flex-col justify-between relative overflow-hidden">
-          <div className="flex-1 w-full relative rounded-3xl overflow-hidden border border-slate-800 shadow-2xl">
-            <PixarStyleScene3D 
-              theme={
-                currentStage === 'room_north' ? 'factcheck' :
-                currentStage === 'room_west' ? 'tribunal' :
-                currentStage === 'room_south' ? 'datacenter' :
-                currentStage === 'room_east' ? 'promptwars' :
-                currentStage === 'boss' ? 'boss' : 'hub'
-              }
-              isAlert={currentStage === 'boss' || timeLeft < 15 * 60}
-              characterMood={
-                totalKeysObtained === 4 ? 'victorious' :
-                currentStage === 'boss' ? 'worried' : 'thinking'
-              }
-            />
+        {/* LEFT COLUMN: 3D Pixar Visual Studio & Holographic Core (Caché dans le tribunal pour une immersion plein écran totale sans distraction) */}
+        {currentStage !== 'room_west' && (
+          <div className="lg:col-span-5 border-r border-slate-800/80 bg-slate-950 p-4 flex flex-col justify-between relative overflow-hidden">
+            <div className="flex-1 w-full relative rounded-3xl overflow-hidden border border-slate-800 shadow-2xl">
+              <PixarStyleScene3D 
+                theme={
+                  currentStage === 'room_north' ? 'factcheck' :
+                  currentStage === 'room_south' ? 'datacenter' :
+                  currentStage === 'room_east' ? 'promptwars' :
+                  currentStage === 'boss' ? 'boss' : 'hub'
+                }
+                isAlert={currentStage === 'boss' || timeLeft < 15 * 60}
+                characterMood={
+                  totalKeysObtained === 4 ? 'victorious' :
+                  currentStage === 'boss' ? 'worried' : 'thinking'
+                }
+              />
 
-            {/* A.U.R.O.R.E. Overlay Badge */}
-            <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-cyan-500/30 flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping" />
-              <span className="text-xs font-mono font-bold text-cyan-200">A.U.R.O.R.E. v2.4 (Live Feed)</span>
+              {/* A.U.R.O.R.E. Overlay Badge */}
+              <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-cyan-500/30 flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping" />
+                <span className="text-xs font-mono font-bold text-cyan-200">A.U.R.O.R.E. v2.4 (Live Feed)</span>
+              </div>
+            </div>
+
+            {/* Dialogue Log Console */}
+            <div className="mt-3 p-3 rounded-2xl bg-slate-900/80 border border-slate-800 font-mono text-xs text-slate-300 space-y-1 max-h-28 overflow-y-auto">
+              <div className="text-[10px] text-cyan-400 uppercase font-black tracking-wider flex items-center gap-1.5 mb-1">
+                <Terminal className="w-3.5 h-3.5" /> Journal de Transmission Directe
+              </div>
+              {dialogueLog.map((log, i) => (
+                <p key={i} className="leading-snug">
+                  <strong className={log.speaker === 'A.U.R.O.R.E.' ? 'text-rose-400' : 'text-amber-400'}>
+                    [{log.speaker}]
+                  </strong> {log.text}
+                </p>
+              ))}
             </div>
           </div>
+        )}
 
-          {/* Dialogue Log Console */}
-          <div className="mt-3 p-3 rounded-2xl bg-slate-900/80 border border-slate-800 font-mono text-xs text-slate-300 space-y-1 max-h-28 overflow-y-auto">
-            <div className="text-[10px] text-cyan-400 uppercase font-black tracking-wider flex items-center gap-1.5 mb-1">
-              <Terminal className="w-3.5 h-3.5" /> Journal de Transmission Directe
-            </div>
-            {dialogueLog.map((log, i) => (
-              <p key={i} className="leading-snug">
-                <strong className={log.speaker === 'A.U.R.O.R.E.' ? 'text-rose-400' : 'text-amber-400'}>
-                  [{log.speaker}]
-                </strong> {log.text}
-              </p>
-            ))}
-          </div>
-        </div>
-
-        {/* RIGHT COLUMN: Interactive Exploration & Mini-Games */}
-        <div className="lg:col-span-7 bg-slate-900/50 p-4 sm:p-6 overflow-y-auto flex flex-col justify-between">
+        {/* RIGHT COLUMN: Interactive Exploration & Mini-Games (Prend 100% de la largeur quand room_west) */}
+        <div className={`${currentStage === 'room_west' ? 'lg:col-span-12 p-2 sm:p-4' : 'lg:col-span-7 p-4 sm:p-6'} bg-slate-900/50 overflow-y-auto flex flex-col justify-between`}>
           
           {/* STAGE: INTRO */}
           {currentStage === 'intro' && (
