@@ -428,41 +428,82 @@ export default function GameGrandProcesHacking({ onComplete }) {
     sounds.playObjectionImpact();
   };
 
-  // Choix d'un argument dans le QCM à 4 options
+  // Choix d'un argument dans le QCM à 4 options (Pré-visualisation de la réaction du juge)
   const handleSelectArgument = (arg) => {
     sounds.stopAllVoice();
     setSelectedArgument(arg);
 
     if (arg.isCorrect) {
-      // Effet positif : Sourire du Juge + Hochement de tête 3D
+      // Effet positif : Sourire approbateur du Juge + Hochement de tête 3D
       setJudgeReaction('smile');
       setCameraView('JUDGE');
+      setWitnessState('confident');
+      setProsecutorState('idle');
       sounds.playSuccess();
-      setJudgeConviction(prev => Math.min(100, prev + arg.gain));
+    } else {
+      // Effet négatif : Moue du Juge + Secouement de tête + Inquiétude de Maxime + Triomphe du Procureur
+      setJudgeReaction('frown');
+      setCameraView('JUDGE');
+      setWitnessState('stressed');
+      setProsecutorState('attacking');
+      sounds.playWrong();
+    }
+  };
+
+  // Confirmation définitive de la plaidoirie choisie par l'avocat (bonne ou mauvaise !)
+  const handleConfirmArgument = () => {
+    if (!selectedArgument) return;
+    sounds.stopAllVoice();
+
+    if (selectedArgument.isCorrect) {
+      // Validation du bon argument
+      sounds.playSuccess();
+      sounds.playAudioFile('/audio/voices/proces_judge_approbation.mp3', 1.0);
+      setJudgeConviction(prev => Math.min(100, prev + selectedArgument.gain));
       setCriticalScore(prev => Math.min(100, prev + 10));
       setProsecutorPanic(prev => Math.min(100, prev + 15));
 
-      // Enregistrer le motif comme prouvé
       setElementsProven(prev => ({
         ...prev,
         [currentAssault.requiredType]: true
       }));
 
-      // Réaction de Maxime après l'approbation du juge
+      // Réaction de Maxime après approbation
       sounds.scheduleTimeout(() => {
         setStage('reaction');
         setCameraView('WITNESS');
         setWitnessState('confident');
         sounds.playAudioFile(`/audio/voices/${currentAssault.maximeVoice}.mp3`, 1.0);
-      }, 1600);
+      }, 1400);
     } else {
-      // Effet négatif : Moue du Juge + Secouement de tête
-      setJudgeReaction('frown');
+      // L'avocat assume sa mauvaise solution : Conséquences réelles !
+      sounds.playGavelStrike();
+      sounds.playAudioFile('/audio/voices/proces_judge_reprimande.mp3', 1.0);
+      setJudgeConviction(prev => Math.max(5, prev + selectedArgument.gain));
+      setCriticalScore(prev => Math.max(5, prev - 8));
+      setProsecutorPanic(prev => Math.max(0, prev - 12));
+
+      // Le motif est définitivement ÉCARTÉ du grand livre !
+      setElementsProven(prev => ({
+        ...prev,
+        [currentAssault.requiredType]: false
+      }));
+
+      // Basculer vers l'écran de réprimande judiciaire (reaction_fail)
+      setStage('reaction_fail');
       setCameraView('JUDGE');
-      sounds.playWrong();
-      setJudgeConviction(prev => Math.max(10, prev + arg.gain));
-      setCriticalScore(prev => Math.max(10, prev - 5));
+      setJudgeState('speaking');
     }
+  };
+
+  // Annuler le choix sélectionné pour réfléchir à nouveau
+  const handleCancelSelectedArgument = () => {
+    sounds.playPop();
+    setSelectedArgument(null);
+    setJudgeReaction('neutral');
+    setWitnessState('idle');
+    setProsecutorState('idle');
+    setCameraView('DEFENSE');
   };
 
   // Passer à l'assaut suivant ou démarrer la grande cinématique du Juge
@@ -722,12 +763,12 @@ export default function GameGrandProcesHacking({ onComplete }) {
                     QCM de Défense (4 Options)
                   </span>
                   <span className="text-[10px] font-mono text-amber-300">
-                    Preuve prête : {currentEvidenceReady?.title}
+                    Preuve : {currentEvidenceReady?.title}
                   </span>
                 </div>
 
                 <p className="text-xs text-slate-300 leading-relaxed font-sans">
-                  Sélectionnez l'argument d'esprit critique le plus rigoureux :
+                  Choisissez une argumentation juridique (observez en direct les réactions du Juge 3D) :
                 </p>
 
                 <div className="space-y-2">
@@ -763,6 +804,35 @@ export default function GameGrandProcesHacking({ onComplete }) {
                   ))}
                 </div>
               </div>
+
+              {/* Barre d'Action : Confirmer la plaidoirie (bonne ou mauvaise) ou réviser */}
+              {selectedArgument && (
+                <div className="pt-2 border-t border-slate-800 space-y-2 animate-in fade-in">
+                  <button
+                    onClick={handleConfirmArgument}
+                    className={`w-full py-3 rounded-2xl font-black text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition shadow-lg ${
+                      selectedArgument.isCorrect
+                        ? 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 text-slate-950 shadow-emerald-500/20'
+                        : 'bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 text-white shadow-rose-600/30'
+                    }`}
+                  >
+                    {selectedArgument.isCorrect ? (
+                      <>⚖️ Valider cette Plaidoirie Approuvée →</>
+                    ) : (
+                      <>⚠️ Assumer cette Plaidoirie malgré la Moue du Juge →</>
+                    )}
+                  </button>
+
+                  {!selectedArgument.isCorrect && (
+                    <button
+                      onClick={handleCancelSelectedArgument}
+                      className="w-full py-2 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-300 text-xs font-mono transition cursor-pointer"
+                    >
+                      ← Choisir une autre formulation
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -806,6 +876,54 @@ export default function GameGrandProcesHacking({ onComplete }) {
                   <>Passer à l'Assaut Suivant ({currentAssaultIdx + 2}/6) <ArrowRight className="w-4 h-4" /></>
                 ) : (
                   <>⚖️ Lancer la Cinématique du Jugement !</>
+                )}
+              </button>
+            </div>
+          )}
+
+          {/* =========================================================================
+              ÉTAPE 4 BIS : RÉPRIMANDE JUDICIAIRE LORS D'UN MAUVAIS CHOIX DE DÉFENSE
+          ========================================================================= */}
+          {stage === 'reaction_fail' && (
+            <div className="p-4 rounded-3xl bg-slate-900/90 border border-rose-500/40 flex flex-col justify-between h-full gap-3 animate-in fade-in">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <span className="text-xs font-mono text-rose-400 font-bold uppercase flex items-center gap-1.5">
+                    <AlertTriangle className="w-4 h-4 text-rose-500 animate-pulse" /> Rejet du Moyen par le Tribunal
+                  </span>
+                  <button
+                    onClick={() => sounds.playAudioFile('/audio/voices/proces_judge_reprimande.mp3', 1.0)}
+                    className="p-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition cursor-pointer"
+                  >
+                    <Volume2 className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-rose-950/40 border border-rose-500/40 text-rose-100 text-xs sm:text-sm font-serif italic leading-relaxed">
+                  « Maître, cet argument est irrecevable et dessert la cause de votre client ! La Cour écarte catégoriquement ce moyen. »
+                </div>
+
+                <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800 text-xs space-y-1.5">
+                  <div className="text-rose-400 font-bold flex items-center gap-1">
+                    <XCircle className="w-3.5 h-3.5" /> Moue Réprobatrice du Juge : Motif non retenu au grand livre (-5%)
+                  </div>
+                  <p className="text-[11px] text-slate-400">
+                    Le Procureur du Roi jubile : <em>« L'accusation marque un point ! L'incarcération pour trouble à l'ordre public se rapproche ! »</em>
+                  </p>
+                  <p className="text-[10px] text-amber-300 font-mono">
+                    ⚠️ Maxime serre les poings à la barre, inquiet pour l'issue de son procès.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={handleNextAssault}
+                className="w-full py-3 rounded-2xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-black text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-rose-600/20"
+              >
+                {currentAssaultIdx < ASSAULTS.length - 1 ? (
+                  <>Encaisser le Rejet & Passer à l'Assaut Suivant ({currentAssaultIdx + 2}/6) <ArrowRight className="w-4 h-4" /></>
+                ) : (
+                  <>⚖️ Aller au Verdict Final du Tribunal !</>
                 )}
               </button>
             </div>
@@ -951,7 +1069,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
                       {isFinalInnocent ? (
                         "« En conséquence, au vu de l'ensemble de ces motifs déterminants et de l'état de nécessité caractérisé, la Cour déclare Maxime pleinement innocent et lui confère le statut de lanceur d'alerte d'intérêt public. Que justice soit faite ! »"
                       ) : (
-                        "« En conséquence, le nombre d'éléments d'intérêt général retenus étant insuffisant pour justifier une coupure totale des systèmes, la Cour retient la culpabilité de cyber-entrave. »"
+                        "« En conséquence, la défense n'ayant pas su établir la proportionnalité de l'acte face au trouble grave causé au campus, la Cour déclare le prévenu coupable de cyber-sabotage et ordonne un mandat de dépôt pour trouble caractérisé à l'ordre public ! »"
                       )}
                     </div>
                   </div>
