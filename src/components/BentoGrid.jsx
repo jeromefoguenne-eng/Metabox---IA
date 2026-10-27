@@ -300,7 +300,7 @@ export default function BentoGrid({
         <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           
           {/* Lignes de Connexion Neuronales SVG d'Arrière-Plan (Mind Map Synapses) */}
-          <svg className="hidden lg:block absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible opacity-50" preserveAspectRatio="none">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="hidden lg:block absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible opacity-50">
             <defs>
               <linearGradient id="synapse-left" x1="1" y1="0.5" x2="0" y2="0.5">
                 <stop offset="0%" stopColor="#6366f1" stopOpacity="0.8" />
@@ -312,15 +312,15 @@ export default function BentoGrid({
               </linearGradient>
             </defs>
             {/* Branches Gauches vers Tuiles 1, 2, 3, 4 */}
-            <path d="M 50% 50% C 42% 40%, 35% 15%, 33% 12%" stroke="url(#synapse-left)" strokeWidth="2.5" fill="none" strokeDasharray="6 6" />
-            <path d="M 50% 50% C 42% 46%, 35% 38%, 33% 38%" stroke="url(#synapse-left)" strokeWidth="2.5" fill="none" strokeDasharray="6 6" />
-            <path d="M 50% 50% C 42% 54%, 35% 62%, 33% 62%" stroke="url(#synapse-left)" strokeWidth="2.5" fill="none" strokeDasharray="6 6" />
-            <path d="M 50% 50% C 42% 60%, 35% 85%, 33% 88%" stroke="url(#synapse-left)" strokeWidth="2.5" fill="none" strokeDasharray="6 6" />
+            <path d="M 50 50 C 42 40, 35 15, 33 12" stroke="url(#synapse-left)" strokeWidth="0.8" fill="none" strokeDasharray="1.5 1.5" />
+            <path d="M 50 50 C 42 46, 35 38, 33 38" stroke="url(#synapse-left)" strokeWidth="0.8" fill="none" strokeDasharray="1.5 1.5" />
+            <path d="M 50 50 C 42 54, 35 62, 33 62" stroke="url(#synapse-left)" strokeWidth="0.8" fill="none" strokeDasharray="1.5 1.5" />
+            <path d="M 50 50 C 42 60, 35 85, 33 88" stroke="url(#synapse-left)" strokeWidth="0.8" fill="none" strokeDasharray="1.5 1.5" />
             {/* Branches Droites vers Tuiles 5, 6, 7, 8 */}
-            <path d="M 50% 50% C 58% 40%, 65% 15%, 67% 12%" stroke="url(#synapse-right)" strokeWidth="2.5" fill="none" strokeDasharray="6 6" />
-            <path d="M 50% 50% C 58% 46%, 65% 38%, 67% 38%" stroke="url(#synapse-right)" strokeWidth="2.5" fill="none" strokeDasharray="6 6" />
-            <path d="M 50% 50% C 58% 54%, 65% 62%, 67% 62%" stroke="url(#synapse-right)" strokeWidth="2.5" fill="none" strokeDasharray="6 6" />
-            <path d="M 50% 50% C 58% 60%, 65% 85%, 67% 88%" stroke="url(#synapse-right)" strokeWidth="2.5" fill="none" strokeDasharray="6 6" />
+            <path d="M 50 50 C 58 40, 65 15, 67 12" stroke="url(#synapse-right)" strokeWidth="0.8" fill="none" strokeDasharray="1.5 1.5" />
+            <path d="M 50 50 C 58 46, 65 38, 67 38" stroke="url(#synapse-right)" strokeWidth="0.8" fill="none" strokeDasharray="1.5 1.5" />
+            <path d="M 50 50 C 58 54, 65 62, 67 62" stroke="url(#synapse-right)" strokeWidth="0.8" fill="none" strokeDasharray="1.5 1.5" />
+            <path d="M 50 50 C 58 60, 65 85, 67 88" stroke="url(#synapse-right)" strokeWidth="0.8" fill="none" strokeDasharray="1.5 1.5" />
           </svg>
 
           {/* ==================== COLONNE GAUCHE (TUILES 1 À 4) ==================== */}

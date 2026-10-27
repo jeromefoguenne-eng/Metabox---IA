@@ -801,10 +801,10 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
     deskRight.position.y = 1.35;
     microscopeGroup.add(deskRight);
 
-    const legR1 = legGeo.clone(); legR1.position.set(-1.0, 0.67, -0.55); microscopeGroup.add(new THREE.Mesh(legR1, metalMat));
-    const legR2 = legGeo.clone(); legR2.position.set(1.0, 0.67, -0.55); microscopeGroup.add(new THREE.Mesh(legR2, metalMat));
-    const legR3 = legGeo.clone(); legR3.position.set(-1.0, 0.67, 0.55); microscopeGroup.add(new THREE.Mesh(legR3, metalMat));
-    const legR4 = legGeo.clone(); legR4.position.set(1.0, 0.67, 0.55); microscopeGroup.add(new THREE.Mesh(legR4, metalMat));
+    const legR1 = new THREE.Mesh(legGeo, metalMat); legR1.position.set(-1.0, 0.67, -0.55); microscopeGroup.add(legR1);
+    const legR2 = new THREE.Mesh(legGeo, metalMat); legR2.position.set(1.0, 0.67, -0.55); microscopeGroup.add(legR2);
+    const legR3 = new THREE.Mesh(legGeo, metalMat); legR3.position.set(-1.0, 0.67, 0.55); microscopeGroup.add(legR3);
+    const legR4 = new THREE.Mesh(legGeo, metalMat); legR4.position.set(1.0, 0.67, 0.55); microscopeGroup.add(legR4);
 
     // Microscope Optique & Laser
     const scopeBaseGeo = new THREE.BoxGeometry(0.5, 0.1, 0.6);
