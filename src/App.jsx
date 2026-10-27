@@ -25,6 +25,7 @@ import BentoGrid from './components/BentoGrid';
 import TileDetails from './components/TileDetails';
 import AiLabView from './components/AiLabView';
 import TrophiesModal from './components/TrophiesModal';
+import IntroVideoGenerique from './components/IntroVideoGenerique';
 import { TILES, METABOX_INFO, BADGES_LIST } from './data/metaboxData';
 import { sounds } from './utils/soundEffects';
 
@@ -40,6 +41,7 @@ const ICONS = {
 };
 
 export default function App() {
+  const [showIntro, setShowIntro] = useState(true);
   const [activeTileId, setActiveTileId] = useState('dashboard'); // 'dashboard' | tile.id
   const [isTrophiesOpen, setIsTrophiesOpen] = useState(false);
 
@@ -162,6 +164,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-['Lexend'] selection:bg-indigo-500/20 selection:text-indigo-800">
+      {/* Générique Vidéo Plein Écran à l'ouverture */}
+      {showIntro && (
+        <IntroVideoGenerique onFinish={() => setShowIntro(false)} />
+      )}
+
       {/* Top Application Header */}
       <Header
         activeTileId={activeTileId}
@@ -171,10 +178,11 @@ export default function App() {
         userXp={userXp}
         userLevel={userLevel}
         onOpenTrophies={() => setIsTrophiesOpen(true)}
+        onPlayIntro={() => setShowIntro(true)}
       />
 
       {/* Main Container */}
-      <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
+      <div className="flex-1 max-w-[1560px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
         
         {/* Mobile Navigation Toggle */}
         <div className="lg:hidden flex items-center justify-between bg-white border border-slate-200 p-4 rounded-2xl shadow-xs">
@@ -358,7 +366,7 @@ export default function App() {
 
       {/* Footer Clair & Épuré */}
       <footer className="mt-auto border-t border-slate-200 bg-white py-8 text-xs sm:text-sm text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <span className="font-['Outfit'] font-bold text-slate-800">Petite Réussite - Métabox IA (Édition Lumineuse 2.1)</span> · SAR Haute École Charlemagne
           </div>

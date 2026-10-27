@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Trophy, LayoutGrid, Volume2, VolumeX, Zap } from 'lucide-react';
+import { Sparkles, Trophy, LayoutGrid, Volume2, VolumeX, Zap, Film } from 'lucide-react';
 import { METABOX_INFO } from '../data/metaboxData';
 import { sounds } from '../utils/soundEffects';
 
@@ -11,7 +11,8 @@ export default function Header({
   userXp = 0,
   userLevel = 1,
   totalQuizzes = 4,
-  onOpenTrophies
+  onOpenTrophies,
+  onPlayIntro
 }) {
   const [isMuted, setIsMuted] = useState(() => sounds.isMuted());
   const completionPercentage = Math.round(((completedTiles.length + completedQuizzes.length) / (8 + totalQuizzes)) * 100);
@@ -28,7 +29,7 @@ export default function Header({
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
+      <div className="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
         {/* Brand & Title */}
         <div 
           onClick={() => handleTileClick('dashboard')}
@@ -81,6 +82,17 @@ export default function Header({
             <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
             <span>Lab IA ✨</span>
           </button>
+
+          {onPlayIntro && (
+            <button
+              onClick={onPlayIntro}
+              title="Revoir le générique vidéo officiel"
+              className="hidden md:flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
+            >
+              <Film className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Générique</span>
+            </button>
+          )}
         </div>
 
         {/* Right side Gamification & Sounds */}

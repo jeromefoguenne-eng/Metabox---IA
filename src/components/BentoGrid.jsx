@@ -14,7 +14,11 @@ import {
   GraduationCap,
   Laptop,
   SpellCheck,
-  ChevronRight
+  Cpu,
+  Layers,
+  Compass,
+  Box,
+  Share2
 } from 'lucide-react';
 import { TILES } from '../data/metaboxData';
 import { sounds } from '../utils/soundEffects';
@@ -30,119 +34,95 @@ const ICONS = {
   Sparkles
 };
 
-// Codes couleur spécifiques et riches pour chacune des 8 tuiles
-const TILE_THEMES = {
+// Palettes 100% COLORÉES intégrales pour chacune des 8 tuiles
+const FULL_COLOR_THEMES = {
   1: {
-    // Tuile 1 : Métabox News (Bleu Ciel / Azur)
-    cardBg: "bg-gradient-to-b from-sky-50/70 via-white to-white",
-    cardBorder: "border-sky-200 hover:border-sky-500 hover:shadow-sky-500/20",
-    topBar: "from-sky-400 via-sky-500 to-blue-600",
-    numberBadge: "bg-sky-600 text-white shadow-sm shadow-sky-600/30",
-    xpBadge: "bg-sky-100 text-sky-800 border-sky-300",
-    iconBox: "bg-gradient-to-tr from-sky-500 to-blue-600 text-white shadow-md shadow-sky-500/30",
-    questText: "text-sky-700",
-    hoverTitle: "group-hover:text-sky-600",
-    footerText: "text-sky-700 group-hover:text-sky-800",
-    footerBtn: "bg-sky-100 text-sky-700 group-hover:bg-sky-600 group-hover:text-white shadow-sky-500/20",
-    tagPill: "bg-sky-50 text-sky-700 border border-sky-200"
+    // Tuile 1 : Métabox News (Bleu Ciel / Azur Profond)
+    gradient: "from-sky-600 via-sky-700 to-blue-800",
+    border: "border-sky-400/50 hover:border-sky-300",
+    glow: "shadow-sky-600/30 hover:shadow-sky-500/50",
+    badgeBg: "bg-white/20 text-white border-white/30 backdrop-blur-md",
+    iconBg: "bg-white/25 text-white shadow-inner",
+    btnBg: "bg-white text-sky-800 hover:bg-sky-50 shadow-md",
+    accentDot: "bg-sky-300",
+    connectorColor: "#0284c7"
   },
   2: {
     // Tuile 2 : Partie Langagière (Indigo / Bleu Royal)
-    cardBg: "bg-gradient-to-b from-indigo-50/70 via-white to-white",
-    cardBorder: "border-indigo-200 hover:border-indigo-500 hover:shadow-indigo-500/20",
-    topBar: "from-indigo-500 via-indigo-600 to-purple-600",
-    numberBadge: "bg-indigo-600 text-white shadow-sm shadow-indigo-600/30",
-    xpBadge: "bg-indigo-100 text-indigo-800 border-indigo-300",
-    iconBox: "bg-gradient-to-tr from-indigo-500 to-purple-600 text-white shadow-md shadow-indigo-500/30",
-    questText: "text-indigo-700",
-    hoverTitle: "group-hover:text-indigo-600",
-    footerText: "text-indigo-700 group-hover:text-indigo-800",
-    footerBtn: "bg-indigo-100 text-indigo-700 group-hover:bg-indigo-600 group-hover:text-white shadow-indigo-500/20",
-    tagPill: "bg-indigo-50 text-indigo-700 border border-indigo-200"
+    gradient: "from-indigo-600 via-indigo-700 to-purple-800",
+    border: "border-indigo-400/50 hover:border-indigo-300",
+    glow: "shadow-indigo-600/30 hover:shadow-indigo-500/50",
+    badgeBg: "bg-white/20 text-white border-white/30 backdrop-blur-md",
+    iconBg: "bg-white/25 text-white shadow-inner",
+    btnBg: "bg-white text-indigo-900 hover:bg-indigo-50 shadow-md",
+    accentDot: "bg-indigo-300",
+    connectorColor: "#4f46e5"
   },
   3: {
     // Tuile 3 : Glossaire du Supérieur (Émeraude / Vert Menthe)
-    cardBg: "bg-gradient-to-b from-emerald-50/70 via-white to-white",
-    cardBorder: "border-emerald-200 hover:border-emerald-500 hover:shadow-emerald-500/20",
-    topBar: "from-emerald-400 via-emerald-500 to-teal-600",
-    numberBadge: "bg-emerald-600 text-white shadow-sm shadow-emerald-600/30",
-    xpBadge: "bg-emerald-100 text-emerald-800 border-emerald-300",
-    iconBox: "bg-gradient-to-tr from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-500/30",
-    questText: "text-emerald-700",
-    hoverTitle: "group-hover:text-emerald-600",
-    footerText: "text-emerald-700 group-hover:text-emerald-800",
-    footerBtn: "bg-emerald-100 text-emerald-700 group-hover:bg-emerald-600 group-hover:text-white shadow-emerald-500/20",
-    tagPill: "bg-emerald-50 text-emerald-700 border border-emerald-200"
+    gradient: "from-emerald-600 via-teal-700 to-emerald-900",
+    border: "border-emerald-400/50 hover:border-emerald-300",
+    glow: "shadow-emerald-600/30 hover:shadow-emerald-500/50",
+    badgeBg: "bg-white/20 text-white border-white/30 backdrop-blur-md",
+    iconBg: "bg-white/25 text-white shadow-inner",
+    btnBg: "bg-white text-emerald-900 hover:bg-emerald-50 shadow-md",
+    accentDot: "bg-emerald-300",
+    connectorColor: "#059669"
   },
   4: {
-    // Tuile 4 : Méthodologie Active (Ambre / Jaune Or)
-    cardBg: "bg-gradient-to-b from-amber-50/70 via-white to-white",
-    cardBorder: "border-amber-200 hover:border-amber-500 hover:shadow-amber-500/20",
-    topBar: "from-amber-400 via-amber-500 to-orange-600",
-    numberBadge: "bg-amber-600 text-white shadow-sm shadow-amber-600/30",
-    xpBadge: "bg-amber-100 text-amber-900 border-amber-300",
-    iconBox: "bg-gradient-to-tr from-amber-500 to-orange-600 text-white shadow-md shadow-amber-500/30",
-    questText: "text-amber-800",
-    hoverTitle: "group-hover:text-amber-600",
-    footerText: "text-amber-800 group-hover:text-amber-900",
-    footerBtn: "bg-amber-100 text-amber-800 group-hover:bg-amber-600 group-hover:text-white shadow-amber-500/20",
-    tagPill: "bg-amber-50 text-amber-800 border border-amber-200"
+    // Tuile 4 : Méthodologie Active (Ambre / Or Chaud)
+    gradient: "from-amber-600 via-amber-700 to-orange-800",
+    border: "border-amber-400/50 hover:border-amber-300",
+    glow: "shadow-amber-600/30 hover:shadow-amber-500/50",
+    badgeBg: "bg-white/20 text-white border-white/30 backdrop-blur-md",
+    iconBg: "bg-white/25 text-white shadow-inner",
+    btnBg: "bg-white text-amber-950 hover:bg-amber-50 shadow-md",
+    accentDot: "bg-amber-300",
+    connectorColor: "#d97706"
   },
   5: {
-    // Tuile 5 : Le Métier d'Étudiant.e (Violet / Mauve)
-    cardBg: "bg-gradient-to-b from-violet-50/70 via-white to-white",
-    cardBorder: "border-violet-200 hover:border-violet-500 hover:shadow-violet-500/20",
-    topBar: "from-violet-400 via-violet-500 to-fuchsia-600",
-    numberBadge: "bg-violet-600 text-white shadow-sm shadow-violet-600/30",
-    xpBadge: "bg-violet-100 text-violet-800 border-violet-300",
-    iconBox: "bg-gradient-to-tr from-violet-500 to-fuchsia-600 text-white shadow-md shadow-violet-500/30",
-    questText: "text-violet-700",
-    hoverTitle: "group-hover:text-violet-600",
-    footerText: "text-violet-700 group-hover:text-violet-800",
-    footerBtn: "bg-violet-100 text-violet-700 group-hover:bg-violet-600 group-hover:text-white shadow-violet-500/20",
-    tagPill: "bg-violet-50 text-violet-700 border border-violet-200"
+    // Tuile 5 : Le Métier d'Étudiant.e & Procès (Violet / Améthyste)
+    gradient: "from-violet-600 via-purple-700 to-violet-950",
+    border: "border-violet-400/50 hover:border-violet-300",
+    glow: "shadow-violet-600/30 hover:shadow-violet-500/50",
+    badgeBg: "bg-white/20 text-white border-white/30 backdrop-blur-md",
+    iconBg: "bg-white/25 text-white shadow-inner",
+    btnBg: "bg-white text-violet-950 hover:bg-violet-50 shadow-md",
+    accentDot: "bg-violet-300",
+    connectorColor: "#7c3aed"
   },
   6: {
     // Tuile 6 : Compétences Numériques (Cyan / Bleu Électrique)
-    cardBg: "bg-gradient-to-b from-cyan-50/70 via-white to-white",
-    cardBorder: "border-cyan-200 hover:border-cyan-500 hover:shadow-cyan-500/20",
-    topBar: "from-cyan-400 via-cyan-500 to-blue-600",
-    numberBadge: "bg-cyan-600 text-white shadow-sm shadow-cyan-600/30",
-    xpBadge: "bg-cyan-100 text-cyan-800 border-cyan-300",
-    iconBox: "bg-gradient-to-tr from-cyan-500 to-blue-600 text-white shadow-md shadow-cyan-500/30",
-    questText: "text-cyan-700",
-    hoverTitle: "group-hover:text-cyan-600",
-    footerText: "text-cyan-700 group-hover:text-cyan-800",
-    footerBtn: "bg-cyan-100 text-cyan-700 group-hover:bg-cyan-600 group-hover:text-white shadow-cyan-500/20",
-    tagPill: "bg-cyan-50 text-cyan-700 border border-cyan-200"
+    gradient: "from-cyan-600 via-teal-700 to-blue-900",
+    border: "border-cyan-400/50 hover:border-cyan-300",
+    glow: "shadow-cyan-600/30 hover:shadow-cyan-500/50",
+    badgeBg: "bg-white/20 text-white border-white/30 backdrop-blur-md",
+    iconBg: "bg-white/25 text-white shadow-inner",
+    btnBg: "bg-white text-cyan-950 hover:bg-cyan-50 shadow-md",
+    accentDot: "bg-cyan-300",
+    connectorColor: "#0891b2"
   },
   7: {
-    // Tuile 7 : Ortho'Express (Rose / Rubis)
-    cardBg: "bg-gradient-to-b from-rose-50/70 via-white to-white",
-    cardBorder: "border-rose-200 hover:border-rose-500 hover:shadow-rose-500/20",
-    topBar: "from-rose-400 via-rose-500 to-pink-600",
-    numberBadge: "bg-rose-600 text-white shadow-sm shadow-rose-600/30",
-    xpBadge: "bg-rose-100 text-rose-800 border-rose-300",
-    iconBox: "bg-gradient-to-tr from-rose-500 to-pink-600 text-white shadow-md shadow-rose-500/30",
-    questText: "text-rose-700",
-    hoverTitle: "group-hover:text-rose-600",
-    footerText: "text-rose-700 group-hover:text-rose-800",
-    footerBtn: "bg-rose-100 text-rose-700 group-hover:bg-rose-600 group-hover:text-white shadow-rose-500/20",
-    tagPill: "bg-rose-50 text-rose-700 border border-rose-200"
+    // Tuile 7 : Ortho'Express (Rose / Rubis Lumineux)
+    gradient: "from-rose-600 via-rose-700 to-red-800",
+    border: "border-rose-400/50 hover:border-rose-300",
+    glow: "shadow-rose-600/30 hover:shadow-rose-500/50",
+    badgeBg: "bg-white/20 text-white border-white/30 backdrop-blur-md",
+    iconBg: "bg-white/25 text-white shadow-inner",
+    btnBg: "bg-white text-rose-950 hover:bg-rose-50 shadow-md",
+    accentDot: "bg-rose-300",
+    connectorColor: "#e11d48"
   },
   8: {
-    // Tuile 8 : Lab IA & Entraînement (Fuchsia / Cyber Gradient)
-    cardBg: "bg-gradient-to-b from-fuchsia-50/90 via-purple-50/40 to-white",
-    cardBorder: "border-fuchsia-300 ring-2 ring-fuchsia-400/30 hover:border-fuchsia-600 hover:shadow-fuchsia-500/25",
-    topBar: "from-fuchsia-500 via-purple-500 to-cyan-400 animate-pulse",
-    numberBadge: "bg-gradient-to-r from-fuchsia-600 to-indigo-600 text-white shadow-sm shadow-fuchsia-600/30",
-    xpBadge: "bg-fuchsia-100 text-fuchsia-800 border-fuchsia-300 font-bold",
-    iconBox: "bg-gradient-to-tr from-fuchsia-600 via-purple-600 to-cyan-500 text-white shadow-md shadow-fuchsia-500/40",
-    questText: "text-fuchsia-700 font-bold",
-    hoverTitle: "group-hover:text-fuchsia-600",
-    footerText: "text-fuchsia-700 group-hover:text-fuchsia-800 font-bold",
-    footerBtn: "bg-fuchsia-100 text-fuchsia-700 group-hover:bg-gradient-to-r group-hover:from-fuchsia-600 group-hover:to-indigo-600 group-hover:text-white shadow-fuchsia-500/25",
-    tagPill: "bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-200 font-bold"
+    // Tuile 8 : Grand Escape Game & Lab IA (Cosmique Fuchsia / Néon Cyber)
+    gradient: "from-fuchsia-600 via-purple-700 to-indigo-950",
+    border: "border-fuchsia-400/70 hover:border-fuchsia-300 ring-2 ring-fuchsia-400/40",
+    glow: "shadow-fuchsia-600/40 hover:shadow-fuchsia-500/60",
+    badgeBg: "bg-white/25 text-white border-white/40 backdrop-blur-md",
+    iconBg: "bg-gradient-to-tr from-fuchsia-400 to-cyan-300 text-slate-900 shadow-lg",
+    btnBg: "bg-gradient-to-r from-yellow-300 to-amber-400 text-slate-950 hover:brightness-110 shadow-lg font-black",
+    accentDot: "bg-fuchsia-300",
+    connectorColor: "#c026d3"
   }
 };
 
@@ -162,188 +142,344 @@ export default function BentoGrid({
     onSelectTile(id);
   };
 
-  return (
-    <div className="space-y-8 animate-in fade-in duration-300">
-      
-      {/* HERO BANNER CLAIR & COLORÉ */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-purple-600 to-sky-600 p-8 md:p-10 shadow-xl text-white">
-        {/* Decorative ambient bubbles */}
-        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-80 h-80 bg-white/10 rounded-full blur-2xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/4 -mb-10 w-60 h-60 bg-yellow-300/10 rounded-full blur-2xl pointer-events-none" />
+  // Séparation des tuiles : Tuiles 1 à 4 à gauche, Tuiles 5 à 8 à droite
+  const leftTiles = TILES.slice(0, 4);
+  const rightTiles = TILES.slice(4, 8);
 
-        <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-yellow-200 border border-white/30 text-xs font-bold mb-4 shadow-xs">
-              <Sparkles className="w-4 h-4 text-yellow-300" />
-              Saison Académique 2025-2026 · SAR HECh
-            </div>
-            <h1 className="font-['Outfit'] text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight">
-              Boîte à Outils de Réussite & Lab IA 🚀
-            </h1>
-            <p className="text-base sm:text-lg text-indigo-100 mt-3 leading-relaxed font-normal">
-              Entraînez-vous sur les 7 modules de méthodologie universitaire, décryptez les consignes d'examens et testez vos réflexes avec l'intelligence artificielle.
-            </p>
+  // Variantes d'animation pour la carte mentale
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.12,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const centerNodeVariants = {
+    hidden: { scale: 0.7, opacity: 0, y: 20 },
+    visible: { 
+      scale: 1, 
+      opacity: 1, 
+      y: 0,
+      transition: { type: "spring", stiffness: 260, damping: 20 }
+    }
+  };
+
+  const leftTileVariants = {
+    hidden: { opacity: 0, x: -40, scale: 0.95 },
+    visible: { 
+      opacity: 1, 
+      x: 0, 
+      scale: 1,
+      transition: { type: "spring", stiffness: 220, damping: 22 }
+    }
+  };
+
+  const rightTileVariants = {
+    hidden: { opacity: 0, x: 40, scale: 0.95 },
+    visible: { 
+      opacity: 1, 
+      x: 0, 
+      scale: 1,
+      transition: { type: "spring", stiffness: 220, damping: 22 }
+    }
+  };
+
+  // Rendu unifié d'une tuile 100% colorée
+  const renderTileCard = (tile, index, isLeft) => {
+    const IconComponent = ICONS[tile.icon] || BookOpenCheck;
+    const isDone = completedTiles.includes(tile.id);
+    const theme = FULL_COLOR_THEMES[tile.number] || FULL_COLOR_THEMES[1];
+
+    return (
+      <motion.div
+        key={tile.id}
+        variants={isLeft ? leftTileVariants : rightTileVariants}
+        whileHover={{ scale: 1.025, y: -4 }}
+        whileTap={{ scale: 0.98 }}
+        onClick={() => handleTileClick(tile.id)}
+        className={`cursor-pointer group relative rounded-3xl p-6 bg-gradient-to-br ${theme.gradient} border-2 ${theme.border} text-white shadow-xl ${theme.glow} transition-all duration-300 overflow-hidden flex flex-col justify-between`}
+      >
+        {/* Lueur d'ambiance d'arrière-plan */}
+        <div className="absolute -top-12 -right-12 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none group-hover:scale-150 transition-transform duration-700" />
+        <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-black/20 rounded-full blur-xl pointer-events-none" />
+
+        {/* Ligne Supérieure : Badges & Statut */}
+        <div className="relative z-10 flex items-center justify-between gap-2 mb-4">
+          <div className="flex items-center gap-2">
+            <span className="font-['Outfit'] font-black text-xs px-3 py-1 rounded-full bg-white text-slate-900 shadow-md">
+              Tuile {tile.number}
+            </span>
+            <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${theme.badgeBg}`}>
+              {tile.badge}
+            </span>
           </div>
 
-          {/* Player Level & XP Card */}
-          <div className="w-full lg:w-auto bg-white/95 backdrop-blur-md text-slate-800 p-6 rounded-3xl flex flex-wrap items-center gap-6 shadow-2xl border border-white/60">
-            {/* Level Avatar */}
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-400 to-indigo-600 p-1 shadow-md flex items-center justify-center">
-                <div className="w-full h-full bg-white rounded-[12px] flex flex-col items-center justify-center">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Niveau</span>
-                  <span className="font-['Outfit'] text-2xl font-black text-indigo-700">{userLevel}</span>
+          <div className="flex items-center gap-1.5 font-mono text-xs font-bold px-2.5 py-1 rounded-full bg-black/25 backdrop-blur-md border border-white/20">
+            <Zap className="w-3.5 h-3.5 text-yellow-300 fill-current" />
+            <span>+{tile.xp} XP</span>
+          </div>
+        </div>
+
+        {/* Corps de la Tuile */}
+        <div className="relative z-10 space-y-2 mb-6">
+          <div className="flex items-center gap-3">
+            <div className={`p-3 rounded-2xl ${theme.iconBg} backdrop-blur-md shadow-md group-hover:scale-110 transition-transform`}>
+              <IconComponent className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="font-['Outfit'] text-lg sm:text-xl font-black leading-tight drop-shadow-sm group-hover:text-yellow-200 transition">
+                {tile.title}
+              </h3>
+              <span className="text-[11px] font-semibold text-white/80 block mt-0.5">
+                {tile.questTitle}
+              </span>
+            </div>
+          </div>
+
+          <p className="text-xs sm:text-sm text-white/90 leading-relaxed font-normal pt-1 line-clamp-3">
+            {tile.shortDesc}
+          </p>
+        </div>
+
+        {/* Pied de Carte : Progression & Bouton d'Action */}
+        <div className="relative z-10 pt-3 border-t border-white/20 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            {isDone ? (
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-emerald-500 text-white shadow-md border border-emerald-300/40">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Quête Validée
+              </span>
+            ) : (
+              <span className="text-[11px] font-medium text-white/75 flex items-center gap-1.5">
+                <span className={`w-2 h-2 rounded-full ${theme.accentDot} animate-pulse`} />
+                À découvrir
+              </span>
+            )}
+          </div>
+
+          <div className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold text-xs ${theme.btnBg} transition-all duration-300 group-hover:translate-x-1`}>
+            <span>{tile.isNew ? 'Accéder au Lab' : 'Explorer'}</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </div>
+        </div>
+      </motion.div>
+    );
+  };
+
+  return (
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-10 animate-in fade-in duration-500"
+    >
+      {/* ============================================================== */}
+      {/* CARTE MENTALE ANIMÉE : CŒUR CENTRAL + BRANCHES + TUILES PLEINES */}
+      {/* ============================================================== */}
+
+      <div className="relative">
+        
+        {/* Titre & Sous-titre de la Page d'Accueil */}
+        <div className="text-center max-w-3xl mx-auto mb-8 space-y-2">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold shadow-xs">
+            <Share2 className="w-3.5 h-3.5 text-indigo-600 animate-spin" style={{ animationDuration: '6s' }} />
+            <span>Architecture Pédagogique Interactive · Carte Mentale</span>
+          </div>
+          <h1 className="font-['Outfit'] text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">
+            Navigation Mentale des 8 Quêtes
+          </h1>
+          <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto">
+            Explorez l'écosystème <span className="font-bold text-indigo-700">Métabox IA</span> depuis le cœur central. Chaque tuile est un module complet d'entraînement pour votre réussite académique.
+          </p>
+        </div>
+
+        {/* DISPOSITION CARTE MENTALE SUR GRAND ÉCRAN (3 COLONNES AVEC CŒUR CENTRAL) */}
+        <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          {/* Lignes de Connexion Neuronales SVG d'Arrière-Plan (Mind Map Synapses) */}
+          <svg className="hidden lg:block absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible opacity-50" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="synapse-left" x1="1" y1="0.5" x2="0" y2="0.5">
+                <stop offset="0%" stopColor="#6366f1" stopOpacity="0.8" />
+                <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.3" />
+              </linearGradient>
+              <linearGradient id="synapse-right" x1="0" y1="0.5" x2="1" y2="0.5">
+                <stop offset="0%" stopColor="#6366f1" stopOpacity="0.8" />
+                <stop offset="100%" stopColor="#d946ef" stopOpacity="0.3" />
+              </linearGradient>
+            </defs>
+            {/* Branches Gauches vers Tuiles 1, 2, 3, 4 */}
+            <path d="M 50% 50% C 42% 40%, 35% 15%, 33% 12%" stroke="url(#synapse-left)" strokeWidth="2.5" fill="none" strokeDasharray="6 6" />
+            <path d="M 50% 50% C 42% 46%, 35% 38%, 33% 38%" stroke="url(#synapse-left)" strokeWidth="2.5" fill="none" strokeDasharray="6 6" />
+            <path d="M 50% 50% C 42% 54%, 35% 62%, 33% 62%" stroke="url(#synapse-left)" strokeWidth="2.5" fill="none" strokeDasharray="6 6" />
+            <path d="M 50% 50% C 42% 60%, 35% 85%, 33% 88%" stroke="url(#synapse-left)" strokeWidth="2.5" fill="none" strokeDasharray="6 6" />
+            {/* Branches Droites vers Tuiles 5, 6, 7, 8 */}
+            <path d="M 50% 50% C 58% 40%, 65% 15%, 67% 12%" stroke="url(#synapse-right)" strokeWidth="2.5" fill="none" strokeDasharray="6 6" />
+            <path d="M 50% 50% C 58% 46%, 65% 38%, 67% 38%" stroke="url(#synapse-right)" strokeWidth="2.5" fill="none" strokeDasharray="6 6" />
+            <path d="M 50% 50% C 58% 54%, 65% 62%, 67% 62%" stroke="url(#synapse-right)" strokeWidth="2.5" fill="none" strokeDasharray="6 6" />
+            <path d="M 50% 50% C 58% 60%, 65% 85%, 67% 88%" stroke="url(#synapse-right)" strokeWidth="2.5" fill="none" strokeDasharray="6 6" />
+          </svg>
+
+          {/* ==================== COLONNE GAUCHE (TUILES 1 À 4) ==================== */}
+          <div className="lg:col-span-4 space-y-6">
+            <div className="flex items-center justify-between px-2 mb-2">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                <Compass className="w-4 h-4 text-sky-600" />
+                Axe Méthodologie & Repères
+              </span>
+              <span className="text-[11px] font-mono font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                Tuiles 1 à 4
+              </span>
+            </div>
+            
+            {leftTiles.map((tile, idx) => renderTileCard(tile, idx, true))}
+          </div>
+
+          {/* ==================== CŒUR CENTRAL (LOGO MÉTABOX 3D) ==================== */}
+          <motion.div 
+            variants={centerNodeVariants}
+            className="lg:col-span-4 flex flex-col items-center justify-center p-4 relative z-20 my-6 lg:my-0"
+          >
+            {/* Anneaux orbitaux et halos lumineux d'arrière-plan */}
+            <div className="absolute w-72 h-72 rounded-full bg-gradient-to-r from-indigo-500/15 via-purple-500/15 to-fuchsia-500/15 blur-3xl pointer-events-none" />
+            <div className="absolute w-80 h-80 rounded-full border border-indigo-200/60 border-dashed animate-spin pointer-events-none" style={{ animationDuration: '30s' }} />
+            <div className="absolute w-96 h-96 rounded-full border border-purple-200/40 pointer-events-none" />
+
+            {/* LE CUBE / LOGO MÉTABOX CENTRAL */}
+            <div className="relative group cursor-pointer" onClick={() => sounds.playFanfare()}>
+              {/* Effet Glow Pulsant */}
+              <div className="absolute -inset-3 bg-gradient-to-r from-sky-500 via-indigo-600 to-fuchsia-600 rounded-3xl blur-xl opacity-60 group-hover:opacity-100 transition duration-700 animate-pulse" />
+              
+              {/* Boîtier Métabox Principal */}
+              <div className="relative w-56 sm:w-64 rounded-3xl bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-950 p-6 border-2 border-indigo-400/60 shadow-2xl text-center text-white flex flex-col items-center">
+                
+                {/* Badge supérieur HECh */}
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-300/30 text-[10px] font-mono font-bold text-indigo-300 mb-3 uppercase tracking-wider">
+                  <Box className="w-3 h-3 text-cyan-300 animate-bounce" />
+                  HECh · SAR Moodle 685
                 </div>
-              </div>
-              <div>
-                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Titre Actuel</div>
-                <div className="font-['Outfit'] text-base font-bold text-slate-900">{levelTitle}</div>
-                <div className="flex items-center gap-2.5 mt-1.5">
-                  <div className="w-28 bg-slate-100 h-2.5 rounded-full overflow-hidden border border-slate-200">
+
+                {/* LOGO MÉTABOX 3D ISOMÉTRIQUE */}
+                <div className="w-24 h-24 my-2 relative flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-cyan-400 via-indigo-500 to-fuchsia-500 rounded-2xl rotate-6 group-hover:rotate-12 transition-transform duration-500 opacity-80 blur-xs" />
+                  <div className="relative w-22 h-22 rounded-2xl bg-gradient-to-br from-slate-900 to-indigo-950 border-2 border-cyan-400/80 p-3 shadow-inner flex flex-col items-center justify-center">
+                    <div className="flex items-center justify-center gap-1">
+                      <Sparkles className="w-4 h-4 text-cyan-400 animate-pulse" />
+                      <Cpu className="w-7 h-7 text-indigo-400" />
+                      <Sparkles className="w-4 h-4 text-fuchsia-400 animate-pulse" />
+                    </div>
+                    <span className="font-['Outfit'] text-xs font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-white to-fuchsia-300 mt-1">
+                      MÉTABOX
+                    </span>
+                  </div>
+                </div>
+
+                {/* Nom & Titre */}
+                <h2 className="font-['Outfit'] text-2xl font-black tracking-tight text-white mt-1">
+                  MÉTABOX <span className="text-cyan-400">IA</span>
+                </h2>
+                <p className="text-[11px] text-indigo-200/80 mt-1 font-medium leading-tight">
+                  Noyau Central de la Réussite
+                </p>
+
+                {/* Stats & Niveau du Joueur */}
+                <div className="mt-4 pt-3 border-t border-indigo-800/60 w-full space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-400">Niveau Étudiant :</span>
+                    <span className="font-bold text-amber-300">Niv. {userLevel}</span>
+                  </div>
+                  <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden border border-indigo-900">
                     <div 
-                      className="bg-gradient-to-r from-amber-400 to-indigo-600 h-full rounded-full transition-all duration-500"
+                      className="bg-gradient-to-r from-cyan-400 via-indigo-500 to-fuchsia-500 h-full rounded-full transition-all duration-500"
                       style={{ width: `${currentLevelProgress}%` }}
                     />
                   </div>
-                  <span className="text-xs font-mono font-bold text-indigo-700">{userXp} XP</span>
+                  <div className="flex items-center justify-between text-[11px] font-mono text-indigo-300">
+                    <span>{userXp} XP</span>
+                    <span>{completedTiles.length}/8 validés</span>
+                  </div>
+                </div>
+
+                {/* Indicateur d'Action */}
+                <div className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-bold text-cyan-300 bg-cyan-950/60 px-3 py-1 rounded-full border border-cyan-500/30">
+                  <Flame className="w-3.5 h-3.5 text-amber-400 animate-bounce" />
+                  <span>Série de {streakDays} jours</span>
                 </div>
               </div>
             </div>
 
-            {/* Quick Stats */}
-            <div className="flex items-center gap-4 pt-4 lg:pt-0 border-t lg:border-t-0 lg:border-l border-slate-200 lg:pl-6">
-              <div className="text-center px-2">
-                <div className="flex items-center justify-center gap-1 text-amber-500 text-base font-black">
-                  <Flame className="w-5 h-5 fill-current text-amber-500 animate-bounce" />
-                  {streakDays}j
-                </div>
-                <div className="text-[11px] text-slate-500 font-medium">Série active</div>
-              </div>
-
-              <div className="text-center px-2">
-                <div className="flex items-center justify-center gap-1 text-emerald-600 text-base font-black">
-                  <Trophy className="w-5 h-5" />
-                  {unlockedBadges.length}
-                </div>
-                <div className="text-[11px] text-slate-500 font-medium">Trophées</div>
-              </div>
-
-              <div className="text-center px-2">
-                <div className="flex items-center justify-center gap-1 text-indigo-600 text-base font-black">
-                  <CheckCircle2 className="w-5 h-5" />
-                  {completedTiles.length}/8
-                </div>
-                <div className="text-[11px] text-slate-500 font-medium">Modules validés</div>
-              </div>
+            {/* Description d'aide sous le logo */}
+            <div className="text-center mt-4">
+              <span className="text-[11px] font-medium text-slate-400 bg-white/80 px-3 py-1 rounded-full border border-slate-200 shadow-2xs">
+                💡 Cliquez sur n'importe quelle tuile pour démarrer
+              </span>
             </div>
+          </motion.div>
+
+          {/* ==================== COLONNE DROITE (TUILES 5 À 8) ==================== */}
+          <div className="lg:col-span-4 space-y-6">
+            <div className="flex items-center justify-between px-2 mb-2">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                <BrainCircuit className="w-4 h-4 text-purple-600" />
+                Axe Numérique, IA & Éthique
+              </span>
+              <span className="text-[11px] font-mono font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                Tuiles 5 à 8
+              </span>
+            </div>
+
+            {rightTiles.map((tile, idx) => renderTileCard(tile, idx, false))}
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* ============================================================== */}
+      {/* BANNIÈRE RÉCAPITULATIVE DE PROGRESSION EN BAS                  */}
+      {/* ============================================================== */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center shadow-md shrink-0">
+            <Trophy className="w-7 h-7" />
+          </div>
+          <div>
+            <h4 className="font-['Outfit'] font-black text-lg text-slate-900">
+              Progression Pédagogique Globale
+            </h4>
+            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+              Complétez les 8 quêtes interactives pour décrocher le titre de <strong className="text-indigo-600">Major de Promotion IA</strong>.
+            </p>
           </div>
         </div>
-      </div>
 
-      {/* SECTION HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
-        <div>
-          <h2 className="font-['Outfit'] text-2xl sm:text-3xl font-black text-slate-900 flex items-center gap-2.5">
-            Modules d'Apprentissage & Quêtes Pédagogiques
-          </h2>
-          <p className="text-sm text-slate-500 mt-1">
-            Cliquez sur un module pour explorer ses leçons, vous auto-évaluer et débloquer vos badges.
-          </p>
+        <div className="flex items-center gap-3 w-full md:w-auto justify-end">
+          <div className="text-right">
+            <span className="text-xs font-bold text-slate-400 block">Trophées débloqués</span>
+            <span className="font-['Outfit'] text-xl font-black text-indigo-700">
+              {unlockedBadges.length} / 5
+            </span>
+          </div>
+
+          <div className="h-10 w-px bg-slate-200 mx-2" />
+
+          <button
+            onClick={() => {
+              sounds.playPop();
+              onSelectTile('tile-ia');
+            }}
+            className="px-5 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-600 via-purple-600 to-indigo-600 text-white font-black text-xs sm:text-sm shadow-md hover:shadow-xl hover:shadow-fuchsia-500/20 transition-all flex items-center gap-2"
+          >
+            <Sparkles className="w-4 h-4 text-yellow-300" />
+            <span>Tester l'Escape Game & Lab IA</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
         </div>
-        <div className="text-xs font-bold px-3 py-1.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 self-start sm:self-auto font-mono">
-          8 Quêtes Interactives Disponibles
-        </div>
       </div>
 
-      {/* BENTO GRID DES 8 TUILES VISUELLES & CLAIRES */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {TILES.map((tile, idx) => {
-          const IconComponent = ICONS[tile.icon] || BookOpenCheck;
-          const isDone = completedTiles.includes(tile.id);
-          const theme = TILE_THEMES[tile.number] || TILE_THEMES[1];
-
-          return (
-            <motion.div
-              key={tile.id}
-              whileHover={{ y: -6, scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => handleTileClick(tile.id)}
-              className={`cursor-pointer group rounded-3xl overflow-hidden ${theme.cardBg} border-2 transition-all flex flex-col justify-between shadow-sm hover:shadow-xl ${
-                isDone 
-                  ? 'border-emerald-400 ring-2 ring-emerald-400/20' 
-                  : theme.cardBorder
-              }`}
-            >
-              {/* Ligne d'accent lumineuse supérieure aux couleurs de la tuile */}
-              <div className={`h-1.5 w-full bg-gradient-to-r ${theme.topBar}`} />
-
-              {/* Image Header with Full Legibility */}
-              <div className="relative h-48 w-full overflow-hidden bg-slate-100">
-                <img
-                  src={tile.image}
-                  alt={tile.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/85 via-slate-900/30 to-transparent" />
-
-                {/* Top Badges */}
-                <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
-                  <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${theme.numberBadge}`}>
-                    Tuile {tile.number}
-                  </span>
-                  <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full backdrop-blur-md shadow-sm flex items-center gap-1 font-mono ${theme.xpBadge}`}>
-                    <Zap className="w-3 h-3 fill-current" /> +{tile.xp} XP
-                  </span>
-                </div>
-
-                {/* Bottom of Image Overlay */}
-                <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
-                  <div className={`p-2.5 rounded-xl backdrop-blur-md shadow-md ${theme.iconBox}`}>
-                    <IconComponent className="w-5 h-5" />
-                  </div>
-
-                  {isDone ? (
-                    <span className="flex items-center gap-1 text-[11px] font-bold px-3 py-1 rounded-full bg-emerald-500 text-white shadow-sm">
-                      <CheckCircle2 className="w-3.5 h-3.5" /> Validé
-                    </span>
-                  ) : (
-                    <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full backdrop-blur-md shadow-sm ${theme.tagPill}`}>
-                      {tile.badge}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Card Body - Contenu textuel complet & identité colorée */}
-              <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 className={`font-['Outfit'] text-lg font-bold text-slate-900 ${theme.hoverTitle} transition leading-snug`}>
-                    {tile.title}
-                  </h3>
-                  <div className={`text-xs font-bold ${theme.questText} mt-1 mb-2.5`}>
-                    {tile.questTitle}
-                  </div>
-                  {/* Description complète sans troncature */}
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                    {tile.shortDesc}
-                  </p>
-                </div>
-
-                {/* Footer Action aux couleurs du module */}
-                <div className="mt-6 pt-4 border-t border-slate-200/60 flex items-center justify-between">
-                  <span className={`text-xs font-bold ${theme.footerText} transition flex items-center gap-1`}>
-                    {tile.isNew ? 'Explorer le Lab IA' : 'Accéder au module'}
-                  </span>
-                  <div className={`w-8 h-8 rounded-xl ${theme.footerBtn} flex items-center justify-center transition shadow-xs`}>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition" />
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
-    </div>
+    </motion.div>
   );
 }
