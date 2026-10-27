@@ -20,6 +20,7 @@ import {
 import confetti from 'canvas-confetti';
 import SpeedChallengeGame from './SpeedChallengeGame';
 import EscapeGameAurore from './EscapeGameAurore';
+import GameFactChecking3D from './GameFactChecking3D';
 import { sounds } from '../utils/soundEffects';
 
 const PRESET_CONSIGNES = [
@@ -40,6 +41,7 @@ const PRESET_CONSIGNES = [
 export default function AiLabView() {
   const [activeTab, setActiveTab] = useState('escape'); // escape | analyzer | simulator | games
   const [isEscapeGameOpen, setIsEscapeGameOpen] = useState(false);
+  const [isFactCheck3DOpen, setIsFactCheck3DOpen] = useState(false);
 
   // State for Consigne Analyzer
   const [inputConsigne, setInputConsigne] = useState(PRESET_CONSIGNES[0].text);
@@ -315,7 +317,18 @@ export default function AiLabView() {
                 className="px-8 py-4 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-600 to-indigo-600 hover:scale-[1.02] text-white font-['Outfit'] font-black text-sm uppercase tracking-wider shadow-xl shadow-rose-500/30 transition flex items-center gap-3 cursor-pointer"
               >
                 <Play className="w-5 h-5 fill-current" />
-                <span>Lancer l'Escape Game en Plein Écran</span>
+                <span>Lancer l'Escape Game Global</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  sounds.playPop();
+                  setIsFactCheck3DOpen(true);
+                }}
+                className="px-7 py-4 rounded-2xl bg-gradient-to-r from-cyan-500 via-sky-600 to-indigo-700 hover:scale-[1.02] text-slate-950 font-['Outfit'] font-black text-sm uppercase tracking-wider shadow-xl shadow-cyan-500/30 transition flex items-center gap-3 cursor-pointer"
+              >
+                <Search className="w-5 h-5" />
+                <span>Jeu Fact-Checking 3D (10 Énigmes)</span>
               </button>
             </div>
           </div>
@@ -325,6 +338,20 @@ export default function AiLabView() {
       {/* FULLSCREEN ESCAPE GAME MODAL */}
       {isEscapeGameOpen && (
         <EscapeGameAurore onClose={() => setIsEscapeGameOpen(false)} />
+      )}
+
+      {/* FULLSCREEN FACT-CHECKING 3D MODAL */}
+      {isFactCheck3DOpen && (
+        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md p-2 sm:p-6 flex flex-col justify-center animate-in fade-in duration-300">
+          <div className="w-full h-full max-w-7xl mx-auto flex flex-col">
+            <GameFactChecking3D 
+              onBack={() => setIsFactCheck3DOpen(false)}
+              onComplete={() => {
+                sounds.playFanfare();
+              }}
+            />
+          </div>
+        </div>
       )}
 
       {/* TAB 1: ANALYSEUR DE CONSIGNES */}

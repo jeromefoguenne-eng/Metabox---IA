@@ -28,6 +28,7 @@ import {
 import confetti from 'canvas-confetti';
 import PixarStyleScene3D from './PixarStyleScene3D';
 import CampusRivageoisMap from './CampusRivageoisMap';
+import GameFactChecking3D from './GameFactChecking3D';
 import GameInvestigationOS from './GameInvestigationOS';
 import GameGrandProcesHacking from './GameGrandProcesHacking';
 import GameSurvivantNovel from './GameSurvivantNovel';
@@ -412,12 +413,12 @@ export default function EscapeGameAurore({ onClose }) {
             </div>
           )}
 
-          {/* ROOM 1: CYBER-DÉTECTIVE OS INVESTIGATION (AILE NORD) */}
+          {/* ROOM 1: CYBER-DÉTECTIVE FACT-CHECKING 3D POINT & CLICK (AILE NORD) */}
           {currentStage === 'room_north' && (
             <div className="space-y-3 animate-in fade-in h-full flex flex-col">
               <div className="flex items-center justify-between pb-2 border-b border-slate-800">
                 <span className="text-xs font-mono text-cyan-400 font-bold uppercase">
-                  AILE NORD (QUAI DE ROME) · LA RÉDACTION FANTÔME
+                  AILE NORD (QUAI DE ROME) · LABORATOIRE FORENSIQUE DE FACT-CHECKING 3D
                 </span>
                 <button 
                   onClick={handleBackToHub}
@@ -427,11 +428,12 @@ export default function EscapeGameAurore({ onClose }) {
                 </button>
               </div>
 
-              <div className="flex-1">
-                <GameInvestigationOS
+              <div className="flex-1 min-h-[640px]">
+                <GameFactChecking3D
                   onComplete={() => {
                     handleUnlockKey('north', 'Clé Alpha (Esprit Critique & Vérité)');
                   }}
+                  onBack={handleBackToHub}
                 />
               </div>
             </div>
