@@ -38,6 +38,7 @@ import { sounds } from '../utils/soundEffects';
 export default function EscapeGameAurore({ onClose }) {
   // Game State
   const [currentStage, setCurrentStage] = useState('intro'); // 'intro' | 'hub' | 'room_north' | 'room_west' | 'room_south' | 'room_east' | 'boss' | 'ending'
+  const [isPixarVideoMode, setIsPixarVideoMode] = useState(false);
   const [timeLeft, setTimeLeft] = useState(45 * 60); // 45 minutes
   const [isPaused, setIsPaused] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -274,25 +275,57 @@ export default function EscapeGameAurore({ onClose }) {
         {currentStage !== 'room_west' && (
           <div className="lg:col-span-5 border-r border-slate-800/80 bg-slate-950 p-4 flex flex-col justify-between relative overflow-hidden">
             <div className="flex-1 w-full relative rounded-3xl overflow-hidden border border-slate-800 shadow-2xl">
-              <PixarStyleScene3D 
-                theme={
-                  currentStage === 'room_north' ? 'factcheck' :
-                  currentStage === 'room_south' ? 'datacenter' :
-                  currentStage === 'room_east' ? 'promptwars' :
-                  currentStage === 'boss' ? 'boss' : 'hub'
-                }
-                isAlert={currentStage === 'boss' || timeLeft < 15 * 60}
-                characterMood={
-                  totalKeysObtained === 4 ? 'victorious' :
-                  currentStage === 'boss' ? 'worried' : 'thinking'
-                }
-              />
+              {isPixarVideoMode ? (
+                <div className="absolute inset-0 z-10 w-full h-full bg-slate-950 flex items-center justify-center">
+                  <video
+                    src="/videos/aurore_presentatrice.mp4"
+                    poster="/videos/sources/aurore_presentatrice.jpg"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover animate-in fade-in duration-700"
+                  />
+                  <div className="absolute bottom-4 left-4 z-30 flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-slate-950/80 border border-cyan-500/40 text-cyan-300 text-xs font-mono font-bold backdrop-blur-md shadow-xl">
+                    <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                    <span>Moteur Wan 2.1 • Avatar Aurore Vivante</span>
+                  </div>
+                </div>
+              ) : (
+                <PixarStyleScene3D 
+                  theme={
+                    currentStage === 'room_north' ? 'factcheck' :
+                    currentStage === 'room_south' ? 'datacenter' :
+                    currentStage === 'room_east' ? 'promptwars' :
+                    currentStage === 'boss' ? 'boss' : 'hub'
+                  }
+                  isAlert={currentStage === 'boss' || timeLeft < 15 * 60}
+                  characterMood={
+                    totalKeysObtained === 4 ? 'victorious' :
+                    currentStage === 'boss' ? 'worried' : 'thinking'
+                  }
+                />
+              )}
 
               {/* A.U.R.O.R.E. Overlay Badge */}
-              <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-cyan-500/30 flex items-center gap-2">
+              <div className="absolute top-4 left-4 z-20 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-cyan-500/30 flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping" />
                 <span className="text-xs font-mono font-bold text-cyan-200">A.U.R.O.R.E. v2.4 (Live Feed)</span>
               </div>
+
+              {/* Bouton bascule Vidéo Pixar Studio */}
+              <button
+                onClick={() => setIsPixarVideoMode(!isPixarVideoMode)}
+                className={`absolute top-4 right-4 z-20 px-3 py-1.5 rounded-xl text-[10px] font-mono font-black transition flex items-center gap-1.5 cursor-pointer shadow-xl border ${
+                  isPixarVideoMode
+                    ? 'bg-gradient-to-r from-cyan-500 via-indigo-500 to-purple-600 text-white border-cyan-400 ring-2 ring-cyan-400/30'
+                    : 'bg-slate-900/90 text-cyan-300 border-cyan-500/40 hover:bg-slate-800'
+                }`}
+                title="Basculer vers l'avatar vidéo Pixar 3D animé par Wan 14B"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-cyan-300 animate-spin" style={{ animationDuration: '4s' }} />
+                <span>{isPixarVideoMode ? '🎬 Vidéo Pixar ACTIF' : '🎬 Activer Vidéo Pixar'}</span>
+              </button>
             </div>
 
             {/* Dialogue Log Console */}

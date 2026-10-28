@@ -90,6 +90,7 @@ export default function TvGameShowArena({
 
   // TV Intro / Générique State
   const [isShowingIntro, setIsShowingIntro] = useState(true);
+  const [isPixarMode, setIsPixarMode] = useState(false);
 
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -801,13 +802,46 @@ export default function TvGameShowArena({
       {/* 2. Main Studio Viewport */}
       <div className="flex-1 flex flex-col relative overflow-hidden">
         
-        {/* Upper Half: 3D TV Studio Scene */}
-        <div className="h-[46vh] min-h-[260px] w-full relative bg-slate-950">
-          <GameShow3D 
-            reaction={reaction} 
-            theme={showType}
-            themeColor={themeColor}
-          />
+        {/* Upper Half: 3D TV Studio Scene & Pixar Mode */}
+        <div className="h-[46vh] min-h-[260px] w-full relative bg-slate-950 overflow-hidden">
+          {isPixarMode ? (
+            <div className="absolute inset-0 z-10 w-full h-full bg-slate-950 flex items-center justify-center">
+              <video
+                key={reaction}
+                src={reaction === 'victory' ? '/videos/tv_show_victoire.mp4' : '/videos/tv_show_plateau.mp4'}
+                poster={reaction === 'victory' ? '/videos/sources/tv_show_victoire.jpg' : '/videos/sources/tv_show_plateau.jpg'}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover animate-in fade-in duration-700"
+              />
+              <div className="absolute bottom-4 left-4 z-30 flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-slate-950/80 border border-amber-500/40 text-amber-300 text-xs font-mono font-bold backdrop-blur-md shadow-xl">
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+                <span>Moteur Wan 2.1 • {reaction === 'victory' ? 'Célébration Victoire' : 'Plateau Télévisé Pixar'}</span>
+              </div>
+            </div>
+          ) : (
+            <GameShow3D 
+              reaction={reaction} 
+              theme={showType}
+              themeColor={themeColor}
+            />
+          )}
+
+          {/* Bouton de bascule Mode Pixar Studio */}
+          <button
+            onClick={() => setIsPixarMode(!isPixarMode)}
+            className={`absolute top-3 right-3 z-30 px-3 py-1.5 rounded-xl text-xs font-mono font-black transition flex items-center gap-1.5 cursor-pointer shadow-xl border ${
+              isPixarMode 
+                ? 'bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 text-white border-amber-400/60 ring-2 ring-amber-400/30'
+                : 'bg-slate-900/90 text-amber-400 border-amber-500/40 hover:bg-slate-800'
+            }`}
+            title="Basculer vers le plateau télévisé Pixar animé par Wan 14B"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-spin" style={{ animationDuration: '4s' }} />
+            <span>{isPixarMode ? '🎬 Rendu Pixar ACTIF' : '🎬 Activer Rendu Pixar 14B'}</span>
+          </button>
 
           {/* DYNAMIC OPENING GENERIQUE TV OVERLAY */}
           {isShowingIntro && (

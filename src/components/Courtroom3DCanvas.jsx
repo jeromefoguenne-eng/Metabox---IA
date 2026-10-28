@@ -1791,10 +1791,68 @@ export default function Courtroom3DCanvas({
     };
   }, []);
 
+  const [isPixarMode, setIsPixarMode] = useState(false);
+
+  // Détermination de la source vidéo/image Pixar selon la vue caméra active
+  const getPixarMedia = () => {
+    if (cameraView === 'JUDGE') {
+      return {
+        video: '/videos/tribunal_silence.mp4',
+        poster: '/videos/sources/tribunal_silence.jpg',
+        title: 'Le Juge — Salle d\'Audience'
+      };
+    }
+    if (cameraView === 'AUDIENCE') {
+      return {
+        video: '/videos/tribunal_foule.mp4',
+        poster: '/videos/sources/tribunal_foule.jpg',
+        title: 'Gradins du Public & Citoyens'
+      };
+    }
+    if (cameraView === 'WITNESS') {
+      return {
+        video: '/videos/tribunal_verdict_maxime.mp4',
+        poster: '/videos/sources/tribunal_verdict_maxime.jpg',
+        title: 'Maxime — Barre des Témoins'
+      };
+    }
+    return {
+      video: '/videos/tribunal_intro.mp4',
+      poster: '/videos/sources/tribunal_intro.jpg',
+      title: 'Vue Panoramique — Tribunal HECh'
+    };
+  };
+
+  const pixarMedia = getPixarMedia();
+
   return (
     <div className="relative w-full h-full min-h-[340px] rounded-3xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-950 select-none">
-      {/* Canvas Three.js */}
-      <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+      {/* Canvas Three.js Temps Réel */}
+      <div 
+        ref={mountRef} 
+        className={`w-full h-full cursor-grab active:cursor-grabbing ${isPixarMode || cameraView === 'PIXAR_CINEMA' ? 'hidden' : 'block'}`} 
+      />
+
+      {/* Rendu Vidéo / Cinématique Pixar Studio (Wan 14B) */}
+      {(isPixarMode || cameraView === 'PIXAR_CINEMA') && (
+        <div className="absolute inset-0 z-10 w-full h-full bg-slate-950 flex items-center justify-center overflow-hidden">
+          <video
+            key={cameraView}
+            src={pixarMedia.video}
+            poster={pixarMedia.poster}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover animate-in fade-in duration-700"
+          />
+          {/* Badge officiel Pixar Studio */}
+          <div className="absolute bottom-4 left-4 z-30 flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-slate-950/80 border border-amber-500/40 text-amber-300 text-xs font-mono font-bold backdrop-blur-md shadow-xl">
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+            <span>Moteur Wan 2.1 14B • {pixarMedia.title}</span>
+          </div>
+        </div>
+      )}
 
       {/* Régie TV & Contrôleur de Caméras Cinématiques */}
       <div className="absolute top-3 left-3 z-20 flex flex-wrap gap-1.5 p-1 rounded-2xl bg-slate-950/85 backdrop-blur-md border border-slate-800 shadow-xl">
@@ -1810,7 +1868,7 @@ export default function Courtroom3DCanvas({
             key={btn.key}
             onClick={() => onCameraChange && onCameraChange(btn.key)}
             className={`px-2.5 py-1 rounded-xl text-[10px] font-mono font-bold transition flex items-center gap-1 cursor-pointer ${
-              cameraView === btn.key
+              cameraView === btn.key && !isPixarMode
                 ? 'bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-md'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
             }`}
@@ -1819,6 +1877,20 @@ export default function Courtroom3DCanvas({
             <span>{btn.label}</span>
           </button>
         ))}
+
+        {/* Bouton bascule Mode Pixar Studio 14B */}
+        <button
+          onClick={() => setIsPixarMode(!isPixarMode)}
+          className={`px-3 py-1 rounded-xl text-[10px] font-mono font-black transition flex items-center gap-1.5 cursor-pointer shadow-lg border ${
+            isPixarMode || cameraView === 'PIXAR_CINEMA'
+              ? 'bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 text-white border-amber-400/60 ring-2 ring-amber-400/30'
+              : 'bg-slate-900/90 text-amber-400 border-amber-500/30 hover:bg-slate-800'
+          }`}
+          title="Basculer vers les cinématiques photo-réalistes Pixar animées par Wan 14B"
+        >
+          <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-spin" style={{ animationDuration: '4s' }} />
+          <span>{isPixarMode ? '🎬 Rendu Pixar ACTIF' : '🎬 Activer Rendu Pixar 14B'}</span>
+        </button>
       </div>
 
       {/* HUD Émotionnel & Statut Judiciaire en direct */}

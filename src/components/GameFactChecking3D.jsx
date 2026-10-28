@@ -422,6 +422,7 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [hoveredStation, setHoveredStation] = useState(null);
   const [isMuted, setIsMuted] = useState(() => sounds.isMuted());
+  const [isPixarMode, setIsPixarMode] = useState(false);
 
   // Objets interactifs 3D
   const interactiveObjectsRef = useRef([]);
@@ -1216,7 +1217,7 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
               key={key}
               onClick={() => handleSwitchCamera(key)}
               className={`px-2.5 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 ${
-                cameraPreset === key
+                cameraPreset === key && !isPixarMode
                   ? 'bg-cyan-500 text-slate-950 shadow-sm'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800'
               }`}
@@ -1225,6 +1226,23 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
               <span>{view.name}</span>
             </button>
           ))}
+
+          {/* Bouton bascule Mode Pixar Studio 14B */}
+          <button
+            onClick={() => {
+              sounds.playPop();
+              setIsPixarMode(!isPixarMode);
+            }}
+            className={`px-3 py-1 rounded-xl text-xs font-mono font-black transition flex items-center gap-1.5 cursor-pointer shadow-lg border shrink-0 ${
+              isPixarMode
+                ? 'bg-gradient-to-r from-cyan-500 via-indigo-500 to-purple-600 text-white border-cyan-400 ring-2 ring-cyan-400/30'
+                : 'bg-slate-900/90 text-cyan-300 border-cyan-500/40 hover:bg-slate-800'
+            }`}
+            title="Basculer vers le laboratoire haute fidélité Pixar animé par Wan 14B"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-cyan-300 animate-spin" style={{ animationDuration: '4s' }} />
+            <span>{isPixarMode ? '🎬 Rendu Pixar ACTIF' : '🎬 Activer Rendu Pixar 14B'}</span>
+          </button>
         </div>
 
         {/* Actions Droite : Score, Journal, Plein Écran, Quitter */}
@@ -1278,12 +1296,31 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
       </div>
 
       {/* ==================================================================== */}
-      {/* 3D CANVAS MOUNT (LE LABORATOIRE POINT & CLICK INTERACTIF)           */}
+      {/* 3D CANVAS MOUNT & PIXAR STUDIO VIDEO VIEWPORT                       */}
       {/* ==================================================================== */}
       <div 
         ref={mountRef} 
-        className="w-full h-full relative cursor-default"
+        className={`w-full h-full relative cursor-default ${isPixarMode ? 'hidden' : 'block'}`}
       />
+
+      {isPixarMode && (
+        <div className="absolute inset-0 z-10 w-full h-full bg-slate-950 flex items-center justify-center overflow-hidden">
+          <video
+            src="/videos/factcheck_lab_intro.mp4"
+            poster="/videos/sources/factcheck_lab_intro.jpg"
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover animate-in fade-in duration-700"
+          />
+          {/* Badge officiel Pixar Studio */}
+          <div className="absolute bottom-4 left-4 z-30 flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-slate-950/80 border border-cyan-500/40 text-cyan-300 text-xs font-mono font-bold backdrop-blur-md shadow-xl">
+            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span>Moteur Wan 2.1 • Cyber-Laboratoire d'Investigation IA</span>
+          </div>
+        </div>
+      )}
 
       {/* Bulle flottante au survol d'une station 3D */}
       {hoveredStation && !activeEnigmaId && (
