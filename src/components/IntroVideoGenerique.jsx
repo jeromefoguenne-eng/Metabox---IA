@@ -113,11 +113,17 @@ export default function IntroVideoGenerique({ onFinish }) {
         </button>
       )}
 
-      {/* Badge Titre en haut à gauche */}
-      <div className="absolute top-6 left-6 flex items-center gap-3 bg-black/60 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/10 text-white pointer-events-none">
-        <Film className="w-4 h-4 text-sky-400 animate-pulse" />
+      {/* Badge Titre en haut à gauche avec Logo HECh */}
+      <div className="absolute top-6 left-6 flex items-center gap-3 bg-black/60 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/20 text-white pointer-events-none">
+        <div className="h-8 px-2 py-0.5 rounded-lg bg-white flex items-center justify-center">
+          <img
+            src="/images/hech_logo_officiel.jpg"
+            alt="Haute École Charlemagne"
+            className="h-6 w-auto object-contain"
+          />
+        </div>
         <span className="font-['Outfit'] font-bold text-sm tracking-wide">
-          Générique Officiel · Métabox IA
+          SAR HECh · Métabox IA
         </span>
       </div>
 

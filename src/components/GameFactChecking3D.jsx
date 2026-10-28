@@ -1184,12 +1184,14 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
       {/* ==================================================================== */}
       <div className="absolute top-0 left-0 right-0 z-30 bg-slate-950/85 backdrop-blur-md border-b border-cyan-500/30 px-4 py-3 flex items-center justify-between gap-4">
         
-        {/* Titre & Statut */}
+        {/* Titre & Statut avec Logo Réel HECh */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 via-indigo-600 to-fuchsia-600 p-0.5 flex items-center justify-center shadow-md">
-            <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-              <Search className="w-5 h-5 text-cyan-400" />
-            </div>
+          <div className="h-10 px-2 py-0.5 rounded-xl bg-white border border-slate-700 shadow-sm flex items-center justify-center">
+            <img
+              src="/images/hech_logo_officiel.jpg"
+              alt="Haute École Charlemagne"
+              className="h-7 w-auto object-contain"
+            />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -1197,7 +1199,7 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
                 Fact-Checking Lab 3D · Point & Click
               </h2>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-500/40 font-mono">
-                Campus Rivageois
+                SAR · HECh Liège
               </span>
             </div>
             <p className="text-xs text-slate-400 hidden sm:block">

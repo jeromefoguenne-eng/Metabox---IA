@@ -417,19 +417,29 @@ export default function Courtroom3DCanvas({
       scene.add(beam);
     });
 
+    // Texture du logo officiel HECh
+    const textureLoader = new THREE.TextureLoader();
+    const hechLogoTex = textureLoader.load('/images/hech_logo_officiel.jpg');
+
     // Grand Écusson de la Justice HECh au-dessus du Juge
     const sealGroup = new THREE.Group();
     sealGroup.position.set(0, 9.2, -8.6);
-    const sealBack = new THREE.Mesh(new THREE.CylinderGeometry(1.3, 1.3, 0.08, 32), goldMat);
+    const sealBack = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.4, 0.08, 32), goldMat);
     sealBack.rotation.x = Math.PI / 2;
     sealGroup.add(sealBack);
 
-    // Relief balance de la justice sur l'écusson
+    // Blason officiel HECh au cœur du sceau de justice
+    const sealLogoMesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.6, 0.85),
+      new THREE.MeshBasicMaterial({ map: hechLogoTex, transparent: true })
+    );
+    sealLogoMesh.position.z = 0.05;
+    sealGroup.add(sealLogoMesh);
+
+    // Relief balance de la justice sous le blason
     const sealPillar = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.4, 0.06), metalDark);
+    sealPillar.position.y = -0.3;
     sealGroup.add(sealPillar);
-    const sealBeam = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.08, 0.06), metalDark);
-    sealBeam.position.y = 0.45;
-    sealGroup.add(sealBeam);
     scene.add(sealGroup);
 
     // 4 Colonnes Corinthiennes en Marbre Blanc Veiné
@@ -654,6 +664,19 @@ export default function Courtroom3DCanvas({
       panel.position.set(bx, 0, 0.72);
       benchGroup.add(panel);
     }
+
+    // Plaque officielle dorée HECh sur la façade centrale du pupitre du Juge
+    const hechPlaqueBase = new THREE.Mesh(new THREE.BoxGeometry(1.25, 0.68, 0.04), goldMat);
+    hechPlaqueBase.position.set(0, 0, 0.77);
+    benchGroup.add(hechPlaqueBase);
+
+    const hechPlaqueMesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.15, 0.60),
+      new THREE.MeshBasicMaterial({ map: hechLogoTex })
+    );
+    hechPlaqueMesh.position.set(0, 0, 0.795);
+    benchGroup.add(hechPlaqueMesh);
+
     scene.add(benchGroup);
 
     // Livres juridiques anciens reliés cuir rouge/or sur le pupitre du juge

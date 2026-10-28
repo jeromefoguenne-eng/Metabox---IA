@@ -354,12 +354,21 @@ export default function BentoGrid({
               <div className="absolute -inset-3 bg-gradient-to-r from-sky-500 via-indigo-600 to-fuchsia-600 rounded-3xl blur-xl opacity-60 group-hover:opacity-100 transition duration-700 animate-pulse" />
               
               {/* Boîtier Métabox Principal */}
-              <div className="relative w-56 sm:w-64 rounded-3xl bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-950 p-6 border-2 border-indigo-400/60 shadow-2xl text-center text-white flex flex-col items-center">
+              <div className="relative w-56 sm:w-68 rounded-3xl bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-950 p-6 border-2 border-indigo-400/60 shadow-2xl text-center text-white flex flex-col items-center">
                 
-                {/* Badge supérieur HECh */}
+                {/* Logo Officiel HECh au sommet du Cœur Métabox */}
+                <div className="bg-white px-3.5 py-1.5 rounded-2xl border border-slate-200/80 shadow-md mb-2.5 flex items-center justify-center hover:scale-105 transition-transform">
+                  <img
+                    src="/images/hech_logo_officiel.jpg"
+                    alt="Logo officiel Haute École Charlemagne"
+                    className="h-8 w-auto object-contain"
+                  />
+                </div>
+
+                {/* Badge supérieur HECh & SAR */}
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-300/30 text-[10px] font-mono font-bold text-indigo-300 mb-3 uppercase tracking-wider">
                   <Box className="w-3 h-3 text-cyan-300 animate-bounce" />
-                  HECh · SAR Moodle 685
+                  Plateforme Pédagogique SAR
                 </div>
 
                 {/* LOGO MÉTABOX 3D ISOMÉTRIQUE */}

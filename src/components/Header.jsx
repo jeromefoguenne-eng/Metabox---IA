@@ -30,17 +30,17 @@ export default function Header({
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
       <div className="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
-        {/* Brand & Title */}
+        {/* Brand & Title avec Logo Réel HECh */}
         <div 
           onClick={() => handleTileClick('dashboard')}
-          className="flex items-center gap-3 cursor-pointer select-none group"
+          className="flex items-center gap-3.5 cursor-pointer select-none group"
         >
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-sky-500 via-indigo-600 to-purple-600 p-0.5 shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
-            <div className="w-full h-full bg-white rounded-[14px] flex items-center justify-center">
-              <span className="font-['Outfit'] font-black text-base bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                PR
-              </span>
-            </div>
+          <div className="h-12 px-2.5 py-1 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-center justify-center group-hover:shadow-md transition-all">
+            <img
+              src="/images/hech_logo_officiel.jpg"
+              alt="Haute École Charlemagne"
+              className="h-9 w-auto object-contain"
+            />
           </div>
           <div>
             <div className="flex items-center gap-2">

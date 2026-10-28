@@ -364,11 +364,20 @@ export default function App() {
         unlockedBadges={unlockedBadges}
       />
 
-      {/* Footer Clair & Épuré */}
+      {/* Footer Clair & Épuré avec Logo Officiel HECh */}
       <footer className="mt-auto border-t border-slate-200 bg-white py-8 text-xs sm:text-sm text-slate-500">
         <div className="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            <span className="font-['Outfit'] font-bold text-slate-800">Petite Réussite - Métabox IA (Édition Lumineuse 2.1)</span> · SAR Haute École Charlemagne
+          <div className="flex items-center gap-3">
+            <div className="h-9 px-2 py-0.5 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center">
+              <img
+                src="/images/hech_logo_officiel.jpg"
+                alt="Haute École Charlemagne"
+                className="h-7 w-auto object-contain"
+              />
+            </div>
+            <div>
+              <span className="font-['Outfit'] font-bold text-slate-800">Petite Réussite - Métabox IA (Édition Lumineuse 2.1)</span> · SAR Haute École Charlemagne
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <a

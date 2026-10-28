@@ -272,9 +272,18 @@ export default function AiLabView() {
           </div>
 
           <div className="relative z-10 max-w-3xl space-y-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 font-mono text-xs font-bold uppercase tracking-widest">
-              <span className="w-2 h-2 rounded-full bg-rose-400 animate-ping" />
-              Nouveau Serious Game Immersif 3D
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="h-9 px-2.5 py-1 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-center">
+                <img
+                  src="/images/hech_logo_officiel.jpg"
+                  alt="Haute École Charlemagne"
+                  className="h-6 w-auto object-contain"
+                />
+              </div>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 font-mono text-xs font-bold uppercase tracking-widest">
+                <span className="w-2 h-2 rounded-full bg-rose-400 animate-ping" />
+                Nouveau Serious Game Immersif 3D · SAR HECh
+              </div>
             </div>
 
             <h3 className="text-3xl sm:text-4xl font-['Outfit'] font-black text-white leading-tight">

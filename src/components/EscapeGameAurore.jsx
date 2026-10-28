@@ -201,8 +201,12 @@ export default function EscapeGameAurore({ onClose }) {
       {/* Top Cyber Command Bar */}
       <header className="h-16 border-b border-slate-800 bg-slate-900/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between z-20">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 text-white shadow-lg shadow-cyan-500/20">
-            <Cpu className="w-5 h-5 animate-pulse" />
+          <div className="h-10 px-2.5 py-1 rounded-xl bg-white border border-slate-700 shadow-sm flex items-center justify-center">
+            <img
+              src="/images/hech_logo_officiel.jpg"
+              alt="Haute École Charlemagne"
+              className="h-7 w-auto object-contain"
+            />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -313,8 +317,17 @@ export default function EscapeGameAurore({ onClose }) {
           {/* STAGE: INTRO */}
           {currentStage === 'intro' && (
             <div className="max-w-2xl mx-auto my-auto space-y-6 text-center animate-in fade-in">
-              <div className="w-16 h-16 rounded-3xl bg-rose-500/20 border-2 border-rose-500 flex items-center justify-center mx-auto shadow-rose-500/30 shadow-2xl">
-                <ShieldAlert className="w-8 h-8 text-rose-400 animate-bounce" />
+              <div className="flex items-center justify-center gap-3">
+                <div className="h-14 px-3 py-1.5 rounded-2xl bg-white border border-slate-700 shadow-xl flex items-center justify-center">
+                  <img
+                    src="/images/hech_logo_officiel.jpg"
+                    alt="Haute École Charlemagne"
+                    className="h-10 w-auto object-contain"
+                  />
+                </div>
+                <div className="w-14 h-14 rounded-2xl bg-rose-500/20 border-2 border-rose-500 flex items-center justify-center shadow-rose-500/30 shadow-xl">
+                  <ShieldAlert className="w-7 h-7 text-rose-400 animate-bounce" />
+                </div>
               </div>
 
               <div>

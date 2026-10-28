@@ -166,16 +166,28 @@ export default function TileDetails({
 
   return (
     <div className={`space-y-8 animate-in fade-in duration-200 p-4 sm:p-6 rounded-3xl border-2 ${getTilePageBg(tile.id)} shadow-xs`}>
-      {/* Back to Dashboard Navigation */}
-      {onBackToDashboard && (
-        <button
-          onClick={handleBack}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-bold text-slate-700 hover:text-indigo-600 transition shadow-xs"
-        >
-          <ArrowRight className="w-4 h-4 rotate-180" />
-          Retour au Dashboard des Quêtes
-        </button>
-      )}
+      {/* Back to Dashboard Navigation & Logo Officiel HECh */}
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        {onBackToDashboard && (
+          <button
+            onClick={handleBack}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-bold text-slate-700 hover:text-indigo-600 transition shadow-xs"
+          >
+            <ArrowRight className="w-4 h-4 rotate-180" />
+            Retour au Dashboard des Quêtes
+          </button>
+        )}
+        <div className="h-10 px-3 py-1 rounded-xl bg-white border border-slate-200 shadow-xs flex items-center gap-2">
+          <img
+            src="/images/hech_logo_officiel.jpg"
+            alt="Haute École Charlemagne"
+            className="h-7 w-auto object-contain"
+          />
+          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono hidden sm:inline">
+            SAR · Module Pédagogique
+          </span>
+        </div>
+      </div>
 
       {/* Visual Image Header Banner */}
       <div className="relative rounded-3xl overflow-hidden border border-slate-200 shadow-md h-64 md:h-72 bg-slate-900">
