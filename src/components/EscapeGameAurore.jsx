@@ -201,11 +201,11 @@ export default function EscapeGameAurore({ onClose }) {
       {/* Top Cyber Command Bar */}
       <header className="h-16 border-b border-slate-800 bg-slate-900/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between z-20">
         <div className="flex items-center gap-3">
-          <div className="h-10 px-2.5 py-1 rounded-xl bg-white border border-slate-700 shadow-sm flex items-center justify-center">
+          <div className="h-10 w-10 p-1 rounded-xl bg-white border border-slate-700 shadow-sm flex items-center justify-center">
             <img
-              src="/images/hech_logo_officiel.jpg"
+              src="/images/hech_logo_officiel.png"
               alt="Haute École Charlemagne"
-              className="h-7 w-auto object-contain"
+              className="w-full h-full object-contain"
             />
           </div>
           <div>
@@ -318,11 +318,11 @@ export default function EscapeGameAurore({ onClose }) {
           {currentStage === 'intro' && (
             <div className="max-w-2xl mx-auto my-auto space-y-6 text-center animate-in fade-in">
               <div className="flex items-center justify-center gap-3">
-                <div className="h-14 px-3 py-1.5 rounded-2xl bg-white border border-slate-700 shadow-xl flex items-center justify-center">
+                <div className="w-14 h-14 p-1.5 rounded-2xl bg-white border border-slate-700 shadow-xl flex items-center justify-center">
                   <img
-                    src="/images/hech_logo_officiel.jpg"
+                    src="/images/hech_logo_officiel.png"
                     alt="Haute École Charlemagne"
-                    className="h-10 w-auto object-contain"
+                    className="w-full h-full object-contain"
                   />
                 </div>
                 <div className="w-14 h-14 rounded-2xl bg-rose-500/20 border-2 border-rose-500 flex items-center justify-center shadow-rose-500/30 shadow-xl">

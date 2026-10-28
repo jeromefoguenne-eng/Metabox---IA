@@ -417,9 +417,9 @@ export default function Courtroom3DCanvas({
       scene.add(beam);
     });
 
-    // Texture du logo officiel HECh
+    // Texture du logo officiel HECh (PNG transparent haute fidélité)
     const textureLoader = new THREE.TextureLoader();
-    const hechLogoTex = textureLoader.load('/images/hech_logo_officiel.jpg');
+    const hechLogoTex = textureLoader.load('/images/hech_logo_officiel.png');
 
     // Grand Écusson de la Justice HECh au-dessus du Juge
     const sealGroup = new THREE.Group();
@@ -428,9 +428,9 @@ export default function Courtroom3DCanvas({
     sealBack.rotation.x = Math.PI / 2;
     sealGroup.add(sealBack);
 
-    // Blason officiel HECh au cœur du sceau de justice
+    // Blason officiel HECh carré au cœur du sceau de justice
     const sealLogoMesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(1.6, 0.85),
+      new THREE.PlaneGeometry(1.3, 1.3),
       new THREE.MeshBasicMaterial({ map: hechLogoTex, transparent: true })
     );
     sealLogoMesh.position.z = 0.05;
@@ -666,13 +666,13 @@ export default function Courtroom3DCanvas({
     }
 
     // Plaque officielle dorée HECh sur la façade centrale du pupitre du Juge
-    const hechPlaqueBase = new THREE.Mesh(new THREE.BoxGeometry(1.25, 0.68, 0.04), goldMat);
+    const hechPlaqueBase = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.85, 0.04), goldMat);
     hechPlaqueBase.position.set(0, 0, 0.77);
     benchGroup.add(hechPlaqueBase);
 
     const hechPlaqueMesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(1.15, 0.60),
-      new THREE.MeshBasicMaterial({ map: hechLogoTex })
+      new THREE.PlaneGeometry(0.76, 0.76),
+      new THREE.MeshBasicMaterial({ map: hechLogoTex, transparent: true })
     );
     hechPlaqueMesh.position.set(0, 0, 0.795);
     benchGroup.add(hechPlaqueMesh);

@@ -1186,11 +1186,11 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
         
         {/* Titre & Statut avec Logo Réel HECh */}
         <div className="flex items-center gap-3">
-          <div className="h-10 px-2 py-0.5 rounded-xl bg-white border border-slate-700 shadow-sm flex items-center justify-center">
+          <div className="h-10 w-10 p-1 rounded-xl bg-white border border-slate-700 shadow-sm flex items-center justify-center">
             <img
-              src="/images/hech_logo_officiel.jpg"
+              src="/images/hech_logo_officiel.png"
               alt="Haute École Charlemagne"
-              className="h-7 w-auto object-contain"
+              className="w-full h-full object-contain"
             />
           </div>
           <div>

@@ -177,11 +177,11 @@ export default function TileDetails({
             Retour au Dashboard des Quêtes
           </button>
         )}
-        <div className="h-10 px-3 py-1 rounded-xl bg-white border border-slate-200 shadow-xs flex items-center gap-2">
+        <div className="h-10 px-2.5 py-1 rounded-xl bg-white border border-slate-200 shadow-xs flex items-center gap-2">
           <img
-            src="/images/hech_logo_officiel.jpg"
+            src="/images/hech_logo_officiel.png"
             alt="Haute École Charlemagne"
-            className="h-7 w-auto object-contain"
+            className="h-7 w-7 object-contain"
           />
           <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono hidden sm:inline">
             SAR · Module Pédagogique

@@ -357,11 +357,11 @@ export default function BentoGrid({
               <div className="relative w-56 sm:w-68 rounded-3xl bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-950 p-6 border-2 border-indigo-400/60 shadow-2xl text-center text-white flex flex-col items-center">
                 
                 {/* Logo Officiel HECh au sommet du Cœur Métabox */}
-                <div className="bg-white px-3.5 py-1.5 rounded-2xl border border-slate-200/80 shadow-md mb-2.5 flex items-center justify-center hover:scale-105 transition-transform">
+                <div className="bg-white/95 w-14 h-14 rounded-2xl border border-white/60 shadow-lg mb-2.5 flex items-center justify-center p-1.5 hover:scale-105 transition-transform backdrop-blur-md">
                   <img
-                    src="/images/hech_logo_officiel.jpg"
+                    src="/images/hech_logo_officiel.png"
                     alt="Logo officiel Haute École Charlemagne"
-                    className="h-8 w-auto object-contain"
+                    className="w-full h-full object-contain"
                   />
                 </div>
 

@@ -35,11 +35,11 @@ export default function Header({
           onClick={() => handleTileClick('dashboard')}
           className="flex items-center gap-3.5 cursor-pointer select-none group"
         >
-          <div className="h-12 px-2.5 py-1 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-center justify-center group-hover:shadow-md transition-all">
+          <div className="h-12 w-12 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex items-center justify-center p-1 group-hover:scale-105 group-hover:shadow-md transition-all">
             <img
-              src="/images/hech_logo_officiel.jpg"
+              src="/images/hech_logo_officiel.png"
               alt="Haute École Charlemagne"
-              className="h-9 w-auto object-contain"
+              className="w-full h-full object-contain"
             />
           </div>
           <div>

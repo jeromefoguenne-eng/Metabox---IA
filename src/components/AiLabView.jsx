@@ -273,11 +273,11 @@ export default function AiLabView() {
 
           <div className="relative z-10 max-w-3xl space-y-6">
             <div className="flex items-center gap-3 flex-wrap">
-              <div className="h-9 px-2.5 py-1 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-center">
+              <div className="h-9 w-9 p-0.5 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-center">
                 <img
-                  src="/images/hech_logo_officiel.jpg"
+                  src="/images/hech_logo_officiel.png"
                   alt="Haute École Charlemagne"
-                  className="h-6 w-auto object-contain"
+                  className="w-full h-full object-contain"
                 />
               </div>
               <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 font-mono text-xs font-bold uppercase tracking-widest">
