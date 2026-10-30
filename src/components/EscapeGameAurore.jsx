@@ -38,7 +38,7 @@ import { sounds } from '../utils/soundEffects';
 export default function EscapeGameAurore({ onClose }) {
   // Game State
   const [currentStage, setCurrentStage] = useState('intro'); // 'intro' | 'hub' | 'room_north' | 'room_west' | 'room_south' | 'room_east' | 'boss' | 'ending'
-  const [isPixarVideoMode, setIsPixarVideoMode] = useState(false);
+  const [isPixarVideoMode, setIsPixarVideoMode] = useState(true);
   const [timeLeft, setTimeLeft] = useState(45 * 60); // 45 minutes
   const [isPaused, setIsPaused] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);

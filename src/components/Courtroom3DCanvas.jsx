@@ -1791,7 +1791,7 @@ export default function Courtroom3DCanvas({
     };
   }, []);
 
-  const [isPixarMode, setIsPixarMode] = useState(false);
+  const [isPixarMode, setIsPixarMode] = useState(true);
 
   // Détermination de la source vidéo/image Pixar selon la vue caméra active
   const getPixarMedia = () => {

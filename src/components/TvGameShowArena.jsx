@@ -90,7 +90,7 @@ export default function TvGameShowArena({
 
   // TV Intro / Générique State
   const [isShowingIntro, setIsShowingIntro] = useState(true);
-  const [isPixarMode, setIsPixarMode] = useState(false);
+  const [isPixarMode, setIsPixarMode] = useState(true);
 
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);

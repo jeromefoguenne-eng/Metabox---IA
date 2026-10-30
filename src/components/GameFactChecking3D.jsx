@@ -422,7 +422,7 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [hoveredStation, setHoveredStation] = useState(null);
   const [isMuted, setIsMuted] = useState(() => sounds.isMuted());
-  const [isPixarMode, setIsPixarMode] = useState(false);
+  const [isPixarMode, setIsPixarMode] = useState(true);
 
   // Objets interactifs 3D
   const interactiveObjectsRef = useRef([]);
