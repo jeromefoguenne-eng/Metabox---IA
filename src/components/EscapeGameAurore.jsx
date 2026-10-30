@@ -28,6 +28,7 @@ import {
 import confetti from 'canvas-confetti';
 import PixarStyleScene3D from './PixarStyleScene3D';
 import CampusRivageoisMap from './CampusRivageoisMap';
+import CharacterAvatar from './CharacterAvatar';
 import GameFactChecking3D from './GameFactChecking3D';
 import GameInvestigationOS from './GameInvestigationOS';
 import GameGrandProcesHacking from './GameGrandProcesHacking';
@@ -271,74 +272,52 @@ export default function EscapeGameAurore({ onClose }) {
       {/* Main Game Screen */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden relative">
         
-        {/* LEFT COLUMN: 3D Pixar Visual Studio & Holographic Core (Caché dans le tribunal pour une immersion plein écran totale sans distraction) */}
+        {/* LEFT COLUMN: 3D Visual Studio & Holographic Core (Aurore) */}
         {currentStage !== 'room_west' && (
           <div className="lg:col-span-5 border-r border-slate-800/80 bg-slate-950 p-4 flex flex-col justify-between relative overflow-hidden">
             <div className="flex-1 w-full relative rounded-3xl overflow-hidden border border-slate-800 shadow-2xl">
-              {isPixarVideoMode ? (
-                <div className="absolute inset-0 z-10 w-full h-full bg-slate-950 flex items-center justify-center">
-                  <video
-                    src="/videos/aurore_presentatrice.mp4"
-                    poster="/videos/sources/aurore_presentatrice.jpg"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="w-full h-full object-cover animate-in fade-in duration-700"
-                  />
-                  <div className="absolute bottom-4 left-4 z-30 flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-slate-950/80 border border-cyan-500/40 text-cyan-300 text-xs font-mono font-bold backdrop-blur-md shadow-xl">
-                    <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                    <span>Moteur Wan 2.1 • Avatar Aurore Vivante</span>
-                  </div>
-                </div>
-              ) : (
-                <PixarStyleScene3D 
-                  theme={
-                    currentStage === 'room_north' ? 'factcheck' :
-                    currentStage === 'room_south' ? 'datacenter' :
-                    currentStage === 'room_east' ? 'promptwars' :
-                    currentStage === 'boss' ? 'boss' : 'hub'
-                  }
-                  isAlert={currentStage === 'boss' || timeLeft < 15 * 60}
-                  characterMood={
-                    totalKeysObtained === 4 ? 'victorious' :
-                    currentStage === 'boss' ? 'worried' : 'thinking'
-                  }
-                />
-              )}
+              <PixarStyleScene3D 
+                theme={
+                  currentStage === 'room_north' ? 'factcheck' :
+                  currentStage === 'room_south' ? 'datacenter' :
+                  currentStage === 'room_east' ? 'promptwars' :
+                  currentStage === 'boss' ? 'boss' : 'hub'
+                }
+                isAlert={currentStage === 'boss' || timeLeft < 15 * 60}
+                characterMood={
+                  totalKeysObtained === 4 ? 'victorious' :
+                  currentStage === 'boss' ? 'worried' : 'thinking'
+                }
+              />
 
-              {/* A.U.R.O.R.E. Overlay Badge */}
-              <div className="absolute top-4 left-4 z-20 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-cyan-500/30 flex items-center gap-2">
+              {/* A.U.R.O.R.E. Overlay Badge Canonique */}
+              <div className="absolute top-4 left-4 z-20 bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-cyan-500/40 flex items-center gap-2 shadow-lg">
                 <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping" />
-                <span className="text-xs font-mono font-bold text-cyan-200">A.U.R.O.R.E. v2.4 (Live Feed)</span>
+                <span className="text-xs font-mono font-bold text-cyan-200">A.U.R.O.R.E. v2.4 (Live Feed 3D)</span>
               </div>
-
-              {/* Bouton bascule Vidéo Pixar Studio */}
-              <button
-                onClick={() => setIsPixarVideoMode(!isPixarVideoMode)}
-                className={`absolute top-4 right-4 z-20 px-3 py-1.5 rounded-xl text-[10px] font-mono font-black transition flex items-center gap-1.5 cursor-pointer shadow-xl border ${
-                  isPixarVideoMode
-                    ? 'bg-gradient-to-r from-cyan-500 via-indigo-500 to-purple-600 text-white border-cyan-400 ring-2 ring-cyan-400/30'
-                    : 'bg-slate-900/90 text-cyan-300 border-cyan-500/40 hover:bg-slate-800'
-                }`}
-                title="Basculer vers l'avatar vidéo Pixar 3D animé par Wan 14B"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-cyan-300 animate-spin" style={{ animationDuration: '4s' }} />
-                <span>{isPixarVideoMode ? '🎬 Vidéo Pixar ACTIF' : '🎬 Activer Vidéo Pixar'}</span>
-              </button>
             </div>
 
-            {/* Dialogue Log Console */}
-            <div className="mt-3 p-3 rounded-2xl bg-slate-900/80 border border-slate-800 font-mono text-xs text-slate-300 space-y-1 max-h-28 overflow-y-auto">
+            {/* Dialogue Log Console avec Avatar Raccord */}
+            <div className="mt-3 p-3 rounded-2xl bg-slate-900/80 border border-slate-800 font-mono text-xs text-slate-300 space-y-2 max-h-32 overflow-y-auto">
               <div className="text-[10px] text-cyan-400 uppercase font-black tracking-wider flex items-center gap-1.5 mb-1">
                 <Terminal className="w-3.5 h-3.5" /> Journal de Transmission Directe
               </div>
               {dialogueLog.map((log, i) => (
-                <p key={i} className="leading-snug">
-                  <strong className={log.speaker === 'A.U.R.O.R.E.' ? 'text-rose-400' : 'text-amber-400'}>
-                    [{log.speaker}]
-                  </strong> {log.text}
-                </p>
+                <div key={i} className="flex items-start gap-2.5 leading-snug">
+                  {log.speaker === 'A.U.R.O.R.E.' ? (
+                    <CharacterAvatar characterId="aurore" size={20} className="shrink-0 mt-0.5" />
+                  ) : (
+                    <div className="w-5 h-5 rounded-md bg-amber-500/20 text-amber-300 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
+                      SYS
+                    </div>
+                  )}
+                  <div>
+                    <strong className={log.speaker === 'A.U.R.O.R.E.' ? 'text-cyan-300' : 'text-amber-400'}>
+                      [{log.speaker}]
+                    </strong>{' '}
+                    <span>{log.text}</span>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
@@ -358,6 +337,7 @@ export default function EscapeGameAurore({ onClose }) {
                     className="w-full h-full object-contain"
                   />
                 </div>
+                <CharacterAvatar characterId="aurore" size={56} />
                 <div className="w-14 h-14 rounded-2xl bg-rose-500/20 border-2 border-rose-500 flex items-center justify-center shadow-rose-500/30 shadow-xl">
                   <ShieldAlert className="w-7 h-7 text-rose-400 animate-bounce" />
                 </div>

@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { Camera, ZoomIn, Eye, Sparkles } from 'lucide-react';
+import { Camera, ZoomIn, Eye, Sparkles, Film, ShieldCheck } from 'lucide-react';
 import { sounds } from '../utils/soundEffects';
+import CharacterAvatar from './CharacterAvatar';
+import { CANONICAL_CHARACTERS } from '../utils/charactersData';
 
 // Générateur procédural de texture Parquet en chêne verni
 function createParquetTexture() {
@@ -1791,71 +1793,73 @@ export default function Courtroom3DCanvas({
     };
   }, []);
 
-  const [isPixarMode, setIsPixarMode] = useState(true);
+  // Mode Réalisateur Cinéma 3D In-Engine (100% raccord avec les personnages)
+  const [isCinematicMode, setIsCinematicMode] = useState(true);
 
-  // Détermination de la source vidéo/image Pixar selon la vue caméra active
-  const getPixarMedia = () => {
-    if (cameraView === 'JUDGE') {
-      return {
-        video: '/videos/tribunal_silence.mp4',
-        poster: '/videos/sources/tribunal_silence.jpg',
-        title: 'Le Juge — Salle d\'Audience'
-      };
-    }
-    if (cameraView === 'AUDIENCE') {
-      return {
-        video: '/videos/tribunal_foule.mp4',
-        poster: '/videos/sources/tribunal_foule.jpg',
-        title: 'Gradins du Public & Citoyens'
-      };
-    }
-    if (cameraView === 'WITNESS') {
-      return {
-        video: '/videos/tribunal_verdict_maxime.mp4',
-        poster: '/videos/sources/tribunal_verdict_maxime.jpg',
-        title: 'Maxime — Barre des Témoins'
-      };
-    }
-    return {
-      video: '/videos/tribunal_intro.mp4',
-      poster: '/videos/sources/tribunal_intro.jpg',
-      title: 'Vue Panoramique — Tribunal HECh'
-    };
+  // Détermination de l'orateur canonique selon la caméra active
+  const getCurrentSpeaker = () => {
+    if (cameraView === 'JUDGE') return CANONICAL_CHARACTERS.juge;
+    if (cameraView === 'WITNESS') return CANONICAL_CHARACTERS.maxime;
+    if (cameraView === 'PROSECUTION') return CANONICAL_CHARACTERS.procureur;
+    return null;
   };
 
-  const pixarMedia = getPixarMedia();
+  const activeSpeaker = getCurrentSpeaker();
 
   return (
     <div className="relative w-full h-full min-h-[340px] rounded-3xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-950 select-none">
-      {/* Canvas Three.js Temps Réel */}
+      {/* Canvas Three.js Temps Réel Unifié (Toujours Actif & Raccord) */}
       <div 
         ref={mountRef} 
-        className={`w-full h-full cursor-grab active:cursor-grabbing ${isPixarMode || cameraView === 'PIXAR_CINEMA' ? 'hidden' : 'block'}`} 
+        className="w-full h-full cursor-grab active:cursor-grabbing" 
       />
 
-      {/* Rendu Vidéo / Cinématique Pixar Studio (Wan 14B) */}
-      {(isPixarMode || cameraView === 'PIXAR_CINEMA') && (
-        <div className="absolute inset-0 z-10 w-full h-full bg-slate-950 flex items-center justify-center overflow-hidden">
-          <video
-            key={cameraView}
-            src={pixarMedia.video}
-            poster={pixarMedia.poster}
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-full object-cover animate-in fade-in duration-700"
-          />
-          {/* Badge officiel Pixar Studio */}
-          <div className="absolute bottom-4 left-4 z-30 flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-slate-950/80 border border-amber-500/40 text-amber-300 text-xs font-mono font-bold backdrop-blur-md shadow-xl">
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
-            <span>Moteur Wan 2.1 14B • {pixarMedia.title}</span>
+      {/* Mode Réalisateur Cinématique : Bandes Letterbox Cinéma 2.39:1 & Vignetage */}
+      {isCinematicMode && (
+        <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between">
+          {/* Bande Noire Supérieure Cinéma */}
+          <div className="h-8 sm:h-12 w-full bg-slate-950/90 border-b border-amber-500/20 backdrop-blur-[2px] transition-all duration-500 flex items-center justify-between px-6">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+              <span className="text-[10px] font-mono font-black text-amber-300 tracking-widest uppercase">
+                REC • HECh Tribunal d'Honneur (Direct 60 FPS)
+              </span>
+            </div>
+            <span className="text-[10px] font-mono text-slate-400">
+              Optique Cinéma 35mm • Ratio 2.39:1
+            </span>
+          </div>
+
+          {/* Bande Noire Inférieure Cinéma avec Badge Orateur Raccord */}
+          <div className="h-10 sm:h-14 w-full bg-slate-950/90 border-t border-amber-500/20 backdrop-blur-[2px] transition-all duration-500 flex items-center justify-between px-6">
+            {activeSpeaker ? (
+              <div className="flex items-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <CharacterAvatar characterId={activeSpeaker.id} size={32} />
+                <div className="flex flex-col">
+                  <span className="text-xs font-black font-['Outfit'] text-white">
+                    {activeSpeaker.name}
+                  </span>
+                  <span className="text-[10px] text-amber-300 font-medium font-mono">
+                    {activeSpeaker.title}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="text-[11px] font-mono text-slate-400 flex items-center gap-2">
+                <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Audience Plénière • Chambre d'Arbitrage Pédagogique</span>
+              </div>
+            )}
+
+            <div className="text-[10px] font-mono text-slate-500 hidden sm:block">
+              Univers Graphique Unifié • Haute École Charlemagne
+            </div>
           </div>
         </div>
       )}
 
       {/* Régie TV & Contrôleur de Caméras Cinématiques */}
-      <div className="absolute top-3 left-3 z-20 flex flex-wrap gap-1.5 p-1 rounded-2xl bg-slate-950/85 backdrop-blur-md border border-slate-800 shadow-xl">
+      <div className="absolute top-10 sm:top-14 left-3 z-20 flex flex-wrap gap-1.5 p-1 rounded-2xl bg-slate-950/85 backdrop-blur-md border border-slate-800 shadow-xl">
         {[
           { key: 'TV_WIDE', label: 'Vue Globale', icon: Camera },
           { key: 'JUDGE', label: 'Le Juge', icon: ZoomIn },
@@ -1868,7 +1872,7 @@ export default function Courtroom3DCanvas({
             key={btn.key}
             onClick={() => onCameraChange && onCameraChange(btn.key)}
             className={`px-2.5 py-1 rounded-xl text-[10px] font-mono font-bold transition flex items-center gap-1 cursor-pointer ${
-              cameraView === btn.key && !isPixarMode
+              cameraView === btn.key
                 ? 'bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-md'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
             }`}
@@ -1878,18 +1882,18 @@ export default function Courtroom3DCanvas({
           </button>
         ))}
 
-        {/* Bouton bascule Mode Pixar Studio 14B */}
+        {/* Bouton bascule Mode Réalisateur Cinéma */}
         <button
-          onClick={() => setIsPixarMode(!isPixarMode)}
+          onClick={() => setIsCinematicMode(!isCinematicMode)}
           className={`px-3 py-1 rounded-xl text-[10px] font-mono font-black transition flex items-center gap-1.5 cursor-pointer shadow-lg border ${
-            isPixarMode || cameraView === 'PIXAR_CINEMA'
+            isCinematicMode
               ? 'bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 text-white border-amber-400/60 ring-2 ring-amber-400/30'
               : 'bg-slate-900/90 text-amber-400 border-amber-500/30 hover:bg-slate-800'
           }`}
-          title="Basculer vers les cinématiques photo-réalistes Pixar animées par Wan 14B"
+          title="Activer/Désactiver le cadrage cinématographique avec suivi de l'orateur"
         >
-          <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-spin" style={{ animationDuration: '4s' }} />
-          <span>{isPixarMode ? '🎬 Rendu Pixar ACTIF' : '🎬 Activer Rendu Pixar 14B'}</span>
+          <Film className="w-3.5 h-3.5 text-amber-300" />
+          <span>{isCinematicMode ? '🎬 Cadrage Cinéma ACTIF' : '🎬 Mode Plein Format'}</span>
         </button>
       </div>
 
