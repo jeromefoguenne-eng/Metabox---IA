@@ -25,6 +25,7 @@ import {
   Sliders
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import GameShow3D from './GameShow3D';
 import { sounds } from '../utils/soundEffects';
 import { 
   JUSTE_PRIX_QUESTIONS, 
@@ -40,6 +41,7 @@ export default function GrandConcours3ManchesArena({
   const [currentRound, setCurrentRound] = useState('intro');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMuted, setIsMuted] = useState(sounds.isMuted());
+  const [reaction, setReaction] = useState('speaking'); // 'idle' | 'speaking' | 'correct' | 'wrong' | 'victory'
   const [hostDialogue, setHostDialogue] = useState("🎙️ Henri : « Bienvenue sur le plateau du GRAND CONCOURS DE LA HECh ! Trois manches éliminatoires pour décrocher le titre suprême ! »");
 
   // Adversaires virtuels
@@ -186,10 +188,12 @@ export default function GrandConcours3ManchesArena({
     setM1IsEvaluated(true);
 
     if (isUserQualified) {
+      setReaction('correct');
       sounds.playApplause();
       sounds.speakHost(`Bravo ! La valeur exacte était de ${target} ${currentJpQ.unit}. Vous êtes qualifié pour le Quatre à la suite !`);
       setHostDialogue(`🎙️ Henri : « Félicitations ! Votre estimation est brillante ! Vous faites partie des qualifiés pour le 4 À LA SUITE ! »`);
     } else {
+      setReaction('wrong');
       sounds.playWrong();
       sounds.speakHost(`Aïe ! La valeur exacte était de ${target} ${currentJpQ.unit}. Vos adversaires ont été plus précis.`);
       setHostDialogue(`🎙️ Henri : « Malheureusement, vos concurrents ont été plus proches de la valeur exacte de ${target}. Retentez votre chance ! »`);
@@ -201,6 +205,7 @@ export default function GrandConcours3ManchesArena({
     sounds.playPop();
     sounds.playTheme('champion');
     setCurrentRound('manche2_quatreasuite');
+    setReaction('speaking');
     setM2Streak(0);
     setM2MaxStreak(0);
     setM2TimeLeft(45);
@@ -215,6 +220,7 @@ export default function GrandConcours3ManchesArena({
   const handleSelectTheme = (themeId) => {
     sounds.playPop();
     setSelectedThemeId(themeId);
+    setReaction('speaking');
     setM2Streak(0);
     setM2MaxStreak(0);
     setM2QuestionIdx(0);
@@ -239,15 +245,18 @@ export default function GrandConcours3ManchesArena({
 
       if (newStreak === 4) {
         // VICTOIRE MANCHE 2 ! QUALIFICATION DIRECTE POUR LA FINALE
+        setReaction('victory');
         setM2IsPlaying(false);
         sounds.playApplause();
         confetti({ particleCount: 120, spread: 90, origin: { y: 0.6 } });
         setHostDialogue("🎙️ Henri : « ET C'EST LE 4 À LA SUITE ! EXCEPTIONNEL ! VOUS DÉCROCHEZ VOTRE BILLET POUR LE FACE-À-FACE FINAL ! »");
         sounds.speakHost("Et c'est le quatre à la suite ! Magnifique ! Direction la grande finale !");
       } else {
+        setReaction('correct');
         setHostDialogue(`🎙️ Henri : « ${newStreak} sur 4 ! Continuez ! »`);
       }
     } else {
+      setReaction('wrong');
       sounds.playWrong();
       setM2Streak(0); // Retour à 0 impératif !
       setM2AnswerFeedback('wrong');
@@ -262,6 +271,7 @@ export default function GrandConcours3ManchesArena({
   };
 
   const handleM2TimeOut = () => {
+    setReaction('wrong');
     setM2IsPlaying(false);
     sounds.playWrong();
     if (m2Streak < 4) {
@@ -275,6 +285,7 @@ export default function GrandConcours3ManchesArena({
     sounds.playPop();
     sounds.playTheme('millionnaire');
     setCurrentRound('manche3_faceaface');
+    setReaction('speaking');
     setM3UserScore(0);
     setM3OpponentScore(0);
     setM3QuestionIdx(0);
@@ -292,6 +303,7 @@ export default function GrandConcours3ManchesArena({
   const handleUserBuzz = () => {
     if (m3IsBuzzed || m3RoundAnswered) return;
     sounds.playBuzzer();
+    setReaction('speaking');
     setM3IsBuzzed(true);
     setM3BuzzerWinner('user');
     setM3ShowOptions(true);
@@ -301,6 +313,7 @@ export default function GrandConcours3ManchesArena({
   const handleOpponentBuzz = (pts) => {
     if (m3IsBuzzed || m3RoundAnswered) return;
     sounds.playBuzzer();
+    setReaction('speaking');
     setM3IsBuzzed(true);
     setM3BuzzerWinner('opponent');
     setHostDialogue(`🎙️ Henri : « ${m3FinalistOpponent.name} buzze pour ${pts} points ! »`);
@@ -312,10 +325,12 @@ export default function GrandConcours3ManchesArena({
         sounds.playSuccess();
         const newScore = m3OpponentScore + pts;
         setM3OpponentScore(newScore);
+        setReaction('idle');
         setHostDialogue(`🎙️ Henri : « Bonne réponse d'Alexandre ! Il empoche ${pts} points ! »`);
         checkFafVictory(m3UserScore, newScore);
       } else {
         sounds.playWrong();
+        setReaction('wrong');
         setHostDialogue(`🎙️ Henri : « Alexandre se trompe ! La main revient au joueur ! »`);
         setM3BuzzerWinner('user');
         setM3ShowOptions(true);
@@ -330,6 +345,7 @@ export default function GrandConcours3ManchesArena({
     const isCorrect = optionIdx === currentFafQ.correctIndex;
     if (isCorrect) {
       sounds.playSuccess();
+      setReaction('correct');
       const pointsWon = m3ActiveClueLevel;
       const newScore = m3UserScore + pointsWon;
       setM3UserScore(newScore);
@@ -339,6 +355,7 @@ export default function GrandConcours3ManchesArena({
       checkFafVictory(newScore, m3OpponentScore);
     } else {
       sounds.playWrong();
+      setReaction('wrong');
       setHostDialogue(`🎙️ Henri : « Non, ce n'était pas la réponse attendue ! C'était : « ${currentFafQ.targetTerm} » ! »`);
       sounds.speakHost("Non, mauvaise réponse !");
       setTimeout(() => advanceToNextFafQuestion(), 2400);
@@ -349,6 +366,7 @@ export default function GrandConcours3ManchesArena({
     if (userPts >= 12) {
       setTimeout(() => {
         setCurrentRound('victoire');
+        setReaction('victory');
         sounds.playApplause();
         sounds.playFanfare();
         confetti({ particleCount: 200, spread: 120, origin: { y: 0.5 } });
@@ -358,6 +376,7 @@ export default function GrandConcours3ManchesArena({
     } else if (oppPts >= 12) {
       setTimeout(() => {
         setCurrentRound('defaite');
+        setReaction('wrong');
         sounds.playWrong();
         setHostDialogue(`🎙️ Henri : « ${m3FinalistOpponent.name} remporte le face-à-face à 12 points ! Quel match intense ! »`);
       }, 1500);
@@ -367,6 +386,7 @@ export default function GrandConcours3ManchesArena({
   };
 
   const advanceToNextFafQuestion = () => {
+    setReaction('speaking');
     setM3QuestionIdx(prev => prev + 1);
     setM3ActiveClueLevel(4);
     setM3IsBuzzed(false);
@@ -377,22 +397,27 @@ export default function GrandConcours3ManchesArena({
 
   return (
     <div className={`fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/90 backdrop-blur-xl animate-in fade-in duration-300 ${isFullscreen ? 'p-0' : ''}`}>
-      <div className={`w-full max-w-5xl h-[92vh] max-h-[850px] bg-slate-900 border border-cyan-500/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-slate-100 relative ${isFullscreen ? 'h-full max-h-none rounded-none' : ''}`}>
+      <div className={`w-full max-w-6xl h-[95vh] max-h-[920px] bg-slate-900 border border-cyan-500/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-slate-100 relative ${isFullscreen ? 'h-full max-h-none rounded-none' : ''}`}>
         
         {/* HEADER TV SHOW */}
-        <div className="px-5 py-3.5 bg-gradient-to-r from-cyan-900/60 via-slate-900 to-indigo-900/60 border-b border-cyan-500/30 flex items-center justify-between">
+        <div className="px-5 py-3 bg-gradient-to-r from-cyan-900/60 via-slate-900 to-indigo-900/60 border-b border-cyan-500/30 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
+            <img 
+              src="/images/hech_logo_officiel.png" 
+              alt="Logo HECh" 
+              className="h-8 w-auto object-contain hidden xs:block drop-shadow-md" 
+            />
             <div className="w-10 h-10 rounded-2xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center shadow-lg shadow-cyan-500/20">
               <Trophy className="w-5 h-5 text-cyan-300 animate-pulse" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-black tracking-widest uppercase px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
-                  PLATEAU TV 3 MANCHES
+                <span className="text-[10px] font-black tracking-widest uppercase px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
+                  PLATEAU TV 3D · 3 MANCHES
                 </span>
-                <span className="text-xs text-slate-400 font-medium hidden sm:inline">Questions pour un Champion · HECh</span>
+                <span className="text-xs text-slate-400 font-medium hidden md:inline">Questions pour un Champion · HECh</span>
               </div>
-              <h2 className="text-lg font-black tracking-tight text-white flex items-center gap-2">
+              <h2 className="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-2">
                 Le Grand Concours de la HECh
               </h2>
             </div>
@@ -441,15 +466,50 @@ export default function GrandConcours3ManchesArena({
           </div>
         </div>
 
-        {/* DIALOGUE BANNER DU PRÉSENTATEUR HENRI */}
-        <div className="bg-slate-950/70 border-b border-slate-800 px-6 py-2.5 flex items-center justify-between">
-          <p className="text-sm font-semibold text-cyan-200 tracking-wide flex items-center gap-2">
-            {hostDialogue}
-          </p>
+        {/* ========================================================================= */}
+        {/* UPPER SECTION: SCÈNE 3D DU PLATEAU TV TEMPS RÉEL (POUR TOUTES LES MANCHES) */}
+        {/* ========================================================================= */}
+        <div className="h-[36vh] sm:h-[42vh] min-h-[220px] max-h-[350px] w-full relative bg-slate-950 overflow-hidden border-b border-cyan-500/30 shrink-0">
+          <GameShow3D 
+            reaction={reaction} 
+            theme="concours" 
+            themeColor="#06b6d4" 
+          />
+
+          {/* Badge Studio Direct & Télémétrie */}
+          <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
+            <div className="bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-cyan-500/40 flex items-center gap-2 shadow-lg">
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse" />
+              <span className="text-[10px] sm:text-xs font-mono font-bold text-white tracking-wider uppercase">
+                DIRECT PLATEAU HECh · 60 FPS
+              </span>
+            </div>
+          </div>
+
+          {/* Indicateur de Manche en Direct */}
+          <div className="absolute top-3 right-3 z-20">
+            <span className="bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-cyan-400/50 text-[10px] sm:text-xs font-black text-cyan-300 uppercase tracking-widest shadow-lg">
+              {currentRound === 'intro' && '📺 GÉNÉRIQUE D\'OUVERTURE'}
+              {currentRound === 'manche1_justeprix' && '⚖️ MANCHE 1 : LE JUSTE PRIX'}
+              {currentRound === 'manche2_quatreasuite' && '🔥 MANCHE 2 : 4 À LA SUITE'}
+              {currentRound === 'manche3_faceaface' && '⚡ MANCHE 3 : LE FACE-À-FACE'}
+              {currentRound === 'victoire' && '🏆 SACRE DU MAJOR HECh'}
+              {currentRound === 'defaite' && '💀 FIN DU MATCH'}
+            </span>
+          </div>
+
+          {/* DIALOGUE BANNER FLOTTANT DU PRÉSENTATEUR HENRI */}
+          <div className="absolute bottom-3 left-3 right-3 z-20 pointer-events-none">
+            <div className="bg-slate-950/85 backdrop-blur-md border border-cyan-500/40 px-4 py-2 rounded-2xl shadow-2xl flex items-center gap-2 max-w-3xl mx-auto pointer-events-auto">
+              <p className="text-xs sm:text-sm font-bold text-cyan-200 tracking-wide line-clamp-2">
+                {hostDialogue}
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* CORPS PRINCIPAL DE JEU SELON LA MANCHE */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 flex flex-col items-center justify-center">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 flex flex-col items-center justify-start bg-gradient-to-b from-slate-950/90 to-slate-900/95">
 
           {/* ================================================================= */}
           {/* ÉCRAN D'ACCUEIL / INTRO TV */}
