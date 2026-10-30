@@ -137,6 +137,21 @@ export default function GameSurvivantNovel({ onComplete }) {
 
   const currentChapter = CHAPTERS[currentChapterIdx];
 
+  // Keyboard shortcut listener for options [1], [2], [3]
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (isGameOver || isVictory || showBriefing) return;
+      if (['1', '2', '3'].includes(e.key)) {
+        const idx = parseInt(e.key, 10) - 1;
+        if (currentChapter.choices[idx]) {
+          handleChoice(currentChapter.choices[idx]);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentChapter, isGameOver, isVictory, showBriefing, stats]);
+
   const handleChoice = (choice) => {
     sounds.playPop();
 
@@ -341,6 +356,14 @@ export default function GameSurvivantNovel({ onComplete }) {
             <div className="p-3 rounded-2xl bg-emerald-950/50 border border-emerald-500/40 text-emerald-300 text-xs font-mono font-bold max-w-sm mx-auto">
               🏆 CLÉ GAMMA (SOBRIÉTÉ & RGPD) ACQUISE
             </div>
+            {onComplete && (
+              <button
+                onClick={onComplete}
+                className="mt-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black font-['Outfit'] text-xs uppercase tracking-wider transition shadow-lg shadow-emerald-500/30 cursor-pointer"
+              >
+                Continuer l'Escape Game →
+              </button>
+            )}
           </div>
         )}
 
