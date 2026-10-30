@@ -29,6 +29,7 @@ import GameShow3D from './GameShow3D';
 import { sounds } from '../utils/soundEffects';
 import CharacterAvatar from './CharacterAvatar';
 import GrandConcours3ManchesArena from './GrandConcours3ManchesArena';
+import { generateMillionnaireSessionQuestions } from '../data/verbesConsignesBank';
 
 const SHOW_META = {
   millionnaire: {
@@ -105,9 +106,18 @@ export default function TvGameShowArena({
   const [reaction, setReaction] = useState('speaking');
   const [scoreEcts, setScoreEcts] = useState(0);
   const [gameOver, setGameOver] = useState(false);
+  const [isGameLost, setIsGameLost] = useState(false); // État d'élimination directe (perte de partie)
   const [hostDialogue, setHostDialogue] = useState("");
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMuted, setIsMuted] = useState(sounds.isMuted());
+
+  // Génération dynamique d'une banque renouvelée de questions pour Qui veut gagner des crédits
+  const [sessionQuestions, setSessionQuestions] = useState(() => {
+    if (showType === 'millionnaire') {
+      return generateMillionnaireSessionQuestions();
+    }
+    return quiz?.questions || [];
+  });
 
   // 3 LIVES SYSTEM (Particularly for La Roue des Accords)
   const [lives, setLives] = useState(3);
@@ -159,8 +169,8 @@ export default function TvGameShowArena({
   const [timeLeft, setTimeLeft] = useState(15);
   const [hasBuzzed, setHasBuzzed] = useState(showType !== 'champion');
 
-  const currentQ = quiz.questions[currentIdx];
-  const totalQuestions = quiz.questions.length;
+  const currentQ = sessionQuestions[currentIdx] || sessionQuestions[0] || {};
+  const totalQuestions = sessionQuestions.length;
   const isMultipleChoice = currentQ?.options && currentQ.options.length > 0;
 
   // Target full sentence or target word for Roue des Accords
@@ -626,7 +636,19 @@ export default function TvGameShowArena({
 
         const randomWrong = `feedback_wrong_${(currentIdx % 2) + 1}`;
         sounds.playVoice(randomWrong);
-        setHostDialogue(`❌ Aïe, c'est une erreur... La bonne réponse était : « ${currentQ.options[currentQ.correctIndex]} »`);
+
+        if (showType === 'millionnaire') {
+          setIsGameLost(true);
+          sounds.stopSuspense();
+          setHostDialogue(`❌ ÉLIMINATION DIRECTE ! Mauvaise réponse... C'était : « ${currentQ.options[currentQ.correctIndex]} ». Vous perdez la partie ! Vous devez recommencer l'ascension.`);
+          sounds.speakHost(`Erreur fatale sur le verbe ${currentQ.verb || ''} ! Vous perdez la partie et devez recommencer.`);
+          
+          setTimeout(() => {
+            setGameOver(true);
+          }, 2400);
+        } else {
+          setHostDialogue(`❌ Aïe, c'est une erreur... La bonne réponse était : « ${currentQ.options[currentQ.correctIndex]} »`);
+        }
       }
     }, showType === 'millionnaire' ? 1800 : 1200);
   };
@@ -654,15 +676,21 @@ export default function TvGameShowArena({
 
   const handleRestart = () => {
     sounds.playPop();
+    if (showType === 'millionnaire') {
+      setSessionQuestions(generateMillionnaireSessionQuestions());
+    }
     setIsShowingIntro(true);
     setCurrentIdx(0);
     setScoreEcts(0);
     setLives(3);
     setGameOver(false);
+    setIsGameLost(false);
     setHasSavedScore(false);
     setJoker50Used(false);
     setJokerAudienceUsed(false);
     setJokerSarUsed(false);
+    setIsAnswerLocked(false);
+    setSelectedOption(null);
   };
 
   // Save to Leaderboard
@@ -870,18 +898,54 @@ export default function TvGameShowArena({
             {/* Game Over Screen WITH HALL OF FAME LEADERBOARD */}
             {gameOver ? (
               <div className="text-center py-4 animate-in zoom-in-95 duration-400">
-                <div className="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-tr from-amber-400 to-orange-500 p-0.5 shadow-2xl shadow-amber-500/30 mb-3 flex items-center justify-center">
-                  <Trophy className="w-8 h-8 text-slate-950" />
-                </div>
-                
-                <h3 className="text-2xl font-outfit font-black text-white mb-1">
-                  {lives > 0 ? "🏆 VICTOIRE DES 10 MANCHES !" : "💀 PARTIE TERMINÉE !"}
-                </h3>
-                <p className="text-slate-300 font-lexend text-sm max-w-lg mx-auto mb-4">
-                  {lives > 0 
-                    ? `Félicitations ! Vous terminez avec ${scoreEcts} Crédits ECTS et ${lives} vie(s) restante(s) !` 
-                    : `Vous avez défendu vos chances jusqu'à la manche ${currentIdx + 1}/10 avec ${scoreEcts} ECTS !`}
-                </p>
+                {isGameLost ? (
+                  <div className="max-w-xl mx-auto space-y-4">
+                    <div className="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-rose-600 to-red-700 p-0.5 shadow-2xl shadow-rose-600/40 mb-3 flex items-center justify-center animate-bounce">
+                      <XCircle className="w-10 h-10 text-white" />
+                    </div>
+                    
+                    <span className="text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full bg-rose-600/20 text-rose-300 border border-rose-500/30">
+                      ÉLIMINATION DIRECTE · PALIER ACADÉMIQUE
+                    </span>
+
+                    <h3 className="text-3xl font-outfit font-black text-white">
+                      💀 PARTIE PERDUE !
+                    </h3>
+
+                    <p className="text-slate-300 font-lexend text-sm max-w-lg mx-auto leading-relaxed">
+                      Vous avez échoué à l'épreuve #{currentIdx + 1} face au verbe <strong className="text-rose-400">« {currentQ?.verb || 'de consigne'} »</strong>. Dans <em>Qui veut gagner des crédits</em>, la moindre erreur de consigne est éliminatoire ! L'ascension est interrompue.
+                    </p>
+
+                    <div className="p-4 rounded-2xl bg-slate-900 border border-rose-500/30 text-left text-xs text-slate-300 space-y-1.5 shadow-lg">
+                      <div className="text-slate-400 font-bold uppercase text-[10px]">Rappel de la bonne réponse académique :</div>
+                      <div className="text-emerald-400 font-bold text-sm">✓ {currentQ?.options?.[currentQ?.correctIndex]}</div>
+                      <div className="text-slate-400 text-xs italic mt-1">{currentQ?.explanation}</div>
+                    </div>
+
+                    <div className="pt-3">
+                      <button
+                        onClick={handleRestart}
+                        className="px-8 py-4 rounded-2xl bg-gradient-to-r from-rose-600 via-red-500 to-rose-600 hover:brightness-110 text-white font-outfit font-black text-sm uppercase tracking-wider shadow-2xl shadow-rose-600/40 transition transform hover:scale-105 cursor-pointer flex items-center gap-2.5 mx-auto"
+                      >
+                        <RotateCcw className="w-5 h-5" />
+                        <span>Recommencer la Partie (Nouvelles Questions)</span>
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-tr from-amber-400 to-orange-500 p-0.5 shadow-2xl shadow-amber-500/30 mb-3 flex items-center justify-center">
+                      <Trophy className="w-8 h-8 text-slate-950" />
+                    </div>
+                    
+                    <h3 className="text-2xl font-outfit font-black text-white mb-1">
+                      {lives > 0 ? "🏆 VICTOIRE DES 10 MANCHES !" : "💀 PARTIE TERMINÉE !"}
+                    </h3>
+                    <p className="text-slate-300 font-lexend text-sm max-w-lg mx-auto mb-4">
+                      {lives > 0 
+                        ? `Félicitations ! Vous terminez avec ${scoreEcts} Crédits ECTS et ${lives} vie(s) restante(s) !` 
+                        : `Vous avez défendu vos chances jusqu'à la manche ${currentIdx + 1}/10 avec ${scoreEcts} ECTS !`}
+                    </p>
 
                 {/* Save Pseudo Form */}
                 {!hasSavedScore && (
@@ -962,8 +1026,10 @@ export default function TvGameShowArena({
                     </button>
                   )}
                 </div>
-              </div>
-            ) : (
+              </>
+            )}
+          </div>
+        ) : (
               <>
                 {/* 1. QUI VEUT GAGNER DES CRÉDITS : Pyramide de difficulté graduée & Jokers */}
                 {showType === 'millionnaire' && (
@@ -1417,16 +1483,28 @@ export default function TvGameShowArena({
                   </div>
                 )}
 
-                {/* Next Question Button */}
+                {/* Next Question Button ou Bouton Élimination en cas de défaite */}
                 {isAnswerLocked && (
                   <div className="mt-5 flex justify-end animate-in fade-in duration-300">
-                    <button
-                      onClick={handleNextQuestion}
-                      className="px-7 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-outfit font-black text-sm tracking-wide shadow-xl shadow-emerald-500/30 transition flex items-center gap-2 cursor-pointer"
-                    >
-                      <span>{currentIdx + 1 < totalQuestions ? "Épreuve Suivante" : "Voir le Palmarès Final"}</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
+                    {showType === 'millionnaire' && isGameLost ? (
+                      <button
+                        onClick={handleRestart}
+                        className="px-7 py-3 rounded-2xl bg-gradient-to-r from-rose-600 via-red-500 to-rose-600 hover:brightness-110 text-white font-outfit font-black text-sm tracking-wide shadow-xl shadow-rose-600/40 transition flex items-center gap-2 cursor-pointer animate-pulse"
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                        <span>Partie Perdue · Recommencer l'Ascension</span>
+                      </button>
+                    ) : (
+                      (!isGameLost || showType !== 'millionnaire') && (
+                        <button
+                          onClick={handleNextQuestion}
+                          className="px-7 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-outfit font-black text-sm tracking-wide shadow-xl shadow-emerald-500/30 transition flex items-center gap-2 cursor-pointer"
+                        >
+                          <span>{currentIdx + 1 < totalQuestions ? "Épreuve Suivante" : "Voir le Palmarès Final"}</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
+                      )
+                    )}
                   </div>
                 )}
               </>
