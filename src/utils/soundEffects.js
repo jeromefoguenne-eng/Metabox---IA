@@ -63,8 +63,8 @@ class SoundManager {
     return this.muted;
   }
 
-  // --- Joueur Audio MP3 avec mise en cache & Anti-Superposition Stricte ---
-  playAudioFile(path, volume = 1.0, loop = false) {
+  // --- Joueur Audio MP3 avec mise en cache, Callback de fin & Anti-Superposition Stricte ---
+  playAudioFile(path, volume = 1.0, loop = false, onEnded = null) {
     if (this.muted) return null;
 
     // Détection stricte de toute piste vocale
@@ -90,15 +90,23 @@ class SoundManager {
         audio.currentTime = 0;
       }
 
-      if (isVoiceTrack) {
-        this.currentVoiceAudio = audio;
-        this.activeVoicesSet.add(audio);
-        audio.onended = () => {
+      const handleEnded = () => {
+        if (isVoiceTrack) {
           this.activeVoicesSet.delete(audio);
           if (this.currentVoiceAudio === audio) {
             this.currentVoiceAudio = null;
           }
-        };
+        }
+        if (typeof onEnded === 'function') {
+          onEnded();
+        }
+      };
+
+      audio.onended = handleEnded;
+
+      if (isVoiceTrack) {
+        this.currentVoiceAudio = audio;
+        this.activeVoicesSet.add(audio);
       }
 
       audio.volume = Math.max(0, Math.min(1, volume));
@@ -107,11 +115,15 @@ class SoundManager {
       if (playPromise !== undefined) {
         playPromise.catch(() => {
           // Fallback or autoplay policy catch
+          if (typeof onEnded === 'function') {
+            setTimeout(onEnded, 4000);
+          }
         });
       }
       return audio;
     } catch (err) {
       console.warn("Could not play audio file", path, err);
+      if (typeof onEnded === 'function') onEnded();
       return null;
     }
   }

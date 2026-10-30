@@ -459,13 +459,14 @@ export default function GameGrandProcesHacking({ onComplete }) {
     setJudgeReaction('neutral');
     setSelectedArgument(null);
     setIsPleadingConfirmed(false);
-    sounds.playAudioFile(`/audio/voices/${currentAssault.prosecutorVoice}.mp3`, 1.0);
 
-    // Dans l'assaut 1, après l'emportement du procureur qui réclame l'incarcération ferme :
-    // 1. Le public s'insurge et crie d'abord dans la salle !
-    // 2. Le Juge tape ensuite du marteau et menace d'évacuer la salle !
-    if (currentAssaultIdx === 0) {
-      setTimeout(() => {
+    // Le Procureur prononce l'intégralité de son réquisitoire sans AUCUNE interruption
+    sounds.playAudioFile(`/audio/voices/${currentAssault.prosecutorVoice}.mp3`, 1.0, false, () => {
+      setProsecutorState('idle');
+
+      // Dans l'assaut 1 : C'est SEULEMENT après la fin complète de sa phrase (réclamation d'incarcération ferme)
+      // que le public s'insurge dans la salle et que le Juge frappe son marteau pour exiger le silence !
+      if (currentAssaultIdx === 0) {
         setAudienceState('shout_maxime');
         setAudienceShoutText('Public : « Scandale ! Parodie de justice ! Libérez Maxime ! »');
         setCameraView('AUDIENCE');
@@ -477,10 +478,14 @@ export default function GameGrandProcesHacking({ onComplete }) {
           sounds.playJudgeSilence();
           setTimeout(() => {
             setAudienceShoutText('');
+            setCameraView('TV_WIDE');
+            setJudgeState('idle');
           }, 4500);
         });
-      }, 5500);
-    }
+      } else {
+        setCameraView('TV_WIDE');
+      }
+    });
   };
 
   // Phase d'enquête forensique
@@ -617,7 +622,10 @@ export default function GameGrandProcesHacking({ onComplete }) {
       setWitnessState('idle');
       setDefenseState('idle');
       sounds.playCourtroomMurmur(2.8);
-      sounds.playAudioFile(`/audio/voices/${ASSAULTS[currentAssaultIdx + 1].prosecutorVoice}.mp3`, 1.0);
+      sounds.playAudioFile(`/audio/voices/${ASSAULTS[currentAssaultIdx + 1].prosecutorVoice}.mp3`, 1.0, false, () => {
+        setProsecutorState('idle');
+        setCameraView('TV_WIDE');
+      });
     } else {
       // Lancement de la CINÉMATIQUE FINALE DU JUGE
       setStage('verdict_cinematic');
@@ -833,9 +841,17 @@ export default function GameGrandProcesHacking({ onComplete }) {
                     <Flame className="w-4 h-4 text-rose-500" /> {currentAssault.title}
                   </span>
                   <button
-                    onClick={() => sounds.playAudioFile(`/audio/voices/${currentAssault.prosecutorVoice}.mp3`, 1.0)}
+                    onClick={() => {
+                      sounds.stopAllVoice();
+                      setCameraView('PROSECUTION');
+                      setProsecutorState('attacking');
+                      sounds.playAudioFile(`/audio/voices/${currentAssault.prosecutorVoice}.mp3`, 1.0, false, () => {
+                        setProsecutorState('idle');
+                        setCameraView('TV_WIDE');
+                      });
+                    }}
                     className="p-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition cursor-pointer"
-                    title="Réécouter"
+                    title="Réécouter le réquisitoire complet"
                   >
                     <Volume2 className="w-4 h-4" />
                   </button>
