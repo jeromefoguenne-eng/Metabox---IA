@@ -30,22 +30,22 @@ export default function PixarStyleScene3D({
     const width = currentMount.clientWidth;
     const height = currentMount.clientHeight;
 
-    // --- 1. Scène Arène Stylisée Arcane / Tech-Noir ---
+    // --- 1. Scène Studio Tactile Style 1 : Claymorphism & Tactile 3D Studio (Pixar / Tactile PBR) ---
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0e051b);
-    scene.fog = new THREE.FogExp2(0x0e051b, 0.035);
+    scene.background = new THREE.Color(0x0a1128);
+    scene.fog = new THREE.FogExp2(0x0a1128, 0.032);
 
     // Caméra Cadrage Portrait 50mm flatteur & naturel
     const camera = new THREE.PerspectiveCamera(28, width / height, 0.1, 30);
     camera.position.set(0, 1.34, 2.95);
     camera.lookAt(0, 1.28, 0);
 
-    // --- 2. Rendu PBR Haute Définition Contrasté ---
+    // --- 2. Rendu PBR Haute Définition Velouté ---
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.35;
+    renderer.toneMappingExposure = 1.30;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     currentMount.appendChild(renderer.domElement);
@@ -56,45 +56,46 @@ export default function PixarStyleScene3D({
       setIsLoaded(true);
     });
 
-    // --- 4. Éclairage Cell-Shaded Studio Style Arcane (Ambre Chaud + Cyan Électrique + Violet) ---
-    // Key Light : Ambre doré chaud à fort contraste (Style Fortiche)
-    const keyLight = new THREE.DirectionalLight(0xf59e0b, 2.8);
+    // --- 4. Éclairage Studio Tactile Chaleureux 3-Points ---
+    // Key Light : Lumière champagne chaude principale (ombres veloutées douces)
+    const keyLight = new THREE.DirectionalLight(0xfff5ea, 2.5);
     keyLight.position.set(1.6, 2.6, 2.2);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.width = 1024;
     keyLight.shadow.mapSize.height = 1024;
     keyLight.shadow.bias = -0.0002;
+    keyLight.shadow.radius = 3.2; // Ombres douces veloutées
     scene.add(keyLight);
 
-    // Fill Light : Violet royal pour déboucher les ombres avec nuance chromatique
-    const fillLight = new THREE.DirectionalLight(0x7c3aed, 1.4);
+    // Fill Light : Ciel poudré doux pour déboucher délicatement les ombres
+    const fillLight = new THREE.DirectionalLight(0x93c5fd, 1.15);
     fillLight.position.set(-1.8, 1.8, 1.6);
     scene.add(fillLight);
 
-    // Rim Light (Hair & Edge Light) : Cyan électrique tranchant d'animation de pointe
-    const rimLight = new THREE.DirectionalLight(0x06b6d4, 3.2);
+    // Rim Light (Hair Light) : Or chaud soyeux pour détacher la silhouette avec éclat
+    const rimLight = new THREE.DirectionalLight(0xfef08a, 2.4);
     rimLight.position.set(-0.8, 2.4, -1.5);
     scene.add(rimLight);
 
-    // Kicker : Magenta néon d'interférence cybernétique
-    const kickerLight = new THREE.PointLight(0xd946ef, 1.4, 5);
+    // Kicker : Ambiance technologique douce cyan
+    const kickerLight = new THREE.PointLight(0x38bdf8, 1.1, 5);
     kickerLight.position.set(1.4, 1.2, -0.6);
     scene.add(kickerLight);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.55);
+    const ambientLight = new THREE.AmbientLight(0xfff1e6, 0.70);
     scene.add(ambientLight);
 
     // =========================================================================
-    // 5. DÉCOR ARÈNE NÉO-RÉTRO ARCANE (BOISERIES SOMBRES & NEONS CUIVRÉS/OR)
+    // 5. DÉCOR STUDIO CHALEUREUX & ACOUSTIQUE (BOISERIES CHÂTAIGNIER & OR SATINÉ)
     // =========================================================================
     const studioGroup = new THREE.Group();
     studioGroup.position.set(0, 0, -1.2);
     scene.add(studioGroup);
 
-    // Fond courbe velouté violet sombre
+    // Fond courbe velouté bleu nuit contemporain
     const alcoveGeo = new THREE.CylinderGeometry(5.5, 5.5, 5.0, 32, 1, true, -Math.PI * 0.45, Math.PI * 0.9);
     const alcoveMat = new THREE.MeshStandardMaterial({
-      color: 0x140827,
+      color: 0x0f172a,
       roughness: 0.85,
       side: THREE.BackSide
     });
@@ -102,11 +103,11 @@ export default function PixarStyleScene3D({
     alcove.position.set(0, 1.8, 0);
     studioGroup.add(alcove);
 
-    // Panneaux verticaux en noyer sombre avec liserés or brossé
+    // Panneaux acoustiques en bois chaleureux avec liserés or brossé
     const woodPanelMat = new THREE.MeshStandardMaterial({
-      color: 0x22131b,
-      roughness: 0.65,
-      metalness: 0.15
+      color: 0x3b2318,
+      roughness: 0.55,
+      metalness: 0.08
     });
 
     const goldTrimMat = new THREE.MeshStandardMaterial({

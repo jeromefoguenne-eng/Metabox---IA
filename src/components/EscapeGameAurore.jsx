@@ -61,7 +61,7 @@ export default function EscapeGameAurore({ onClose }) {
   const [factCheckCompleted, setFactCheckCompleted] = useState(false);
 
   // Mini-Game 2: Tribunal Plagiat States (Aile Ouest)
-  const [tribunalMode, setTribunalMode] = useState('cases'); // 'cases' (3 Affaires & Forensique) | 'blackout' (Grand Procès 24h)
+  const [tribunalMode, setTribunalMode] = useState('blackout'); // 'blackout' (Grand Procès 24h - Maxime) par défaut selon la demande de l'utilisateur
   const [tribunalCaseIdx, setTribunalCaseIdx] = useState(0);
   const [tribunalPlaidoyer, setTribunalPlaidoyer] = useState(null);
 
@@ -504,20 +504,6 @@ export default function EscapeGameAurore({ onClose }) {
                     <button
                       onClick={() => {
                         sounds.playPop();
-                        setTribunalMode('cases');
-                      }}
-                      className={`px-2.5 py-1 rounded-lg font-bold transition cursor-pointer ${
-                        tribunalMode === 'cases'
-                          ? 'bg-purple-600 text-white shadow'
-                          : 'text-slate-400 hover:text-white'
-                      }`}
-                      title="Procès 2030 : 3 Affaires complètes (Julien, Léo, AlgoRH) avec Outils Forensiques & Objection"
-                    >
-                      ⚖️ 3 Affaires & Forensique (Julien / Léo / AlgoRH)
-                    </button>
-                    <button
-                      onClick={() => {
-                        sounds.playPop();
                         setTribunalMode('blackout');
                       }}
                       className={`px-2.5 py-1 rounded-lg font-bold transition cursor-pointer ${
@@ -528,6 +514,20 @@ export default function EscapeGameAurore({ onClose }) {
                       title="Le Grand Procès du Blackout 24h : Défense de Maxime c. Procureur du Roi"
                     >
                       ⚡ Grand Procès Blackout 24h (Maxime)
+                    </button>
+                    <button
+                      onClick={() => {
+                        sounds.playPop();
+                        setTribunalMode('cases');
+                      }}
+                      className={`px-2.5 py-1 rounded-lg font-bold transition cursor-pointer ${
+                        tribunalMode === 'cases'
+                          ? 'bg-purple-600 text-white shadow'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                      title="Procès 2030 : 3 Affaires complètes (Julien, Léo, AlgoRH) avec Outils Forensiques & Objection"
+                    >
+                      ⚖️ 3 Affaires & Forensique (Julien / Léo / AlgoRH)
                     </button>
                   </div>
                 </div>

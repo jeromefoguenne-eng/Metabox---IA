@@ -226,48 +226,48 @@ export default function Courtroom3DCanvas({
 
     container.appendChild(renderer.domElement);
 
-    // 2. Éclairage Studio Cinéma Style Pixar (3-Points + Rebond Chaud au Sol)
-    const ambientLight = new THREE.AmbientLight(0xfff1e6, 1.15);
+    // 2. Éclairage Studio Cinéma Style 1 : Claymorphism & Tactile 3D Studio (Pixar / LittleBigPlanet)
+    const ambientLight = new THREE.AmbientLight(0xfff1e6, 1.25);
     scene.add(ambientLight);
 
-    // Key Light : Lumière dorée douce principale
-    const keySpot = new THREE.SpotLight(0xfff7ed, 3.8);
+    // Key Light : Lumière champagne chaude principale (ombres veloutées douces)
+    const keySpot = new THREE.SpotLight(0xfff7ed, 3.6);
     keySpot.position.set(3, 11, 7);
     keySpot.angle = Math.PI / 4.0;
-    keySpot.penumbra = 0.75;
+    keySpot.penumbra = 0.85;
     keySpot.castShadow = true;
     keySpot.shadow.mapSize.width = 2048;
     keySpot.shadow.mapSize.height = 2048;
     keySpot.shadow.bias = -0.0001;
-    keySpot.shadow.radius = 2.8; // Ombres douces veloutées Pixar
+    keySpot.shadow.radius = 3.5; // Ombres ultra-douces veloutées Style 1
     scene.add(keySpot);
 
-    // Kicker / Rim Light Gauche : Cyan néon électrique tranchant Style Arcane
-    const rimCyan = new THREE.DirectionalLight(0x06b6d4, 3.2);
+    // Kicker / Rim Light Gauche : Ciel doux poudré velouté (pour détacher les silhouettes sans tranchant agressif)
+    const rimCyan = new THREE.DirectionalLight(0x93c5fd, 2.4);
     rimCyan.position.set(-8, 7, -2);
     scene.add(rimCyan);
 
-    // Kicker / Rim Light Droit : Or ambré chaud sculpté
-    const rimWarm = new THREE.DirectionalLight(0xf59e0b, 2.2);
+    // Kicker / Rim Light Droit : Or ambré chaud tactile
+    const rimWarm = new THREE.DirectionalLight(0xfef08a, 2.2);
     rimWarm.position.set(8, 7, -2);
     scene.add(rimWarm);
 
-    // Bounce Light Chaud au Sol : Rebond lumineux contrasté Tech-Noir
-    const floorBounce = new THREE.PointLight(0xfde68a, 1.4, 20);
+    // Bounce Light Chaud au Sol : Rebond lumineux simulant la radiosité du parquet verni
+    const floorBounce = new THREE.PointLight(0xfde68a, 1.8, 20);
     floorBounce.position.set(0, 0.8, 0);
     scene.add(floorBounce);
 
     // Spot or théâtral centré sur le Juge
-    const judgeSpot = new THREE.SpotLight(0xfbbf24, 3.5);
+    const judgeSpot = new THREE.SpotLight(0xfbbf24, 3.4);
     judgeSpot.position.set(0, 9.5, -2.5);
     judgeSpot.target.position.set(0, 3.2, -4.8);
     judgeSpot.angle = Math.PI / 4.5;
-    judgeSpot.penumbra = 0.5;
+    judgeSpot.penumbra = 0.65;
     scene.add(judgeSpot);
     scene.add(judgeSpot.target);
 
-    // Halo d'atmosphère violet royal en fond de scène Style Arcane
-    const backFill = new THREE.PointLight(0x7c3aed, 2.6, 26);
+    // Halo d'atmosphère douce en fond de scène
+    const backFill = new THREE.PointLight(0x6366f1, 2.0, 26);
     backFill.position.set(0, 6.5, -8.5);
     scene.add(backFill);
 
