@@ -987,17 +987,6 @@ export default function Courtroom3DCanvas({
       wigGroup.add(bCurl);
     }
 
-    judgeHeadGroup.add(wigGroup);
-
-    // Anneau d'émotion lumineux réactif (Approbation verte vs Avertissement rouge)
-    const emoRing = new THREE.Mesh(
-      new THREE.RingGeometry(0.22, 0.30, 32),
-      new THREE.MeshBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0, side: THREE.DoubleSide })
-    );
-    emoRing.position.set(0, 0.72, 0.1);
-    judgeHeadGroup.add(emoRing);
-    judgeEmoRingRef.current = emoRing;
-
     judgeGroup.add(judgeHeadGroup);
     judgeHeadRef.current = judgeHeadGroup;
 
@@ -1628,12 +1617,6 @@ export default function Courtroom3DCanvas({
             judgeRightBrowRef.current.position.y = 0.17;
             judgeRightBrowRef.current.rotation.z = -0.15;
           }
-
-          if (judgeEmoRingRef.current) {
-            judgeEmoRingRef.current.material.color.setHex(0x10b981);
-            judgeEmoRingRef.current.material.opacity = 0.9;
-            judgeEmoRingRef.current.rotation.z += 0.03;
-          }
         } else if (currentJudgeReaction === 'frown') {
           // Moue sévère + secouement de tête désapprobateur ("NON !")
           judgeHeadRef.current.rotation.x = -0.06;
@@ -1650,12 +1633,6 @@ export default function Courtroom3DCanvas({
             judgeRightBrowRef.current.position.y = 0.12;
             judgeRightBrowRef.current.rotation.z = 0.25;
           }
-
-          if (judgeEmoRingRef.current) {
-            judgeEmoRingRef.current.material.color.setHex(0xf43f5e);
-            judgeEmoRingRef.current.material.opacity = 0.9;
-            judgeEmoRingRef.current.rotation.z -= 0.03;
-          }
         } else {
           // Neutre
           judgeHeadRef.current.rotation.set(0, 0, 0);
@@ -1667,9 +1644,6 @@ export default function Courtroom3DCanvas({
             judgeLeftBrowRef.current.rotation.z = 0;
             judgeRightBrowRef.current.position.y = 0.14;
             judgeRightBrowRef.current.rotation.z = 0;
-          }
-          if (judgeEmoRingRef.current) {
-            judgeEmoRingRef.current.material.opacity = 0;
           }
         }
       }

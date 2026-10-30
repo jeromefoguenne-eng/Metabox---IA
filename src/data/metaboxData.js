@@ -445,7 +445,12 @@ export const QUIZ_DATABASE = {
         difficulty: "Facile",
         tier: 1,
         rewardEcts: 6,
-        options: ["Tracer un trait sous le mot", "Tracer un ovale autour de...", "Séparer par des traits"],
+        options: [
+          "Tracer un trait continu sous le mot désigné",
+          "Tracer un cercle ou un ovale autour de...",
+          "Séparer par des traits obliques",
+          "Mettre le mot en gras ou le surligner au feutre"
+        ],
         correctIndex: 0,
         explanation: "Souligner signifie tracer une ligne continue directement sous les mots désignés."
       },
@@ -455,7 +460,12 @@ export const QUIZ_DATABASE = {
         difficulty: "Facile",
         tier: 1,
         rewardEcts: 12,
-        options: ["Assembler", "Placer un petit trait dans une case en face d'une proposition", "Effacer"],
+        options: [
+          "Assembler plusieurs documents entre eux",
+          "Placer un petit trait ou une croix dans une case en face d'une proposition",
+          "Effacer définitivement la mauvaise réponse",
+          "Numéroter les paragraphes dans la marge de la copie"
+        ],
         correctIndex: 1,
         explanation: "Cocher signifie marquer d'un signe (croix ou coche) une case prédéfinie."
       },
@@ -465,7 +475,12 @@ export const QUIZ_DATABASE = {
         difficulty: "Facile",
         tier: 1,
         rewardEcts: 18,
-        options: ["Barrer", "Gommer", "Tracer un trait sous le mot"],
+        options: [
+          "Barrer d'un trait continu pour éliminer ou annuler",
+          "Gommer pour faire disparaître l'encre",
+          "Tracer un trait sous le mot",
+          "Surligner en couleur fluorescente"
+        ],
         correctIndex: 0,
         explanation: "Biffer signifie barrer ou rayer un mot d'un trait (pour l'annuler ou l'éliminer)."
       },
@@ -478,7 +493,12 @@ export const QUIZ_DATABASE = {
         tier: 2,
         isSafetyTier: true, // PALIER DE SÉCURITÉ GARANTI !
         rewardEcts: 24,
-        options: ["Placer deux éléments l'un à côté de l'autre", "Tracer une ligne allant d'un élément à un autre", "Lire une seconde fois"],
+        options: [
+          "Placer deux éléments côte à côte sans les lier",
+          "Tracer une ligne ou une flèche reliant deux correspondances",
+          "Lire une seconde fois à voix haute",
+          "Regrouper les termes dans un tableau à double entrée"
+        ],
         correctIndex: 1,
         explanation: "Relier consiste à établir une connexion visible (flèche ou trait) entre deux correspondances."
       },
@@ -488,7 +508,12 @@ export const QUIZ_DATABASE = {
         difficulty: "Intermédiaire",
         tier: 2,
         rewardEcts: 30,
-        options: ["Expliquer", "Numéroter", "Nommer"],
+        options: [
+          "Expliquer en détail avec ses propres mots",
+          "Numéroter les étapes d'un protocole",
+          "Nommer ou reproduire textuellement un élément sans le développer",
+          "Démontrer mathématiquement un théorème"
+        ],
         correctIndex: 2,
         explanation: "Citer consiste à nommer, énoncer ou reproduire textuellement un élément sans nécessairement le développer."
       },
@@ -498,7 +523,12 @@ export const QUIZ_DATABASE = {
         difficulty: "Intermédiaire",
         tier: 2,
         rewardEcts: 36,
-        options: ["Citer des éléments les uns après les autres", "Donner une longue explication", "Donner le nombre total"],
+        options: [
+          "Citer des éléments les uns après les autres sous forme de liste",
+          "Rédiger une longue explication continue",
+          "Donner le nombre total de données chiffrées",
+          "Créer une carte conceptuelle heuristique"
+        ],
         correctIndex: 0,
         explanation: "Énumérer consiste à énoncer une liste ordonnée ou à puces de données ou d'arguments."
       },
@@ -508,7 +538,12 @@ export const QUIZ_DATABASE = {
         difficulty: "Intermédiaire",
         tier: 2,
         rewardEcts: 42,
-        options: ["Ranger dans un certain ordre ou selon des catégories", "Recopier au propre", "Organiser son classeur"],
+        options: [
+          "Ranger dans un certain ordre ou selon des catégories logiques explicites",
+          "Recopier au propre sans ratures",
+          "Organiser ses feuilles dans un classeur",
+          "Corriger les accords grammaticaux"
+        ],
         correctIndex: 0,
         explanation: "Classer implique de regrouper ou d'ordonner des éléments selon un critère logique explicite."
       },
@@ -520,7 +555,12 @@ export const QUIZ_DATABASE = {
         difficulty: "Haute Exigence",
         tier: 3,
         rewardEcts: 48,
-        options: ["Expliquer le sens avec rigueur", "Terminer le tout en une fois", "Donner les caractéristiques"],
+        options: [
+          "Énoncer avec rigueur et exactitude la signification d'un terme",
+          "Terminer le devoir en une seule session continue",
+          "Donner son avis personnel sur le concept",
+          "Illustrer uniquement par un exemple anecdotique"
+        ],
         correctIndex: 0,
         explanation: "Définir consiste à formuler avec exactitude la signification d'un terme ou d'un concept."
       },
@@ -530,7 +570,12 @@ export const QUIZ_DATABASE = {
         difficulty: "Haute Exigence",
         tier: 3,
         rewardEcts: 54,
-        options: ["Ajouter ce qui manque pour rendre complet", "Choisir la bonne réponse au hasard", "Tout réécrire"],
+        options: [
+          "Insérer ce qui manque pour rendre un texte ou schéma complet",
+          "Choisir la réponse au hasard parmi des distracteurs",
+          "Tout réécrire depuis le début de la consigne",
+          "Traduire les termes techniques en français courant"
+        ],
         correctIndex: 0,
         explanation: "Compléter consiste à insérer l'information manquante dans un texte à trous ou un schéma incomplet."
       },
@@ -540,7 +585,12 @@ export const QUIZ_DATABASE = {
         difficulty: "Haute Exigence",
         tier: 3,
         rewardEcts: 60,
-        options: ["Assembler parallèlement deux éléments", "Utiliser un instrument de mesure", "Trouver les ressemblances et les différences entre deux éléments"],
+        options: [
+          "Assembler parallèlement deux éléments sans les analyser",
+          "Utiliser un instrument de mesure quantitatif",
+          "Mettre en regard deux objets en dégageant ressemblances ET différences",
+          "Classer par ordre chronologique de découverte"
+        ],
         correctIndex: 2,
         explanation: "Comparer exige obligatoirement de mettre en regard deux objets en dégageant points communs ET divergences."
       }

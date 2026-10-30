@@ -28,6 +28,7 @@ import confetti from 'canvas-confetti';
 import GameShow3D from './GameShow3D';
 import { sounds } from '../utils/soundEffects';
 import CharacterAvatar from './CharacterAvatar';
+import GrandConcours3ManchesArena from './GrandConcours3ManchesArena';
 
 const SHOW_META = {
   millionnaire: {
@@ -87,6 +88,11 @@ export default function TvGameShowArena({
   onFinishGame,
   onClose
 }) {
+  // Délégation au Grand Concours officiel en 3 Manches (Questions pour un champion)
+  if (showType === 'concours') {
+    return <GrandConcours3ManchesArena onClose={onClose} onFinishGame={onFinishGame} />;
+  }
+
   const meta = SHOW_META[showType] || SHOW_META.millionnaire;
 
   // TV Intro / Générique State

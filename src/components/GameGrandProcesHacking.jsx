@@ -555,8 +555,8 @@ export default function GameGrandProcesHacking({ onComplete }) {
         [currentAssault.requiredType]: true
       }));
 
-      // Réaction de Maxime après approbation
-      sounds.scheduleTimeout(() => {
+      // Réaction de Maxime après approbation (Timer sécurisé React indépendant du gestionnaire vocal)
+      setTimeout(() => {
         setStage('reaction');
         setCameraView('WITNESS');
         setWitnessState('confident');
@@ -592,8 +592,8 @@ export default function GameGrandProcesHacking({ onComplete }) {
         [currentAssault.requiredType]: false
       }));
 
-      // Basculer vers l'écran de réprimande judiciaire
-      sounds.scheduleTimeout(() => {
+      // Basculer vers l'écran de réprimande judiciaire (Timer sécurisé React indépendant du gestionnaire vocal)
+      setTimeout(() => {
         setStage('reaction_fail');
         setCameraView('JUDGE');
         setJudgeState('speaking');
@@ -654,7 +654,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
       const isInnocent = provenCount >= 4 || judgeConviction >= 65;
 
       const finalVoice = isInnocent ? 'proces_judge_cinematic_innocent' : 'proces_judge_cinematic_guilty';
-      sounds.scheduleTimeout(() => {
+      setTimeout(() => {
         sounds.playAudioFile(`/audio/voices/${finalVoice}.mp3`, 1.0);
         if (isInnocent) {
           confetti({ particleCount: 160, spread: 110, origin: { y: 0.6 } });

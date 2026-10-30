@@ -686,25 +686,74 @@ class SoundManager {
     this.playVoice(`proces_public_liberez_poly_${idx}`, onComplete);
   }
 
-  // Voix synthèse de secours si jamais un texte dynamique non pré-enregistré est passé
-  speakHost(text) {
+  // Voix synthèse ultra-réaliste & expressive (sélection des meilleures voix neurales FR)
+  speakHost(text, character = 'henri') {
     if (this.muted) return;
     if (!('speechSynthesis' in window)) return;
 
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'fr-FR';
-    utterance.rate = 1.05;
-    utterance.pitch = 1.0;
-
-    const voices = window.speechSynthesis.getVoices();
-    // Priorité aux voix naturelles Google ou Microsoft
-    const naturalVoice = voices.find(v => v.lang.startsWith('fr') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Henri')));
-    const frVoice = naturalVoice || voices.find(v => v.lang.startsWith('fr'));
-    if (frVoice) {
-      utterance.voice = frVoice;
+    
+    // Prosodie vivante selon le personnage
+    if (character === 'aurore') {
+      utterance.rate = 1.02;
+      utterance.pitch = 1.12; // Voix féminine chaleureuse
+    } else if (character === 'judge') {
+      utterance.rate = 0.95;
+      utterance.pitch = 0.88; // Voix grave et solennelle de magistrat
+    } else {
+      // Henri animateur TV
+      utterance.rate = 1.06;
+      utterance.pitch = 1.04; // Voix dynamique et chaleureuse de présentateur
     }
-    window.speechSynthesis.speak(utterance);
+
+    const setOptimalVoice = () => {
+      const voices = window.speechSynthesis.getVoices();
+      if (!voices || voices.length === 0) return;
+
+      const frVoices = voices.filter(v => v.lang.startsWith('fr'));
+      let chosenVoice = null;
+
+      if (character === 'aurore') {
+        chosenVoice = frVoices.find(v => 
+          v.name.includes('Denise') || 
+          v.name.includes('Julie') || 
+          v.name.includes('Hortense') || 
+          v.name.includes('Céline') ||
+          (v.name.includes('Natural') && (v.name.includes('Female') || !v.name.includes('Henri'))) ||
+          v.name.includes('Google français')
+        );
+      } else if (character === 'judge') {
+        chosenVoice = frVoices.find(v => 
+          v.name.includes('Claude') || 
+          v.name.includes('Paul') || 
+          v.name.includes('Alain') || 
+          v.name.includes('Henri') ||
+          v.name.includes('Natural')
+        );
+      } else {
+        // Henri
+        chosenVoice = frVoices.find(v => 
+          v.name.includes('Henri') || 
+          v.name.includes('Paul') || 
+          v.name.includes('Natural') || 
+          v.name.includes('Google français')
+        );
+      }
+
+      utterance.voice = chosenVoice || frVoices[0] || null;
+    };
+
+    if (window.speechSynthesis.getVoices().length === 0) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        setOptimalVoice();
+        window.speechSynthesis.speak(utterance);
+      };
+    } else {
+      setOptimalVoice();
+      window.speechSynthesis.speak(utterance);
+    }
   }
 }
 

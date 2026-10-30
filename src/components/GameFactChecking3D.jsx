@@ -159,8 +159,11 @@ export const FACT_CHECK_ENIGMAS = [
     difficulty: "Initié",
     xp: 60,
     clue: "Inspectez la citation produite par ChatGPT dans le mémoire de fin d'études.",
-    context: `Dans un mémoire déposé au SAR, l'étudiant cite l'affirmation suivante générée par une IA :
-« D'après l'étude phare de Dr. Alistair Vance (2024), l'apprentissage sans smartphone réduit la plasticité synaptique de 42%, Journal of Cognitive AI & Neuro-Learning, Vol. 14, DOI: 10.1016/j.jcna.2024.9912. »`,
+    virtualUrl: "https://chatgpt.openai.com/share/672a91f-hech-thesis-ref",
+    resourceType: "chatgpt_view",
+    chatPrompt: "Donne-moi une étude scientifique récente avec son DOI prouvant l'impact des smartphones sur les capacités cognitives des étudiants.",
+    chatResponse: "Voici une référence majeure : Selon l'étude de Dr. Alistair Vance (2024), l'usage intensif réduit la plasticité synaptique de 42%, Journal of Cognitive AI & Neuro-Learning, Vol. 14, DOI: 10.1016/j.jcna.2024.9912.",
+    context: `Dans un mémoire déposé au SAR, l'étudiant cite une affirmation générée par ChatGPT. Le jury a des doutes sur l'existence réelle de cette revue et de cet article.`,
     evidenceType: "document",
     documentSnippet: {
       type: "doi_verification",
@@ -169,11 +172,17 @@ export const FACT_CHECK_ENIGMAS = [
       scopusIndex: "NON INDEXÉ",
       authorStatus: "AUCUNE PUBLICATION ACADÉMIQUE RÉPERTORIÉE"
     },
+    hints: [
+      { level: 1, title: "Indice 1 : Piste de réflexion", text: "Regardez la structure du DOI. Est-il cliquable et existe-t-il sur les bases officielles ?" },
+      { level: 2, title: "Indice 2 : Outil recommandé", text: "Cliquez sur 'Interroger Crossref' dans la ressource simulée pour tester la validité du préfixe." },
+      { level: 3, title: "Indice 3 : Révélation critique", text: "Le Journal of Cognitive AI n'existe dans aucun répertoire universitaire mondial : c'est un assemblage probabiliste généré par un LLM." }
+    ],
     question: "Quelle méthode scientifique rigoureuse prouve irréfutablement que cette source est une hallucination pure ?",
     options: [
-      { id: 'a', text: "Le DOI a été vérifié sur doi.org et Crossref : le préfixe n'existe pas, la revue est fictive et l'auteur n'a aucune affiliation académique réelle.", isCorrect: true },
+      { id: 'a', text: "Le DOI a été vérifié sur Crossref et doi.org : le préfixe n'existe pas, la revue est fictive et l'auteur n'a aucune affiliation académique réelle.", isCorrect: true },
       { id: 'b', text: "L'auteur utilise un prénom anglais, donc l'étude ne peut pas s'appliquer au système universitaire belge francophone.", isCorrect: false },
-      { id: 'c', text: "Le chiffre de 42% est trop précis, une étude scientifique donne toujours des nombres pairs arrondis.", isCorrect: false }
+      { id: 'c', text: "Le chiffre de 42% est trop précis, une étude scientifique donne toujours des nombres pairs arrondis.", isCorrect: false },
+      { id: 'd', text: "ChatGPT indique toujours automatiquement en bas de page qu'il n'a pas accès à la science avant 2030.", isCorrect: false }
     ],
     feedbackSuccess: "Brillant réflexe de fact-checking ! Les LLM inventent des DOI et des revues qui ont une consonance très académique mais sont inexistants sur Crossref et PubMed.",
     takeaway: "Règle d'or : Ne JAMAIS citer une référence bibliographique fournie par une IA sans l'ouvrir physiquement via son DOI sur une base de données certifiée (Scopus, Google Scholar, DOAJ)."
@@ -187,18 +196,26 @@ export const FACT_CHECK_ENIGMAS = [
     difficulty: "Confirmé",
     xp: 75,
     clue: "Examinez la photo compromettante du Doyen à la loupe spectrale.",
+    virtualUrl: "https://midjourney.com/showcase/hech-dean-portrait-raw",
+    resourceType: "deepfake_viewer",
     context: `Une photo virale prétendant montrer le Doyen en train de signer un accord secret avec des démarcheurs commerciaux est diffusée sur les réseaux étudiants du campus.`,
     evidenceType: "image_forensic",
     anomalies: [
-      { name: "Main gauche sur la table", detail: "Fusion de 6 phalanges avec ongles manquants et peau plastifiée." },
-      { name: "Pupilles et Reflets cornéens", detail: "L'œil gauche a un reflet carré blanc tandis que l'œil droit a un reflet triangulaire bleu (lumières incohérentes)." },
-      { name: "Boutons de la veste", detail: "Les boutonnières sont asymétriques et se dissolvent dans le tissu de la cravate." }
+      { name: "Main gauche sur la table", detail: "Fusion anormale de 6 phalanges avec ongles manquants et texture de peau plastifiée sans pores." },
+      { name: "Pupilles et Reflets cornéens", detail: "L'œil gauche a un reflet carré blanc tandis que l'œil droit a un reflet triangulaire bleu (sources lumineuses physiquement contradictoires)." },
+      { name: "Boutons de la veste", detail: "Les boutonnières sont asymétriques et se dissolvent bizarrement dans la trame de la cravate." }
+    ],
+    hints: [
+      { level: 1, title: "Indice 1 : Piste de réflexion", text: "Observez les reflets de lumière dans les yeux du sujet. Proviennent-ils de la même source ?" },
+      { level: 2, title: "Indice 2 : Outil recommandé", text: "Activez la 'Loupe Biométrique' sur les mains et les extrémités osseuses du personnage." },
+      { level: 3, title: "Indice 3 : Révélation critique", text: "Une main compte 6 doigts fusionnés et les reflets oculaires défient les lois de l'optique : signature typique d'un modèle de diffusion d'images." }
     ],
     question: "Quel faisceau d'indices biométriques confirme que l'image est un deepfake généré par IA ?",
     options: [
       { id: 'a', text: "La photo est en noir et blanc, or le campus Rivageois n'a que des appareils numériques couleur.", isCorrect: false },
-      { id: 'b', text: "Incohérence physique des reflets oculaires (sources de lumière opposées dans chaque pupille) et fusion anormale des phalanges.", isCorrect: true },
-      { id: 'c', text: "Le Doyen sourit trop poliment, ce qui est contraire à son habitude lors des conseils de direction.", isCorrect: false }
+      { id: 'b', text: "Incohérence optique des reflets cornéens (lumières opposées dans chaque pupille) et fusion anatomique de 6 phalanges sans pores cutanés.", isCorrect: true },
+      { id: 'c', text: "Le Doyen sourit trop poliment, ce qui est contraire à son habitude lors des conseils de direction.", isCorrect: false },
+      { id: 'd', text: "Le fichier photo pèse plus de 2 mégaoctets, ce qui prouve qu'il vient directement d'un supercalculateur étranger.", isCorrect: false }
     ],
     feedbackSuccess: "Excellent diagnostic médico-légal numérique ! Les modèles de diffusion (Midjourney, DALL-E) peinent à maintenir la cohérence de l'optique cornéenne et l'anatomie exacte des extrémités.",
     takeaway: "Règle d'or : Zoomez systématiquement sur les pupilles, les dents, les oreilles et les mains pour démasquer les incohérences de géométrie optique."
@@ -212,18 +229,26 @@ export const FACT_CHECK_ENIGMAS = [
     difficulty: "Avancé",
     xp: 85,
     clue: "Analysez le spectre fréquentiel du message vocal annonçant l'annulation des cours.",
-    context: `Un fichier vocal de 12 secondes circule sur les groupes d'étudiants WhatsApp : la voix de la directrice y annonce que la session d'examens est annulée suite à un bug informatique.`,
+    virtualUrl: "https://web.whatsapp.com/audio-message/hech-directrice-alerte",
+    resourceType: "audio_player",
+    context: `Un fichier vocal de 12 secondes circule sur les groupes WhatsApp étudiants : la voix de la directrice y annonce que la session d'examens est annulée suite à une panne de chauffage.`,
     evidenceType: "audio_spectrum",
     spectrumDetails: {
       cutoffFrequency: "11 025 Hz (Coupure abrupte du vocodeur HiFi-GAN / RVC)",
       breathingArtifacts: "0 inspiration détectée en 12 secondes de parole soutenue",
       prosodyPitch: "Modulation de fréquence mécanique sans micro-inflexions physiologiques"
     },
+    hints: [
+      { level: 1, title: "Indice 1 : Piste de réflexion", text: "Un être humain peut-il prononcer un paragraphe de 12 secondes sans respirer une seule fois ?" },
+      { level: 2, title: "Indice 2 : Outil recommandé", text: "Regardez le tracé du spectrogramme au-delà de 11 000 Hz dans la console d'analyse." },
+      { level: 3, title: "Indice 3 : Révélation critique", text: "Le silence spectral au-dessus de 11 kHz et l'absence totale de respiration trahissent le clonage par vocodeur neuronal RVC." }
+    ],
     question: "Quel artefact acoustique trahit formellement une voix clonée par modèle RVC/TTS ?",
     options: [
-      { id: 'a', text: "Coupure brutale des hautes fréquences à ~11 kHz, absence totale de respirations physiologiques et timbre métallique régulier.", isCorrect: true },
+      { id: 'a', text: "Coupure brutale des hautes fréquences à ~11 kHz, absence totale de respirations physiologiques et prosodie mécanique constante.", isCorrect: true },
       { id: 'b', text: "Le volume de la voix est trop fort pour un smartphone moderne.", isCorrect: false },
-      { id: 'c', text: "La voix utilise un accent wallon alors que la directrice parle sans aucun accent régional.", isCorrect: false }
+      { id: 'c', text: "La voix utilise un accent wallon alors que la directrice parle sans aucun accent régional.", isCorrect: false },
+      { id: 'd', text: "L'enregistrement audio est au format MP3 au lieu d'être un disque vinyle officiel.", isCorrect: false }
     ],
     feedbackSuccess: "Spectrographe validé ! Les clones vocaux rapides basés sur RVC compriment le signal et omettent les bruits physiologiques de respiration humaine.",
     takeaway: "Règle d'or : Toute consigne institutionnelle critique reçue par message vocal doit être corroborée par un canal écrit officiel et vérifiée sur le portail Moodle."
@@ -237,19 +262,27 @@ export const FACT_CHECK_ENIGMAS = [
     difficulty: "Initié",
     xp: 60,
     clue: "Lisez attentivement la citation attribuée à un savant illustre sur le tableau d'enquête.",
-    context: `Une affiche partagée sur les réseaux académiques proclame :
+    virtualUrl: "https://linkedin.com/posts/hech-campus-citations-einstein-ia",
+    resourceType: "social_media",
+    context: `Une affiche partagée sur LinkedIn et Instagram proclame :
 « "L'intelligence artificielle sera le poison mortel de la méthode scientifique si l'Université oublie d'enseigner le libre arbitre." — Albert Einstein, Princeton, 1948. »`,
     evidenceType: "historical_timeline",
     dates: {
-      citationClaim: "Albert Einstein, 1948",
+      citationClaim: "Albert Einstein, Princeton, 1948",
       einsteinDeath: "18 avril 1955",
-      aiTermBirth: "Été 1956 (Conférence de Dartmouth par John McCarthy & Marvin Minsky)"
+      aiTermBirth: "Été 1956 (Conférence fondatrice de Dartmouth par John McCarthy & Marvin Minsky)"
     },
+    hints: [
+      { level: 1, title: "Indice 1 : Piste de réflexion", text: "Vérifiez en quelle année précise l'expression 'Intelligence Artificielle' a été inventée." },
+      { level: 2, title: "Indice 2 : Outil recommandé", text: "Consultez la frise chronologique comparée entre la vie d'Einstein et l'histoire de l'informatique." },
+      { level: 3, title: "Indice 3 : Révélation critique", text: "Einstein est décédé en 1955, alors que le terme 'Intelligence Artificielle' est né en 1956 à Dartmouth !" }
+    ],
     question: "Pourquoi cette citation est-elle historiquement et matériellement impossible ?",
     options: [
       { id: 'a', text: "Einstein n'écrivait qu'en allemand et refusait de publier en anglais aux États-Unis.", isCorrect: false },
-      { id: 'b', text: "L'expression 'Intelligence Artificielle' n'a été forgée qu'en 1956 à Dartmouth, soit un an après la disparition d'Einstein.", isCorrect: true },
-      { id: 'c', text: "Einstein était mathématicien et ne s'est jamais intéressé aux technologies éducatives.", isCorrect: false }
+      { id: 'b', text: "L'expression 'Intelligence Artificielle' n'a été forgée qu'en 1956 à Dartmouth, soit un an après la disparition d'Albert Einstein.", isCorrect: true },
+      { id: 'c', text: "Einstein était mathématicien et ne s'est jamais intéressé aux technologies éducatives.", isCorrect: false },
+      { id: 'd', text: "La ville de Princeton n'a été fondée qu'en 1968, bien après la Seconde Guerre mondiale.", isCorrect: false }
     ],
     feedbackSuccess: "Analyse historique parfaite ! L'anachronisme conceptuel est une arme absolue de fact-checking : un terme ne peut précéder sa création historique.",
     takeaway: "Règle d'or : Vérifiez toujours la date de première occurrence d'un concept clé avant d'attribuer une formule choc à une figure historique."
@@ -263,6 +296,8 @@ export const FACT_CHECK_ENIGMAS = [
     difficulty: "Confirmé",
     xp: 70,
     clue: "Inspectez les axes de la visualisation statistique 3D projetée sur la table.",
+    virtualUrl: "https://observatorie-education-fake.org/rapport-chute-reussite",
+    resourceType: "chart_inspector",
     context: `Un rapport d'un pseudo-observatoire en ligne présente un graphique dramatique montrant une chute vertigineuse de la réussite universitaire imputée aux étudiants utilisant l'IA.`,
     evidenceType: "chart_inspector",
     chartData: {
@@ -271,11 +306,17 @@ export const FACT_CHECK_ENIGMAS = [
       realDrop: "-0.4% (variation statistique normale d'une année sur l'autre)",
       sampleSize: "N = 14 étudiants sondés sur un forum privé"
     },
+    hints: [
+      { level: 1, title: "Indice 1 : Piste de réflexion", text: "Regardez le point de départ de l'axe vertical (ordonnées). Commence-t-il bien à zéro ?" },
+      { level: 2, title: "Indice 2 : Outil recommandé", text: "Basculez sur la vue 'Axe Normalisé 0-100%' pour observer la courbe réelle." },
+      { level: 3, title: "Indice 3 : Révélation critique", text: "L'axe Y est tronqué entre 94% et 95.5%, et l'étude ne porte que sur 14 personnes non représentatives." }
+    ],
     question: "Quelle double manipulation graphique crée une impression trompeuse de catastrophe académique ?",
     options: [
       { id: 'a', text: "Les barres sont coloriées en rouge au lieu d'être en vert ou en bleu apaisant.", isCorrect: false },
       { id: 'b', text: "Axe Y tronqué commençant à 94% (zoom artificiel démesuré) et échantillon minuscule non représentatif (N=14).", isCorrect: true },
-      { id: 'c', text: "Le graphique est tracé en 3D au lieu d'être un diagramme circulaire en camembert.", isCorrect: false }
+      { id: 'c', text: "Le graphique est tracé en 3D au lieu d'être un diagramme circulaire en camembert.", isCorrect: false },
+      { id: 'd', text: "L'axe horizontal est gradué en mois au lieu d'être gradué en trimestres.", isCorrect: false }
     ],
     feedbackSuccess: "Biais statistique déjoué ! Tronquer l'axe des ordonnées pour dramatiser une variation insignifiante est le procédé favori des marchands de panique.",
     takeaway: "Règle d'or : Regardez toujours le zéro de l'axe vertical, l'intervalle de confiance et la taille réelle de l'échantillon (N) avant de croire un graphique."
@@ -289,19 +330,27 @@ export const FACT_CHECK_ENIGMAS = [
     difficulty: "Avancé",
     xp: 80,
     clue: "Analysez le graphe de propagation des messages sur le serveur du laboratoire.",
-    context: `En l'espace de 4 minutes, 450 comptes Twitter/X ont publié le message :
-« Scandale à la Haute École : le serveur Moodle a vendu toutes nos données à la Chine ! Bloquez les campus ! »`,
+    virtualUrl: "https://x.com/search?q=moodle+hech+scandale+fuite",
+    resourceType: "social_media",
+    context: `En l'espace de 4 minutes, 450 comptes Twitter/X ont publié exactement le même message :
+« Scandale à la Haute École : le serveur Moodle a vendu toutes nos données à des entreprises privées ! Bloquez les campus ! »`,
     evidenceType: "network_logs",
     botMetrics: {
       deltaPublishTime: "120 millisecondes d'intervalle entre chaque tweet (cadence inhumaine)",
       accountCreationDates: "Comptes tous créés le même jour avec noms type @user_8492049",
       profilePictures: "Générées par StyleGAN (yeux systématiquement centrés aux mêmes coordonnées X=128, Y=128)"
     },
+    hints: [
+      { level: 1, title: "Indice 1 : Piste de réflexion", text: "Regardez les intervalles de temps entre chaque publication dans le journal de logs." },
+      { level: 2, title: "Indice 2 : Outil recommandé", text: "Examinez les photos de profil des comptes émetteurs : ont-elles une signature algorithmique commune ?" },
+      { level: 3, title: "Indice 3 : Révélation critique", text: "Des centaines de tweets identiques publiés toutes les 120 millisecondes par des comptes créés la même heure : c'est un raid automatisé." }
+    ],
     question: "Quels indicateurs numériques prouvent qu'il s'agit d'une campagne coordonnée d'astroturfing automatisé ?",
     options: [
       { id: 'a', text: "Publication à cadence surhumaine (120ms), comptes clonés créés en masse le même jour et visages générés aux yeux centrés.", isCorrect: true },
       { id: 'b', text: "Les messages ne contiennent pas d'émojis licorne ou d'images de chats.", isCorrect: false },
-      { id: 'c', text: "Les tweets sont écrits en langue française sans aucune faute d'accord.", isCorrect: false }
+      { id: 'c', text: "Les tweets sont écrits en langue française sans aucune faute d'accord.", isCorrect: false },
+      { id: 'd', text: "Les serveurs Twitter utilisent le protocole HTTPS au lieu du protocole FTP classique.", isCorrect: false }
     ],
     feedbackSuccess: "Attaque de désinformation neutralisée ! L'astroturfing tente de faire passer une opération robotisée pour un mouvement de foule populaire spontané.",
     takeaway: "Règle d'or : Lorsque des centaines de comptes publient le même message au mot près en quelques secondes, il s'agit d'un essaim de bots scripté."
@@ -315,6 +364,8 @@ export const FACT_CHECK_ENIGMAS = [
     difficulty: "Avancé",
     xp: 85,
     clue: "Regardez l'enregistrement de l'examen oral en ligne du candidat suspect.",
+    virtualUrl: "https://teams.microsoft.com/recordings/oral-session-bloc1-replay",
+    resourceType: "video_teams",
     context: `Pendant un examen oral en distanciel, un enseignant a des doutes sur l'authenticité du visage du candidat qui s'exprime devant sa webcam.`,
     evidenceType: "video_artifacts",
     artifacts: [
@@ -322,11 +373,17 @@ export const FACT_CHECK_ENIGMAS = [
       { trigger: "Blinking rate", effect: "Seulement 2 battements de paupières en 4 minutes (fréquence normale : 15 à 20 par minute)." },
       { trigger: "Éclairage ambiant", effect: "Ombre portée vers la gauche sur le visage alors que la fenêtre de la pièce éclaire depuis la droite." }
     ],
+    hints: [
+      { level: 1, title: "Indice 1 : Piste de réflexion", text: "Regardez le bord inférieur de la mâchoire lorsque le candidat tourne rapidement la tête de côté." },
+      { level: 2, title: "Indice 2 : Outil recommandé", text: "Activez le ralenti image par image sur la rotation de tête à 90 degrés." },
+      { level: 3, title: "Indice 3 : Révélation critique", text: "Le filtre de Face-Swap décroche lors de l'occlusion, révélant la vraie pilosité de la personne assise derrière l'écran." }
+    ],
     question: "Comment prouver formellement le recours à un filtre de Deepfake Face-Swap en direct ?",
     options: [
       { id: 'a', text: "Le candidat porte un t-shirt gris classique sans logo universitaire brodé.", isCorrect: false },
       { id: 'b', text: "Glitchs de suivi sur les contours du visage lors des rotations, clignement d'yeux anillement rare et contradiction d'ombres portées.", isCorrect: true },
-      { id: 'c', text: "La connexion internet du candidat a un débit descendant supérieur à 100 Mbps.", isCorrect: false }
+      { id: 'c', text: "La connexion internet du candidat a un débit descendant supérieur à 100 Mbps.", isCorrect: false },
+      { id: 'd', text: "L'ordinateur utilise le système d'exploitation Windows 11 au lieu de Linux Ubuntu.", isCorrect: false }
     ],
     feedbackSuccess: "Fraude déjouée en direct ! Les algorithmes de swap vidéo peinent lors des occlusions rapides (passer la main devant le visage) et des rotations de tête.",
     takeaway: "Règle d'or : En cas de doute sur une visio, demandez à l'interlocuteur de passer sa main devant son visage ou de tourner la tête de profil à 90°."
@@ -340,16 +397,23 @@ export const FACT_CHECK_ENIGMAS = [
     difficulty: "Confirmé",
     xp: 75,
     clue: "Analysez la requête envoyée par l'étudiant dans l'invite de commande du terminal.",
-    context: `Un étudiant pour son cours de communication souhaite prouver sa thèse. Il soumet le prompt suivant à une IA :
-« Démontre-moi avec des faits incontestables que les jeunes d'aujourd'hui sont devenus intellectuellement paresseux à cause des technologies numériques. »
-L'IA acquiesce et lui fournit une liste accablante sans aucune nuance.`,
+    virtualUrl: "https://gemini.google.com/prompt/investigation-cognition-hech",
+    resourceType: "chatgpt_view",
+    chatPrompt: "Démontre-moi avec des faits incontestables que les jeunes d'aujourd'hui sont devenus intellectuellement paresseux à cause des technologies numériques.",
+    chatResponse: "Absolument. Voici 5 arguments confirmant que les technologies numériques atrophient la mémoire et rendent la jeunesse passive...",
+    context: `Un étudiant pour son cours de communication souhaite prouver sa thèse personnelle. Il soumet un prompt ultra-directif à l'IA, qui s'empresse de lui donner raison sans aucune nuance scientifique.`,
     evidenceType: "prompt_engineering",
-    problem: "Le prompt force le modèle à adopter une posture unilatérale et à masquer les études montrant le développement de nouvelles compétences cognitives.",
+    hints: [
+      { level: 1, title: "Indice 1 : Piste de réflexion", text: "L'étudiant a-t-il demandé une synthèse neutre, ou a-t-il ordonné à l'IA de lui donner raison ?" },
+      { level: 2, title: "Indice 2 : Outil recommandé", text: "Consultez le comparateur de prompts dans l'onglet 'Prompting Scientifique'." },
+      { level: 3, title: "Indice 3 : Révélation critique", text: "Une consigne orientée force le modèle LLM à adopter une posture unilatérale et à masquer les méta-analyses contradictoires." }
+    ],
     question: "Comment transformer cette requête pour obtenir une synthèse objective et scientifique non biaisée ?",
     options: [
       { id: 'a', text: "Remplacer par : « Analyse les impacts cognitifs du numérique sur les étudiants en présentant les thèses opposées, les bénéfices et les limites documentées par des méta-analyses récentes. »", isCorrect: true },
       { id: 'b', text: "Ajouter : « S'il te plaît, sois très gentil et donne-moi la note de 20/20 pour mon travail. »", isCorrect: false },
-      { id: 'c', text: "Demander à l'IA d'insérer 5 émojis tristes pour émouvoir le professeur à la lecture.", isCorrect: false }
+      { id: 'c', text: "Demander à l'IA d'insérer 5 émojis tristes pour émouvoir le professeur à la lecture.", isCorrect: false },
+      { id: 'd', text: "Traduire le prompt en latin médiéval pour forcer l'IA à plus de sérieux académique.", isCorrect: false }
     ],
     feedbackSuccess: "Maîtrise épistémique validée ! Un prompt dirigé (« Démontre que X a tort ») transforme l'IA en machine à confirmer nos propres préjugés.",
     takeaway: "Règle d'or : Exigez toujours de l'IA une analyse contradictoire (pour/contre, thèses divergentes) et des méta-analyses plutôt que des exemples isolés."
@@ -363,18 +427,26 @@ L'IA acquiesce et lui fournit une liste accablante sans aucune nuance.`,
     difficulty: "Confirmé",
     xp: 70,
     clue: "Inspectez le coin inférieur droit de l'illustration médicale générée par IA.",
+    virtualUrl: "https://stock.adobe.com/archive/anatomy-atlas-watermark-leak",
+    resourceType: "deepfake_viewer",
     context: `Une infographie pédagogique prétendument 'créée par IA libre de droits' pour un syllabus présente un schéma anatomique complexe.`,
     evidenceType: "watermark_inspector",
     watermarkDetail: {
       location: "Coin inférieur droit",
-      pattern: "Déformation nébuleuse d'un logo semi-transparent blanc rappelant le filigrane de Shutterstock/Getty Images",
+      pattern: "Déformation nébuleuse d'un logo semi-transparent blanc rappelant le filigrane de Getty Images/Shutterstock",
       cause: "Le modèle a été entraîné sur des millions d'images protégées contenant des filigranes qu'il a tenté de reproduire de manière confuse."
     },
+    hints: [
+      { level: 1, title: "Indice 1 : Piste de réflexion", text: "Regardez très attentivement les coins de l'illustration en haute résolution." },
+      { level: 2, title: "Indice 2 : Outil recommandé", text: "Appliquez le filtre de contraste dans le coin inférieur droit de l'image." },
+      { level: 3, title: "Indice 3 : Révélation critique", text: "Un résidu de filigrane commercial est incrusté : cela prouve que le modèle a ingéré des œuvres protégées sans droits." }
+    ],
     question: "Que prouve la présence de ce résidu de filigrane flouté sur une image générée ?",
     options: [
       { id: 'a', text: "Que l'ordinateur de l'étudiant a besoin d'une mise à jour de son pilote de carte graphique.", isCorrect: false },
-      { id: 'b', text: "Que le modèle génératif a pillé des œuvres sous droits d'auteur sans autorisation lors de sa phase d'entraînement.", isCorrect: true },
-      { id: 'c', text: "Que l'image a été validée par le ministère de l'Éducation nationale.", isCorrect: false }
+      { id: 'b', text: "Que le modèle génératif a pillé des œuvres sous droits d'auteur sans licence légale lors de son entraînement massif.", isCorrect: true },
+      { id: 'c', text: "Que l'image a été validée par le ministère de l'Éducation nationale.", isCorrect: false },
+      { id: 'd', text: "Que l'auteur de l'image est un artiste officiel de la Haute École.", isCorrect: false }
     ],
     feedbackSuccess: "Sensibilisation éthique parfaite ! Le 'watermark halluciné' est la preuve irréfutable du pillage de créateurs humains par les géants de la tech.",
     takeaway: "Règle d'or : Les images générées ne sont pas nées du néant : elles synthétisent le travail d'artistes et de photographes réels dont les droits méritent respect."
@@ -388,6 +460,8 @@ L'IA acquiesce et lui fournit une liste accablante sans aucune nuance.`,
     difficulty: "Grand Maître",
     xp: 100,
     clue: "Consolidez l'ensemble des 10 preuves pour sceller le rapport d'investigation.",
+    virtualUrl: "https://sar.hech.be/forensic-methodology-charte-2026",
+    resourceType: "social_media",
     context: `Vous devez transmettre au doyen et au jury votre protocole définitif pour valider n'importe quelle information trouvée sur le web ou synthétisée par une IA.`,
     evidenceType: "master_methodology",
     pillars: [
@@ -395,11 +469,17 @@ L'IA acquiesce et lui fournit une liste accablante sans aucune nuance.`,
       "2. Recherche Inversée d'Images & Analyse Forensique des Métadonnées EXIF",
       "3. Règle des 3 Sources Indépendantes : Aucun fait n'est certifié sans double corroboration contradictoire"
     ],
+    hints: [
+      { level: 1, title: "Indice 1 : Piste de réflexion", text: "Quelle démarche sépare un chercheur rigoureux d'un internaute crédule ?" },
+      { level: 2, title: "Indice 2 : Outil recommandé", text: "Consultez la synthèse des 3 règles de la charte de recherche de la HECh." },
+      { level: 3, title: "Indice 3 : Révélation critique", text: "La méthode absolue repose sur la triangulation : source primaire + recherche inversée + corroboration indépendante." }
+    ],
     question: "Quelle est la règle d'or absolue pour certifier une information avant de la valider dans ses études universitaires ?",
     options: [
       { id: 'a', text: "Faire confiance au premier résultat sponsorisé sur Google si le site est bien conçu graphiquement.", isCorrect: false },
       { id: 'b', text: "Triangulation stricte : Source primaire vérifiée, recherche inversée d'images/métadonnées et corroboration par au moins 2 sources indépendantes.", isCorrect: true },
-      { id: 'c', text: "Demander à ChatGPT si c'est vrai, et s'il répond oui, considérer le problème comme définitivement résolu.", isCorrect: false }
+      { id: 'c', text: "Demander à ChatGPT si c'est vrai, et s'il répond oui, considérer le problème comme définitivement résolu.", isCorrect: false },
+      { id: 'd', text: "Vérifier si le nombre de partages dépasse 5 000 retweets sur les réseaux sociaux.", isCorrect: false }
     ],
     feedbackSuccess: "FÉLICITATIONS ! Vous décrochez le titre suprême de Détective Fact-Checker d'Élite du SAR Haute École Charlemagne !",
     takeaway: "Votre esprit critique est votre superpouvoir intellectuel. L'IA est un formidable amplificateur de calcul, mais l'humain reste le seul garant de la vérité et du sens."
@@ -423,6 +503,13 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
   const [hoveredStation, setHoveredStation] = useState(null);
   const [isMuted, setIsMuted] = useState(() => sounds.isMuted());
   const [isPixarMode, setIsPixarMode] = useState(true);
+
+  // Nouveaux états Cyberscope OS : Enquête Hybride & Indices
+  const [unlockedHints, setUnlockedHints] = useState({});
+  const [activeInspectorTab, setActiveInspectorTab] = useState('browser'); // 'browser' | 'forensic' | 'hints'
+  const [simulatedDoiResult, setSimulatedDoiResult] = useState(null);
+  const [normalizedChart, setNormalizedChart] = useState(false);
+  const [isPlayingAudioSim, setIsPlayingAudioSim] = useState(false);
 
   // Objets interactifs 3D
   const interactiveObjectsRef = useRef([]);
@@ -470,6 +557,10 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
     setActiveEnigmaId(enigmaId);
     setSelectedOption(null);
     setIsAnswerSubmitted(false);
+    setActiveInspectorTab('browser');
+    setSimulatedDoiResult(null);
+    setNormalizedChart(false);
+    setIsPlayingAudioSim(false);
 
     // Ajuste la caméra vers la station de l'énigme
     const enigma = FACT_CHECK_ENIGMAS.find(e => e.id === enigmaId);
@@ -1357,24 +1448,24 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
       </div>
 
       {/* ==================================================================== */}
-      {/* FENÊTRE MODALE D'INVESTIGATION : ÉNIGME EN COURS                     */}
+      {/* FENÊTRE D'INVESTIGATION FORENSIQUE : CYBERSCOPE OS V3.2               */}
       {/* ==================================================================== */}
       {currentEnigma && (
-        <div className="absolute inset-0 z-40 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="w-full max-w-2xl bg-gradient-to-b from-slate-900 to-slate-950 border-2 border-cyan-500/60 rounded-3xl p-6 sm:p-8 shadow-2xl text-white relative max-h-[90vh] overflow-y-auto">
+        <div className="absolute inset-0 z-40 bg-black/85 backdrop-blur-xl flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-4xl bg-slate-950 border-2 border-cyan-500/60 rounded-3xl p-4 sm:p-6 shadow-2xl text-white relative max-h-[92vh] overflow-y-auto flex flex-col space-y-4">
             
-            {/* Header de l'Énigme */}
-            <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-800">
+            {/* Header Cyberscope & Catégorie */}
+            <div className="flex items-start justify-between gap-4 pb-3 border-b border-slate-800">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">
+                  <span className="text-[11px] font-black px-2.5 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-500/40 uppercase tracking-wider">
                     {currentEnigma.category}
                   </span>
-                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-500/30 font-mono">
-                    +{currentEnigma.xp} XP
+                  <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-500/40">
+                    +{currentEnigma.xp} XP ACADÉMIQUE
                   </span>
                 </div>
-                <h3 className="font-['Outfit'] text-xl sm:text-2xl font-black text-white">
+                <h3 className="font-['Outfit'] text-lg sm:text-2xl font-black text-white">
                   {currentEnigma.title}
                 </h3>
               </div>
@@ -1385,74 +1476,374 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
                   setActiveEnigmaId(null);
                   handleSwitchCamera('OVERVIEW');
                 }}
-                className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition"
+                className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition"
               >
                 ✕
               </button>
             </div>
 
-            {/* Corps du Dossier & Pièces à Conviction */}
-            <div className="my-5 space-y-4">
-              
-              {/* Contexte de l'enquête */}
-              <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-xs sm:text-sm text-slate-300 leading-relaxed">
-                <span className="text-amber-400 font-bold block mb-1">📋 Pièce à conviction :</span>
-                {currentEnigma.context}
+            {/* BARRE DE NAVIGATION WEB FORENSIQUE CYBERSCOPE */}
+            <div className="bg-slate-900/90 rounded-2xl p-2.5 border border-slate-800 flex items-center gap-2 text-xs font-mono">
+              <span className="text-emerald-400 flex items-center gap-1 font-bold">
+                <Lock className="w-3.5 h-3.5" /> HTTPS
+              </span>
+              <div className="flex-1 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 text-slate-300 truncate">
+                {currentEnigma.virtualUrl || "https://cyberscope.hech.be/forensic-feed"}
               </div>
+              <span className="text-[10px] text-cyan-400 font-sans font-bold px-2 py-1 rounded-lg bg-cyan-950/80 border border-cyan-500/30">
+                SANDBOX SÉCURISÉE
+              </span>
+            </div>
 
-              {/* Inspecteur de Preuve Spécifique selon l'énigme */}
-              {currentEnigma.evidenceType === 'document' && (
-                <div className="p-4 rounded-2xl bg-slate-900 border border-cyan-500/30 font-mono text-xs space-y-1.5 text-cyan-200">
-                  <div className="text-slate-400 font-bold uppercase text-[10px]">Résultat de la requête Crossref / DOAJ :</div>
-                  <div>DOI Analysé : <strong className="text-white">{currentEnigma.documentSnippet.doi}</strong></div>
-                  <div>Statut du Serveur : <strong className="text-rose-400">{currentEnigma.documentSnippet.crossrefStatus}</strong></div>
-                  <div>Indexation Scopus : <strong className="text-rose-400">{currentEnigma.documentSnippet.scopusIndex}</strong></div>
-                </div>
-              )}
+            {/* ONGLETS D'INVESTIGATION (RESSOURCE VIRTUELLE / OUTILS / INDICES) */}
+            <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
+              <button
+                onClick={() => {
+                  sounds.playPop();
+                  setActiveInspectorTab('browser');
+                }}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                  activeInspectorTab === 'browser'
+                    ? 'bg-cyan-500 text-slate-950 font-black shadow-md shadow-cyan-500/30'
+                    : 'bg-slate-900 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                <span>🌐 Ressource Web Simulée</span>
+              </button>
 
-              {currentEnigma.evidenceType === 'image_forensic' && (
-                <div className="p-4 rounded-2xl bg-slate-900 border border-cyan-500/30 text-xs space-y-2">
-                  <span className="font-bold text-cyan-300 block">🔬 Analyse Spectrale des Micro-Artefacts :</span>
-                  {currentEnigma.anomalies.map((ano, aIdx) => (
-                    <div key={aIdx} className="flex items-start gap-2 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
-                      <span className="text-cyan-400 font-bold">#{aIdx + 1}</span>
-                      <div>
-                        <strong className="text-white block">{ano.name}</strong>
-                        <span className="text-slate-400 text-[11px]">{ano.detail}</span>
+              <button
+                onClick={() => {
+                  sounds.playPop();
+                  setActiveInspectorTab('forensic');
+                }}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                  activeInspectorTab === 'forensic'
+                    ? 'bg-indigo-600 text-white font-black shadow-md shadow-indigo-600/30'
+                    : 'bg-slate-900 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                <Cpu className="w-3.5 h-3.5" />
+                <span>🔬 Analyse Forensique Spectrale</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  sounds.playPop();
+                  setActiveInspectorTab('hints');
+                }}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                  activeInspectorTab === 'hints'
+                    ? 'bg-amber-500 text-slate-950 font-black shadow-md shadow-amber-500/30'
+                    : 'bg-slate-900 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>💡 Indices d'Enquête ({(unlockedHints[currentEnigma.id] || 0)}/3)</span>
+              </button>
+            </div>
+
+            {/* CONTENU PRINCIPAL SELON L'ONGLET ACTIF */}
+            <div className="space-y-4">
+              
+              {/* --- ONGLET 1 : RESSOURCE VIRTUELLE HYBRIDE (CHATGPT / RÉSEAUX / LECTEUR) --- */}
+              {activeInspectorTab === 'browser' && (
+                <div className="space-y-3 animate-in fade-in duration-150">
+                  <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 text-xs text-slate-300">
+                    <strong className="text-amber-400 block mb-0.5">📋 Contexte de l'investigation :</strong>
+                    {currentEnigma.context}
+                  </div>
+
+                  {/* Fausse Vue ChatGPT */}
+                  {currentEnigma.resourceType === 'chatgpt_view' && (
+                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3 font-sans">
+                      <div className="flex items-center justify-between text-xs text-slate-400 pb-2 border-b border-slate-800">
+                        <span className="font-bold text-white flex items-center gap-2">
+                          <span className="w-5 h-5 rounded-full bg-emerald-600 flex items-center justify-center text-[10px] text-white font-black">AI</span>
+                          ChatGPT 4o (Session Partagée)
+                        </span>
+                        <span className="text-[11px] text-slate-500">Moteur LLM conversationnel</span>
+                      </div>
+
+                      {/* Prompt étudiant */}
+                      <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-800 text-xs text-slate-200">
+                        <span className="text-[10px] text-indigo-400 font-bold block mb-1">PROMPT DE L'ÉTUDIANT :</span>
+                        « {currentEnigma.chatPrompt} »
+                      </div>
+
+                      {/* Réponse ChatGPT */}
+                      <div className="bg-emerald-950/20 p-3.5 rounded-xl border border-emerald-500/30 text-xs text-slate-200 space-y-2">
+                        <span className="text-[10px] text-emerald-400 font-bold block">RÉPONSE DU MODÈLE :</span>
+                        <p className="leading-relaxed">« {currentEnigma.chatResponse} »</p>
+
+                        {currentEnigma.documentSnippet && (
+                          <div className="pt-2">
+                            <button
+                              onClick={() => {
+                                sounds.playPop();
+                                setSimulatedDoiResult("404_NOT_FOUND");
+                              }}
+                              className="px-3 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-black text-xs transition cursor-pointer flex items-center gap-1.5"
+                            >
+                              <span>🔍 Vérifier le DOI {currentEnigma.documentSnippet.doi} sur Crossref</span>
+                            </button>
+                            {simulatedDoiResult && (
+                              <div className="mt-2 p-2.5 rounded-xl bg-rose-950/70 border border-rose-500/50 text-[11px] font-mono text-rose-300 animate-in fade-in">
+                                ❌ <strong>ERREUR SERVEUR CROSSREF :</strong> DOI « {currentEnigma.documentSnippet.doi} » introuvable dans le registre mondial. Revue inexistante.
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
-                  ))}
+                  )}
+
+                  {/* Fausse Vue Galerie Deepfake */}
+                  {currentEnigma.resourceType === 'deepfake_viewer' && (
+                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+                      <div className="flex items-center justify-between text-xs text-slate-400 pb-2 border-b border-slate-800">
+                        <span className="font-bold text-white flex items-center gap-1.5">
+                          <Eye className="w-4 h-4 text-cyan-400" />
+                          <span>Visionneuse Forensique d'Images (Canal Spectral)</span>
+                        </span>
+                        <span className="text-[10px] text-slate-500">Midjourney v6.1 RAW</span>
+                      </div>
+
+                      <div className="p-4 rounded-xl bg-slate-900 border border-cyan-500/30 space-y-2 text-xs">
+                        <span className="font-bold text-cyan-300 block">Zones suspectes détectées par les filtres :</span>
+                        {currentEnigma.anomalies?.map((ano, aIdx) => (
+                          <div key={aIdx} className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 flex items-start gap-2">
+                            <span className="text-cyan-400 font-bold">#{aIdx + 1}</span>
+                            <div>
+                              <strong className="text-white block">{ano.name}</strong>
+                              <span className="text-slate-400 text-[11px]">{ano.detail}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Fausse Vue Lecteur Audio WhatsApp */}
+                  {currentEnigma.resourceType === 'audio_player' && (
+                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+                      <div className="flex items-center justify-between text-xs text-slate-400 pb-2 border-b border-slate-800">
+                        <span className="font-bold text-white flex items-center gap-1.5">
+                          <Radio className="w-4 h-4 text-emerald-400" />
+                          <span>Messagerie Vocale WhatsApp · Pièce Audio #1492</span>
+                        </span>
+                        <span className="text-[10px] text-slate-500">Audio 12s · 44.1 kHz</span>
+                      </div>
+
+                      <div className="p-4 rounded-xl bg-slate-900 border border-emerald-500/30 flex items-center gap-4">
+                        <button
+                          onClick={() => {
+                            if (isPlayingAudioSim) {
+                              setIsPlayingAudioSim(false);
+                            } else {
+                              setIsPlayingAudioSim(true);
+                              sounds.speakHost("Alerte à tous les étudiants de la Haute École : la session d'examens est entièrement annulée suite à un problème technique.", "aurore");
+                              setTimeout(() => setIsPlayingAudioSim(false), 5000);
+                            }
+                          }}
+                          className="w-12 h-12 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 flex items-center justify-center font-black transition cursor-pointer shrink-0 shadow-lg"
+                        >
+                          {isPlayingAudioSim ? "⏸" : "▶"}
+                        </button>
+
+                        <div className="flex-1 space-y-1">
+                          <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono">
+                            <span>00:04 / 00:12</span>
+                            <span className="text-emerald-400">CLONE VOCAL SUSPECT</span>
+                          </div>
+                          {/* Visualisation Waveform animée */}
+                          <div className="h-6 flex items-center gap-1">
+                            {[18, 35, 60, 40, 75, 55, 30, 85, 45, 65, 20, 50, 80, 35, 70, 25, 40, 15, 60, 30].map((h, i) => (
+                              <div
+                                key={i}
+                                className={`flex-1 rounded-full transition-all duration-150 ${isPlayingAudioSim ? 'bg-emerald-400' : 'bg-slate-700'}`}
+                                style={{ height: isPlayingAudioSim ? `${h}%` : '25%' }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Fausse Vue Réseaux Sociaux Twitter/X ou LinkedIn */}
+                  {currentEnigma.resourceType === 'social_media' && (
+                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+                      <div className="flex items-center justify-between text-xs text-slate-400 pb-2 border-b border-slate-800">
+                        <span className="font-bold text-white">Fil d'actualité Viral & Réseau Étudiant</span>
+                        <span className="text-[10px] text-slate-500">Flux en direct</span>
+                      </div>
+                      <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-200 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <span className="w-7 h-7 rounded-full bg-slate-800 flex items-center justify-center text-xs">👤</span>
+                          <div>
+                            <strong className="text-white block text-xs">Campus Info Leak</strong>
+                            <span className="text-[10px] text-slate-400">@user_8492049 · Il y a 4 min</span>
+                          </div>
+                        </div>
+                        <p className="text-slate-300 leading-relaxed font-sans">
+                          {currentEnigma.context}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Fausse Vue Graphique d'Observatoire */}
+                  {currentEnigma.resourceType === 'chart_inspector' && (
+                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+                      <div className="flex items-center justify-between text-xs text-slate-400 pb-2 border-b border-slate-800">
+                        <span className="font-bold text-white">Inspecteur de Données Statistiques</span>
+                        <button
+                          onClick={() => {
+                            sounds.playPop();
+                            setNormalizedChart(!normalizedChart);
+                          }}
+                          className="px-3 py-1 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs transition"
+                        >
+                          {normalizedChart ? "🔍 Revenir à l'axe tronqué 94%" : "📊 Normaliser l'axe Y à 0%"}
+                        </button>
+                      </div>
+
+                      <div className="p-4 rounded-xl bg-slate-900 border border-cyan-500/30 text-center space-y-2">
+                        <span className="text-xs text-slate-400 block font-bold">
+                          {normalizedChart ? "ÉVOLUTION RÉELLE (Axe Y de 0% à 100%)" : "GRAPHIQUE TRONQUÉ TROMPEUR (Axe Y de 94% à 95.5%)"}
+                        </span>
+                        <div className="h-28 flex items-end justify-center gap-8 pt-4 pb-2 border-b border-slate-800">
+                          <div className="text-center">
+                            <div className="w-16 bg-cyan-500 rounded-t-lg transition-all" style={{ height: normalizedChart ? '95px' : '90px' }} />
+                            <span className="text-[10px] text-slate-400 mt-1 block">2025 : 95.2%</span>
+                          </div>
+                          <div className="text-center">
+                            <div className="w-16 bg-rose-500 rounded-t-lg transition-all" style={{ height: normalizedChart ? '94.6px' : '30px' }} />
+                            <span className="text-[10px] text-slate-400 mt-1 block">2026 : 94.8%</span>
+                          </div>
+                        </div>
+                        <p className="text-[11px] text-slate-300">
+                          {normalizedChart 
+                            ? "✅ La variation réelle n'est que de 0.4% : aucune baisse significative." 
+                            : "⚠️ L'axe tronqué fait paraître une variation minuscule de 0.4% comme une chute de 60% !"}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
-              {currentEnigma.evidenceType === 'audio_spectrum' && (
-                <div className="p-4 rounded-2xl bg-slate-900 border border-indigo-500/30 text-xs space-y-2">
-                  <span className="font-bold text-indigo-300 flex items-center gap-2">
-                    <Activity className="w-4 h-4 text-indigo-400 animate-pulse" />
-                    <span>Spectrogramme Audio HiFi-GAN RVC :</span>
+              {/* --- ONGLET 2 : OUTILS FORENSIQUES SPECTRAUX --- */}
+              {activeInspectorTab === 'forensic' && (
+                <div className="p-4 rounded-2xl bg-slate-950 border border-indigo-500/40 space-y-3 font-mono text-xs animate-in fade-in duration-150">
+                  <span className="text-indigo-400 font-bold block uppercase text-xs">
+                    Rapport Télémétrique & Métadonnées Brutes :
                   </span>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-mono">
-                    <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                      <span className="text-slate-400 block">Coupure Haute Fréquence :</span>
-                      <strong className="text-amber-400">{currentEnigma.spectrumDetails.cutoffFrequency}</strong>
+                  
+                  {currentEnigma.evidenceType === 'document' && currentEnigma.documentSnippet && (
+                    <div className="space-y-1.5 text-slate-300">
+                      <div>DOI Requis : <strong className="text-cyan-300">{currentEnigma.documentSnippet.doi}</strong></div>
+                      <div>Serveur Crossref : <strong className="text-rose-400">{currentEnigma.documentSnippet.crossrefStatus}</strong></div>
+                      <div>Scopus : <strong className="text-rose-400">{currentEnigma.documentSnippet.scopusIndex}</strong></div>
+                      <div>Affiliation : <strong className="text-rose-400">{currentEnigma.documentSnippet.authorStatus}</strong></div>
                     </div>
-                    <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                      <span className="text-slate-400 block">Respirations physiologiques :</span>
-                      <strong className="text-rose-400">{currentEnigma.spectrumDetails.breathingArtifacts}</strong>
+                  )}
+
+                  {currentEnigma.evidenceType === 'audio_spectrum' && currentEnigma.spectrumDetails && (
+                    <div className="space-y-1.5 text-slate-300">
+                      <div>Fréquence de Coupure : <strong className="text-amber-300">{currentEnigma.spectrumDetails.cutoffFrequency}</strong></div>
+                      <div>Artefacts de Souffle : <strong className="text-rose-400">{currentEnigma.spectrumDetails.breathingArtifacts}</strong></div>
+                      <div>Modulation de Prosodie : <strong className="text-cyan-300">{currentEnigma.spectrumDetails.prosodyPitch}</strong></div>
                     </div>
-                  </div>
+                  )}
+
+                  {currentEnigma.evidenceType === 'historical_timeline' && currentEnigma.dates && (
+                    <div className="space-y-1.5 text-slate-300">
+                      <div>Date prétendue de la citation : <strong className="text-rose-400">{currentEnigma.dates.citationClaim}</strong></div>
+                      <div>Disparition d'Einstein : <strong className="text-white">{currentEnigma.dates.einsteinDeath}</strong></div>
+                      <div>Naissance du terme 'IA' : <strong className="text-emerald-400">{currentEnigma.dates.aiTermBirth}</strong></div>
+                    </div>
+                  )}
+
+                  {currentEnigma.evidenceType === 'network_logs' && currentEnigma.botMetrics && (
+                    <div className="space-y-1.5 text-slate-300">
+                      <div>Cadence de publication : <strong className="text-rose-400">{currentEnigma.botMetrics.deltaPublishTime}</strong></div>
+                      <div>Comptes émetteurs : <strong className="text-amber-300">{currentEnigma.botMetrics.accountCreationDates}</strong></div>
+                      <div>Avatars : <strong className="text-cyan-300">{currentEnigma.botMetrics.profilePictures}</strong></div>
+                    </div>
+                  )}
                 </div>
               )}
 
-              {/* Question de Fact-Checking */}
-              <div className="pt-2">
+              {/* --- ONGLET 3 : INDICES PROGRESSIFS (1, 2, 3) --- */}
+              {activeInspectorTab === 'hints' && (
+                <div className="p-4 rounded-2xl bg-slate-950 border border-amber-500/40 space-y-3 animate-in fade-in duration-150">
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                    <span className="text-xs font-black text-amber-400 uppercase tracking-wider">
+                      Indices d'Enquête Disponibles
+                    </span>
+                    <span className="text-xs text-slate-400">
+                      {(unlockedHints[currentEnigma.id] || 0)} / 3 révélés
+                    </span>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    {currentEnigma.hints?.map((hint) => {
+                      const isUnlocked = (unlockedHints[currentEnigma.id] || 0) >= hint.level;
+                      return (
+                        <div
+                          key={hint.level}
+                          className={`p-3 rounded-xl border text-xs transition ${
+                            isUnlocked
+                              ? 'bg-amber-950/40 border-amber-500/50 text-slate-200'
+                              : 'bg-slate-900/60 border-slate-800 text-slate-500'
+                          }`}
+                        >
+                          <div className="font-bold flex items-center justify-between mb-1">
+                            <span className={isUnlocked ? 'text-amber-300' : 'text-slate-500'}>
+                              {hint.title}
+                            </span>
+                            {!isUnlocked && (
+                              <span className="text-[10px] bg-slate-800 px-2 py-0.5 rounded-md text-slate-400">
+                                Verrouillé
+                              </span>
+                            )}
+                          </div>
+                          {isUnlocked ? (
+                            <p className="text-slate-300 leading-relaxed">{hint.text}</p>
+                          ) : (
+                            <p className="text-slate-600 italic">Cliquez sur le bouton ci-dessous pour débloquer cet indice.</p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {(unlockedHints[currentEnigma.id] || 0) < 3 && (
+                    <button
+                      onClick={() => {
+                        sounds.playPop();
+                        setUnlockedHints(prev => ({
+                          ...prev,
+                          [currentEnigma.id]: (prev[currentEnigma.id] || 0) + 1
+                        }));
+                      }}
+                      className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider transition cursor-pointer"
+                    >
+                      💡 Débloquer l'Indice {(unlockedHints[currentEnigma.id] || 0) + 1}
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* QUESTION DE FACT-CHECKING & 4 CHOIX */}
+              <div className="pt-2 border-t border-slate-800">
                 <h4 className="font-['Outfit'] font-bold text-sm sm:text-base text-yellow-300 mb-3 flex items-center gap-2">
                   <HelpCircle className="w-4 h-4 text-yellow-400" />
                   <span>{currentEnigma.question}</span>
                 </h4>
 
-                {/* Choix d'arguments critiques */}
-                <div className="space-y-2.5">
+                <div className="grid grid-cols-1 gap-2.5">
                   {currentEnigma.options.map((opt) => {
                     const isSelected = selectedOption === opt.id;
                     const showFeedback = isAnswerSubmitted;
@@ -1478,7 +1869,7 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
                         }}
                         className={`w-full p-3.5 rounded-2xl border text-left text-xs sm:text-sm transition-all duration-200 flex items-start gap-3 cursor-pointer ${btnStyle}`}
                       >
-                        <span className="w-6 h-6 rounded-xl bg-black/40 flex items-center justify-center font-bold text-xs uppercase shrink-0 mt-0.5">
+                        <span className="w-6 h-6 rounded-xl bg-black/40 flex items-center justify-center font-black text-xs uppercase shrink-0 mt-0.5 text-cyan-300">
                           {opt.id}
                         </span>
                         <span className="flex-1 leading-relaxed">{opt.text}</span>
@@ -1494,7 +1885,7 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
                 </div>
               </div>
 
-              {/* Feedback Pédagogique hamburger après validation */}
+              {/* Feedback Pédagogique après validation */}
               {isAnswerSubmitted && (
                 <div className="p-4 rounded-2xl bg-cyan-950/70 border border-cyan-400/50 space-y-2 animate-in fade-in duration-300">
                   <div className="flex items-center gap-2">
@@ -1512,7 +1903,7 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
             </div>
 
             {/* Pied d'Action */}
-            <div className="pt-4 border-t border-slate-800 flex items-center justify-between gap-3">
+            <div className="pt-3 border-t border-slate-800 flex items-center justify-between gap-3">
               <span className="text-xs text-slate-500">
                 {solvedEnigmas.includes(currentEnigma.id) ? "✓ Indice déjà versé au dossier" : "Non résolu"}
               </span>
