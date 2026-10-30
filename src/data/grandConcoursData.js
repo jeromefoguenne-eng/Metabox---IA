@@ -391,6 +391,16 @@ export const QUATRE_A_LA_SUITE_THEMES = [
         q: "Combien de sessions d'examens officielles existent obligatoirement par année académique en Haute École ?",
         options: ["Deux sessions (janvier/juin et août/septembre)", "Une seule session en juin", "Trois sessions trimestrielles", "Quatre sessions sans rattrapage"],
         correct: 0
+      },
+      {
+        q: "Quelle est la condition minimale de crédits ECTS acquis pour pouvoir valider un Bachelier complet en Haute École ?",
+        options: ["180 crédits ECTS", "120 crédits", "240 crédits", "60 crédits"],
+        correct: 0
+      },
+      {
+        q: "Que désigne un 'prérequis' dans l'organisation séquentielle d'un cursus du Décret Paysage ?",
+        options: ["Une UE dont la réussite préalable est indispensable pour pouvoir inscrire une UE ultérieure", "Un examen passé avant l'entrée en Bloc 1", "Une dispense accordée automatiquement", "Un stage obligatoire à l'étranger"],
+        correct: 0
       }
     ]
   },
@@ -424,6 +434,21 @@ export const QUATRE_A_LA_SUITE_THEMES = [
       {
         q: "Si la consigne dit « Relever les trois arguments du texte », que devez-vous faire ?",
         options: ["Extraire précisément 3 arguments présents dans le texte sans en inventer", "Donner son propre avis en 3 points", "Corriger les fautes d'orthographe de l'auteur", "Traduire en anglais"],
+        correct: 0
+      },
+      {
+        q: "Face à la consigne « Illustrer par un exemple concret », que devez-vous fournir ?",
+        options: ["Un cas d'application réel, contextualisé et explicité rattaché à la théorie", "Un dessin artistique à la peinture", "Une photo prise sur Instagram sans explication", "La répétition de la définition mot à mot"],
+        correct: 0
+      },
+      {
+        q: "Que requiert la consigne « Argumenter votre position » lors d'un examen ?",
+        options: ["Développer un raisonnement logique appuyé sur des faits, des concepts du cours et des preuves", "Insister en répétant la même affirmation plusieurs fois", "Critiquer personnellement le professeur", "Recopier la question au début de chaque paragraphe"],
+        correct: 0
+      },
+      {
+        q: "Que signifie le verbe « Définir un concept » selon la taxonomie des objectifs pédagogiques ?",
+        options: ["Énoncer de manière concise et univoque ses caractéristiques distinctives essentielles", "Raconter une anecdote historique", "Donner son ressenti subjectif", "Écrire une dissertation de 10 pages"],
         correct: 0
       }
     ]
@@ -459,6 +484,21 @@ export const QUATRE_A_LA_SUITE_THEMES = [
         q: "Qu'appelle-t-on l'effet de test (testing effect) en sciences de l'éducation ?",
         options: ["Se tester activement renforce plus durablement la mémoire que réviser passivement", "Avoir peur des examens améliore les réflexes", "Ne jamais faire d'exercices évite de se tromper", "Les examens écrits sont supérieurs aux oraux"],
         correct: 0
+      },
+      {
+        q: "Qu'appelle-t-on le 'chunking' (ou découpage en blocs) en psychologie cognitive ?",
+        options: ["Le regroupement d'éléments d'information isolés en unités significatives pour soulager la mémoire de travail", "Le fait de déchirer ses feuilles de cours", "L'étude exclusive par morceaux de 2 minutes", "L'oubli volontaire des détails difficiles"],
+        correct: 0
+      },
+      {
+        q: "Quel est l'impact du stress aigu non maîtrisé (cortisol élevé) sur l'hippocampe lors d'un examen oral ?",
+        options: ["Il inhibe la récupération des souvenirs en mémoire à long terme (trou noir temporaire)", "Il augmente la capacité de mémorisation par 10", "Il supprime définitivement les neurones du langage", "Il n'a aucun effet biologique mesurable"],
+        correct: 0
+      },
+      {
+        q: "Pourquoi la méthode de 'double encodage' (mots + schémas visuels) améliore-t-elle la rétention ?",
+        options: ["Elle active simultanément deux canaux de traitement cognitif indépendants (visuel et verbal)", "Parce que le cerveau ne retient que les images colorées", "Parce que cela prend deux fois moins de temps de révision", "Parce que les mots ne sont jamais mémorisés seuls"],
+        correct: 0
       }
     ]
   },
@@ -487,6 +527,26 @@ export const QUATRE_A_LA_SUITE_THEMES = [
       {
         q: "Pourquoi le multitâche (multitasking) est-il un mythe contre-productif selon les neurosciences ?",
         options: ["Le cerveau alterne rapidement entre les tâches, ce qui entraîne un coût attentionnel de réengagement élevé", "Le cerveau humain peut traiter 5 pensées complexes en même temps", "Le multitâche améliore le QI de 10 points", "Seuls les ordinateurs peuvent être distraits"],
+        correct: 0
+      },
+      {
+        q: "Que conseille la 'Règle des 2 minutes' (Getting Things Done) en gestion des priorités ?",
+        options: ["Si une tâche académique prend moins de 2 minutes, il faut l'exécuter immédiatement", "Ne jamais étudier plus de 2 minutes consécutives", "Attendre 2 minutes avant de répondre à une question d'examen", "Faire une pause toutes les 2 minutes"],
+        correct: 0
+      },
+      {
+        q: "Qu'est-ce que la 'procrastination active' souvent observée chez les étudiants ?",
+        options: ["Remplacer la tâche prioritaire difficile par d'autres tâches utiles mais secondaires (ranger son bureau, trier ses mails)", "Dormir toute la journée sans culpabilité", "Étudier 12 heures sans s'arrêter", "Terminer ses devoirs 3 semaines en avance"],
+        correct: 0
+      },
+      {
+        q: "Dans un planning de révision pour le blocus, pourquoi faut-il toujours prévoir des zones tampons ('buffers') ?",
+        options: ["Pour absorber les imprévus, retards et fatigues sans désorganiser tout le planning", "Pour pouvoir partir en vacances plus tôt", "Pour supprimer les matières que l'on n'aime pas", "Parce que les professeurs changent toujours les dates"],
+        correct: 0
+      },
+      {
+        q: "Que désigne l'effet de récence en psychologie de la mémoire lors d'une session d'étude ?",
+        options: ["La tendance naturelle à mieux se souvenir des derniers éléments étudiés en fin de session", "Se souvenir uniquement des cours de première année", "Oublier tout ce qui a été appris récemment", "La rapidité à taper sur un clavier"],
         correct: 0
       }
     ]
@@ -517,6 +577,26 @@ export const QUATRE_A_LA_SUITE_THEMES = [
         q: "Quelle est la source principale d'empreinte carbone liée à un cycle de vie d'ordinateur portable étudiant ?",
         options: ["Sa phase de fabrication et d'extraction des terres rares (jusqu'à 75-80% de l'impact total)", "Son emballage en carton", "La recharge de sa batterie sur le réseau électrique", "La souris sans fil"],
         correct: 0
+      },
+      {
+        q: "Quel indicateur standard (PUE) mesure l'efficacité énergétique d'un centre de données hébergeant des serveurs IA ?",
+        options: ["Power Usage Effectiveness (ratio entre l'énergie totale consommée et celle alimentant l'informatique)", "Puissance Utile Écologique", "Pourcentage d'Usage Électrique", "Programme Universel d'Éco-conception"],
+        correct: 0
+      },
+      {
+        q: "Pourquoi les architectures de modèles légers 'SLM' (Small Language Models) sont-elles encouragées pour les tâches simples ?",
+        options: ["Elles consomment jusqu'à 95% d'énergie et de calcul en moins tout en tournant localement sur GPU grand public", "Elles sont gratuites uniquement la nuit", "Elles n'ont besoin d'aucune électricité", "Elles ne fonctionnent que sur des téléphones anciens"],
+        correct: 0
+      },
+      {
+        q: "Qu'appelle-t-on le 'Green IT' ou numérique éco-responsable dans l'enseignement supérieur ?",
+        options: ["Une démarche visant à réduire l'empreinte environnementale, sociale et économique du numérique", "Peindre les ordinateurs des laboratoires en vert", "N'utiliser internet que dans les parcs publics", "Interdire totalement l'usage des ordinateurs"],
+        correct: 0
+      },
+      {
+        q: "Quel composant physique d'un datacenter génère le plus de chaleur lors de l'entraînement d'un LLM ?",
+        options: ["Les accélérateurs graphiques (GPU) et matrices de calcul tensoriel poussés à 100% de charge", "Les disques durs mécaniques de stockage", "Les câbles réseau en fibre optique", "Les claviers des administrateurs système"],
+        correct: 0
       }
     ]
   },
@@ -545,6 +625,26 @@ export const QUATRE_A_LA_SUITE_THEMES = [
       {
         q: "Dans la phrase : « Elle s'est... compte de son erreur », quel est le bon accord ?",
         options: ["rendu (le COD 'compte' est placé après le verbe pronominal)", "rendue (accord avec le sujet)", "rendus (pluriel)", "rendre (infinitif)"],
+        correct: 0
+      },
+      {
+        q: "Dans la phrase : « Ces erreurs, ils se les sont... », quel est le bon accord du verbe voir ?",
+        options: ["vues (accord avec le COD 'les' placé avant le verbe)", "vu (invariable)", "vus (accord avec le sujet)", "vuent"],
+        correct: 0
+      },
+      {
+        q: "Quelle est la bonne orthographe : « Les étudiants ont résolu ce problème... » ?",
+        options: ["eux-mêmes (avec un trait d'union et un s)", "eux même", "eux-même (singulier)", "euxs-mêmes"],
+        correct: 0
+      },
+      {
+        q: "Quelle forme verbale complète correctement : « Quoiqu'il... ses efforts, il a réussi. » ?",
+        options: ["ait ralenti (subjonctif après 'quoique')", "a ralenti (indicatif)", "ait ralentit", "ayant ralentit"],
+        correct: 0
+      },
+      {
+        q: "Dans l'expression « C'est à vous que je... », quelle est la bonne terminaison du verbe adresser ?",
+        options: ["m'adresse (accord avec 'je')", "vous adressez", "m'adresses", "m'adresser"],
         correct: 0
       }
     ]
@@ -575,6 +675,26 @@ export const QUATRE_A_LA_SUITE_THEMES = [
         q: "Que désigne l'effet Dunning-Kruger dans le monde académique ?",
         options: ["Le biais cognitif où les personnes les moins qualifiées surestiment démesurément leurs compétences", "La peur panique de parler en public", "La capacité à tout mémoriser en 5 minutes", "L'angoisse de la page blanche"],
         correct: 0
+      },
+      {
+        q: "Qu'est-ce que la technique de 'lecture latérale' (lateral reading) recommandée par les fact-checkers professionnels ?",
+        options: ["Ouvrir de nouveaux onglets pour vérifier la crédibilité et le financement de la source avant de lire l'article", "Lire un texte en penchant la tête sur le côté", "Lire uniquement la première et la dernière ligne", "Traduire le texte en diagonale"],
+        correct: 0
+      },
+      {
+        q: "Dans la rhétorique argumentative, que désigne un sophisme de type 'Homme de paille' (Straw man) ?",
+        options: ["Déformer et caricaturer l'argument adverse pour le réfuter plus facilement", "Attaquer physiquement son interlocuteur", "Citer un proverbe agricole sans rapport", "Se taire pour laisser l'autre parler"],
+        correct: 0
+      },
+      {
+        q: "Qu'est-ce qu'un 'deepfake' généré par intelligence artificielle générative ?",
+        options: ["Un contenu synthétique hyperréaliste (audio, vidéo ou photo) manipulant l'apparence ou la voix d'une personne", "Un profil d'utilisateur anonyme sur Twitter", "Un virus qui efface les fichiers système", "Une fausse page de connexion bancaire"],
+        correct: 0
+      },
+      {
+        q: "Pourquoi la 'loi de Brandolini' (ou principe d'asymétrie des bêtises) est-elle cruciale en esprit critique ?",
+        options: ["Réfuter une fausse information demande un ordre de grandeur d'énergie supérieur à celui nécessaire pour la produire", "Toutes les informations sur internet sont fausses", "Les scientifiques ne se trompent jamais", "Les algorithmes favorisent toujours la vérité"],
+        correct: 0
       }
     ]
   },
@@ -603,6 +723,26 @@ export const QUATRE_A_LA_SUITE_THEMES = [
       {
         q: "Sur quel campus de la HECh se situe la direction générale et la section pédagogique historique ?",
         options: ["Le Campus des Rivageois à Liège", "Le Campus de Verviers", "Le Campus de Huy", "Le Campus d'Outremeuse"],
+        correct: 0
+      },
+      {
+        q: "Quelle plateforme numérique officielle d'apprentissage en ligne est utilisée quotidiennement à la HECh pour les cours ?",
+        options: ["Moodle HECh (plateforme e-learning institutionnelle)", "Canvas USA", "Blackboard Learn", "Discord public"],
+        correct: 0
+      },
+      {
+        q: "Que permet le Conseil des Étudiants (CE) au sein des organes de gouvernance de la Haute École Charlemagne ?",
+        options: ["Représenter et défendre les intérêts des étudiants aux conseils pédagogiques et d'administration", "Fixer les notes des examens de délibération", "Organiser uniquement des soirées festives", "Remplacer les professeurs absents"],
+        correct: 0
+      },
+      {
+        q: "En plus de Rivageois, quel campus HECh propose des formations en agronomie et biotechnologies ?",
+        options: ["Le Campus de Huy", "Le Campus de Verviers", "Le Campus de Namur", "Le Campus de Charleroi"],
+        correct: 0
+      },
+      {
+        q: "Quel document personnel délivré en début d'année permet d'accéder aux bibliothèques et d'imprimer sur le campus ?",
+        options: ["La carte d'étudiant RFID multiservices HECh", "Le passeport européen", "La carte de fidélité Carrefour", "Le permis de conduire"],
         correct: 0
       }
     ]
@@ -633,6 +773,26 @@ export const QUATRE_A_LA_SUITE_THEMES = [
         q: "Quel est le pire moment pour relire ses fiches de révision la veille d'un examen ?",
         options: ["Tard dans la nuit en sacrifiant son temps de sommeil réparateur", "En fin d'après-midi au calme", "Au réveil après un bon petit-déjeuner", "Deux jours avant l'épreuve"],
         correct: 0
+      },
+      {
+        q: "Qu'appelle-t-on la technique de Feynman pour tester sa compréhension profonde d'une matière ?",
+        options: ["Expliquer le concept avec des mots simples comme si on s'adressait à un enfant de 10 ans", "Apprendre par cœur les formules sans réfléchir", "Résumer un cours en 100 équations mathématiques", "Écrire ses fiches avec une plume d'oie"],
+        correct: 0
+      },
+      {
+        q: "Pourquoi le surlignage intensif au stabilo est-il souvent qualifié d'activité d'apprentissage à 'faible utilité' ?",
+        options: ["Il procure une impression passive de travail sans engager de réel traitement cognitif profond", "Le fluo abîme irrémédiablement le papier", "Il coûte trop cher aux étudiants", "Il empêche la photocopie des cours"],
+        correct: 0
+      },
+      {
+        q: "Quel système de boîtes à compartiments (Leitner system) optimise l'usage des flashcards ?",
+        options: ["Classer les cartes par niveau de maîtrise et espacer les révisions de celles que l'on connaît bien", "Mélanger toutes les cartes au hasard chaque jour", "Jeter les cartes dès qu'on a juste une fois", "Ne réviser que les questions les plus faciles"],
+        correct: 0
+      },
+      {
+        q: "Pourquoi s'entraîner sur d'anciens examens blancs en conditions réelles (temps chronométré, sans notes) est-il si puissant ?",
+        options: ["Cela recrée le contexte cognitif de l'évaluation et réduit le stress d'inconnu le jour J", "Parce que les questions d'examens sont toujours identiques mot pour mot", "Parce que cela évite d'étudier le syllabus", "Parce que le professeur corrige toujours plus gentiment"],
+        correct: 0
       }
     ]
   },
@@ -661,6 +821,26 @@ export const QUATRE_A_LA_SUITE_THEMES = [
       {
         q: "Selon les normes bibliographiques APA 7, quel élément suit immédiatement le nom de l'auteur dans une référence ?",
         options: ["L'année de publication entre parenthèses : (2024)", "Le numéro de téléphone de l'éditeur", "Le prix du livre en euros", "La photo de l'auteur"],
+        correct: 0
+      },
+      {
+        q: "Quelle est la durée de protection légale des droits patrimoniaux d'auteur en Belgique après le décès de l'auteur ?",
+        options: ["70 ans après la mort de l'auteur (avant d'entrer dans le domaine public)", "10 ans", "25 ans", "La protection est éternelle sans limite"],
+        correct: 0
+      },
+      {
+        q: "Que garantissent les licences 'Creative Commons' (CC-BY, CC-NC) pour un créateur de contenu pédagogique ?",
+        options: ["Elles définissent précisément les conditions légales selon lesquelles autrui peut réutiliser son œuvre", "Elles interdisent totalement toute lecture sur internet", "Elles rendent le document secret d'État", "Elles obligent à payer une taxe à l'UNESCO"],
+        correct: 0
+      },
+      {
+        q: "Qu'est-ce que l'exception de 'courte citation' autorisée dans le cadre d'un travail d'étudiant ?",
+        options: ["L'autorisation d'incorporer un bref extrait textuel entre guillemets avec mention claire de la source", "Le droit de recopier un livre entier s'il est court", "Le droit de citer sans nommer l'auteur", "L'interdiction de citer plus de 3 mots"],
+        correct: 0
+      },
+      {
+        q: "Pourquoi le 'patchwriting' (léger remaniement superficiel d'une phrase copiée) reste-t-il assimilé à du plagiat ?",
+        options: ["Parce que la structure logique et l'essence du texte original sont reprises sans attribution authentique", "Parce que changer les synonymes est interdit par la loi", "Parce que l'auteur original reçoit une alerte par SMS", "Parce que les dictionnaires de synonymes sont payants"],
         correct: 0
       }
     ]

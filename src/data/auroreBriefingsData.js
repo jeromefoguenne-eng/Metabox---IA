@@ -155,7 +155,7 @@ export const AURORE_GAME_BRIEFINGS = {
     whyPlay: "Ce tournoi synthétise l'intégralité des compétences : esprit critique, culture de l'IA, méthodologie et réactivité. Arriver au bout de la troisième manche est indispensable pour empocher la coupe et déverrouiller la proclamation des résultats.",
     rules: [
       "MANCHE 1 - QUESTIONS DE RAPIDITÉ : Appuyez sur le buzzer dès que vous connaissez la réponse et inscrivez-la au clavier en moins de 10 secondes (pas de QCM). Le premier candidat à cumuler 3 bonnes réponses est directement qualifié !",
-      "MANCHE 2 - LE QUATRE À LA SUITE : Choisissez une rubrique parmi 10 thèmes académiques renouvelés et réussissez 4 bonnes réponses consécutives avant l'expiration du chrono !",
+      "MANCHE 2 - LE QUATRE À LA SUITE : Choisissez une rubrique parmi 10 thèmes académiques renouvelés et réussissez 4 bonnes réponses consécutives en 1 minute 30. Attention : toute mauvaise réponse vous fait immédiatement retomber à zéro !",
       "MANCHE 3 - LE FACE À FACE : Affrontez le meilleur candidat virtuel dans un duel palpitant avec 4 indices descendants. Marquez 12 points pour remporter la victoire suprême !"
     ],
     auroreSpokenText: "Voici l'arène ultime : Le Grand Concours de la Haute École en trois manches. Les questions de rapidité au buzzer, le Quatre à la suite, puis le Face à Face final. Atteignez le bout du duel pour remporter le trophée du campus."

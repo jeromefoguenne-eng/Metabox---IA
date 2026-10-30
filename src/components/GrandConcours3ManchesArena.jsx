@@ -84,16 +84,25 @@ export default function GrandConcours3ManchesArena({
   // ÉTATS DE LA MANCHE 2 : LE 4 À LA SUITE (STYLE QUESTIONS POUR UN CHAMPION)
   // =========================================================================
   const [selectedThemeId, setSelectedThemeId] = useState(null);
+  const [m2ActiveQuestions, setM2ActiveQuestions] = useState([]);
   const [m2Streak, setM2Streak] = useState(0); // 0 à 4
   const [m2MaxStreak, setM2MaxStreak] = useState(0);
   const [m2QuestionIdx, setM2QuestionIdx] = useState(0);
-  const [m2TimeLeft, setM2TimeLeft] = useState(45);
+  const [m2TimeLeft, setM2TimeLeft] = useState(90); // 1 minute 30
   const [m2IsPlaying, setM2IsPlaying] = useState(false);
   const [m2AnswerFeedback, setM2AnswerFeedback] = useState(null); // 'correct' | 'wrong'
 
   const currentTheme = QUATRE_A_LA_SUITE_THEMES.find(t => t.id === selectedThemeId);
+  const currentM2Question = m2ActiveQuestions[m2QuestionIdx % (m2ActiveQuestions.length || 1)] || 
+    (currentTheme?.questions ? currentTheme.questions[m2QuestionIdx % currentTheme.questions.length] : null);
 
-  // Minuteur du 4 à la suite
+  const formatM2Timer = (sec) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
+  // Minuteur du 4 à la suite (1 min 30 = 90 secondes)
   useEffect(() => {
     if (currentRound !== 'manche2_quatreasuite' || !m2IsPlaying || m2TimeLeft <= 0) return;
 
@@ -376,33 +385,48 @@ export default function GrandConcours3ManchesArena({
     setReaction('speaking');
     setM2Streak(0);
     setM2MaxStreak(0);
-    setM2TimeLeft(45);
+    setM2TimeLeft(90); // 1 minute 30
     setM2IsPlaying(false);
     setSelectedThemeId(null);
-    setHostDialogue("🎙️ Henri : « MANCHE 2 : LE 4 À LA SUITE ! Choisissez votre rubrique parmi nos 10 thèmes académiques. 4 bonnes réponses consécutives en 45 secondes ! »");
+    setHostDialogue("🎙️ Henri : « MANCHE 2 : LE 4 À LA SUITE ! Choisissez votre rubrique. Vous avez 1 minute 30 pour réussir 4 bonnes réponses consécutives. Attention, toute erreur remet le compteur à zéro ! »");
   };
 
   // =========================================================================
-  // LOGIQUE MANCHE 2 : LE 4 À LA SUITE
+  // LOGIQUE MANCHE 2 : LE 4 À LA SUITE (1 MIN 30 / RETOMBÉE À ZÉRO EN CAS D'ERREUR)
   // =========================================================================
   const handleSelectTheme = (themeId) => {
     sounds.playPop();
+    const theme = QUATRE_A_LA_SUITE_THEMES.find(t => t.id === themeId);
+    if (!theme) return;
+
+    // Mélange dynamique des questions et de l'ordre des options pour que la bonne réponse soit équitablement répartie (A, B, C, D)
+    const shuffled = theme.questions.map(q => {
+      const correctText = q.options[q.correct];
+      const shuffledOpts = [...q.options].sort(() => Math.random() - 0.5);
+      const newCorrectIdx = shuffledOpts.indexOf(correctText);
+      return {
+        ...q,
+        options: shuffledOpts,
+        correct: newCorrectIdx
+      };
+    }).sort(() => Math.random() - 0.5);
+
+    setM2ActiveQuestions(shuffled);
     setSelectedThemeId(themeId);
     setReaction('speaking');
     setM2Streak(0);
     setM2MaxStreak(0);
     setM2QuestionIdx(0);
-    setM2TimeLeft(45);
+    setM2TimeLeft(90); // 1 minute 30
     setM2IsPlaying(true);
-    setHostDialogue("🎙️ Henri : « C'est parti pour le 4 à la suite ! Top chrono 45 secondes ! »");
-    sounds.speakHost("C'est parti ! Quatre à la suite !");
+    setHostDialogue("🎙️ Henri : « C'est parti pour le 4 à la suite ! 1 minute 30 pour réussir 4 bonnes réponses consécutives ! Au moindre faux pas, le compteur retombe à zéro ! »");
+    sounds.speakHost("C'est parti pour une minute trente ! Quatre à la suite !");
   };
 
   const handleM2Answer = (optionIdx) => {
-    if (!currentTheme || !m2IsPlaying) return;
+    if (!currentTheme || !m2IsPlaying || !currentM2Question) return;
 
-    const q = currentTheme.questions[m2QuestionIdx % currentTheme.questions.length];
-    const isCorrect = optionIdx === q.correct;
+    const isCorrect = optionIdx === currentM2Question.correct;
 
     if (isCorrect) {
       sounds.playSuccess();
@@ -416,26 +440,26 @@ export default function GrandConcours3ManchesArena({
         setReaction('victory');
         setM2IsPlaying(false);
         sounds.playApplause();
-        confetti({ particleCount: 120, spread: 90, origin: { y: 0.6 } });
-        setHostDialogue("🎙️ Henri : « ET C'EST LE 4 À LA SUITE ! EXCEPTIONNEL ! VOUS DÉCROCHEZ VOTRE BILLET POUR LE FACE-À-FACE FINAL ! »");
-        sounds.speakHost("Et c'est le quatre à la suite ! Magnifique ! Direction la grande finale !");
+        confetti({ particleCount: 140, spread: 90, origin: { y: 0.6 } });
+        setHostDialogue("🎙️ Henri : « ET C'EST LE 4 À LA SUITE ! 4 BONNES RÉPONSES D'AFFILÉE ! QUALIFICATION VALIDÉE POUR LE FACE-À-FACE FINAL ! »");
+        sounds.speakHost("Et c'est le quatre à la suite ! Qualification pour la finale !");
       } else {
         setReaction('correct');
-        setHostDialogue(`🎙️ Henri : « ${newStreak} sur 4 ! Continuez ! »`);
+        setHostDialogue(`🎙️ Henri : « C'est bon ! ${newStreak} sur 4 ! Plus que ${4 - newStreak} bonne(s) réponse(s) pour la qualification ! »`);
       }
     } else {
       setReaction('wrong');
       sounds.playWrong();
-      setM2Streak(0); // Retour à 0 impératif !
+      setM2Streak(0); // RETOUR À ZÉRO IMPÉRATIF !
       setM2AnswerFeedback('wrong');
-      setHostDialogue("🎙️ Henri : « Mauvaise réponse ! Le compteur retombe à zéro ! Rien n'est perdu, enchaînez ! »");
+      setHostDialogue("🎙️ Henri : « Aïe, mauvaise réponse ! Le compteur retombe à zéro ! Il vous reste du temps, reprenez la série immédiatement ! »");
       sounds.speakHost("Non ! Compteur à zéro ! On repart !");
     }
 
     setTimeout(() => {
       setM2AnswerFeedback(null);
       setM2QuestionIdx(prev => prev + 1);
-    }, 700);
+    }, 600);
   };
 
   const handleM2TimeOut = () => {
@@ -443,7 +467,7 @@ export default function GrandConcours3ManchesArena({
     setM2IsPlaying(false);
     sounds.playWrong();
     if (m2Streak < 4) {
-      setHostDialogue(`🎙️ Henri : « Le temps est écoulé ! Vous aviez atteint une série de ${m2MaxStreak} sur 4. Il faut retenter le 4 à la suite pour accéder à la Finale ! »`);
+      setHostDialogue(`🎙️ Henri : « Le temps est écoulé ! Les 1 minute 30 sont passées. Vous aviez atteint une série maximale de ${m2MaxStreak} sur 4. Il faut retenter le 4 à la suite pour accéder à la Finale ! »`);
       sounds.speakHost("Temps écoulé ! Il fallait réaliser quatre réponses consécutives.");
     }
   };
@@ -723,7 +747,7 @@ export default function GrandConcours3ManchesArena({
                 <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-amber-500/30">
                   <span className="text-xs font-black text-amber-400">MANCHE 2</span>
                   <h4 className="font-black text-white text-sm mt-0.5">4 à la Suite</h4>
-                  <p className="text-xs text-slate-400 mt-1">Choisissez votre rubrique. Enchaînez 4 bonnes réponses consécutives.</p>
+                  <p className="text-xs text-slate-400 mt-1">Choisissez votre rubrique. Enchaînez 4 bonnes réponses consécutives en 1 min 30 (toute mauvaise réponse remet à zéro !).</p>
                 </div>
                 <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-emerald-500/30">
                   <span className="text-xs font-black text-emerald-400">MANCHE 3</span>
@@ -1001,27 +1025,32 @@ export default function GrandConcours3ManchesArena({
 
                 <div className="flex items-center gap-4">
                   {/* Indicateur 4 à la suite (4 cercles de score) */}
-                  <div className="flex items-center gap-1.5 bg-slate-950/80 px-3.5 py-2 rounded-2xl border border-slate-800">
-                    {[1, 2, 3, 4].map(step => (
-                      <div
-                        key={step}
-                        className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black transition-all ${
-                          m2Streak >= step 
-                            ? 'bg-amber-400 text-slate-950 scale-110 shadow-lg shadow-amber-400/40 font-black' 
-                            : 'bg-slate-800 text-slate-500'
-                        }`}
-                      >
-                        {step}
-                      </div>
-                    ))}
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="text-[10px] font-mono font-bold text-amber-300 uppercase tracking-wider">
+                      Série active : {m2Streak} / 4
+                    </span>
+                    <div className="flex items-center gap-1.5 bg-slate-950/80 px-3.5 py-1.5 rounded-2xl border border-slate-800">
+                      {[1, 2, 3, 4].map(step => (
+                        <div
+                          key={step}
+                          className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black transition-all ${
+                            m2Streak >= step 
+                              ? 'bg-amber-400 text-slate-950 scale-110 shadow-lg shadow-amber-400/40 font-black animate-pulse' 
+                              : 'bg-slate-800 text-slate-500'
+                          }`}
+                        >
+                          {step}
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
-                  {/* Chrono 45s */}
-                  <div className={`px-4 py-2 rounded-2xl border font-black text-lg flex items-center gap-2 ${
-                    m2TimeLeft <= 10 ? 'bg-rose-600/30 text-rose-300 border-rose-500 animate-pulse' : 'bg-slate-900 text-amber-300 border-amber-500/40'
+                  {/* Chrono 1 min 30 (90s) */}
+                  <div className={`px-4 py-2.5 rounded-2xl border font-black text-lg flex items-center gap-2 ${
+                    m2TimeLeft <= 15 ? 'bg-rose-600/30 text-rose-300 border-rose-500 animate-pulse' : 'bg-slate-900 text-amber-300 border-amber-500/40'
                   }`}>
                     <Timer className="w-5 h-5" />
-                    <span>{m2TimeLeft}s</span>
+                    <span className="font-mono">{formatM2Timer(m2TimeLeft)}</span>
                   </div>
                 </div>
               </div>
@@ -1030,7 +1059,7 @@ export default function GrandConcours3ManchesArena({
               {!selectedThemeId && (
                 <div className="space-y-4 animate-in fade-in duration-200">
                   <p className="text-center text-xs font-bold text-slate-400 uppercase tracking-wider">
-                    Sélectionnez une rubrique parmi les 10 domaines académiques de la HECh :
+                    Sélectionnez une rubrique parmi les 10 domaines académiques de la HECh (1 min 30 au chrono, 4 d'affilée pour gagner) :
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {QUATRE_A_LA_SUITE_THEMES.map(theme => (
@@ -1051,18 +1080,27 @@ export default function GrandConcours3ManchesArena({
               )}
 
               {/* 2. Écran de Jeu actif du 4 à la suite */}
-              {selectedThemeId && m2IsPlaying && currentTheme && (
+              {selectedThemeId && m2IsPlaying && currentM2Question && (
                 <div className="space-y-4 animate-in zoom-in-95 duration-200">
                   {/* Carte Question */}
                   <div className="p-6 rounded-3xl bg-slate-950/80 border border-amber-500/40 text-center space-y-4 shadow-2xl relative overflow-hidden">
                     {m2AnswerFeedback === 'correct' && (
-                      <div className="absolute inset-0 bg-emerald-600/20 border-2 border-emerald-400 pointer-events-none animate-in fade-in duration-150 flex items-center justify-center">
-                        <CheckCircle2 className="w-16 h-16 text-emerald-400 animate-bounce" />
+                      <div className="absolute inset-0 bg-emerald-950/85 backdrop-blur-xs border-2 border-emerald-500 pointer-events-none animate-in fade-in duration-150 flex flex-col items-center justify-center space-y-2 z-20">
+                        <CheckCircle2 className="w-14 h-14 text-emerald-400 animate-bounce" />
+                        <span className="text-base sm:text-lg font-black text-white bg-emerald-600 px-4 py-1.5 rounded-xl border border-emerald-300 shadow-xl uppercase tracking-wider">
+                          ✨ BONNE RÉPONSE : {m2Streak}/4 !
+                        </span>
                       </div>
                     )}
                     {m2AnswerFeedback === 'wrong' && (
-                      <div className="absolute inset-0 bg-rose-600/20 border-2 border-rose-400 pointer-events-none animate-in fade-in duration-150 flex items-center justify-center">
-                        <XCircle className="w-16 h-16 text-rose-400 animate-bounce" />
+                      <div className="absolute inset-0 bg-rose-950/85 backdrop-blur-xs border-2 border-rose-500 pointer-events-none animate-in fade-in duration-150 flex flex-col items-center justify-center space-y-2 z-20">
+                        <XCircle className="w-14 h-14 text-rose-400 animate-bounce" />
+                        <span className="text-base sm:text-lg font-black text-white bg-rose-600 px-4 py-1.5 rounded-xl border border-rose-300 shadow-xl uppercase tracking-wider">
+                          ⚠️ MAUVAISE RÉPONSE : RETOUR À 0 !
+                        </span>
+                        <p className="text-xs text-rose-200 font-mono">
+                          Le chrono continue ! Enchaînez 4 bonnes réponses !
+                        </p>
                       </div>
                     )}
 
@@ -1070,12 +1108,12 @@ export default function GrandConcours3ManchesArena({
                       Question #{m2QuestionIdx + 1}
                     </span>
                     <h3 className="text-lg sm:text-xl font-black text-white leading-snug">
-                      « {currentTheme.questions[m2QuestionIdx % currentTheme.questions.length].q} »
+                      « {currentM2Question.q} »
                     </h3>
 
                     {/* Grille des 4 options de réponse */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-left">
-                      {currentTheme.questions[m2QuestionIdx % currentTheme.questions.length].options.map((opt, optIdx) => (
+                      {currentM2Question.options.map((opt, optIdx) => (
                         <button
                           key={optIdx}
                           onClick={() => handleM2Answer(optIdx)}
@@ -1117,23 +1155,34 @@ export default function GrandConcours3ManchesArena({
               {/* 4. Résultat si temps écoulé sans 4 à la suite */}
               {selectedThemeId && !m2IsPlaying && m2Streak < 4 && (
                 <div className="p-6 rounded-3xl bg-slate-950/80 border border-rose-500/40 text-center space-y-4">
+                  <div className="w-14 h-14 mx-auto rounded-2xl bg-rose-500/20 border border-rose-400/50 flex items-center justify-center text-rose-300">
+                    <XCircle className="w-7 h-7" />
+                  </div>
                   <h3 className="text-xl font-black text-rose-300">
-                    TEMPS ÉCOULÉ ! (Série max : {m2MaxStreak} / 4)
+                    TEMPS ÉCOULÉ : LES 1 MIN 30 SONT PASSÉES !
                   </h3>
-                  <p className="text-xs text-slate-300">
-                    Pour accéder à la finale du Grand Concours, vous devez impérativement aligner 4 bonnes réponses d'affilée. Choisissez un autre thème ou réessayez !
+                  <p className="text-xs text-slate-300 max-w-md mx-auto leading-relaxed">
+                    Votre meilleure série sur ce passage a été de <strong className="text-amber-300 font-bold">{m2MaxStreak} / 4</strong>. Pour vous qualifier en Finale, vous devez impérativement aligner 4 bonnes réponses d'affilée en moins de 1 minute 30 !
                   </p>
-                  <button
-                    onClick={() => {
-                      sounds.playPop();
-                      setSelectedThemeId(null);
-                      setM2Streak(0);
-                      setM2TimeLeft(45);
-                    }}
-                    className="px-6 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm transition"
-                  >
-                    🔄 Choisir une autre Rubrique
-                  </button>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                    <button
+                      onClick={() => handleSelectTheme(selectedThemeId)}
+                      className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm transition cursor-pointer shadow-lg shadow-amber-500/20"
+                    >
+                      🔄 Retenter cette Rubrique (1 min 30)
+                    </button>
+                    <button
+                      onClick={() => {
+                        sounds.playPop();
+                        setSelectedThemeId(null);
+                        setM2Streak(0);
+                        setM2TimeLeft(90);
+                      }}
+                      className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm transition cursor-pointer"
+                    >
+                      📚 Choisir une Autre Rubrique
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
