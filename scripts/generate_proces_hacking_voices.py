@@ -6,10 +6,10 @@ VOICES_DIR = os.path.join("public", "audio", "voices")
 os.makedirs(VOICES_DIR, exist_ok=True)
 
 # Voix neuronales ultra-réalistes et expressives
-VOICE_PROSECUTOR = "fr-FR-RemyMultilingualNeural"  # Procureur du Roi : théâtral, incisif, vibrant, humain
+VOICE_PROSECUTOR = "fr-FR-HenriNeural"             # Procureur du Roi : français pur, théâtral, incisif, sans aucun accent
 VOICE_DEFENDANT = "fr-FR-EloiseNeural"              # Maxime : étudiant hacktiviste sincère et déterminé
 VOICE_JUDGE = "fr-BE-GerardNeural"                  # Juge président : solennel, profond, autorité souveraine
-VOICE_DEFENSE = "fr-FR-RemyMultilingualNeural"      # Avocat de la défense
+VOICE_DEFENSE = "fr-FR-HenriNeural"                 # Avocat de la défense
 
 PROCES_HACKING_TRACKS = [
     # --- OUVERTURE DE L'AUDIENCE ---
