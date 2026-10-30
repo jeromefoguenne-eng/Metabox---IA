@@ -32,6 +32,7 @@ import CharacterAvatar from './CharacterAvatar';
 import GameFactChecking3D from './GameFactChecking3D';
 import GameInvestigationOS from './GameInvestigationOS';
 import GameGrandProcesHacking from './GameGrandProcesHacking';
+import GameTribunal3D from './GameTribunal3D';
 import GameSurvivantNovel from './GameSurvivantNovel';
 import GamePromptWarsDeck from './GamePromptWarsDeck';
 import { sounds } from '../utils/soundEffects';
@@ -60,6 +61,7 @@ export default function EscapeGameAurore({ onClose }) {
   const [factCheckCompleted, setFactCheckCompleted] = useState(false);
 
   // Mini-Game 2: Tribunal Plagiat States (Aile Ouest)
+  const [tribunalMode, setTribunalMode] = useState('cases'); // 'cases' (3 Affaires & Forensique) | 'blackout' (Grand Procès 24h)
   const [tribunalCaseIdx, setTribunalCaseIdx] = useState(0);
   const [tribunalPlaidoyer, setTribunalPlaidoyer] = useState(null);
 
@@ -276,74 +278,48 @@ export default function EscapeGameAurore({ onClose }) {
         {currentStage !== 'room_west' && (
           <div className="lg:col-span-5 border-r border-slate-800/80 bg-slate-950 p-4 flex flex-col justify-between relative overflow-hidden">
             <div className="flex-1 w-full relative rounded-3xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-950">
-              {isPixarVideoMode ? (
-                /* Mode Cinématique Style Arcane (Tech-Noir Fortiche Haute Définition) */
-                <div className="w-full h-full relative flex items-center justify-center bg-slate-950 overflow-hidden">
-                  <img
-                    src="/images/aurore_arcane_hd.jpg"
-                    alt="A.U.R.O.R.E. Style Arcane"
-                    className="w-full h-full object-cover object-center animate-in fade-in duration-500"
-                  />
-                  {/* Effets d'éclairage cell-shaded Tech-Noir Arcane */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0e051b] via-transparent to-[#1a0833]/40 pointer-events-none" />
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(14,5,27,0.7)_100%)] pointer-events-none" />
-
-                  {/* Liseré néon cyan et or crépitant */}
-                  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-cyan-400 via-amber-400 to-purple-600 opacity-80" />
-
-                  {/* Visualiseur d'ondes audio holographique en bas */}
-                  <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between pointer-events-none">
-                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/85 backdrop-blur-md border border-cyan-400/50 shadow-lg">
-                      <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                      <span className="text-[10px] font-mono font-bold text-cyan-200">SIGNAL VOCAL ARCANE CONNECTÉ</span>
-                    </div>
-                    <div className="flex items-end gap-1 h-5 px-2 py-1 rounded-lg bg-slate-950/80 border border-purple-500/40">
-                      {[14, 22, 10, 26, 18, 24, 12, 20].map((h, i) => (
-                        <div
-                          key={i}
-                          className="w-1 bg-gradient-to-t from-cyan-400 to-amber-400 rounded-full animate-pulse"
-                          style={{
-                            height: `${h}px`,
-                            animationDuration: `${0.35 + (i % 4) * 0.15}s`
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                /* Mode 3D Temps Réel Three.js Style Arcane */
-                <PixarStyleScene3D 
-                  theme={
-                    currentStage === 'room_north' ? 'factcheck' :
-                    currentStage === 'room_south' ? 'datacenter' :
-                    currentStage === 'room_east' ? 'promptwars' :
-                    currentStage === 'boss' ? 'boss' : 'hub'
-                  }
-                  isAlert={currentStage === 'boss' || timeLeft < 15 * 60}
-                  characterMood={
-                    totalKeysObtained === 4 ? 'victorious' :
-                    currentStage === 'boss' ? 'worried' : 'thinking'
-                  }
-                />
-              )}
+              {/* Personnage 3D Temps Réel Animé Style Arcane (Three.js 60 FPS) */}
+              <PixarStyleScene3D 
+                theme={
+                  currentStage === 'room_north' ? 'factcheck' :
+                  currentStage === 'room_south' ? 'datacenter' :
+                  currentStage === 'room_east' ? 'promptwars' :
+                  currentStage === 'boss' ? 'boss' : 'hub'
+                }
+                isAlert={currentStage === 'boss' || timeLeft < 15 * 60}
+                characterMood={
+                  totalKeysObtained === 4 ? 'victorious' :
+                  currentStage === 'boss' ? 'worried' : 'thinking'
+                }
+              />
 
               {/* A.U.R.O.R.E. Overlay Badge Canonique Arcane */}
               <div className="absolute top-4 left-4 z-20 bg-slate-950/90 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-cyan-400/50 flex items-center gap-2 shadow-lg shadow-purple-950/50">
                 <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping" />
                 <span className="text-xs font-mono font-bold text-cyan-200">
-                  {isPixarVideoMode ? 'A.U.R.O.R.E. (Tech-Noir Arcane)' : 'A.U.R.O.R.E. (Arène 3D Arcane)'}
+                  A.U.R.O.R.E. (Animée 3D Temps Réel 60 FPS)
                 </span>
               </div>
 
-              {/* Bouton Toggle entre Mode Arcane HD et Arène 3D */}
-              <button
-                onClick={() => setIsPixarVideoMode(!isPixarVideoMode)}
-                className="absolute top-4 right-4 z-20 px-2.5 py-1.5 rounded-xl bg-slate-950/90 hover:bg-purple-950/80 backdrop-blur-md border border-cyan-400/40 text-[10px] font-mono font-bold text-cyan-300 transition cursor-pointer shadow-md flex items-center gap-1.5"
-                title="Basculer entre le rendu illustré HD Arcane et la scène 3D temps réel"
-              >
-                <span>{isPixarVideoMode ? '🕹️ Arène 3D' : '🎬 Flux Arcane HD'}</span>
-              </button>
+              {/* Visualiseur d'ondes audio holographique en bas */}
+              <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between pointer-events-none z-20">
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/85 backdrop-blur-md border border-cyan-400/50 shadow-lg">
+                  <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                  <span className="text-[10px] font-mono font-bold text-cyan-200">SIGNAL VOCAL DIRECT CONNECTÉ</span>
+                </div>
+                <div className="flex items-end gap-1 h-5 px-2 py-1 rounded-lg bg-slate-950/80 border border-purple-500/40">
+                  {[14, 22, 10, 26, 18, 24, 12, 20].map((h, i) => (
+                    <div
+                      key={i}
+                      className="w-1 bg-gradient-to-t from-cyan-400 to-amber-400 rounded-full animate-pulse"
+                      style={{
+                        height: `${h}px`,
+                        animationDuration: `${0.35 + (i % 4) * 0.15}s`
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* Dialogue Log Console avec Avatar Raccord */}
@@ -517,10 +493,45 @@ export default function EscapeGameAurore({ onClose }) {
           {/* ROOM 2: TRIBUNAL ACADÉMIQUE 2030 (AILE OUEST) */}
           {currentStage === 'room_west' && (
             <div className="space-y-3 animate-in fade-in h-full flex flex-col">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                <span className="text-xs font-mono text-purple-400 font-bold uppercase">
-                  AILE OUEST (RUE DES RIVAGEOIS) · LE GRAND PROCÈS : L'AFFAIRE DU BLACKOUT 24H
-                </span>
+              <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-800">
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <span className="text-xs font-mono text-purple-400 font-bold uppercase">
+                    AILE OUEST (RUE DES RIVAGEOIS) · TRIBUNAL 3D
+                  </span>
+                  
+                  {/* Sélecteur de mode de procès pour retrouver la structure exacte */}
+                  <div className="flex items-center gap-1 p-0.5 rounded-xl bg-slate-900 border border-slate-800 text-[10px] font-mono">
+                    <button
+                      onClick={() => {
+                        sounds.playPop();
+                        setTribunalMode('cases');
+                      }}
+                      className={`px-2.5 py-1 rounded-lg font-bold transition cursor-pointer ${
+                        tribunalMode === 'cases'
+                          ? 'bg-purple-600 text-white shadow'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                      title="Procès 2030 : 3 Affaires complètes (Julien, Léo, AlgoRH) avec Outils Forensiques & Objection"
+                    >
+                      ⚖️ 3 Affaires & Forensique (Julien / Léo / AlgoRH)
+                    </button>
+                    <button
+                      onClick={() => {
+                        sounds.playPop();
+                        setTribunalMode('blackout');
+                      }}
+                      className={`px-2.5 py-1 rounded-lg font-bold transition cursor-pointer ${
+                        tribunalMode === 'blackout'
+                          ? 'bg-purple-600 text-white shadow'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                      title="Le Grand Procès du Blackout 24h : Défense de Maxime c. Procureur du Roi"
+                    >
+                      ⚡ Grand Procès Blackout 24h (Maxime)
+                    </button>
+                  </div>
+                </div>
+
                 <button 
                   onClick={handleBackToHub}
                   className="text-xs text-slate-400 hover:text-white font-mono cursor-pointer"
@@ -530,11 +541,19 @@ export default function EscapeGameAurore({ onClose }) {
               </div>
 
               <div className="flex-1">
-                <GameGrandProcesHacking 
-                  onComplete={() => {
-                    handleUnlockKey('west', 'Clé Beta (Intégrité & Éthique Académique)');
-                  }}
-                />
+                {tribunalMode === 'cases' ? (
+                  <GameTribunal3D 
+                    onComplete={() => {
+                      handleUnlockKey('west', 'Clé Beta (Intégrité Académique)');
+                    }}
+                  />
+                ) : (
+                  <GameGrandProcesHacking 
+                    onComplete={() => {
+                      handleUnlockKey('west', 'Clé Beta (Intégrité & Éthique Académique)');
+                    }}
+                  />
+                )}
               </div>
             </div>
           )}
