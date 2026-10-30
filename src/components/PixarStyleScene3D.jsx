@@ -50,11 +50,12 @@ export default function PixarStyleScene3D({
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     currentMount.appendChild(renderer.domElement);
 
-    // --- 3. Textures Officielles ---
+    // --- 3. Textures Officielles & Personnage Style 1 ---
     const textureLoader = new THREE.TextureLoader();
-    const hechLogoTex = textureLoader.load('/images/hech_logo_officiel.png', () => {
+    const auroreTex = textureLoader.load('/images/aurore_style1_cutout.png', () => {
       setIsLoaded(true);
     });
+    const hechLogoTex = textureLoader.load('/images/hech_logo_officiel.png');
 
     // --- 4. Éclairage Studio Tactile Chaleureux 3-Points ---
     // Key Light : Lumière champagne chaude principale (ombres veloutées douces)
@@ -244,279 +245,47 @@ export default function PixarStyleScene3D({
     podRing.position.set(0, 0.10, 0);
     characterRoot.add(podRing);
 
-    // --- BUSTE & BLAZER CORPORATE ---
-    const torsoGroup = new THREE.Group();
-    torsoGroup.position.set(0, 0.70, 0);
-    characterRoot.add(torsoGroup);
+    // Maillage 3D organique incurve pour Aurore Style 1 (Zero facettes Low Poly)
+    const auroreGeo = new THREE.PlaneGeometry(1.65, 2.25, 24, 24);
+    const posAttr = auroreGeo.attributes.position;
+    for (let i = 0; i < posAttr.count; i++) {
+      const x = posAttr.getX(i);
+      posAttr.setZ(i, -Math.pow(x, 2) * 0.12);
+    }
+    auroreGeo.computeVertexNormals();
 
-    // Torse cintré élégant
-    const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.28, 0.65, 32), blazerMat);
-    torso.scale.set(1.15, 1.0, 0.72);
-    torso.castShadow = true;
-    torsoGroup.add(torso);
-
-    // Revers et liserés dorés du blazer (Style Arcane Haute École)
-    const lapelLeft = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.36, 0.03), blazerTrimMat);
-    lapelLeft.position.set(-0.09, 0.14, 0.23);
-    lapelLeft.rotation.z = -0.22;
-    torsoGroup.add(lapelLeft);
-
-    const lapelRight = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.36, 0.03), blazerTrimMat);
-    lapelRight.position.set(0.09, 0.14, 0.23);
-    lapelRight.rotation.z = 0.22;
-    torsoGroup.add(lapelRight);
-
-    // Chemisier blanc
-    const shirt = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.34, 0.02), shirtMat);
-    shirt.position.set(0, 0.14, 0.215);
-    torsoGroup.add(shirt);
-
-    // Col en V soyeux
-    const vCollar = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.16, 3), shirtMat);
-    vCollar.position.set(0, 0.30, 0.22);
-    vCollar.rotation.x = Math.PI;
-    torsoGroup.add(vCollar);
-
-    // Épaules souples naturelles
-    const shoulderL = new THREE.Mesh(new THREE.SphereGeometry(0.10, 24, 24), blazerMat);
-    shoulderL.position.set(-0.29, 0.26, 0);
-    shoulderL.scale.set(1.0, 0.75, 0.85);
-    torsoGroup.add(shoulderL);
-
-    const shoulderR = new THREE.Mesh(new THREE.SphereGeometry(0.10, 24, 24), blazerMat);
-    shoulderR.position.set(0.29, 0.26, 0);
-    shoulderR.scale.set(1.0, 0.75, 0.85);
-    torsoGroup.add(shoulderR);
-
-    // Badge officiel HECh net et discret sur le revers gauche
-    const badge = new THREE.Group();
-    badge.position.set(-0.14, 0.16, 0.24);
-    badge.rotation.y = -0.15;
-    const badgeBase = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.045, 0.045, 0.008, 24),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2, metalness: 0.1 })
-    );
-    badgeBase.rotation.x = Math.PI / 2;
-    badge.add(badgeBase);
-
-    const badgeArt = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.08, 0.08),
-      new THREE.MeshBasicMaterial({ map: hechLogoTex, transparent: true })
-    );
-    badgeArt.position.z = 0.006;
-    badge.add(badgeArt);
-    torsoGroup.add(badge);
-
-    // --- COU HARMONIEUX ---
-    const neckGroup = new THREE.Group();
-    neckGroup.position.set(0, 1.08, 0);
-    characterRoot.add(neckGroup);
-
-    const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.095, 0.22, 24), skinMat);
-    neck.position.y = 0.02;
-    neck.castShadow = true;
-    neckGroup.add(neck);
-
-    // --- TÊTE D'AURORE (SIMPLIFIÉE, DOUCE & NATURELLE) ---
-    const headGroup = new THREE.Group();
-    headGroup.position.set(0, 1.28, 0);
-    characterRoot.add(headGroup);
-
-    // Crâne & Visage unifié (Ovale féminin gracieux)
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.22, 48, 48), skinMat);
-    head.scale.set(0.92, 1.08, 0.95);
-    head.castShadow = true;
-    headGroup.add(head);
-
-    // Menton délicat
-    const chin = new THREE.Mesh(new THREE.SphereGeometry(0.055, 24, 24), skinMat);
-    chin.position.set(0, -0.21, 0.10);
-    chin.scale.set(0.9, 0.6, 0.7);
-    headGroup.add(chin);
-
-    // Nez fin et proportionné
-    const nose = new THREE.Mesh(new THREE.ConeGeometry(0.022, 0.085, 16), skinMat);
-    nose.position.set(0, -0.015, 0.23);
-    nose.rotation.x = 0.15;
-    headGroup.add(nose);
-
-    const noseTip = new THREE.Mesh(new THREE.SphereGeometry(0.018, 16, 16), skinMat);
-    noseTip.position.set(0, -0.045, 0.235);
-    headGroup.add(noseTip);
-
-    // Lèvres souriantes naturelles
-    const lipsGroup = new THREE.Group();
-    lipsGroup.position.set(0, -0.12, 0.205);
-    headGroup.add(lipsGroup);
-
-    const lipUpper = new THREE.Mesh(new THREE.TorusGeometry(0.038, 0.009, 12, 24, Math.PI * 0.7), lipsMat);
-    lipUpper.rotation.x = Math.PI / 2;
-    lipUpper.rotation.z = Math.PI * 0.15;
-    lipsGroup.add(lipUpper);
-
-    const lipLower = new THREE.Mesh(new THREE.SphereGeometry(0.024, 16, 16), lipsMat);
-    lipLower.position.set(0, -0.016, 0.005);
-    lipLower.scale.set(1.4, 0.5, 0.6);
-    lipsGroup.add(lipLower);
-
-    // --- YEUX EXPRESSIFS & REGARD VIVANT ---
-    const scleraMat = new THREE.MeshStandardMaterial({ color: 0xfcfcfc, roughness: 0.15 });
-    const irisMat = new THREE.MeshStandardMaterial({
-      color: 0x1d4ed8, // Bleu saphir élégant
-      roughness: 0.2
+    const auroreMat = new THREE.MeshPhysicalMaterial({
+      map: auroreTex,
+      roughness: 0.38,
+      clearcoat: 0.30,
+      transparent: true,
+      alphaTest: 0.15,
+      depthWrite: true,
+      side: THREE.DoubleSide
     });
-    const pupilMat = new THREE.MeshBasicMaterial({ color: 0x080808 });
-    const glintMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const auroreMesh = new THREE.Mesh(auroreGeo, auroreMat);
+    auroreMesh.position.set(0, 1.25, 0);
+    auroreMesh.castShadow = true;
+    characterRoot.add(auroreMesh);
 
-    const createEye = (xPos) => {
-      const eyeGroup = new THREE.Group();
-      eyeGroup.position.set(xPos, 0.035, 0.185);
-
-      // Globe oculaire
-      const eyeball = new THREE.Mesh(new THREE.SphereGeometry(0.036, 24, 24), scleraMat);
-      eyeGroup.add(eyeball);
-
-      // Iris doux
-      const iris = new THREE.Mesh(new THREE.CircleGeometry(0.019, 24), irisMat);
-      iris.position.set(0, 0, 0.0355);
-      eyeGroup.add(iris);
-
-      // Pupille
-      const pupil = new THREE.Mesh(new THREE.CircleGeometry(0.0095, 24), pupilMat);
-      pupil.position.set(0, 0, 0.036);
-      eyeGroup.add(pupil);
-
-      // Reflet cornéen vivant (Catchlight)
-      const glint = new THREE.Mesh(new THREE.CircleGeometry(0.004, 12), glintMat);
-      glint.position.set(0.006, 0.006, 0.0365);
-      eyeGroup.add(glint);
-
-      // Paupière supérieure pour clignement
-      const lidGeo = new THREE.SphereGeometry(0.038, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2);
-      const lid = new THREE.Mesh(lidGeo, skinMat);
-      lid.rotation.x = -Math.PI / 2.2;
-      eyeGroup.add(lid);
-
-      return { group: eyeGroup, lid };
-    };
-
-    const eyeL = createEye(-0.072);
-    const eyeR = createEye(0.072);
-    headGroup.add(eyeL.group);
-    headGroup.add(eyeR.group);
-
-    // Sourcils fins et expressifs
-    const browMat = new THREE.MeshStandardMaterial({ color: 0x85582f, roughness: 0.6 });
-    const browL = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.009, 0.012), browMat);
-    browL.position.set(-0.072, 0.085, 0.20);
-    browL.rotation.z = 0.06;
-    headGroup.add(browL);
-
-    const browR = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.009, 0.012), browMat);
-    browR.position.set(0.072, 0.085, 0.20);
-    browR.rotation.z = -0.06;
-    headGroup.add(browR);
-
-    // --- LUNETTES FINES DORÉES CONTEMPORAINES ---
-    const glassesGroup = new THREE.Group();
-    glassesGroup.position.set(0, 0.035, 0.225);
-    headGroup.add(glassesGroup);
-
-    // Pont de nez fin
-    const bridge = new THREE.Mesh(new THREE.CylinderGeometry(0.0035, 0.0035, 0.045, 12), frameMat);
-    bridge.rotation.z = Math.PI / 2;
-    bridge.position.set(0, 0.004, 0);
-    glassesGroup.add(bridge);
-
-    // Cerclages délicats
-    [-0.072, 0.072].forEach((xPos) => {
-      const rim = new THREE.Mesh(new THREE.TorusGeometry(0.034, 0.0035, 12, 32), frameMat);
-      rim.position.set(xPos, 0, 0);
-      glassesGroup.add(rim);
-
-      const lens = new THREE.Mesh(new THREE.CircleGeometry(0.032, 24), lensMat);
-      lens.position.set(xPos, 0, 0.001);
-      glassesGroup.add(lens);
-    });
-
-    // Branches latérales fines
-    [-0.108, 0.108].forEach((xPos, idx) => {
-      const temple = new THREE.Mesh(new THREE.BoxGeometry(0.004, 0.004, 0.19), frameMat);
-      temple.position.set(xPos, 0.008, -0.085);
-      temple.rotation.y = idx === 0 ? 0.06 : -0.06;
-      glassesGroup.add(temple);
-    });
-
-    // --- CHEVELURE BLONDE VOLUMINEUSE & SOYEUSE ---
-    const hairGroup = new THREE.Group();
-    headGroup.add(hairGroup);
-
-    // Calotte principale arrondie
-    const hairCrown = new THREE.Mesh(
-      new THREE.SphereGeometry(0.24, 32, 32, 0, Math.PI * 2, 0, Math.PI / 1.7),
-      hairMat
-    );
-    hairCrown.position.set(0, 0.06, -0.02);
-    hairCrown.scale.set(0.97, 1.05, 1.06);
-    hairGroup.add(hairCrown);
-
-    // Frange douce balayée sur le front
-    const bangs = new THREE.Mesh(new THREE.SphereGeometry(0.12, 24, 24), hairHighlightMat);
-    bangs.position.set(-0.05, 0.17, 0.14);
-    bangs.scale.set(1.4, 0.45, 0.7);
-    bangs.rotation.set(-0.25, 0.2, 0.4);
-    hairGroup.add(bangs);
-
-    // Mèches latérales élégantes qui encadrent le visage
-    const lockL = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.02, 0.45, 16), hairHighlightMat);
-    lockL.position.set(-0.16, -0.08, 0.06);
-    lockL.rotation.set(0.15, 0.2, 0.18);
-    hairGroup.add(lockL);
-
-    const lockR = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.02, 0.45, 16), hairHighlightMat);
-    lockR.position.set(0.16, -0.08, 0.06);
-    lockR.rotation.set(0.15, -0.2, -0.18);
-    hairGroup.add(lockR);
-
-    const hairBack = new THREE.Mesh(new THREE.SphereGeometry(0.16, 24, 24), hairMat);
-    hairBack.position.set(0, 0.02, -0.15);
-    hairBack.scale.set(1.1, 1.2, 0.9);
-    hairGroup.add(hairBack);
-
-    // --- POSTURE NATURELLE D'ACCUEIL ---
-    const armsGroup = new THREE.Group();
-    torsoGroup.add(armsGroup);
-
-    // Bras gauche
-    const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.048, 0.38, 16), blazerMat);
-    armL.position.set(-0.31, -0.08, 0.04);
-    armL.rotation.z = 0.22;
-    armsGroup.add(armL);
-
-    // Bras droit
-    const armR = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.048, 0.38, 16), blazerMat);
-    armR.position.set(0.31, -0.08, 0.04);
-    armR.rotation.z = -0.22;
-    armsGroup.add(armR);
-
-    // Tablette tactile interactive tenue élégamment à mi-buste
+    // Tablette tactile interactive tenue a mi-buste
     const padGroup = new THREE.Group();
-    padGroup.position.set(0, -0.18, 0.26);
-    padGroup.rotation.x = -0.45;
+    padGroup.position.set(0, 0.52, 0.35);
+    padGroup.rotation.x = -0.42;
 
     const padBody = new THREE.Mesh(
-      new THREE.BoxGeometry(0.24, 0.16, 0.012),
+      new THREE.BoxGeometry(0.36, 0.24, 0.015),
       new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3, metalness: 0.7 })
     );
     padGroup.add(padBody);
 
     const padScreen = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.22, 0.14),
+      new THREE.PlaneGeometry(0.33, 0.21),
       new THREE.MeshBasicMaterial({ color: 0x06b6d4 })
     );
-    padScreen.position.z = 0.007;
+    padScreen.position.z = 0.009;
     padGroup.add(padScreen);
-    torsoGroup.add(padGroup);
+    characterRoot.add(padGroup);
 
     // =========================================================================
     // 8. INTERACTION MOUSE TRACKING & PARALLAXE DOUCE
@@ -545,40 +314,29 @@ export default function PixarStyleScene3D({
       mouse.x = THREE.MathUtils.lerp(mouse.x, mouse.targetX, 0.05);
       mouse.y = THREE.MathUtils.lerp(mouse.y, mouse.targetY, 0.05);
 
-      // Respiration naturelle et douce
+      // Respiration naturelle et vivante
       const breath = Math.sin(t * 2.0);
-      torsoGroup.scale.y = 1.0 + breath * 0.006;
-      headGroup.position.y = 1.28 + breath * 0.004;
+      auroreMesh.position.y = 1.25 + breath * 0.012;
+      padGroup.position.y = 0.52 + breath * 0.010;
 
-      // Clignement doux naturel
-      const blinkCycle = (t * 0.8) % 4.5;
-      const isBlinking = blinkCycle < 0.12;
-      const targetLidAngle = isBlinking ? 0.0 : -Math.PI / 2.2;
-      eyeL.lid.rotation.x = THREE.MathUtils.lerp(eyeL.lid.rotation.x, targetLidAngle, 0.45);
-      eyeR.lid.rotation.x = THREE.MathUtils.lerp(eyeR.lid.rotation.x, targetLidAngle, 0.45);
-
-      // Micro-expressions selon l'humeur
+      // Micro-expressions et inclinaison du regard selon l humeur
       if (characterMood === 'speaking') {
-        headGroup.rotation.y = mouse.x + Math.sin(t * 2.8) * 0.05;
-        headGroup.rotation.x = -mouse.y + Math.sin(t * 2.2) * 0.025;
-        padGroup.rotation.z = Math.sin(t * 2.0) * 0.03;
+        auroreMesh.rotation.y = mouse.x + Math.sin(t * 2.8) * 0.035;
+        auroreMesh.rotation.x = -mouse.y + Math.sin(t * 2.2) * 0.018;
+        padGroup.rotation.z = Math.sin(t * 2.0) * 0.025;
         padScreen.material.color.setHex(0x38bdf8);
       } else if (characterMood === 'victorious') {
-        headGroup.rotation.y = mouse.x + Math.sin(t * 1.2) * 0.02;
-        headGroup.rotation.x = -mouse.y - 0.02;
-        browL.position.y = 0.092;
-        browR.position.y = 0.092;
+        auroreMesh.rotation.y = mouse.x + Math.sin(t * 1.2) * 0.018;
+        auroreMesh.rotation.x = -mouse.y - 0.015;
         padScreen.material.color.setHex(0x10b981); // Vert victoire
       } else if (characterMood === 'worried' || isAlert) {
-        headGroup.rotation.y = mouse.x - 0.03;
-        headGroup.rotation.x = -mouse.y + 0.02;
-        browL.rotation.z = -0.06;
-        browR.rotation.z = 0.06;
+        auroreMesh.rotation.y = mouse.x - 0.025;
+        auroreMesh.rotation.x = -mouse.y + 0.018;
         padScreen.material.color.setHex(0xf43f5e); // Alerte
       } else {
-        // Thinking / neutre : regard doux
-        headGroup.rotation.y = mouse.x + Math.sin(t * 0.6) * 0.025;
-        headGroup.rotation.x = -mouse.y + Math.cos(t * 0.5) * 0.015;
+        // Thinking / neutre : regard bienveillant
+        auroreMesh.rotation.y = mouse.x + Math.sin(t * 0.6) * 0.02;
+        auroreMesh.rotation.x = -mouse.y + Math.cos(t * 0.5) * 0.01;
         padScreen.material.color.setHex(0x06b6d4);
       }
 
