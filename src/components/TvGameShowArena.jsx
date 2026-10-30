@@ -30,6 +30,7 @@ import { sounds } from '../utils/soundEffects';
 import CharacterAvatar from './CharacterAvatar';
 import GrandConcours3ManchesArena from './GrandConcours3ManchesArena';
 import { generateMillionnaireSessionQuestions } from '../data/verbesConsignesBank';
+import { generateRoueSessionQuestions } from '../data/roueAccordsBank';
 
 const SHOW_META = {
   millionnaire: {
@@ -111,10 +112,13 @@ export default function TvGameShowArena({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMuted, setIsMuted] = useState(sounds.isMuted());
 
-  // Génération dynamique d'une banque renouvelée de questions pour Qui veut gagner des crédits
+  // Génération dynamique d'une banque renouvelée de questions pour Qui veut gagner des crédits & La Roue des Accords
   const [sessionQuestions, setSessionQuestions] = useState(() => {
     if (showType === 'millionnaire') {
       return generateMillionnaireSessionQuestions();
+    }
+    if (showType === 'roue') {
+      return generateRoueSessionQuestions();
     }
     return quiz?.questions || [];
   });
@@ -678,6 +682,8 @@ export default function TvGameShowArena({
     sounds.playPop();
     if (showType === 'millionnaire') {
       setSessionQuestions(generateMillionnaireSessionQuestions());
+    } else if (showType === 'roue') {
+      setSessionQuestions(generateRoueSessionQuestions());
     }
     setIsShowingIntro(true);
     setCurrentIdx(0);
