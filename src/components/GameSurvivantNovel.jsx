@@ -18,6 +18,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { sounds } from '../utils/soundEffects';
+import AuroreGameBriefingModal from './AuroreGameBriefingModal';
 
 /**
  * GameSurvivantNovel:
@@ -29,6 +30,7 @@ import { sounds } from '../utils/soundEffects';
  */
 export default function GameSurvivantNovel({ onComplete }) {
   const [currentChapterIdx, setCurrentChapterIdx] = useState(0);
+  const [showBriefing, setShowBriefing] = useState(true);
   
   // Player Survivant Gauges
   const [stats, setStats] = useState({
@@ -189,6 +191,19 @@ export default function GameSurvivantNovel({ onComplete }) {
 
         {/* 4 Survivant Gauges */}
         <div className="flex items-center gap-3 text-xs font-mono">
+          {/* Bouton Briefing Officiel d'Aurore (Scénario & Règles) */}
+          <button
+            onClick={() => {
+              sounds.playPop();
+              setShowBriefing(true);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-xs font-mono font-bold text-cyan-200 transition cursor-pointer shadow-md"
+            title="Briefing d'Aurore : Scénario, Enjeu & Règles"
+          >
+            <span>ℹ️</span>
+            <span className="hidden sm:inline">Briefing Aurore</span>
+          </button>
+
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-900 border border-slate-800">
             <Heart className={`w-3.5 h-3.5 ${stats.energy < 30 ? 'text-rose-500 animate-pulse' : 'text-emerald-400'}`} />
             <span className="text-slate-300 font-bold">{stats.energy}%</span>
@@ -340,6 +355,13 @@ export default function GameSurvivantNovel({ onComplete }) {
         )}
 
       </div>
+
+      {/* Briefing Officiel d'Aurore (Scénario de l'Escape Game, Enjeu & Règles) */}
+      <AuroreGameBriefingModal
+        gameId="survivant"
+        isOpen={showBriefing}
+        onClose={() => setShowBriefing(false)}
+      />
     </div>
   );
 }

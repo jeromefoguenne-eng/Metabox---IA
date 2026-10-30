@@ -32,6 +32,7 @@ import {
   QUATRE_A_LA_SUITE_THEMES, 
   FACE_A_FACE_QUESTIONS 
 } from '../data/grandConcoursData';
+import AuroreGameBriefingModal from './AuroreGameBriefingModal';
 
 export default function GrandConcours3ManchesArena({
   onClose,
@@ -39,6 +40,7 @@ export default function GrandConcours3ManchesArena({
 }) {
   // Navigation entre les 3 Manches : 'intro' | 'manche1_justeprix' | 'manche2_quatreasuite' | 'manche3_faceaface' | 'victoire' | 'defaite'
   const [currentRound, setCurrentRound] = useState('intro');
+  const [showBriefing, setShowBriefing] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMuted, setIsMuted] = useState(sounds.isMuted());
   const [reaction, setReaction] = useState('speaking'); // 'idle' | 'speaking' | 'correct' | 'wrong' | 'victory'
@@ -439,6 +441,19 @@ export default function GrandConcours3ManchesArena({
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Bouton Briefing Officiel d'Aurore */}
+            <button
+              onClick={() => {
+                sounds.playPop();
+                setShowBriefing(true);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-xs font-mono font-bold text-cyan-200 transition cursor-pointer shadow-md"
+              title="Briefing d'Aurore : Scénario, Enjeu & Règles des 3 Manches"
+            >
+              <span>ℹ️</span>
+              <span className="hidden sm:inline">Briefing Aurore</span>
+            </button>
+
             <button
               onClick={() => {
                 const muted = sounds.toggleMute();
@@ -1032,6 +1047,13 @@ export default function GrandConcours3ManchesArena({
 
         </div>
       </div>
+
+      {/* Briefing Officiel d'Aurore (Scénario de l'Escape Game, Enjeu & Règles des 3 Manches) */}
+      <AuroreGameBriefingModal
+        gameId="concours"
+        isOpen={showBriefing}
+        onClose={() => setShowBriefing(false)}
+      />
     </div>
   );
 }

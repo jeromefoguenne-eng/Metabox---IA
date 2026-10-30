@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { sounds } from '../utils/soundEffects';
+import AuroreGameBriefingModal from './AuroreGameBriefingModal';
 
 // ============================================================================
 // TEXTURES PROCÉDURALES POUR LE LABO (Parquet composite, liège, circuits, métal)
@@ -503,6 +504,7 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
   const [hoveredStation, setHoveredStation] = useState(null);
   const [isMuted, setIsMuted] = useState(() => sounds.isMuted());
   const [isPixarMode, setIsPixarMode] = useState(true);
+  const [showBriefing, setShowBriefing] = useState(true);
 
   // Nouveaux états Cyberscope OS : Enquête Hybride & Indices
   const [unlockedHints, setUnlockedHints] = useState({});
@@ -1321,6 +1323,19 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
 
         {/* Actions Droite : Score, Journal, Plein Écran, Quitter */}
         <div className="flex items-center gap-2.5">
+          {/* Bouton Briefing Officiel d'Aurore (Scénario & Règles) */}
+          <button
+            onClick={() => {
+              sounds.playPop();
+              setShowBriefing(true);
+            }}
+            className="px-2.5 py-1.5 rounded-xl bg-cyan-950/70 hover:bg-cyan-900/80 border border-cyan-500/40 text-cyan-200 text-xs font-bold font-mono transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+            title="Briefing d'Aurore : Scénario, Enjeu & Règles"
+          >
+            <HelpCircle className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="hidden sm:inline">Briefing Aurore</span>
+          </button>
+
           {/* Progression des 10 Énigmes */}
           <div className="flex items-center gap-2 bg-slate-900/90 px-3 py-1.5 rounded-xl border border-slate-800">
             <Trophy className="w-4 h-4 text-amber-400" />
@@ -2043,6 +2058,13 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
           </div>
         </div>
       )}
+
+      {/* Briefing Officiel d'Aurore (Scénario de l'Escape Game, Enjeu & Règles) */}
+      <AuroreGameBriefingModal
+        gameId="factcheck"
+        isOpen={showBriefing}
+        onClose={() => setShowBriefing(false)}
+      />
 
     </div>
   );

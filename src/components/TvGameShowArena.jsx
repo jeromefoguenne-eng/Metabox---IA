@@ -31,6 +31,7 @@ import CharacterAvatar from './CharacterAvatar';
 import GrandConcours3ManchesArena from './GrandConcours3ManchesArena';
 import { generateMillionnaireSessionQuestions } from '../data/verbesConsignesBank';
 import { generateRoueSessionQuestions } from '../data/roueAccordsBank';
+import AuroreGameBriefingModal from './AuroreGameBriefingModal';
 
 const SHOW_META = {
   millionnaire: {
@@ -821,6 +822,19 @@ export default function TvGameShowArena({
 
         {/* Right: Audio Toggle, Fullscreen & Exit */}
         <div className="flex items-center gap-2">
+          {/* Bouton Briefing Officiel d'Aurore */}
+          <button
+            onClick={() => {
+              sounds.playPop();
+              setIsShowingIntro(true);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-xs font-mono font-bold text-cyan-200 transition cursor-pointer shadow-md"
+            title="Briefing d'Aurore : Scénario, Enjeu & Règles"
+          >
+            <span>ℹ️</span>
+            <span className="hidden sm:inline">Briefing Aurore</span>
+          </button>
+
           <button
             onClick={() => {
               const muted = sounds.toggleMute();
@@ -868,38 +882,12 @@ export default function TvGameShowArena({
             themeColor={themeColor}
           />
 
-          {/* DYNAMIC OPENING GENERIQUE TV OVERLAY */}
-          {isShowingIntro && (
-            <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-md z-30 flex flex-col items-center justify-center p-6 text-center animate-in fade-in zoom-in-95 duration-500">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/40 text-[11px] font-black uppercase tracking-widest mb-3">
-                <span className="animate-pulse">🔴</span> {meta.badge}
-              </div>
-
-              <h1 className="text-3xl sm:text-5xl font-outfit font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-amber-200 to-white tracking-wide uppercase drop-shadow-2xl mb-2">
-                {meta.title}
-              </h1>
-
-              <p className="text-sm sm:text-base font-lexend text-slate-300 max-w-xl mx-auto mb-6 leading-relaxed">
-                {meta.subtitle}
-              </p>
-
-              <div className="flex flex-col sm:flex-row items-center gap-3">
-                <button
-                  onClick={handleStartFromIntro}
-                  className="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-rose-600 via-indigo-600 to-purple-600 hover:scale-105 transition-all text-white font-outfit font-black text-sm tracking-wider uppercase shadow-xl shadow-indigo-600/40 flex items-center gap-2.5 cursor-pointer"
-                >
-                  <Play className="w-4 h-4 fill-current" />
-                  <span>Entrer sur le Plateau (C'est parti !)</span>
-                </button>
-                <button
-                  onClick={handleStartFromIntro}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition cursor-pointer"
-                >
-                  Passer le générique →
-                </button>
-              </div>
-            </div>
-          )}
+          {/* BRIEFING OFFICIEL D'AURORE AU DÉBUT DU JEU TV (Scénario de l'Escape Game, Enjeu & Règles) */}
+          <AuroreGameBriefingModal
+            gameId={showType}
+            isOpen={isShowingIntro}
+            onClose={() => setIsShowingIntro(false)}
+          />
 
           {/* Host Prompter Banner avec Avatar Raccord */}
           {!isShowingIntro && (

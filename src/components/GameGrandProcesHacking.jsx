@@ -27,6 +27,7 @@ import confetti from 'canvas-confetti';
 import Courtroom3DCanvas from './Courtroom3DCanvas';
 import CourtroomHackingTools from './CourtroomHackingTools';
 import { sounds } from '../utils/soundEffects';
+import AuroreGameBriefingModal from './AuroreGameBriefingModal';
 
 /**
  * GameGrandProcesHacking:
@@ -43,6 +44,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
   const [currentAssaultIdx, setCurrentAssaultIdx] = useState(0);
   const [stage, setStage] = useState('intro'); // 'intro' | 'attack' | 'investigation' | 'pleading' | 'reaction' | 'verdict_cinematic'
   const [cameraView, setCameraView] = useState('TV_WIDE');
+  const [showBriefing, setShowBriefing] = useState(true);
 
   // États 3D
   const [witnessState, setWitnessState] = useState('idle'); // 'idle' | 'speaking' | 'stressed' | 'confident'
@@ -702,6 +704,19 @@ export default function GameGrandProcesHacking({ onComplete }) {
 
         {/* Jauges en Direct & Bouton Plein Écran */}
         <div className="flex items-center gap-3">
+          {/* Bouton Briefing Officiel d'Aurore (Scénario & Règles) */}
+          <button
+            onClick={() => {
+              sounds.playPop();
+              setShowBriefing(true);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-xs font-mono font-bold text-cyan-200 transition cursor-pointer shadow-md"
+            title="Briefing d'Aurore : Scénario du Tribunal, Enjeu & Règles"
+          >
+            <span>ℹ️</span>
+            <span className="hidden sm:inline">Briefing Aurore</span>
+          </button>
+
           {/* Bouton Chahut du Public & Menace d'évacuation par le Juge */}
           <button
             onClick={triggerAudienceUproarAndJudgeSilence}
@@ -1311,6 +1326,13 @@ export default function GameGrandProcesHacking({ onComplete }) {
           )}
         </div>
       </div>
+
+      {/* Briefing Officiel d'Aurore (Scénario de l'Escape Game, Enjeu & Règles) */}
+      <AuroreGameBriefingModal
+        gameId="tribunal"
+        isOpen={showBriefing}
+        onClose={() => setShowBriefing(false)}
+      />
     </div>
   );
 }

@@ -16,6 +16,7 @@ import {
   Activity
 } from 'lucide-react';
 import { sounds } from '../utils/soundEffects';
+import AuroreGameBriefingModal from './AuroreGameBriefingModal';
 
 /**
  * GamePromptWarsDeck:
@@ -28,6 +29,7 @@ export default function GamePromptWarsDeck({ onComplete }) {
   const [bossHp, setBossHp] = useState(120);
   const [mana, setMana] = useState(3);
   const [turn, setTurn] = useState(1);
+  const [showBriefing, setShowBriefing] = useState(true);
   const [battleLog, setBattleLog] = useState([
     "Tour 1 : Le Bot Propagandiste s'initialise et prépare une hallucination de sources !"
   ]);
@@ -185,6 +187,19 @@ export default function GamePromptWarsDeck({ onComplete }) {
 
         {/* Mana Crystals (3 Orbs) */}
         <div className="flex items-center gap-4">
+          {/* Bouton Briefing Officiel d'Aurore (Scénario & Règles) */}
+          <button
+            onClick={() => {
+              sounds.playPop();
+              setShowBriefing(true);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-xs font-mono font-bold text-cyan-200 transition cursor-pointer shadow-md"
+            title="Briefing d'Aurore : Scénario, Enjeu & Règles"
+          >
+            <span>ℹ️</span>
+            <span className="hidden sm:inline">Briefing Aurore</span>
+          </button>
+
           <span className="text-xs font-mono font-bold text-slate-300 hidden sm:inline">Tour {turn}</span>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-slate-900/80 border border-cyan-500/40">
             <span className="text-[11px] font-mono font-bold text-cyan-300">MANA :</span>
@@ -354,6 +369,13 @@ export default function GamePromptWarsDeck({ onComplete }) {
         </div>
 
       </div>
+
+      {/* Briefing Officiel d'Aurore (Scénario de l'Escape Game, Enjeu & Règles) */}
+      <AuroreGameBriefingModal
+        gameId="promptwars"
+        isOpen={showBriefing}
+        onClose={() => setShowBriefing(false)}
+      />
     </div>
   );
 }
