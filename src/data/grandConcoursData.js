@@ -1,5 +1,283 @@
 // Banque de données officielle pour « Le Grand Concours de la HECh »
-// 3 Manches inspirées des grands jeux télévisés académiques (Questions pour un Champion / Le Juste Prix)
+// 3 Manches inspirées des grands jeux télévisés académiques (Questions pour un Champion)
+// Manche 1 : Questions de rapidité au buzzer (saisie au clavier en 10 secondes, premier à 3 points qualifié)
+// Manche 2 : Le 4 à la suite (10 rubriques au choix)
+// Manche 3 : Le Face-à-Face (indices descendants contre un finaliste)
+
+// ============================================================================
+// OUTILS DE VALIDATION INTELLIGENTE DES RÉPONSES TEXTUELLES
+// (Normalisation accents, casse, ponctuation, articles et tolérance Levenshtein)
+// ============================================================================
+export function normalizeRapiditeAnswer(str) {
+  if (!str) return "";
+  return str
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // Supprime les accents
+    .replace(/['’\-–—/]/g, " ") // Remplace apostrophes, slashs et tirets par des espaces
+    .replace(/[^a-z0-9\s]/g, "") // Supprime la ponctuation restante
+    .replace(/\b(le|la|les|l|un|une|des|du|de|d|en|au|aux)\b/g, "") // Supprime les articles français
+    .replace(/\s+/g, " ") // Compresse les espaces multiples
+    .trim();
+}
+
+function computeLevenshtein(a, b) {
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+  const matrix = [];
+  for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+  for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        );
+      }
+    }
+  }
+  return matrix[b.length][a.length];
+}
+
+export function isRapiditeAnswerCorrect(userInput, acceptedAnswers) {
+  if (!userInput || !acceptedAnswers) return false;
+  const cleanInput = normalizeRapiditeAnswer(userInput);
+  if (!cleanInput) return false;
+
+  for (const accepted of acceptedAnswers) {
+    const cleanAccepted = normalizeRapiditeAnswer(accepted);
+    if (!cleanAccepted) continue;
+
+    // Correspondance exacte
+    if (cleanInput === cleanAccepted) return true;
+
+    // Inclusion mutuelle (ex: "hermann ebbinghaus" pour "ebbinghaus", ou "ects" dans "credit ects")
+    if (cleanInput.includes(cleanAccepted) || cleanAccepted.includes(cleanInput)) {
+      if (cleanAccepted.length >= 3 && cleanInput.length >= 3) {
+        return true;
+      }
+    }
+
+    // Tolérance d'une faute de frappe pour les mots de 5 lettres ou plus
+    if (cleanAccepted.length >= 5 && Math.abs(cleanInput.length - cleanAccepted.length) <= 1) {
+      if (computeLevenshtein(cleanInput, cleanAccepted) <= 1) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+// ============================================================================
+// MANCHE 1 : BANQUE DE QUESTIONS DE RAPIDITÉ AU BUZZER (PAS DE QCM)
+// Course aux 3 points : le premier candidat qui inscrit 3 bonnes réponses est qualifié !
+// ============================================================================
+export const RAPIDITE_QUESTIONS = [
+  {
+    id: "rap_1",
+    theme: "DÉCRET PAYSAGE & ÉTUDES",
+    question: "Quel système européen officiel de transfert et d'accumulation de crédits attribue forfaitairement 60 crédits par bloc annuel ?",
+    displayAnswer: "ECTS (European Credit Transfer and Accumulation System)",
+    acceptedAnswers: ["ects", "credit ects", "credits ects", "systeme ects", "european credit transfer system"],
+    explanation: "Le système ECTS harmonise l'enseignement supérieur européen à raison de 60 crédits par bloc annuel (environ 1800h de travail)."
+  },
+  {
+    id: "rap_2",
+    theme: "SCIENCES COGNITIVES",
+    question: "Quel psychologue allemand a théorisé la courbe exponentielle de l'oubli et la réactivation espacée en 1885 ?",
+    displayAnswer: "Hermann Ebbinghaus",
+    acceptedAnswers: ["ebbinghaus", "hermann ebbinghaus", "ebinghaus", "herman ebbinghaus"],
+    explanation: "Hermann Ebbinghaus a démontré que sans réactivation rapide, plus des deux tiers des apprentissages s'évaporent en 24h."
+  },
+  {
+    id: "rap_3",
+    theme: "DURÉE DES ÉTUDES",
+    question: "Combien de crédits ECTS au total composent le cursus complet d'un Bachelier de plein exercice en Haute École ?",
+    displayAnswer: "180 crédits ECTS",
+    acceptedAnswers: ["180", "180 ects", "180 credits", "cent quatre vingts", "cent quatre vingt", "180 credits ects"],
+    explanation: "Un bachelier professionnalisant compte 180 crédits ECTS répartis en 3 blocs d'études annuels de 60 crédits."
+  },
+  {
+    id: "rap_4",
+    theme: "ORGANISATION ACADÉMIQUE",
+    question: "Comment appelle-t-on le sous-ensemble pédagogique autonome qui compose une Unité d'Enseignement, abrégé par le sigle AA ?",
+    displayAnswer: "Activité d'Apprentissage (AA)",
+    acceptedAnswers: ["activite d'apprentissage", "activites d'apprentissage", "activite apprentissage", "activites apprentissage", "apprentissage"],
+    explanation: "Une Unité d'Enseignement (UE) regroupe une ou plusieurs Activités d'Apprentissage (AA) complémentaires."
+  },
+  {
+    id: "rap_5",
+    theme: "SYSTÈME DE NOTATION",
+    question: "En Fédération Wallonie-Bruxelles, quelle est la note minimale sur 20 exigée pour valider une Unité d'Enseignement sans compensation ?",
+    displayAnswer: "10 / 20",
+    acceptedAnswers: ["10", "10/20", "10 sur 20", "dix", "10 / 20"],
+    explanation: "La note de 10/20 est le seuil légal de réussite garantissant l'octroi définitif des crédits ECTS associés à l'UE."
+  },
+  {
+    id: "rap_6",
+    theme: "INTELLIGENCE ARTIFICIELLE",
+    question: "Quel terme désigne la fabrication d'affirmations plausibles mais totalement fausses et inventées par un modèle d'IA comme ChatGPT ?",
+    displayAnswer: "Une hallucination (ou fabulation)",
+    acceptedAnswers: ["hallucination", "hallucinations", "hallucination d'ia", "fabulation", "halluciner"],
+    explanation: "L'hallucination survient quand le modèle prédit des mots statistiquement cohérents sans ancrage dans la réalité factuelle."
+  },
+  {
+    id: "rap_7",
+    theme: "INTELLIGENCE ARTIFICIELLE",
+    question: "Quel acronyme anglophone désigne les grands modèles de langage basés sur l'architecture Transformer (ex: GPT, Claude, Gemma) ?",
+    displayAnswer: "LLM (Large Language Model)",
+    acceptedAnswers: ["llm", "large language model", "large language models", "modele de langage"],
+    explanation: "LLM signifie Large Language Model, désignant les modèles massifs entraînés sur des centaines de milliards de tokens textuels."
+  },
+  {
+    id: "rap_8",
+    theme: "CAMPUS DE LA HECH",
+    question: "Dans quelle ville francophone se situe le campus historique des Rivageois de la Haute École Charlemagne ?",
+    displayAnswer: "Liège",
+    acceptedAnswers: ["liege", "liége"],
+    explanation: "Le campus des Rivageois est implanté au bord de la Meuse à Liège, à proximité de la gare des Guillemins."
+  },
+  {
+    id: "rap_9",
+    theme: "PROTECTION DES DONNÉES",
+    question: "Quel règlement général européen, abrégé en 4 lettres, protège la vie privée et les données personnelles des étudiants face aux IA ?",
+    displayAnswer: "Le RGPD (ou GDPR en anglais)",
+    acceptedAnswers: ["rgpd", "gdpr", "reglement general sur la protection des donnees"],
+    explanation: "Le RGPD encadre strictement la collecte, l'hébergement et le traitement des données nominatives au sein de l'UE."
+  },
+  {
+    id: "rap_10",
+    theme: "VERBES DE CONSIGNE",
+    question: "Quel verbe de consigne d'examen exige de dégager simultanément les points communs ET les divergences entre deux concepts ?",
+    displayAnswer: "Comparer (la comparaison)",
+    acceptedAnswers: ["comparer", "comparaison", "mettre en regard"],
+    explanation: "Comparer impose un examen bilatéral : isoler ce qui rapproche deux notions tout en mettant en lumière ce qui les distingue."
+  },
+  {
+    id: "rap_11",
+    theme: "CHARGE DE TRAVAIL",
+    question: "Combien d'heures d'activités d'apprentissage (cours + travail personnel) représente forfaitairement 1 crédit ECTS ?",
+    displayAnswer: "30 heures",
+    acceptedAnswers: ["30", "30 heures", "30h", "trente", "trente heures"],
+    explanation: "Le Décret Paysage fixe à 30 heures de charge globale pour l'étudiant l'équivalent d'un crédit ECTS."
+  },
+  {
+    id: "rap_12",
+    theme: "MÉTHODOLOGIE DE TRAVAIL",
+    question: "Quel président et général américain a donné son nom à la célèbre matrice classant les tâches selon l'urgence et l'importance ?",
+    displayAnswer: "Dwight D. Eisenhower",
+    acceptedAnswers: ["eisenhower", "dwight eisenhower", "matrice d'eisenhower", "matrice eisenhower"],
+    explanation: "La matrice d'Eisenhower aide les étudiants à privilégier le Cadran 2 (Important mais Non Urgent : révisions anticipées)."
+  },
+  {
+    id: "rap_13",
+    theme: "CYBERSÉCURITÉ & MÉDIAS",
+    question: "Quel terme anglophone désigne une vidéo ou un enregistrement audio hyperréaliste falsifié par intelligence artificielle ?",
+    displayAnswer: "Un deepfake (hypertrucage)",
+    acceptedAnswers: ["deepfake", "deep fake", "deepfakes", "hypertrucage", "hyper-trucage"],
+    explanation: "Les deepfakes utilisent des réseaux de neurones génératifs pour substituer des visages ou cloner des timbres vocaux."
+  },
+  {
+    id: "rap_14",
+    theme: "VERBES DE CONSIGNE",
+    question: "Quel verbe de consigne ordonne à l'étudiant d'étayer son affirmation par des arguments rationnels, des preuves ou des calculs ?",
+    displayAnswer: "Justifier (la justification)",
+    acceptedAnswers: ["justifier", "justification", "argumenter", "prouver"],
+    explanation: "Justifier interdit l'affirmation gratuite : l'étudiant doit impérativement fournir la chaîne logique et factuelle de la preuve."
+  },
+  {
+    id: "rap_15",
+    theme: "PARCOURS DE L'ÉTUDIANT",
+    question: "Quel sigle officiel en 3 lettres désigne le Programme Annuel de l'Étudiant, validé par le jury en début d'année académique ?",
+    displayAnswer: "Le PAE (Programme Annuel de l'Étudiant)",
+    acceptedAnswers: ["pae", "programme annuel de l'etudiant", "programme annuel d'etudes", "programme annuel d'etude"],
+    explanation: "Le PAE est le contrat académique annuel qui regroupe la liste des Unités d'Enseignement suivies par l'étudiant."
+  },
+  {
+    id: "rap_16",
+    theme: "CAMPUS DE LA HECH",
+    question: "Combien d'implantations géographiques majeures composent la Haute École Charlemagne (Rivageois, Outremeuse, Huy et Verviers) ?",
+    displayAnswer: "4 campus",
+    acceptedAnswers: ["4", "quatre", "4 campus", "quatre campus"],
+    explanation: "La Haute École Charlemagne déploie ses formations sur 4 sites en province de Liège : Liège (2 sites), Huy et Verviers."
+  },
+  {
+    id: "rap_17",
+    theme: "RECHERCHE SCIENTIFIQUE",
+    question: "Quel identifiant numérique persistant et universel, abrégé en 3 lettres (DOI), garantit l'accès officiel à un article scientifique ?",
+    displayAnswer: "Le DOI (Digital Object Identifier)",
+    acceptedAnswers: ["doi", "digital object identifier"],
+    explanation: "Le DOI fournit un lien pérenne infalsifiable vers les publications scientifiques certifiées par les pairs."
+  },
+  {
+    id: "rap_18",
+    theme: "CAMPUS DE LA HECH",
+    question: "Dans quelle ville située le long de la Meuse se trouve le campus de la HECh réputé pour ses formations en agronomie et gestion ?",
+    displayAnswer: "Huy",
+    acceptedAnswers: ["huy"],
+    explanation: "Le campus de Huy de la HECh accueille notamment les bacheliers en agronomie et les filières de gestion."
+  },
+  {
+    id: "rap_19",
+    theme: "ARCHITECTURE MATÉRIELLE",
+    question: "Quel type de processeur graphique haute performance (carte graphique), abrégé en 3 lettres, alimente les supercalculateurs d'IA ?",
+    displayAnswer: "Le GPU (Graphics Processing Unit)",
+    acceptedAnswers: ["gpu", "processeur graphique", "carte graphique", "cartes graphiques"],
+    explanation: "Les GPU excellent dans le calcul matriciel parallèle massif, indispensable pour exécuter et entraîner les réseaux de neurones."
+  },
+  {
+    id: "rap_20",
+    theme: "DÉCISION ACADÉMIQUE",
+    question: "Quel organe collégial d'enseignants se réunit en fin de session pour délibérer souverainement sur la réussite des étudiants ?",
+    displayAnswer: "Le Jury (de délibération)",
+    acceptedAnswers: ["jury", "le jury", "jury de deliberation", "deliberation", "conseil de classe"],
+    explanation: "Le jury de délibération examine les dossiers académiques dans le respect strict du Règlement Général des Études (RGE)."
+  },
+  {
+    id: "rap_21",
+    theme: "PROMPT ENGINEERING",
+    question: "Quel mot d'origine anglaise désigne l'instruction textuelle soumise à une intelligence artificielle pour obtenir une réponse précise ?",
+    displayAnswer: "Un prompt",
+    acceptedAnswers: ["prompt", "prompts", "prompting", "invite"],
+    explanation: "Le prompt définit le rôle, le contexte, les contraintes et le format attendu pour orienter le modèle de langage."
+  },
+  {
+    id: "rap_22",
+    theme: "OUTILS DU CAMPUS",
+    question: "Quel environnement numérique d'apprentissage en ligne open-source (LMS) est officiellement utilisé à la HECh pour les cours ?",
+    displayAnswer: "Moodle",
+    acceptedAnswers: ["moodle"],
+    explanation: "Moodle centralise les syllabus, consignes d'examens, dépôts de travaux et exercices interactifs de la Haute École."
+  },
+  {
+    id: "rap_23",
+    theme: "PÉDAGOGIE INTERACTIVE",
+    question: "Quel outil belge de participation interactive en auditoire permet aux professeurs de sonder les étudiants en direct sur smartphone ?",
+    displayAnswer: "Wooclap",
+    acceptedAnswers: ["wooclap"],
+    explanation: "Créé en Belgique, Wooclap stimule l'attention et teste la compréhension en temps réel dans les auditoires universitaires."
+  },
+  {
+    id: "rap_24",
+    theme: "LÉGISLATION ENSEIGNEMENT",
+    question: "Quel décret promulgué en 2013 par le ministre Marcourt a réformé l'organisation modulaire des études supérieures en FWB ?",
+    displayAnswer: "Le Décret Paysage",
+    acceptedAnswers: ["paysage", "decret paysage", "le decret paysage", "decret marcourt"],
+    explanation: "Le Décret Paysage a introduit les crédits ECTS capitalisables, les blocs annuels et la fin du redoublement automatique intégral."
+  },
+  {
+    id: "rap_25",
+    theme: "SCIENCES COGNITIVES",
+    question: "Quelle expression désigne le piège psychologique où un étudiant pense maîtriser son cours simplement en le survolant des yeux ?",
+    displayAnswer: "L'illusion de compétence (ou illusion de savoir)",
+    acceptedAnswers: ["illusion de competence", "illusion de savoir", "illusion cognitive", "effet dunning kruger", "dunning kruger"],
+    explanation: "La lecture passive trompe le cerveau : seul le rappel actif (s'interroger soi-même sans notes) consolide les connaissances."
+  }
+];
 
 export const JUSTE_PRIX_QUESTIONS = [
   {

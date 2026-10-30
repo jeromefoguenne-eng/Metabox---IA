@@ -147,17 +147,17 @@ export const AURORE_GAME_BRIEFINGS = {
   concours: {
     gameId: 'concours',
     title: "Le Grand Concours de la HECh (Tournoi en 3 Manches)",
-    subtitle: "Le Juste Prix · Le Quatre à la Suite · Le Face à Face",
+    subtitle: "Questions de Rapidité · Le Quatre à la Suite · Le Face à Face",
     wing: "TOURNOI INTER-CAMPUS HECH · ARÈNE 3D COMPLÈTE",
     keyReward: "Trophée Suprême des Délibérations & Coupe Inter-Campus",
     badgeColor: "from-cyan-400 via-blue-600 to-violet-600",
     scenarioLink: "L'épreuve reine de l'escape game ! Pour lever définitivement l'ensemble des restrictions d'A.U.R.O.R.E. et prouver l'excellence de votre campus (Rivageois, Huy, Verviers, Outremeuse), vous participez au grand tournoi télévisé académique en 3 manches inspiré des grands jeux de culture générale.",
     whyPlay: "Ce tournoi synthétise l'intégralité des compétences : esprit critique, culture de l'IA, méthodologie et réactivité. Arriver au bout de la troisième manche est indispensable pour empocher la coupe et déverrouiller la proclamation des résultats.",
     rules: [
-      "MANCHE 1 - LE JUSTE PRIX : Estimez avec la plus grande précision des chiffres réels sur l'IA et l'enseignement (watts, litres d'eau, pourcentages). Les plus proches engrangent des points décisifs.",
+      "MANCHE 1 - QUESTIONS DE RAPIDITÉ : Appuyez sur le buzzer dès que vous connaissez la réponse et inscrivez-la au clavier en moins de 10 secondes (pas de QCM). Le premier candidat à cumuler 3 bonnes réponses est directement qualifié !",
       "MANCHE 2 - LE QUATRE À LA SUITE : Choisissez une rubrique parmi 10 thèmes académiques renouvelés et réussissez 4 bonnes réponses consécutives avant l'expiration du chrono !",
-      "MANCHE 3 - LE FACE À FACE : Affrontez un candidat virtuel dans un duel palpitant avec 4 indices descendants. Marquez le score requis pour remporter la victoire suprême !"
+      "MANCHE 3 - LE FACE À FACE : Affrontez le meilleur candidat virtuel dans un duel palpitant avec 4 indices descendants. Marquez 12 points pour remporter la victoire suprême !"
     ],
-    auroreSpokenText: "Voici l'arène ultime : Le Grand Concours de la Haute École en trois manches. Le Juste Prix, le Quatre à la suite, puis le Face à Face final. Atteignez le bout du duel pour remporter le trophée du campus."
+    auroreSpokenText: "Voici l'arène ultime : Le Grand Concours de la Haute École en trois manches. Les questions de rapidité au buzzer, le Quatre à la suite, puis le Face à Face final. Atteignez le bout du duel pour remporter le trophée du campus."
   }
 };

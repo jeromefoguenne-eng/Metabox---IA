@@ -28,7 +28,8 @@ import confetti from 'canvas-confetti';
 import GameShow3D from './GameShow3D';
 import { sounds } from '../utils/soundEffects';
 import { 
-  JUSTE_PRIX_QUESTIONS, 
+  RAPIDITE_QUESTIONS,
+  isRapiditeAnswerCorrect,
   QUATRE_A_LA_SUITE_THEMES, 
   FACE_A_FACE_QUESTIONS 
 } from '../data/grandConcoursData';
@@ -55,14 +56,29 @@ export default function GrandConcours3ManchesArena({
   ]);
 
   // =========================================================================
-  // ÉTATS DE LA MANCHE 1 : LE JUSTE PRIX ACADÉMIQUE
+  // ÉTATS DE LA MANCHE 1 : QUESTIONS DE RAPIDITÉ AU BUZZER (NON-QCM)
+  // « On pousse sur le buzzer et on inscrit la réponse (10s).
+  //   Le premier joueur qui a 3 bonnes réponses est qualifié pour la suite. »
   // =========================================================================
-  const [m1QuestionIdx, setM1QuestionIdx] = useState(() => Math.floor(Math.random() * JUSTE_PRIX_QUESTIONS.length));
-  const [m1UserEstimate, setM1UserEstimate] = useState(30);
-  const [m1IsEvaluated, setM1IsEvaluated] = useState(false);
-  const [m1Results, setM1Results] = useState(null);
+  const [m1Questions, setM1Questions] = useState(() => {
+    return [...RAPIDITE_QUESTIONS].sort(() => Math.random() - 0.5);
+  });
+  const [m1Idx, setM1Idx] = useState(0);
+  const [userScoreM1, setUserScoreM1] = useState(0); // 0 à 3 (Course aux 3 points)
+  const [oppScoresM1, setOppScoresM1] = useState({
+    lucas: 0,
+    manon: 0,
+    alexandre: 0,
+    sarah: 0
+  });
+  const [m1BuzzerState, setM1BuzzerState] = useState('open'); // 'open' | 'user_buzzed' | 'opponent_buzzed' | 'feedback' | 'qualified' | 'eliminated'
+  const [m1BuzzedOpponent, setM1BuzzedOpponent] = useState(null);
+  const [m1UserAnswer, setM1UserAnswer] = useState('');
+  const [m1Timer, setM1Timer] = useState(10); // 10 secondes pour saisir la réponse
+  const [m1Feedback, setM1Feedback] = useState(null);
+  const [m1QualifiedPlayer, setM1QualifiedPlayer] = useState(null);
 
-  const currentJpQ = JUSTE_PRIX_QUESTIONS[m1QuestionIdx];
+  const currentRapQ = m1Questions[m1Idx % m1Questions.length];
 
   // =========================================================================
   // ÉTATS DE LA MANCHE 2 : LE 4 À LA SUITE (STYLE QUESTIONS POUR UN CHAMPION)
@@ -154,52 +170,202 @@ export default function GrandConcours3ManchesArena({
   };
 
   // =========================================================================
-  // LOGIQUE MANCHE 1 : VALIDATION DU JUSTE PRIX
+  // LOGIQUE MANCHE 1 : QUESTIONS DE RAPIDITÉ AU BUZZER (NON-QCM)
   // =========================================================================
-  const handleValidateJustePrix = () => {
-    sounds.playPop();
-    const target = currentJpQ.targetValue;
-    const userDiff = Math.abs(m1UserEstimate - target);
 
-    // Estimations des adversaires avec variance réaliste
-    const oppEstimates = opponents.map(opp => {
-      const variance = (Math.random() - 0.5) * (target * 0.5);
-      const val = Math.max(1, Math.round(target + variance));
-      return {
-        ...opp,
-        estimate: val,
-        diff: Math.abs(val - target)
-      };
-    });
+  // Minuteur de 10 secondes pour le joueur après avoir buzzé
+  useEffect(() => {
+    if (currentRound !== 'manche1_rapidite' || m1BuzzerState !== 'user_buzzed') return;
 
-    const allParticipants = [
-      { id: 'user', name: 'Vous (Candidat)', campus: 'HECh', avatar: '🌟', estimate: m1UserEstimate, diff: userDiff, isUser: true },
-      ...oppEstimates
-    ];
+    if (m1Timer <= 0) {
+      handleUserTimeOut();
+      return;
+    }
 
-    allParticipants.sort((a, b) => a.diff - b.diff);
+    const countdown = setInterval(() => {
+      setM1Timer(prev => prev - 1);
+    }, 1000);
 
-    // Les 3 meilleurs se qualifient (+ le joueur s'il est dans le top 3)
-    const isUserQualified = allParticipants.findIndex(p => p.isUser) <= 2;
+    return () => clearInterval(countdown);
+  }, [currentRound, m1BuzzerState, m1Timer]);
 
-    setM1Results({
-      target,
-      allParticipants,
-      isUserQualified
-    });
-    setM1IsEvaluated(true);
+  // Simulation réaliste de concurrents qui buzzent s'il tarde
+  useEffect(() => {
+    if (currentRound !== 'manche1_rapidite' || m1BuzzerState !== 'open') return;
 
-    if (isUserQualified) {
+    // Délai aléatoire entre 4.2s et 7.5s pour qu'un concurrent tente sa chance
+    const delay = 4200 + Math.random() * 3300;
+    const oppTimer = setTimeout(() => {
+      const available = opponents.filter(o => (oppScoresM1[o.id] || 0) < 3);
+      if (available.length === 0) return;
+      const chosen = available[Math.floor(Math.random() * available.length)];
+      triggerOpponentBuzz(chosen);
+    }, delay);
+
+    return () => clearTimeout(oppTimer);
+  }, [currentRound, m1BuzzerState, m1Idx]);
+
+  // Écouteur de la touche Espace pour buzzer immédiatement
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.code === 'Space' && currentRound === 'manche1_rapidite' && m1BuzzerState === 'open') {
+        e.preventDefault();
+        handleUserBuzzM1();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentRound, m1BuzzerState]);
+
+  // Le joueur appuie sur le buzzer (Manche 1)
+  const handleUserBuzzM1 = () => {
+    if (m1BuzzerState !== 'open') return;
+    sounds.playBuzzer();
+    setReaction('speaking');
+    setM1BuzzerState('user_buzzed');
+    setM1Timer(10);
+    setM1UserAnswer('');
+    setHostDialogue("🎙️ Henri : « Vous avez la main ! Vous avez 10 secondes pour inscrire votre réponse au clavier ! »");
+    sounds.speakHost("À vous ! Inscrivez votre réponse !");
+  };
+
+  // Le joueur valide sa réponse au clavier (Manche 1)
+  const handleUserSubmitM1 = (e) => {
+    if (e) e.preventDefault();
+    if (m1BuzzerState !== 'user_buzzed' || !m1UserAnswer.trim()) return;
+
+    const isCorrect = isRapiditeAnswerCorrect(m1UserAnswer, currentRapQ.acceptedAnswers);
+
+    if (isCorrect) {
+      const newScore = userScoreM1 + 1;
+      setUserScoreM1(newScore);
       setReaction('correct');
-      sounds.playApplause();
-      sounds.speakHost(`Bravo ! La valeur exacte était de ${target} ${currentJpQ.unit}. Vous êtes qualifié pour le Quatre à la suite !`);
-      setHostDialogue(`🎙️ Henri : « Félicitations ! Votre estimation est brillante ! Vous faites partie des qualifiés pour le 4 À LA SUITE ! »`);
+      sounds.playSuccess();
+      setHostDialogue(`🎙️ Henri : « C'est une excellente réponse ! +1 point pour vous ! (${newScore}/3) »`);
+      setM1Feedback({
+        isCorrect: true,
+        who: 'Vous',
+        text: `Bonne réponse : ${currentRapQ.displayAnswer} !`
+      });
+
+      if (newScore >= 3) {
+        setM1BuzzerState('qualified');
+        setM1QualifiedPlayer('user');
+        sounds.playFanfare();
+        confetti({ particleCount: 140, spread: 90, origin: { y: 0.6 } });
+        sounds.speakHost("Félicitations ! Vous êtes qualifié pour la Manche 2 !");
+        setHostDialogue("🎙️ Henri : « QUALIFICATION VALIDÉE ! Vous êtes le premier candidat à atteindre 3 points ! En route pour le 4 À LA SUITE ! »");
+      } else {
+        setM1BuzzerState('feedback');
+        setTimeout(() => {
+          setM1Idx(prev => prev + 1);
+          setM1BuzzerState('open');
+          setM1Feedback(null);
+          setReaction('idle');
+        }, 2400);
+      }
     } else {
       setReaction('wrong');
-      sounds.playWrong();
-      sounds.speakHost(`Aïe ! La valeur exacte était de ${target} ${currentJpQ.unit}. Vos adversaires ont été plus précis.`);
-      setHostDialogue(`🎙️ Henri : « Malheureusement, vos concurrents ont été plus proches de la valeur exacte de ${target}. Retentez votre chance ! »`);
+      sounds.playBuzzer();
+      setHostDialogue(`🎙️ Henri : « Non, ce n'est pas la bonne réponse ! C'était : ${currentRapQ.displayAnswer} »`);
+      setM1Feedback({
+        isCorrect: false,
+        who: 'Vous',
+        text: `Erreur ! La bonne réponse était : ${currentRapQ.displayAnswer}. (${currentRapQ.explanation})`
+      });
+      setM1BuzzerState('feedback');
+      setTimeout(() => {
+        setM1Idx(prev => prev + 1);
+        setM1BuzzerState('open');
+        setM1Feedback(null);
+        setReaction('idle');
+      }, 3000);
     }
+  };
+
+  // Temps écoulé pour le joueur
+  const handleUserTimeOut = () => {
+    setReaction('wrong');
+    sounds.playBuzzer();
+    setHostDialogue(`🎙️ Henri : « Les 10 secondes sont écoulées ! La bonne réponse était : ${currentRapQ.displayAnswer} »`);
+    setM1Feedback({
+      isCorrect: false,
+      who: 'Vous',
+      text: `Temps écoulé (10 secondes) ! La réponse officielle était : ${currentRapQ.displayAnswer}.`
+    });
+    setM1BuzzerState('feedback');
+    setTimeout(() => {
+      setM1Idx(prev => prev + 1);
+      setM1BuzzerState('open');
+      setM1Feedback(null);
+      setReaction('idle');
+    }, 3000);
+  };
+
+  // Un adversaire virtuel buzze
+  const triggerOpponentBuzz = (opp) => {
+    sounds.playBuzzer();
+    setM1BuzzedOpponent(opp);
+    setM1BuzzerState('opponent_buzzed');
+    setHostDialogue(`🎙️ Henri : « ${opp.name} (${opp.campus}) a pris la main au buzzer ! »`);
+
+    setTimeout(() => {
+      const isOppCorrect = Math.random() < 0.60;
+      if (isOppCorrect) {
+        const newScore = (oppScoresM1[opp.id] || 0) + 1;
+        setOppScoresM1(prev => ({ ...prev, [opp.id]: newScore }));
+        sounds.playSuccess();
+        setHostDialogue(`🎙️ Henri : « Bonne réponse de ${opp.name} : ${currentRapQ.displayAnswer} ! (+1 point) »`);
+        setM1Feedback({
+          isCorrect: true,
+          who: opp.name,
+          text: `${opp.name} marque le point avec : ${currentRapQ.displayAnswer} !`
+        });
+
+        if (newScore >= 3) {
+          setM1BuzzerState('eliminated');
+          setM1QualifiedPlayer(opp.name);
+          setHostDialogue(`🎙️ Henri : « C'est ${opp.name} qui est qualifié en premier pour la suite ! »`);
+        } else {
+          setM1BuzzerState('feedback');
+          setTimeout(() => {
+            setM1Idx(prev => prev + 1);
+            setM1BuzzerState('open');
+            setM1Feedback(null);
+            setM1BuzzedOpponent(null);
+          }, 2500);
+        }
+      } else {
+        sounds.playBuzzer();
+        setHostDialogue(`🎙️ Henri : « Erreur de ${opp.name} ! La main redevient libre, buzzez ! »`);
+        setM1Feedback({
+          isCorrect: false,
+          who: opp.name,
+          text: `Erreur de ${opp.name} ! La main est libre pour buzzer !`
+        });
+        setTimeout(() => {
+          setM1BuzzerState('open');
+          setM1Feedback(null);
+          setM1BuzzedOpponent(null);
+        }, 1800);
+      }
+    }, 1600);
+  };
+
+  // Recommencer la Manche 1
+  const handleRestartManche1 = () => {
+    sounds.playPop();
+    setUserScoreM1(0);
+    setOppScoresM1({ lucas: 0, manon: 0, alexandre: 0, sarah: 0 });
+    setM1BuzzerState('open');
+    setM1BuzzedOpponent(null);
+    setM1UserAnswer('');
+    setM1Timer(10);
+    setM1Feedback(null);
+    setM1QualifiedPlayer(null);
+    setM1Idx(prev => prev + 1);
+    setReaction('speaking');
+    setHostDialogue("🎙️ Henri : « C'est reparti pour les QUESTIONS DE RAPIDITÉ ! Premier candidat à 3 points qualifié pour le 4 à la suite ! »");
   };
 
   // Passer à la Manche 2
@@ -427,8 +593,8 @@ export default function GrandConcours3ManchesArena({
 
           {/* Stepper des 3 Manches */}
           <div className="hidden md:flex items-center gap-2 bg-slate-950/60 px-3 py-1.5 rounded-2xl border border-slate-800">
-            <span className={`text-xs font-bold px-2.5 py-1 rounded-xl transition ${currentRound === 'manche1_justeprix' ? 'bg-cyan-500 text-slate-950 font-black' : 'text-slate-400'}`}>
-              1. Le Juste Prix
+            <span className={`text-xs font-bold px-2.5 py-1 rounded-xl transition ${currentRound === 'manche1_rapidite' ? 'bg-cyan-500 text-slate-950 font-black' : 'text-slate-400'}`}>
+              1. Questions de Rapidité
             </span>
             <span className="text-slate-600">→</span>
             <span className={`text-xs font-bold px-2.5 py-1 rounded-xl transition ${currentRound === 'manche2_quatreasuite' ? 'bg-amber-500 text-slate-950 font-black' : 'text-slate-400'}`}>
@@ -505,7 +671,7 @@ export default function GrandConcours3ManchesArena({
           <div className="absolute top-3 right-3 z-20">
             <span className="bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-cyan-400/50 text-[10px] sm:text-xs font-black text-cyan-300 uppercase tracking-widest shadow-lg">
               {currentRound === 'intro' && '📺 GÉNÉRIQUE D\'OUVERTURE'}
-              {currentRound === 'manche1_justeprix' && '⚖️ MANCHE 1 : LE JUSTE PRIX'}
+              {currentRound === 'manche1_rapidite' && '⚡ MANCHE 1 : QUESTIONS DE RAPIDITÉ'}
               {currentRound === 'manche2_quatreasuite' && '🔥 MANCHE 2 : 4 À LA SUITE'}
               {currentRound === 'manche3_faceaface' && '⚡ MANCHE 3 : LE FACE-À-FACE'}
               {currentRound === 'victoire' && '🏆 SACRE DU MAJOR HECh'}
@@ -551,8 +717,8 @@ export default function GrandConcours3ManchesArena({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
                 <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-cyan-500/30">
                   <span className="text-xs font-black text-cyan-400">MANCHE 1</span>
-                  <h4 className="font-black text-white text-sm mt-0.5">Le Juste Prix</h4>
-                  <p className="text-xs text-slate-400 mt-1">Estimation chiffrée. Les candidats les plus proches se qualifient.</p>
+                  <h4 className="font-black text-white text-sm mt-0.5">Questions de Rapidité</h4>
+                  <p className="text-xs text-slate-400 mt-1">Buzzez au plus vite ! 10 secondes pour saisir la réponse au clavier. Le premier à 3 bonnes réponses est qualifié.</p>
                 </div>
                 <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-amber-500/30">
                   <span className="text-xs font-black text-amber-400">MANCHE 2</span>
@@ -569,9 +735,9 @@ export default function GrandConcours3ManchesArena({
               <button
                 onClick={() => {
                   sounds.playPop();
-                  setCurrentRound('manche1_justeprix');
-                  setHostDialogue("🎙️ Henri : « MANCHE 1 : LE JUSTE PRIX ! Estimez la valeur exacte de la consigne académique ! »");
-                  sounds.speakHost("Première manche : Le Juste Prix académique ! À vos estimations !");
+                  setCurrentRound('manche1_rapidite');
+                  setHostDialogue("🎙️ Henri : « MANCHE 1 : QUESTIONS DE RAPIDITÉ ! Premier candidat à 3 points qualifié pour la suite ! À vos buzzers ! »");
+                  sounds.speakHost("Première manche : Questions de rapidité au buzzer ! Le premier à trois bonnes réponses se qualifie !");
                 }}
                 className="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-black text-base shadow-xl shadow-cyan-500/30 cursor-pointer transition transform hover:scale-105"
               >
@@ -581,122 +747,230 @@ export default function GrandConcours3ManchesArena({
           )}
 
           {/* ================================================================= */}
-          {/* MANCHE 1 : LE JUSTE PRIX ACADÉMIQUE */}
+          {/* MANCHE 1 : QUESTIONS DE RAPIDITÉ AU BUZZER (PREMIER À 3 POINTS) */}
           {/* ================================================================= */}
-          {currentRound === 'manche1_justeprix' && (
-            <div className="w-full max-w-3xl space-y-6">
+          {currentRound === 'manche1_rapidite' && (
+            <div className="w-full max-w-3xl space-y-5">
+              {/* Entête avec rappel des règles */}
               <div className="flex items-center justify-between bg-cyan-950/40 p-3 rounded-2xl border border-cyan-500/30">
                 <div className="flex items-center gap-2 text-cyan-300 font-bold text-sm">
-                  <Scale className="w-4 h-4 text-cyan-400" />
-                  <span>MANCHE 1 : ESTIMATION CHIFFRÉE & RAPIDITÉ</span>
+                  <Zap className="w-4 h-4 text-cyan-400" />
+                  <span>MANCHE 1 : QUESTIONS DE RAPIDITÉ AU BUZZER</span>
                 </div>
                 <span className="text-xs bg-cyan-500/20 text-cyan-300 px-2.5 py-1 rounded-full font-bold">
-                  Top 3 Qualifiés
+                  Premier à 3 Points = Qualifié
                 </span>
               </div>
 
-              {/* Carte Question Juste Prix */}
-              <div className="p-6 rounded-3xl bg-slate-950/80 border border-cyan-500/40 text-center space-y-4 shadow-xl">
-                <span className="text-xs font-black uppercase tracking-wider text-cyan-400">
-                  Question d'Estimation
-                </span>
+              {/* Tableau des Scores des 5 Candidats avec voyants */}
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                {/* Vous */}
+                <div className={`p-2.5 rounded-2xl border transition-all ${
+                  m1BuzzerState === 'user_buzzed'
+                    ? 'bg-rose-500/20 border-rose-500 shadow-lg shadow-rose-500/20 ring-2 ring-rose-400'
+                    : 'bg-indigo-950/60 border-indigo-500/40'
+                }`}>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-white">Vous (Maxime)</span>
+                    <span className="text-xs font-mono font-bold text-cyan-300">{userScoreM1}/3</span>
+                  </div>
+                  <div className="flex gap-1 mt-1.5">
+                    {[1, 2, 3].map((pt) => (
+                      <div
+                        key={pt}
+                        className={`flex-1 h-2 rounded-full transition-all ${
+                          userScoreM1 >= pt ? 'bg-cyan-400 shadow-sm shadow-cyan-400' : 'bg-slate-800'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Adversaires */}
+                {m1Opponents.map((opp) => {
+                  const score = oppScoresM1[opp.id] || 0;
+                  const isBuzzing = m1BuzzerState === 'opponent_buzzed' && m1CurrentBuzzParticipant?.id === opp.id;
+                  return (
+                    <div
+                      key={opp.id}
+                      className={`p-2.5 rounded-2xl border transition-all ${
+                        isBuzzing
+                          ? 'bg-amber-500/20 border-amber-500 shadow-lg shadow-amber-500/20 ring-2 ring-amber-400 animate-pulse'
+                          : 'bg-slate-950/60 border-slate-800 text-slate-300'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold truncate">{opp.avatar} {opp.name}</span>
+                        <span className="text-xs font-mono font-bold text-amber-300">{score}/3</span>
+                      </div>
+                      <div className="flex gap-1 mt-1.5">
+                        {[1, 2, 3].map((pt) => (
+                          <div
+                            key={pt}
+                            className={`flex-1 h-2 rounded-full transition-all ${
+                              score >= pt ? 'bg-amber-400 shadow-sm shadow-amber-400' : 'bg-slate-800'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Carte Principale de la Question de Rapidité */}
+              <div className="p-6 rounded-3xl bg-slate-950/85 border border-cyan-500/40 text-center space-y-5 shadow-2xl relative overflow-hidden">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black uppercase tracking-wider text-cyan-400 px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/30">
+                    Thème : {currentRapQ.theme}
+                  </span>
+                  <span className="text-xs font-mono text-slate-400">
+                    Question {m1Idx + 1} / {m1Questions.length}
+                  </span>
+                </div>
+
                 <h3 className="text-xl sm:text-2xl font-black text-white leading-snug">
-                  « {currentJpQ.question} »
+                  « {currentRapQ.question} »
                 </h3>
 
-                {!m1IsEvaluated ? (
-                  <div className="space-y-6 pt-4 max-w-md mx-auto">
-                    <div className="flex items-center justify-center gap-3">
-                      <input
-                        type="number"
-                        value={m1UserEstimate}
-                        onChange={(e) => setM1UserEstimate(Number(e.target.value))}
-                        min={currentJpQ.minRange}
-                        max={currentJpQ.maxRange}
-                        className="w-36 text-center text-3xl font-black bg-slate-900 border-2 border-cyan-500 rounded-2xl p-2 text-cyan-300 focus:outline-hidden"
-                      />
-                      <span className="text-base font-bold text-slate-300">
-                        {currentJpQ.unit}
+                {/* ÉTAT 1 : BUZZER OUVERT (TOUT LE MONDE PEUT BUZZER) */}
+                {m1BuzzerState === 'open' && (
+                  <div className="pt-3 pb-2 flex flex-col items-center justify-center space-y-4">
+                    <button
+                      onClick={handleUserBuzzM1}
+                      className="group relative w-36 h-36 rounded-full bg-gradient-to-b from-rose-500 via-rose-600 to-rose-700 hover:from-rose-400 hover:to-rose-600 active:scale-95 shadow-2xl shadow-rose-600/50 flex flex-col items-center justify-center transition-all cursor-pointer border-4 border-rose-300 ring-8 ring-rose-500/20 hover:ring-rose-500/40"
+                    >
+                      <Zap className="w-10 h-10 text-white animate-pulse" />
+                      <span className="text-sm font-black text-white tracking-widest uppercase mt-1">
+                        BUZZER !
                       </span>
+                    </button>
+                    <p className="text-xs text-slate-400 font-mono flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700">ESPACE</span>
+                      <span>ou clic souris pour prendre la main</span>
+                    </p>
+                  </div>
+                )}
+
+                {/* ÉTAT 2 : VOUS AVEZ BUZZÉ -> SAISIE AU CLAVIER EN 10 SECONDES (SANS QCM) */}
+                {m1BuzzerState === 'user_buzzed' && (
+                  <div className="pt-2 pb-2 space-y-4 max-w-lg mx-auto animate-in zoom-in-95 duration-200">
+                    {/* Barre de compte à rebours 10s */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between text-xs font-mono font-bold">
+                        <span className="text-rose-400 flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 animate-spin" /> TEMPS DE SAISIE
+                        </span>
+                        <span className="text-rose-300 text-sm font-black">{m1Timer}s</span>
+                      </div>
+                      <div className="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                        <div
+                          className="bg-gradient-to-r from-amber-400 to-rose-500 h-full transition-all duration-1000 ease-linear"
+                          style={{ width: `${(m1Timer / 10) * 100}%` }}
+                        />
+                      </div>
                     </div>
 
-                    <input
-                      type="range"
-                      min={currentJpQ.minRange}
-                      max={currentJpQ.maxRange}
-                      value={m1UserEstimate}
-                      onChange={(e) => setM1UserEstimate(Number(e.target.value))}
-                      className="w-full accent-cyan-400 cursor-pointer"
-                    />
-
-                    <button
-                      onClick={handleValidateJustePrix}
-                      className="w-full py-3.5 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-base shadow-lg shadow-cyan-500/30 transition transform hover:scale-102 cursor-pointer"
-                    >
-                      ⚖️ Verrouiller mon Estimation
-                    </button>
+                    <form onSubmit={handleUserSubmitM1} className="space-y-3">
+                      <input
+                        ref={m1InputRef}
+                        type="text"
+                        autoFocus
+                        value={m1UserAnswer}
+                        onChange={(e) => setM1UserAnswer(e.target.value)}
+                        placeholder="Inscrivez votre réponse ici..."
+                        className="w-full text-center text-lg sm:text-xl font-bold bg-slate-900 border-2 border-rose-500 rounded-2xl py-3 px-4 text-white focus:outline-hidden focus:ring-4 focus:ring-rose-500/30 placeholder-slate-500 shadow-inner"
+                      />
+                      <button
+                        type="submit"
+                        className="w-full py-3 rounded-2xl bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 text-white font-black text-sm shadow-lg shadow-rose-600/30 transition transform hover:scale-101 cursor-pointer flex items-center justify-center gap-2"
+                      >
+                        <span>Valider la Réponse</span>
+                        <span className="text-xs opacity-75 font-mono">[Entrée]</span>
+                      </button>
+                    </form>
                   </div>
-                ) : (
-                  <div className="space-y-6 pt-2 animate-in zoom-in-95 duration-300">
-                    <div className="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/40">
-                      <span className="text-xs text-slate-400 uppercase font-black">Valeur exacte officielle</span>
-                      <div className="text-3xl font-black text-cyan-300 mt-1">
-                        {m1Results.target} {currentJpQ.unit}
-                      </div>
-                      <p className="text-xs text-slate-300 mt-2">
-                        {currentJpQ.explanation}
+                )}
+
+                {/* ÉTAT 3 : UN ADVERSAIRE A BUZZÉ */}
+                {m1BuzzerState === 'opponent_buzzed' && (
+                  <div className="py-6 flex flex-col items-center justify-center space-y-3 animate-in fade-in">
+                    <div className="text-4xl animate-bounce">
+                      {m1CurrentBuzzParticipant?.avatar}
+                    </div>
+                    <div className="text-base font-black text-amber-300">
+                      ⚡ {m1CurrentBuzzParticipant?.name} ({m1CurrentBuzzParticipant?.campus}) a buzzé !
+                    </div>
+                    <p className="text-xs text-slate-400 font-mono animate-pulse">
+                      Le candidat formule sa réponse...
+                    </p>
+                  </div>
+                )}
+
+                {/* ÉTAT 4 : FEEDBACK DE RÉPONSE */}
+                {m1BuzzerState === 'feedback' && (
+                  <div className="py-4 space-y-3 animate-in zoom-in-95 duration-200">
+                    <div className={`p-4 rounded-2xl border text-center ${
+                      m1FeedbackText.includes('Excellente') || m1FeedbackText.includes('Bonne réponse')
+                        ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-200'
+                        : 'bg-rose-500/20 border-rose-500/50 text-rose-200'
+                    }`}>
+                      <p className="text-sm font-black">{m1FeedbackText}</p>
+                      <p className="text-xs text-slate-300 mt-1.5">
+                        Bonne(s) réponse(s) acceptée(s) : <span className="font-bold text-white">{currentRapQ.acceptedAnswers.join(', ')}</span>
                       </p>
                     </div>
+                    <p className="text-xs text-slate-400 font-mono">
+                      Question suivante dans un instant...
+                    </p>
+                  </div>
+                )}
 
-                    {/* Tableau des estimations */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
-                      {m1Results.allParticipants.map((p, idx) => (
-                        <div 
-                          key={p.id}
-                          className={`p-3 rounded-xl border flex items-center justify-between ${
-                            p.isUser 
-                              ? 'bg-indigo-600/30 border-indigo-400 text-white font-bold' 
-                              : 'bg-slate-900/60 border-slate-800 text-slate-300'
-                          } ${idx <= 2 ? 'ring-1 ring-emerald-400/50' : 'opacity-60'}`}
-                        >
-                          <div className="flex items-center gap-2">
-                            <span className="text-lg">{p.avatar}</span>
-                            <div>
-                              <div className="text-xs font-black flex items-center gap-1.5">
-                                <span>{p.name}</span>
-                                {idx <= 2 && <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded-sm">Qualifié</span>}
-                              </div>
-                              <span className="text-[10px] text-slate-400">{p.campus}</span>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <span className="text-sm font-black text-cyan-300">{p.estimate} {currentJpQ.unit}</span>
-                            <div className="text-[10px] text-slate-400">Écart : {p.diff}</div>
-                          </div>
-                        </div>
-                      ))}
+                {/* ÉTAT 5 : VOUS ÊTES QUALIFIÉ (3 BONNES RÉPONSES EN PREMIER) */}
+                {m1BuzzerState === 'qualified' && (
+                  <div className="py-6 space-y-4 animate-in zoom-in-95 duration-300">
+                    <div className="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center text-emerald-300 shadow-xl shadow-emerald-500/30">
+                      <Trophy className="w-8 h-8" />
                     </div>
+                    <div>
+                      <h4 className="text-xl font-black text-white">
+                        🎉 Félicitations, vous êtes qualifié !
+                      </h4>
+                      <p className="text-sm text-emerald-300 mt-1">
+                        Vous avez atteint 3 points en premier ! Vous accédez à la Manche 2.
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleStartManche2}
+                      className="w-full max-w-md mx-auto py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-base shadow-xl shadow-emerald-500/30 transition transform hover:scale-102 cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      <span>Passer à la Manche 2 : Le Quatre à la Suite</span>
+                      <ArrowRight className="w-5 h-5" />
+                    </button>
+                  </div>
+                )}
 
-                    {m1Results.isUserQualified ? (
-                      <button
-                        onClick={handleStartManche2}
-                        className="w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-base shadow-lg shadow-emerald-500/30 transition transform hover:scale-102 cursor-pointer flex items-center justify-center gap-2"
-                      >
-                        <span>Passer à la Manche 2 : Le Quatre à la Suite</span>
-                        <ArrowRight className="w-5 h-5" />
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => {
-                          sounds.playPop();
-                          setM1IsEvaluated(false);
-                          setM1QuestionIdx((m1QuestionIdx + 1) % JUSTE_PRIX_QUESTIONS.length);
-                        }}
-                        className="w-full py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm transition"
-                      >
-                        🔄 Retenter une autre question d'estimation
-                      </button>
-                    )}
+                {/* ÉTAT 6 : ÉLIMINÉ (UN ADVERSAIRE A ATTEINT 3 POINTS EN PREMIER) */}
+                {m1BuzzerState === 'eliminated' && (
+                  <div className="py-6 space-y-4 animate-in zoom-in-95 duration-300">
+                    <div className="w-16 h-16 mx-auto rounded-2xl bg-rose-500/20 border-2 border-rose-400 flex items-center justify-center text-rose-300 shadow-xl">
+                      <XCircle className="w-8 h-8" />
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-black text-white">
+                        Qualification manquée !
+                      </h4>
+                      <p className="text-sm text-slate-300 mt-1">
+                        Un adversaire a atteint 3 points avant vous. Retentez votre chance !
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleRestartManche1}
+                      className="w-full max-w-md mx-auto py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-black text-base shadow-xl transition transform hover:scale-102 cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      <RotateCcw className="w-5 h-5" />
+                      <span>Recommencer la Manche 1</span>
+                    </button>
                   </div>
                 )}
               </div>

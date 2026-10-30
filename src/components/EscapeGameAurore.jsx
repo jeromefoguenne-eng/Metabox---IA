@@ -275,26 +275,76 @@ export default function EscapeGameAurore({ onClose }) {
         {/* LEFT COLUMN: 3D Visual Studio & Holographic Core (Aurore) */}
         {currentStage !== 'room_west' && (
           <div className="lg:col-span-5 border-r border-slate-800/80 bg-slate-950 p-4 flex flex-col justify-between relative overflow-hidden">
-            <div className="flex-1 w-full relative rounded-3xl overflow-hidden border border-slate-800 shadow-2xl">
-              <PixarStyleScene3D 
-                theme={
-                  currentStage === 'room_north' ? 'factcheck' :
-                  currentStage === 'room_south' ? 'datacenter' :
-                  currentStage === 'room_east' ? 'promptwars' :
-                  currentStage === 'boss' ? 'boss' : 'hub'
-                }
-                isAlert={currentStage === 'boss' || timeLeft < 15 * 60}
-                characterMood={
-                  totalKeysObtained === 4 ? 'victorious' :
-                  currentStage === 'boss' ? 'worried' : 'thinking'
-                }
-              />
+            <div className="flex-1 w-full relative rounded-3xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-950">
+              {isPixarVideoMode ? (
+                /* Mode Cinématique Pixar HD Réaliste & Fluide (Wan 14B Canonique) */
+                <div className="w-full h-full relative flex items-center justify-center bg-slate-950 overflow-hidden">
+                  <video
+                    src="/videos/aurore_presentatrice.mp4"
+                    poster="/images/aurore_pixar_hd.jpg"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover object-center"
+                  />
+                  {/* Effets subtils de studio holographique */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/40 pointer-events-none" />
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_45%,rgba(2,6,23,0.55)_100%)] pointer-events-none" />
+
+                  {/* Visualiseur d'ondes audio holographique en bas */}
+                  <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between pointer-events-none">
+                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-cyan-500/40 shadow-lg">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="text-[10px] font-mono font-bold text-cyan-200">SIGNAL VOCAL CANONIQUE ACTIF</span>
+                    </div>
+                    <div className="flex items-end gap-1 h-5 px-2 py-1 rounded-lg bg-slate-950/70 border border-slate-800">
+                      {[12, 18, 8, 22, 14, 20, 10, 16].map((h, i) => (
+                        <div
+                          key={i}
+                          className="w-1 bg-cyan-400 rounded-full animate-pulse"
+                          style={{
+                            height: `${h}px`,
+                            animationDuration: `${0.4 + (i % 4) * 0.2}s`
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* Mode 3D Temps Réel Three.js Épuré & Allégé */
+                <PixarStyleScene3D 
+                  theme={
+                    currentStage === 'room_north' ? 'factcheck' :
+                    currentStage === 'room_south' ? 'datacenter' :
+                    currentStage === 'room_east' ? 'promptwars' :
+                    currentStage === 'boss' ? 'boss' : 'hub'
+                  }
+                  isAlert={currentStage === 'boss' || timeLeft < 15 * 60}
+                  characterMood={
+                    totalKeysObtained === 4 ? 'victorious' :
+                    currentStage === 'boss' ? 'worried' : 'thinking'
+                  }
+                />
+              )}
 
               {/* A.U.R.O.R.E. Overlay Badge Canonique */}
               <div className="absolute top-4 left-4 z-20 bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-cyan-500/40 flex items-center gap-2 shadow-lg">
                 <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping" />
-                <span className="text-xs font-mono font-bold text-cyan-200">A.U.R.O.R.E. v2.4 (Live Feed 3D)</span>
+                <span className="text-xs font-mono font-bold text-cyan-200">
+                  {isPixarVideoMode ? 'A.U.R.O.R.E. v2.4 (Pixar HD Live)' : 'A.U.R.O.R.E. v2.4 (Live Feed 3D)'}
+                </span>
               </div>
+
+              {/* Bouton Toggle entre Mode Pixar HD et Mode 3D */}
+              <button
+                onClick={() => setIsPixarVideoMode(!isPixarVideoMode)}
+                className="absolute top-4 right-4 z-20 px-2.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 backdrop-blur-md border border-cyan-500/30 text-[10px] font-mono font-bold text-cyan-300 transition cursor-pointer shadow-md flex items-center gap-1.5"
+                title="Basculer entre le rendu vidéo cinématique Pixar HD et le rendu 3D WebGL"
+              >
+                <span>{isPixarVideoMode ? '🕹️ Vue 3D' : '🎬 Pixar HD'}</span>
+              </button>
             </div>
 
             {/* Dialogue Log Console avec Avatar Raccord */}
