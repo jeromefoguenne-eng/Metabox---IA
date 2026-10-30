@@ -405,15 +405,32 @@ export default function TvGameShowArena({
     setCurrentWedge(null);
     setHostDialogue("🎡 La roue tourne à pleine vitesse... Où va-t-elle s'arrêter ?!");
 
-    // Realistic wheel physics simulation
-    const wedgeCount = WHEEL_WEDGES.length;
-    const randomWedgeIdx = Math.floor(Math.random() * wedgeCount);
-    const extraRounds = 6 + Math.floor(Math.random() * 3);
-    const wedgeAngle = 360 / wedgeCount;
-    // Pointer is at TOP (90 deg in standard SVG, or 270)
-    const targetDeg = wheelRotation + extraRounds * 360 + randomWedgeIdx * wedgeAngle + (wedgeAngle / 2);
+    // Sélection aléatoire équiprobable d'un secteur de la roue
+    const wedgeCount = WHEEL_WEDGES.length; // 12 secteurs (30° chacun)
+    const targetWedgeIdx = Math.floor(Math.random() * wedgeCount);
+    const wedgeAngle = 360 / wedgeCount; // 30°
 
-    setWheelRotation(targetDeg);
+    // Position angulaire initiale du centre du secteur par rapport au haut (12h) dans le sens horaire :
+    // Secteur 0 = [0°, 30°] (centre 15°)
+    // Secteur 6 = [180°, 210°] (centre 195°, soit 1000 ECTS)
+    const targetCenterAngle = (targetWedgeIdx + 0.5) * wedgeAngle;
+
+    // Pour amener ce secteur exactement sous la flèche située à 12h (0°),
+    // la rotation finale R (sens horaire) doit vérifier : (targetCenterAngle + R) % 360 === 0
+    // Soit R % 360 === (360 - targetCenterAngle) % 360
+    const desiredMod = (360 - (targetCenterAngle % 360)) % 360;
+    const currentMod = ((wheelRotation % 360) + 360) % 360;
+
+    let delta = desiredMod - currentMod;
+    if (delta <= 0) {
+      delta += 360;
+    }
+
+    // Ajout d'au moins 6 tours complets pour une rotation cinématographique spectaculaire
+    const extraSpins = (6 + Math.floor(Math.random() * 3)) * 360;
+    const finalRotation = wheelRotation + extraSpins + delta;
+
+    setWheelRotation(finalRotation);
 
     // Audio clicks while spinning
     const intervalTicks = setInterval(() => {
@@ -423,7 +440,7 @@ export default function TvGameShowArena({
     setTimeout(() => {
       clearInterval(intervalTicks);
       setIsSpinningWheel(false);
-      const landed = WHEEL_WEDGES[randomWedgeIdx];
+      const landed = WHEEL_WEDGES[targetWedgeIdx];
       setCurrentWedge(landed);
 
       if (landed.type === 'bankrupt') {
@@ -1237,8 +1254,8 @@ export default function TvGameShowArena({
                       <div className="flex flex-col items-center justify-center">
                         <div className="relative w-56 h-56 sm:w-64 sm:h-64 flex items-center justify-center">
                           
-                          {/* Pointer Arrow at 12 o'clock */}
-                          <div className="absolute top-0 z-20 transform -translate-y-2">
+                          {/* Pointer Arrow at 12 o'clock (strictement centré au zénith) */}
+                          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 z-20 pointer-events-none">
                             <div className="w-0 h-0 border-l-[14px] border-l-transparent border-r-[14px] border-r-transparent border-t-[24px] border-t-amber-400 drop-shadow-[0_2px_8px_rgba(245,158,11,0.8)] animate-pulse" />
                           </div>
 
