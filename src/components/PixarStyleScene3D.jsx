@@ -28,29 +28,29 @@ export default function PixarStyleScene3D({
     const width = currentMount.clientWidth;
     const height = currentMount.clientHeight;
 
-    // --- 1. Scène Studio Pédagogique Réaliste ---
+    // --- 1. Scène Arène Stylisée Arcane / Tech-Noir ---
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0a1120);
-    scene.fog = new THREE.FogExp2(0x0a1120, 0.035);
+    scene.background = new THREE.Color(0x0e051b);
+    scene.fog = new THREE.FogExp2(0x0e051b, 0.035);
 
     // Caméra Cadrage Portrait 50mm flatteur & naturel
     const camera = new THREE.PerspectiveCamera(28, width / height, 0.1, 30);
     camera.position.set(0, 1.30, 2.85);
     camera.lookAt(0, 1.25, 0);
 
-    // --- 2. Rendu PBR Haute Définition ---
+    // --- 2. Rendu PBR Haute Définition Contrasté ---
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.25;
+    renderer.toneMappingExposure = 1.35;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     currentMount.appendChild(renderer.domElement);
 
-    // --- 3. Textures Officielles ---
+    // --- 3. Textures Officielles Canoniques Arcane ---
     const textureLoader = new THREE.TextureLoader();
-    const aurorePortraitTex = textureLoader.load('/images/aurore_pixar_hd.jpg', () => {
+    const aurorePortraitTex = textureLoader.load('/images/aurore_arcane_hd.jpg', () => {
       setIsLoaded(true);
     });
     aurorePortraitTex.generateMipmaps = true;
@@ -59,9 +59,9 @@ export default function PixarStyleScene3D({
 
     const hechLogoTex = textureLoader.load('/images/hech_logo_officiel.png');
 
-    // --- 4. Éclairage Studio Professionnel 3-Points ---
-    // Key Light : Lumière principale douce chaude (3200K) à 40°
-    const keyLight = new THREE.DirectionalLight(0xfff5ea, 2.4);
+    // --- 4. Éclairage Cell-Shaded Studio Style Arcane (Ambre Chaud + Cyan Électrique + Violet) ---
+    // Key Light : Ambre doré chaud à fort contraste (Style Fortiche)
+    const keyLight = new THREE.DirectionalLight(0xf59e0b, 2.8);
     keyLight.position.set(1.6, 2.6, 2.2);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.width = 1024;
@@ -69,49 +69,49 @@ export default function PixarStyleScene3D({
     keyLight.shadow.bias = -0.0002;
     scene.add(keyLight);
 
-    // Fill Light douce bleutée pour déboucher délicatement les ombres
-    const fillLight = new THREE.DirectionalLight(0x93c5fd, 1.1);
+    // Fill Light : Violet royal pour déboucher les ombres avec nuance chromatique
+    const fillLight = new THREE.DirectionalLight(0x7c3aed, 1.4);
     fillLight.position.set(-1.8, 1.8, 1.6);
     scene.add(fillLight);
 
-    // Rim Light (Hair Light) dorée pour faire ressortir la silhouette
-    const rimLight = new THREE.DirectionalLight(0xfef08a, 2.2);
+    // Rim Light (Hair & Edge Light) : Cyan électrique tranchant d'animation de pointe
+    const rimLight = new THREE.DirectionalLight(0x06b6d4, 3.0);
     rimLight.position.set(-0.8, 2.4, -1.5);
     scene.add(rimLight);
 
-    // Ambiance technologique douce
-    const kickerLight = new THREE.PointLight(0x06b6d4, 1.2, 5);
+    // Kicker : Magenta néon d'interférence cybernétique
+    const kickerLight = new THREE.PointLight(0xd946ef, 1.4, 5);
     kickerLight.position.set(1.4, 1.2, -0.6);
     scene.add(kickerLight);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.55);
     scene.add(ambientLight);
 
     // =========================================================================
-    // 5. DÉCOR STUDIO ÉPURÉ, MODERNE & CHALEUREUX (AUCUN BARREAU, DESIGN SOBRE)
+    // 5. DÉCOR ARÈNE NÉO-RÉTRO ARCANE (BOISERIES SOMBRES & NEONS CUIVRÉS/OR)
     // =========================================================================
     const studioGroup = new THREE.Group();
     studioGroup.position.set(0, 0, -1.2);
     scene.add(studioGroup);
 
-    // Fond courbe velouté bleu nuit contemporain
+    // Fond courbe velouté violet sombre
     const alcoveGeo = new THREE.CylinderGeometry(5.5, 5.5, 5.0, 32, 1, true, -Math.PI * 0.45, Math.PI * 0.9);
     const alcoveMat = new THREE.MeshStandardMaterial({
-      color: 0x0f172a,
-      roughness: 0.9,
-      metalness: 0.05,
+      color: 0x140726,
+      roughness: 0.85,
+      metalness: 0.1,
       side: THREE.BackSide
     });
     const alcove = new THREE.Mesh(alcoveGeo, alcoveMat);
     alcove.position.set(0, 1.8, -0.5);
     studioGroup.add(alcove);
 
-    // Panneau acoustique central élégant en bois clair scandinave
+    // Panneau central texturé en ébène et or
     const woodPanelGeo = new THREE.BoxGeometry(2.8, 2.0, 0.04);
     const woodPanelMat = new THREE.MeshStandardMaterial({
-      color: 0x241e17,
-      roughness: 0.75,
-      metalness: 0.1
+      color: 0x221035,
+      roughness: 0.7,
+      metalness: 0.2
     });
     const woodPanel = new THREE.Mesh(woodPanelGeo, woodPanelMat);
     woodPanel.position.set(0, 1.7, -0.4);
@@ -333,8 +333,8 @@ export default function PixarStyleScene3D({
       {/* Overlay status subtil */}
       <div className="absolute bottom-3 left-4 flex items-center gap-2 pointer-events-none">
         <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-        <span className="text-[10px] font-mono text-cyan-300/80 font-bold tracking-wider">
-          STUDIO PÉDAGOGIQUE • FLUX OPTIQUE 3D SOUVERAIN
+        <span className="text-[10px] font-mono text-cyan-300/90 font-bold tracking-wider">
+          STUDIO A.U.R.O.R.E. • ARÈNE CELL-SHADED STYLE ARCANE
         </span>
       </div>
     </div>

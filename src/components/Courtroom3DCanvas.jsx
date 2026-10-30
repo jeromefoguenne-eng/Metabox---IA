@@ -242,32 +242,32 @@ export default function Courtroom3DCanvas({
     keySpot.shadow.radius = 2.8; // Ombres douces veloutées Pixar
     scene.add(keySpot);
 
-    // Kicker / Rim Light Gauche : Cyan studio vibrant pour détacher les silhouettes
-    const rimCyan = new THREE.DirectionalLight(0x38bdf8, 2.4);
+    // Kicker / Rim Light Gauche : Cyan néon électrique tranchant Style Arcane
+    const rimCyan = new THREE.DirectionalLight(0x06b6d4, 3.2);
     rimCyan.position.set(-8, 7, -2);
     scene.add(rimCyan);
 
-    // Kicker / Rim Light Droit : Rose ambré chaleureux
-    const rimWarm = new THREE.DirectionalLight(0xf472b6, 1.4);
+    // Kicker / Rim Light Droit : Or ambré chaud sculpté
+    const rimWarm = new THREE.DirectionalLight(0xf59e0b, 2.2);
     rimWarm.position.set(8, 7, -2);
     scene.add(rimWarm);
 
-    // Bounce Light Chaud au Sol : Rebond lumineux simulant la radiosité Pixar
-    const floorBounce = new THREE.PointLight(0xfde68a, 1.6, 20);
+    // Bounce Light Chaud au Sol : Rebond lumineux contrasté Tech-Noir
+    const floorBounce = new THREE.PointLight(0xfde68a, 1.4, 20);
     floorBounce.position.set(0, 0.8, 0);
     scene.add(floorBounce);
 
     // Spot or théâtral centré sur le Juge
-    const judgeSpot = new THREE.SpotLight(0xfef08a, 2.8);
+    const judgeSpot = new THREE.SpotLight(0xfbbf24, 3.5);
     judgeSpot.position.set(0, 9.5, -2.5);
     judgeSpot.target.position.set(0, 3.2, -4.8);
     judgeSpot.angle = Math.PI / 4.5;
-    judgeSpot.penumbra = 0.6;
+    judgeSpot.penumbra = 0.5;
     scene.add(judgeSpot);
     scene.add(judgeSpot.target);
 
-    // Halo d'atmosphère violacé en fond de scène
-    const backFill = new THREE.PointLight(0xa78bfa, 1.8, 24);
+    // Halo d'atmosphère violet royal en fond de scène Style Arcane
+    const backFill = new THREE.PointLight(0x7c3aed, 2.6, 26);
     backFill.position.set(0, 6.5, -8.5);
     scene.add(backFill);
 

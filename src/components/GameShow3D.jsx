@@ -45,13 +45,13 @@ const SHOW_THEMES = {
   concours: {
     title: "LE GRAND CONCOURS DE LA HECH",
     subtitle: "RÈGLEMENTS, DROITS & VIE ÉTUDIANTE",
-    bgHex: 0x030c14,
-    ambientHex: 0x083344,
-    floorColor: 0x082032,
+    bgHex: 0x0e051b,
+    ambientHex: 0x2e1065,
+    floorColor: 0x18092e,
     primaryColor: '#06b6d4',
-    goldColor: '#8b5cf6',
+    goldColor: '#f59e0b',
     rimHex: 0x06b6d4,
-    spotColors: [0x06b6d4, 0x8b5cf6, 0x3b82f6, 0x22d3ee],
+    spotColors: [0x06b6d4, 0xf59e0b, 0x7c3aed, 0x0ea5e9],
     screenType: 'arena',
     emblem: 'CAMPUS'
   }
