@@ -84,18 +84,13 @@ const WHEEL_WEDGES = [
   { id: 11, label: "💥 BANQUEROUTE", value: 0, fill: "#dc2626", textColor: "#fef08a", isSpecial: true, type: "bankrupt" }
 ];
 
-export default function TvGameShowArena({ 
+function TvGameShowArenaContent({ 
   quiz, 
-  showType = 'millionnaire', // 'millionnaire' | 'champion' | 'roue' | 'concours'
+  showType = 'millionnaire',
   themeColor = '#4f46e5',
   onFinishGame,
   onClose
 }) {
-  // Délégation au Grand Concours officiel en 3 Manches (Questions pour un champion)
-  if (showType === 'concours') {
-    return <GrandConcours3ManchesArena onClose={onClose} onFinishGame={onFinishGame} />;
-  }
-
   const meta = SHOW_META[showType] || SHOW_META.millionnaire;
 
   // TV Intro / Générique State
@@ -1527,4 +1522,11 @@ export default function TvGameShowArena({
 
     </div>
   );
+}
+
+export default function TvGameShowArena(props) {
+  if (props.showType === 'concours') {
+    return <GrandConcours3ManchesArena onClose={props.onClose} onFinishGame={props.onFinishGame} />;
+  }
+  return <TvGameShowArenaContent {...props} />;
 }

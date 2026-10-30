@@ -287,7 +287,11 @@ export default function GameShow3D({
     // HECh Red Shield
     pCtx.fillStyle = '#e11d48';
     pCtx.beginPath();
-    pCtx.roundRect(40, 52, 105, 105, [24]);
+    if (typeof pCtx.roundRect === 'function') {
+      pCtx.roundRect(40, 52, 105, 105, [24]);
+    } else {
+      pCtx.rect(40, 52, 105, 105);
+    }
     pCtx.fill();
 
     // Gold Accent
@@ -744,7 +748,11 @@ export default function GameShow3D({
       // HECh Official Badge on giant LED broadcast screen
       screenCtx.fillStyle = '#e11d48';
       screenCtx.beginPath();
-      screenCtx.roundRect(40, 35, 60, 60, [14]);
+      if (typeof screenCtx.roundRect === 'function') {
+        screenCtx.roundRect(40, 35, 60, 60, [14]);
+      } else {
+        screenCtx.rect(40, 35, 60, 60);
+      }
       screenCtx.fill();
       screenCtx.fillStyle = '#f59e0b';
       screenCtx.beginPath();

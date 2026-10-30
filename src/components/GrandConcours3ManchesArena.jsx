@@ -78,7 +78,9 @@ export default function GrandConcours3ManchesArena({
   const [m1Feedback, setM1Feedback] = useState(null);
   const [m1QualifiedPlayer, setM1QualifiedPlayer] = useState(null);
 
-  const currentRapQ = m1Questions[m1Idx % m1Questions.length];
+  const currentRapQ = (m1Questions && m1Questions.length > 0)
+    ? m1Questions[m1Idx % m1Questions.length]
+    : { question: 'Chargement de la question...', acceptedAnswers: [], displayAnswer: '', explanation: '', theme: 'Général' };
 
   // =========================================================================
   // ÉTATS DE LA MANCHE 2 : LE 4 À LA SUITE (STYLE QUESTIONS POUR UN CHAMPION)
@@ -133,7 +135,9 @@ export default function GrandConcours3ManchesArena({
   const [m3ShowOptions, setM3ShowOptions] = useState(false);
   const [m3RoundAnswered, setM3RoundAnswered] = useState(false);
 
-  const currentFafQ = FACE_A_FACE_QUESTIONS[m3QuestionIdx % FACE_A_FACE_QUESTIONS.length];
+  const currentFafQ = (FACE_A_FACE_QUESTIONS && FACE_A_FACE_QUESTIONS.length > 0)
+    ? FACE_A_FACE_QUESTIONS[m3QuestionIdx % FACE_A_FACE_QUESTIONS.length]
+    : { category: 'Général', targetTerm: '', clues: [{ points: 4, text: 'Indice...' }], options: [], correctIndex: 0 };
 
   // Défilement automatique des indices du Face-à-Face (4 -> 3 -> 2 -> 1 points)
   useEffect(() => {

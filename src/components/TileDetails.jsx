@@ -23,6 +23,7 @@ import {
 import QuizPlayer from './QuizPlayer';
 import EisenhowerBoard from './EisenhowerBoard';
 import TvGameShowArena from './TvGameShowArena';
+import GrandConcours3ManchesArena from './GrandConcours3ManchesArena';
 import { GLOSSARY_ITEMS, QUIZ_DATABASE } from '../data/metaboxData';
 import { sounds } from '../utils/soundEffects';
 
@@ -88,10 +89,20 @@ export default function TileDetails({
     if (!activeQuizId || activeQuizId !== quizId || !QUIZ_DATABASE[quizId]) return null;
 
     if (isTvShowMode) {
+      const showType = getShowTypeForQuiz(quizId);
+      if (showType === 'concours') {
+        return (
+          <GrandConcours3ManchesArena
+            onClose={() => setActiveQuizId(null)}
+            onFinishGame={(score) => onLaunchQuiz(quizId)}
+          />
+        );
+      }
+
       return (
         <TvGameShowArena
           quiz={QUIZ_DATABASE[quizId]}
-          showType={getShowTypeForQuiz(quizId)}
+          showType={showType}
           themeColor={getTileThemeColor(tile.id)}
           onClose={() => setActiveQuizId(null)}
           onFinishGame={(score) => onLaunchQuiz(quizId)}
