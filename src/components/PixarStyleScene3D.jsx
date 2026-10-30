@@ -460,15 +460,17 @@ export default function PixarStyleScene3D({
     bangs.rotation.set(-0.25, 0.2, 0.4);
     hairGroup.add(bangs);
 
-    // Mèches latérales élégantes qui encadrent le visage
-    const lockL = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.02, 0.45, 16), hairHighlightMat);
-    lockL.position.set(-0.16, -0.08, 0.06);
-    lockL.rotation.set(0.15, 0.2, 0.18);
+    // Mèches latérales soyeuses et fluides encadrant le visage (volumes adoucis sans arêtes cylindriques)
+    const lockL = new THREE.Mesh(new THREE.SphereGeometry(0.08, 24, 24), hairHighlightMat);
+    lockL.scale.set(0.65, 2.0, 0.75);
+    lockL.position.set(-0.16, -0.06, 0.05);
+    lockL.rotation.set(0.12, 0.15, 0.15);
     hairGroup.add(lockL);
 
-    const lockR = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.02, 0.45, 16), hairHighlightMat);
-    lockR.position.set(0.16, -0.08, 0.06);
-    lockR.rotation.set(0.15, -0.2, -0.18);
+    const lockR = new THREE.Mesh(new THREE.SphereGeometry(0.08, 24, 24), hairHighlightMat);
+    lockR.scale.set(0.65, 2.0, 0.75);
+    lockR.position.set(0.16, -0.06, 0.05);
+    lockR.rotation.set(0.12, -0.15, -0.15);
     hairGroup.add(lockR);
 
     // Chignon / Volume arrière soigné

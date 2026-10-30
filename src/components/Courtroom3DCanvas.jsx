@@ -184,9 +184,9 @@ export default function Courtroom3DCanvas({
 
   // Configurations de caméra prédéfinies style régie TV (plans serrés et expressifs)
   const CAMERA_PRESETS = {
-    TV_WIDE: { pos: [0, 5.2, 10.5], look: [0, 2.2, 0] },
+    TV_WIDE: { pos: [0, 5.0, 10.0], look: [0, 2.0, -1.0] },
     JUDGE: { pos: [0, 3.4, -2.4], look: [0, 3.8, -5.2] },
-    WITNESS: { pos: [0, 2.2, 1.8], look: [0, 2.0, -0.65] },
+    WITNESS: { pos: [-0.45, 2.15, -1.2], look: [0, 2.05, 0.72] }, // Contre-champ : Maxime filmé de face devant la barre, regardant le Juge
     DEFENSE: { pos: [2.6, 2.4, 1.4], look: [4.4, 2.2, -0.2] },
     PROSECUTION: { pos: [-2.6, 2.4, 1.4], look: [-4.4, 2.2, -0.2] },
     AUDIENCE: { pos: [0, 2.5, 3.2], look: [0, 1.9, 7.8] } // Plan Caméra sur le Banc du Public
@@ -1067,20 +1067,22 @@ export default function Courtroom3DCanvas({
       scene.add(post);
     }
 
-    // Micro col de cygne du témoin
+    // Micro col de cygne du témoin (incliné vers Maxime face au Juge)
     const witnessMic = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.4, 12), metalDark);
-    witnessMic.position.set(0, 1.6, 0.35);
-    witnessMic.rotation.x = 0.35;
+    witnessMic.position.set(0, 1.50, 0.38);
+    witnessMic.rotation.x = -0.32;
     scene.add(witnessMic);
     const witnessMicLed = new THREE.Mesh(new THREE.SphereGeometry(0.025, 12, 12), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
-    witnessMicLed.position.set(0, 1.78, 0.28);
+    witnessMicLed.position.set(0, 1.68, 0.45);
     scene.add(witnessMicLed);
 
     // =========================================================================
     // 8. PERSONNAGE 3D SCULPTÉ HAUTE DÉFINITION : MAXIME À LA BARRE
+    // Positionné face au Juge (regard vers -z, mains posées sur la rampe)
     // =========================================================================
     const witnessGroup = new THREE.Group();
-    witnessGroup.position.set(0, 0, -0.65);
+    witnessGroup.position.set(0, 0, 0.72);
+    witnessGroup.rotation.y = Math.PI; // Face au Juge !
 
     // Sweat à capuche étudiant (bleu canard / marine) sculpté et galbé
     const witBodyMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.62 });
@@ -1236,27 +1238,27 @@ export default function Courtroom3DCanvas({
     witnessGroup.add(witHeadGroup);
     witnessHeadRef.current = witHeadGroup;
 
-    // Bras avec mains sculptées agrippées fermement à la rampe en laiton
+    // Bras avec mains sculptées posées sur la rampe en laiton face au Juge
     const witLeftArm = new THREE.Group();
     witLeftArm.position.set(-0.35, 1.82, 0);
-    const lBicep = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.075, 0.68, 18), witBodyMat);
-    lBicep.position.set(-0.08, -0.34, 0.22);
-    lBicep.rotation.x = -Math.PI / 4;
+    const lBicep = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.07, 0.50, 18), witBodyMat);
+    lBicep.position.set(-0.06, -0.22, 0.09);
+    lBicep.rotation.x = -Math.PI / 5;
     witLeftArm.add(lBicep);
     const lHand = new THREE.Mesh(new THREE.SphereGeometry(0.065, 14, 14), skinToneWitness);
-    lHand.position.set(-0.08, -0.62, 0.48);
+    lHand.position.set(-0.06, -0.40, 0.17); // S'aligne parfaitement sur standRail à z = 0.55
     witLeftArm.add(lHand);
     witnessGroup.add(witLeftArm);
     witnessLeftArmRef.current = witLeftArm;
 
     const witRightArm = new THREE.Group();
     witRightArm.position.set(0.35, 1.82, 0);
-    const rBicep = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.075, 0.68, 18), witBodyMat);
-    rBicep.position.set(0.08, -0.34, 0.22);
-    rBicep.rotation.x = -Math.PI / 4;
+    const rBicep = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.07, 0.50, 18), witBodyMat);
+    rBicep.position.set(0.06, -0.22, 0.09);
+    rBicep.rotation.x = -Math.PI / 5;
     witRightArm.add(rBicep);
     const rHand = new THREE.Mesh(new THREE.SphereGeometry(0.065, 14, 14), skinToneWitness);
-    rHand.position.set(0.08, -0.62, 0.48);
+    rHand.position.set(0.06, -0.40, 0.17); // S'aligne parfaitement sur standRail à z = 0.55
     witRightArm.add(rHand);
     witnessGroup.add(witRightArm);
     witnessRightArmRef.current = witRightArm;
@@ -1521,15 +1523,15 @@ export default function Courtroom3DCanvas({
       // Animation des particules de poussière en suspension
       dustParticles.rotation.y = elapsedTime * 0.015;
 
-      // Animation du Témoin selon son état émotionnel
+      // Animation du Témoin selon son état émotionnel (Face au Juge)
       const currentWitnessState = witnessStateRef.current;
       if (witnessHeadRef.current && witnessLeftArmRef.current && witnessRightArmRef.current) {
         if (currentWitnessState === 'stressed' || currentWitnessState === 'broken') {
           // Tremblements d'inquiétude lors d'une mauvaise défense
           witnessHeadRef.current.rotation.z = Math.sin(elapsedTime * 25) * 0.06;
           witnessHeadRef.current.rotation.x = 0.2 + Math.sin(elapsedTime * 18) * 0.04;
-          witnessLeftArmRef.current.position.y = 1.35 + Math.sin(elapsedTime * 20) * 0.04;
-          witnessRightArmRef.current.position.y = 1.35 + Math.cos(elapsedTime * 20) * 0.04;
+          witnessLeftArmRef.current.position.y = 1.82 + Math.sin(elapsedTime * 20) * 0.03;
+          witnessRightArmRef.current.position.y = 1.82 + Math.cos(elapsedTime * 20) * 0.03;
 
           // Sourcils inclinés d'anxiété
           if (witnessLeftBrowRef.current && witnessRightBrowRef.current) {
@@ -1537,31 +1539,35 @@ export default function Courtroom3DCanvas({
             witnessRightBrowRef.current.rotation.z = 0.3;
           }
 
-          // Gouttes de sueur
+          // Gouttes de sueur (côté visage de Maxime, en -z mondial)
           sweatParticlesRef.current.forEach((drop, idx) => {
             drop.visible = true;
             const t = (elapsedTime * 2 + idx * 0.4) % 1;
             drop.position.set(
               witnessGroup.position.x + (idx % 2 === 0 ? 0.35 : -0.35) + (idx > 1 ? 0.1 : -0.1),
               2.4 - t * 0.5,
-              witnessGroup.position.z + 0.3
+              witnessGroup.position.z - 0.22
             );
           });
         } else if (currentWitnessState === 'speaking' || currentWitnessState === 'confident') {
-          // Gesticulation d'explication ou soulagement
+          // Gesticulation d'explication ou soulagement face au Tribunal
           witnessHeadRef.current.rotation.y = Math.sin(elapsedTime * 3) * 0.15;
           witnessHeadRef.current.rotation.x = Math.sin(elapsedTime * 4) * 0.08;
-          witnessRightArmRef.current.rotation.x = -0.4 + Math.sin(elapsedTime * 4) * 0.2;
+          witnessRightArmRef.current.rotation.x = -0.3 + Math.sin(elapsedTime * 4) * 0.15;
+          witnessLeftArmRef.current.position.set(-0.35, 1.82, 0);
+          witnessRightArmRef.current.position.set(0.35, 1.82, 0);
           if (witnessLeftBrowRef.current && witnessRightBrowRef.current) {
             witnessLeftBrowRef.current.rotation.z = 0;
             witnessRightBrowRef.current.rotation.z = 0;
           }
           sweatParticlesRef.current.forEach(drop => (drop.visible = false));
         } else {
-          // Respiration calme
+          // Respiration calme face au Juge
           witnessHeadRef.current.rotation.set(0, 0, 0);
           witnessLeftArmRef.current.rotation.set(0, 0, 0);
           witnessRightArmRef.current.rotation.set(0, 0, 0);
+          witnessLeftArmRef.current.position.set(-0.35, 1.82, 0);
+          witnessRightArmRef.current.position.set(0.35, 1.82, 0);
           if (witnessLeftBrowRef.current && witnessRightBrowRef.current) {
             witnessLeftBrowRef.current.rotation.z = 0;
             witnessRightBrowRef.current.rotation.z = 0;
