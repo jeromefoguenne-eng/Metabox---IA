@@ -777,7 +777,7 @@ export default function Courtroom3DCanvas({
     scene.add(book2);
 
     // Bloc sonore en bois et bague de laiton pour frappe du marteau
-    const soundBlock = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.38, 0.14, 24), woodLight || woodMahogany);
+    const soundBlock = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.38, 0.14, 24), woodMahogany);
     soundBlock.position.set(0.65, 2.57, -4.1);
     soundBlock.receiveShadow = true;
     scene.add(soundBlock);
