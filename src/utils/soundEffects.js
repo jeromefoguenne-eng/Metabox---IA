@@ -656,23 +656,29 @@ class SoundManager {
     } catch {}
   }
 
-  // Coup de marteau solennel du Juge exigeant le silence
+  // Coup de marteau solennel et exaspéré du Juge exigeant le silence (Triple frappe sèche)
   playJudgeSilence() {
     this.playGavelStrike();
+    this.scheduleTimeout(() => this.playGavelStrike(), 220);
+    this.scheduleTimeout(() => this.playGavelStrike(), 440);
     this.scheduleTimeout(() => {
       this.playAudioFile('/audio/voices/proces_judge_silence.mp3', 1.0);
-    }, 450);
+    }, 550);
   }
 
   // Clameur polyphonique du public / chahut suivi de la menace du Juge d'évacuer la salle
   playPublicUproarAndJudgeSilence(onUproarStart, onJudgeSilenceStart, onComplete) {
     if (onUproarStart) onUproarStart();
+    this.playApplause();
     this.playVoice('proces_public_chahut_poly', () => {
+      // Triple frappe furieuse du marteau
       this.playGavelStrike();
+      this.scheduleTimeout(() => this.playGavelStrike(), 200);
+      this.scheduleTimeout(() => this.playGavelStrike(), 400);
       if (onJudgeSilenceStart) onJudgeSilenceStart();
       this.scheduleTimeout(() => {
         this.playVoice('proces_judge_silence', onComplete);
-      }, 550);
+      }, 500);
     });
   }
 
@@ -692,9 +698,10 @@ class SoundManager {
     }, 250);
   }
 
-  // Cri spontané polyphonique du public en chœur : "Libérez Maxime !"
+  // Cri spontané polyphonique du public en chœur : "Libérez Maxime !" renforcé et vibrant
   playPublicLiberez(onComplete) {
     const idx = Math.floor(Math.random() * 3) + 1;
+    this.playApplause(); // Double l'énergie de la foule
     this.playVoice(`proces_public_liberez_poly_${idx}`, onComplete);
   }
 
@@ -711,9 +718,10 @@ class SoundManager {
     if (character === 'aurore') {
       utterance.rate = 1.02;
       utterance.pitch = 1.12; // Voix féminine chaleureuse
-    } else if (character === 'judge') {
-      utterance.rate = 0.95;
-      utterance.pitch = 0.88; // Voix grave et solennelle de magistrat
+    } else if (character === 'judge' || character === 'judge_exasperated') {
+      utterance.rate = 1.12; // Plus incisif, autoritaire et emporté
+      utterance.pitch = 0.92; // Voix forte et tendue
+      utterance.volume = 1.0;
     } else {
       // Henri animateur TV
       utterance.rate = 1.06;

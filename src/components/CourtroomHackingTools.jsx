@@ -49,7 +49,7 @@ export default function CourtroomHackingTools({
           </div>
           <div>
             <h3 className="font-['Outfit'] font-black text-xs sm:text-sm text-cyan-300">
-              CONSOLE D'INVESTIGATION FORENSIQUE DU CRASH
+              CONSOLE D'INVESTIGATION NUMÉRIQUE DU CRASH
             </h3>
             <p className="text-[10px] text-slate-400">
               Manipulez les données techniques pour matérialiser la preuve requise par la défense

@@ -10,13 +10,13 @@ export const AURORE_GAME_BRIEFINGS = {
   // 1. FACT-CHECKING 3D (AILE NORD)
   factcheck: {
     gameId: 'factcheck',
-    title: "Laboratoire Forensique de Fact-Checking 3D",
+    title: "Laboratoire d'Investigation Numérique & Fact-Checking 3D",
     subtitle: "Démystification de Deepfakes & Hallucinations d'IA",
     wing: "AILE NORD · QUAI DE ROME",
     keyReward: "Clé Alpha (Esprit Critique & Vérité)",
     badgeColor: "from-cyan-500 to-blue-600",
     scenarioLink: "Les serveurs du jury de délibération de la HECh ont été verrouillés en urgence suite à l'injection massive de faux documents académiques générés par IA. L'algorithme central A.U.R.O.R.E. refuse de valider les délibérations de fin d'année tant que le registre mondial des sources de l'école n'aura pas été nettoyé de toutes ses hallucinations.",
-    whyPlay: "Pour déverrouiller la Clé Alpha indispensable à l'ouverture du jury, vous devez prouver que votre discernement humain surpasse les illusions algorithmiques. Vous devez inspecter 10 dossiers forensiques suspects (faux articles scientifiques, fausses déclarations orales synthétisées, prompts d'examen piégés et photos retouchées) et isoler scientifiquement chaque tromperie.",
+    whyPlay: "Pour déverrouiller la Clé Alpha indispensable à l'ouverture du jury, vous devez prouver que votre discernement humain surpasse les illusions algorithmiques. Vous devez inspecter 10 dossiers d'investigation suspects (faux articles scientifiques, fausses déclarations orales synthétisées, prompts d'examen piégés et photos retouchées) et isoler scientifiquement chaque tromperie.",
     rules: [
       "Explorez les 10 stations d'investigation dans le laboratoire 3D interactif.",
       "Ouvrez le terminal Cyberscope OS pour consulter les documents, vérifier les faux DOI CrossRef et analyser les spectres audio.",
@@ -24,7 +24,7 @@ export const AURORE_GAME_BRIEFINGS = {
       "Sélectionnez le verdict technique exact qui démontre la manipulation d'IA ou la falsification de la source.",
       "Résolvez l'ensemble des 10 énigmes pour purifier le réseau de la HECh et obtenir la Clé Alpha."
     ],
-    auroreSpokenText: "Alerte délibération au Quai de Rome. L'Aile Nord est saturée d'hallucinations d'IA et de faux documents. Examinez les dix stations forensiques, débusquez chaque falsification et restaurez la vérité pour débloquer la Clé Alpha."
+    auroreSpokenText: "Alerte délibération au Quai de Rome. L'Aile Nord est saturée d'hallucinations d'IA et de faux documents. Examinez les dix stations d'investigation numérique, débusquez chaque falsification et restaurez la vérité pour débloquer la Clé Alpha."
   },
 
   // 2. GRAND PROCÈS DU BLACKOUT 24H (AILE OUEST)

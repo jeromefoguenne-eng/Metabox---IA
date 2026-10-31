@@ -119,7 +119,7 @@ export default function CourtroomForensicTools({
           </div>
           <div>
             <h3 className="font-['Outfit'] font-black text-sm sm:text-base text-cyan-300">
-              LABORATOIRE FORENSIQUE NUMÉRIQUE & PREUVES
+              LABORATOIRE D'EXPERTISE NUMÉRIQUE & PREUVES
             </h3>
             <p className="text-[11px] text-slate-400">
               Manipulez les outils interactifs pour extraire les indices matériels avant la confrontation
@@ -195,7 +195,7 @@ export default function CourtroomForensicTools({
             </div>
           </div>
 
-          {/* Outil 2 : Loupe UV Forensic sur le Mémoire */}
+          {/* Outil 2 : Loupe UV d'Analyse sur le Mémoire */}
           <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 flex flex-col gap-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono text-purple-300 font-bold flex items-center gap-1.5">

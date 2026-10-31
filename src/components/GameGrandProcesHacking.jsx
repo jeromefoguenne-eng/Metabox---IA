@@ -85,15 +85,17 @@ export default function GameGrandProcesHacking({ onComplete }) {
     };
   }, []);
 
-  // Cris spontanés aléatoires du public "Libérez Maxime !" pendant le procès
+  // Cris spontanés aléatoires du public "Libérez Maxime !" plus forts et chargés d'émotion
   useEffect(() => {
     const interval = setInterval(() => {
       if (stage === 'pleading' || stage === 'investigation' || stage === 'attack') {
         const shoutTexts = [
-          'Public : « Libérez Maxime ! C\'est un lanceur d\'alerte ! »',
-          'Public : « Libérez Maxime ! Il a sauvé nos données ! »',
-          'Public : « Non au tout-IA ! Libérez-le ! »',
-          'Public : « Maxime est innocent ! Liberté pour Maxime ! »'
+          'Public : « LIBÉREZ MAXIME ! C\'est un héros, pas un coupable ! »',
+          'Public : « JUSTICE POUR MAXIME ! Il s\'est sacrifié pour sauver nos données ! »',
+          'Public : « NON AU PROCÈS TRUQUÉ ! Maxime est innocent, libérez-le ! »',
+          'Public : « LA MACHINE NE NOUS GOUVERNE PAS ! LIBERTÉ POUR MAXIME ! »',
+          'Public : « LE CAMPUS EXIGE LA VÉRITÉ ! Relâchez Maxime sur-le-champ ! »',
+          'Public : « MAXIME A EU LE COURAGE DE DIRE NON ! VOUS JUGEZ LE MAUVAIS ACCUSÉ ! »'
         ];
         const randomText = shoutTexts[Math.floor(Math.random() * shoutTexts.length)];
         setAudienceState('shout_maxime');
@@ -103,18 +105,18 @@ export default function GameGrandProcesHacking({ onComplete }) {
         setTimeout(() => {
           setAudienceState('idle');
           setAudienceShoutText('');
-        }, 3600);
+        }, 4200);
       }
-    }, 28000);
+    }, 20000);
 
     return () => clearInterval(interval);
   }, [stage]);
 
-  // Déclenchement spectaculaire : Le public crie et se soulève, PUIS le Juge tape du marteau et menace d'évacuer la salle
+  // Déclenchement spectaculaire : Le public crie et se soulève avec émotion, PUIS le Juge exaspéré tape furieusement du marteau et menace d'évacuer la salle
   const triggerAudienceUproarAndJudgeSilence = () => {
     sounds.stopAllVoice();
     setAudienceState('shout_maxime');
-    setAudienceShoutText('Public : « Scandale ! Parodie de justice ! Libérez Maxime ! »');
+    setAudienceShoutText('Public : « SCANDALE ! PARODIE DE JUSTICE ! LIBÉREZ MAXIME IMMÉDIATEMENT ! »');
     setCameraView('AUDIENCE');
 
     sounds.playPublicUproarAndJudgeSilence(
@@ -124,11 +126,13 @@ export default function GameGrandProcesHacking({ onComplete }) {
       () => {
         setCameraView('JUDGE');
         setJudgeState('gavel');
+        setJudgeReaction('frown');
         setAudienceState('idle');
-        setAudienceShoutText('Juge : « Silence ! Ou je fais évacuer la salle ! »');
+        setAudienceShoutText('LE JUGE (EXASPÉRÉ) : « SILENCE DANS CETTE SALLE ! ASSEZ ! La Cour n\'est pas un cirque ! Au prochain cri, je fais évacuer la tribune sur-le-champ ! »');
       },
       () => {
         setJudgeState('idle');
+        setJudgeReaction('neutral');
         setAudienceShoutText('');
       }
     );
@@ -490,7 +494,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
     });
   };
 
-  // Phase d'enquête forensique
+  // Phase d'enquête et d'expertise numérique
   const handleOpenForensics = () => {
     sounds.stopAllVoice();
     setStage('investigation');
@@ -886,13 +890,13 @@ export default function GameGrandProcesHacking({ onComplete }) {
                 onClick={handleOpenForensics}
                 className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-black text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 transition cursor-pointer shadow-lg shadow-cyan-500/20"
               >
-                Inspecter les Preuves Techniques Forensiques →
+                Inspecter les Preuves d'Expertise Numérique →
               </button>
             </div>
           )}
 
           {/* =========================================================================
-              ÉTAPE 2 : INVESTIGATION FORENSIQUE
+              ÉTAPE 2 : INVESTIGATION TECHNIQUE & NUMÉRIQUE
           ========================================================================= */}
           {stage === 'investigation' && (
             <div className="flex flex-col gap-3 h-full animate-in fade-in">

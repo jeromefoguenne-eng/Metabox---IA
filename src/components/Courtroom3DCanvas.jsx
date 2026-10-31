@@ -1610,7 +1610,23 @@ export default function Courtroom3DCanvas({
       // Réaction Faciale Précise du Juge (Sourire approbateur vs Moue sévère)
       const currentJudgeReaction = judgeReactionRef.current;
       if (judgeHeadRef.current && judgeMouthRef.current) {
-        if (currentJudgeReaction === 'smile') {
+        if (judgeState === 'gavel' || isGavelStriking) {
+          // EXASPÉRATION TOTALE DU JUGE : sourcils froncés très bas, bouche grande ouverte rouge colère, secouement agacé
+          judgeHeadRef.current.rotation.x = -0.12; // Penché en avant avec sévérité
+          judgeHeadRef.current.rotation.y = Math.sin(elapsedTime * 18) * 0.14; // Secoue la tête de fureur
+          judgeHeadRef.current.rotation.z = Math.sin(elapsedTime * 14) * 0.05;
+          judgeMouthRef.current.position.y = -0.20;
+          judgeMouthRef.current.scale.set(1.7, 2.3, 1); // Bouche grande ouverte criant "SILENCE !"
+          judgeMouthRef.current.material.color.setHex(0xdc2626); // Rouge vif de colère
+
+          // Sourcils profondément froncés et inclinés agressivement vers le centre
+          if (judgeLeftBrowRef.current && judgeRightBrowRef.current) {
+            judgeLeftBrowRef.current.position.y = 0.08;
+            judgeLeftBrowRef.current.rotation.z = -0.45;
+            judgeRightBrowRef.current.position.y = 0.08;
+            judgeRightBrowRef.current.rotation.z = 0.45;
+          }
+        } else if (currentJudgeReaction === 'smile') {
           // Sourire approbateur + hochement bienveillant
           judgeHeadRef.current.rotation.x = 0.12 + Math.sin(elapsedTime * 6) * 0.08;
           judgeHeadRef.current.rotation.y = 0;
@@ -1628,19 +1644,19 @@ export default function Courtroom3DCanvas({
           }
         } else if (currentJudgeReaction === 'frown') {
           // Moue sévère + secouement de tête désapprobateur ("NON !")
-          judgeHeadRef.current.rotation.x = -0.06;
-          judgeHeadRef.current.rotation.y = Math.sin(elapsedTime * 7) * 0.18; // Secoue la tête
+          judgeHeadRef.current.rotation.x = -0.08;
+          judgeHeadRef.current.rotation.y = Math.sin(elapsedTime * 10) * 0.22; // Secoue vivement la tête
           judgeHeadRef.current.rotation.z = -0.06;
           judgeMouthRef.current.position.y = -0.18;
-          judgeMouthRef.current.scale.set(0.9, 1.2, 1);
-          judgeMouthRef.current.material.color.setHex(0xf43f5e); // Rouge désapprobation
+          judgeMouthRef.current.scale.set(1.1, 1.4, 1);
+          judgeMouthRef.current.material.color.setHex(0xef4444); // Rouge désapprobation
 
           // Sourcils froncés agressifs inclinés vers le centre
           if (judgeLeftBrowRef.current && judgeRightBrowRef.current) {
-            judgeLeftBrowRef.current.position.y = 0.12;
-            judgeLeftBrowRef.current.rotation.z = -0.25;
-            judgeRightBrowRef.current.position.y = 0.12;
-            judgeRightBrowRef.current.rotation.z = 0.25;
+            judgeLeftBrowRef.current.position.y = 0.10;
+            judgeLeftBrowRef.current.rotation.z = -0.35;
+            judgeRightBrowRef.current.position.y = 0.10;
+            judgeRightBrowRef.current.rotation.z = 0.35;
           }
         } else {
           // Neutre
@@ -1657,7 +1673,7 @@ export default function Courtroom3DCanvas({
         }
       }
 
-      // Animation du Juge et Frappe du Marteau
+      // Animation du Juge et Frappe du Marteau (Triple Frappe Exaspérée "PAN ! PAN ! PAN !")
       if (judgeArmRef.current) {
         if (judgeState === 'gavel' && !isGavelStriking) {
           isGavelStriking = true;
@@ -1665,29 +1681,37 @@ export default function Courtroom3DCanvas({
         }
 
         if (isGavelStriking) {
-          gavelTimer += 0.06;
-          if (gavelTimer < 0.6) {
-            // Le juge lève le marteau
-            judgeArmRef.current.rotation.x = -Math.PI / 2.2 * (gavelTimer / 0.6);
-          } else if (gavelTimer < 0.8) {
-            // Frappe rapide vers le bas (Impact)
-            judgeArmRef.current.rotation.x = 0.4;
-            if (shockwaveRef.current && shockwaveRef.current.material.opacity === 0) {
-              shockwaveRef.current.material.opacity = 0.95;
-              shockwaveRef.current.scale.set(1, 1, 1);
-              sounds.playGavelStrike();
+          gavelTimer += 0.045;
+          // Triple frappe consécutive et puissante : "PAN ! PAN ! PAN !"
+          const strikeCycle = Math.floor(gavelTimer / 0.45);
+          const cycleProgress = (gavelTimer % 0.45) / 0.45;
+
+          if (strikeCycle < 3) {
+            if (cycleProgress < 0.48) {
+              // Lève vivement le marteau en arrière
+              judgeArmRef.current.rotation.x = -Math.PI / 2.0 * (cycleProgress / 0.48);
+            } else {
+              // Abat avec une grande force sur le socle
+              judgeArmRef.current.rotation.x = 0.45;
+              if (cycleProgress < 0.62 && shockwaveRef.current) {
+                if (shockwaveRef.current.material.opacity < 0.25) {
+                  shockwaveRef.current.material.opacity = 0.95;
+                  shockwaveRef.current.scale.set(1 + strikeCycle * 0.35, 1 + strikeCycle * 0.35, 1 + strikeCycle * 0.35);
+                  sounds.playGavelStrike();
+                }
+              }
             }
-          } else {
-            // Onde de choc se dilate et s'estompe
-            if (shockwaveRef.current) {
-              shockwaveRef.current.scale.addScalar(0.08);
-              shockwaveRef.current.material.opacity = Math.max(0, shockwaveRef.current.material.opacity - 0.05);
-            }
-            if (gavelTimer > 1.4) {
-              isGavelStriking = false;
-              judgeArmRef.current.rotation.x = 0;
-              if (onGavelComplete) onGavelComplete();
-            }
+          }
+
+          if (shockwaveRef.current) {
+            shockwaveRef.current.scale.addScalar(0.06);
+            shockwaveRef.current.material.opacity = Math.max(0, shockwaveRef.current.material.opacity - 0.04);
+          }
+
+          if (gavelTimer > 1.6) {
+            isGavelStriking = false;
+            judgeArmRef.current.rotation.x = 0;
+            if (onGavelComplete) onGavelComplete();
           }
         } else {
           if (judgeState === 'speaking') {
@@ -1725,15 +1749,15 @@ export default function Courtroom3DCanvas({
           spec.leftArm.rotation.z = -0.2;
           spec.rightArm.rotation.z = 0.2;
         } else if (currentAudienceState === 'shout_maxime' || currentAudienceState === 'uproar') {
-          // Debout scandant : "Libérez Maxime !"
-          spec.group.position.y = THREE.MathUtils.lerp(spec.group.position.y, spec.baseY + 0.28, 0.15);
-          spec.head.rotation.x = -0.22; // Regard levé vers l'estrade du Juge
-          spec.head.rotation.y = Math.sin(elapsedTime * 5 + p) * 0.15;
-          // Poing droit levé avec ferveur
-          spec.rightArm.rotation.x = -2.5 + Math.sin(elapsedTime * 10 + p) * 0.45;
-          spec.leftArm.rotation.x = -1.4 + Math.sin(elapsedTime * 7 + p) * 0.2;
-          spec.rightArm.rotation.z = -0.2;
-          spec.leftArm.rotation.z = 0.2;
+          // Debout scandant avec force et émotion : "Libérez Maxime !"
+          spec.group.position.y = THREE.MathUtils.lerp(spec.group.position.y, spec.baseY + 0.36 + Math.sin(elapsedTime * 12 + p) * 0.05, 0.18);
+          spec.head.rotation.x = -0.28; // Regard levé avec ferveur vers l'estrade
+          spec.head.rotation.y = Math.sin(elapsedTime * 8 + p) * 0.22;
+          // Les deux poings levés et brandis en rythme avec émotion
+          spec.rightArm.rotation.x = -2.7 + Math.sin(elapsedTime * 14 + p) * 0.5;
+          spec.leftArm.rotation.x = -2.5 + Math.cos(elapsedTime * 14 + p) * 0.5;
+          spec.rightArm.rotation.z = -0.3 + Math.sin(elapsedTime * 10) * 0.12;
+          spec.leftArm.rotation.z = 0.3 - Math.sin(elapsedTime * 10) * 0.12;
         } else {
           // État assis calme avec respiration naturelle
           spec.group.position.y = THREE.MathUtils.lerp(spec.group.position.y, spec.baseY, 0.08);
@@ -1896,12 +1920,18 @@ export default function Courtroom3DCanvas({
 
       {/* Bulle / Cri du Public dynamique */}
       {audienceShoutText && (
-        <div className="absolute top-14 left-1/2 -translate-x-1/2 z-30 animate-in zoom-in-95 pointer-events-none max-w-[90%]">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-slate-950/95 border-2 border-amber-400 text-amber-200 shadow-2xl backdrop-blur-md">
-            <span className="text-base animate-pulse">📢</span>
-            <span className="text-xs sm:text-sm font-black font-['Outfit'] tracking-wide">
-              {audienceShoutText}
-            </span>
+        <div className="absolute top-10 left-1/2 -translate-x-1/2 z-30 animate-in zoom-in-95 pointer-events-none max-w-[94%] w-max">
+          <div className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-gradient-to-r from-red-950/95 via-slate-950/95 to-amber-950/95 border-2 border-amber-400 text-amber-200 shadow-2xl backdrop-blur-md animate-pulse">
+            <span className="text-2xl animate-bounce">📢</span>
+            <div className="flex flex-col">
+              <span className="text-[10px] font-mono tracking-widest text-red-400 font-black uppercase">
+                {audienceShoutText.includes('JUGE') || audienceShoutText.includes('Juge') ? "⚠️ RAPPEL À L'ORDRE DU JUGE" : "🔥 CLAMEUR DU PUBLIC DANS LA SALLE"}
+              </span>
+              <span className="text-sm sm:text-base font-black font-['Outfit'] tracking-wide text-amber-300 drop-shadow-md">
+                {audienceShoutText}
+              </span>
+            </div>
+            <span className="text-2xl animate-bounce delay-75">⚖️</span>
           </div>
         </div>
       )}

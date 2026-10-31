@@ -279,12 +279,12 @@ Activez sans délai le protocole de chiffrement PGP et sécurisez l'accès à vo
             </div>
           )}
 
-          {/* WINDOW 2: IMAGE ARTIFACTS ANALYZER (DEEPFAKE FORENSIC INSPECTOR) */}
+          {/* WINDOW 2: IMAGE ARTIFACTS ANALYZER (DEEPFAKE INSPECTOR) */}
           {activeWindow === 'image_analyzer' && (
             <div className="space-y-4 animate-in fade-in">
               <div className="flex items-center justify-between pb-2 border-b border-slate-800 text-xs">
                 <strong className="text-indigo-300 flex items-center gap-2">
-                  <Eye className="w-4 h-4" /> Laboratoire de Forensique Visuelle & Spectre Fréquentiel
+                  <Eye className="w-4 h-4" /> Laboratoire d'Analyse Visuelle & Spectre Fréquentiel
                 </strong>
                 <div className="flex gap-2">
                   <button 
@@ -341,7 +341,7 @@ Activez sans délai le protocole de chiffrement PGP et sécurisez l'accès à vo
                   <div className="mt-4 p-4 rounded-2xl bg-slate-900/90 border border-amber-500/50 space-y-3 text-xs animate-in zoom-in-95">
                     <div className="flex justify-between items-center text-amber-300 font-bold">
                       <span className="flex items-center gap-1.5">
-                        <ScanLine className="w-4 h-4 text-amber-400" /> Rapport Forensique des Anomalies :
+                        <ScanLine className="w-4 h-4 text-amber-400" /> Rapport d'Analyse des Anomalies :
                       </span>
                       <span className="font-mono text-rose-400 font-bold bg-rose-950/50 px-2 py-0.5 rounded border border-rose-900">
                         Score de Falsification IA : 99.1%

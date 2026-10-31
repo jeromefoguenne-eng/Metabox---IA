@@ -39,7 +39,7 @@ export default function GameTribunal3D({ onComplete }) {
   const [witnessState, setWitnessState] = useState('speaking'); // 'idle' | 'speaking' | 'stressed' | 'broken'
   const [judgeState, setJudgeState] = useState('idle'); // 'idle' | 'speaking' | 'gavel'
   
-  // Preuves débloquées via les outils forensiques
+  // Preuves débloquées via les outils d'enquête numérique
   const [unlockedEvidences, setUnlockedEvidences] = useState([]);
   const [objectionTriggered, setObjectionTriggered] = useState(false);
   const [selectedVerdict, setSelectedVerdict] = useState(null);
@@ -155,7 +155,7 @@ export default function GameTribunal3D({ onComplete }) {
     }
   }, [currentCaseIdx, trialStage]);
 
-  // Déblocage d'indice depuis les outils forensiques
+  // Déblocage d'indice depuis les outils d'expertise numérique
   const handleEvidenceUnlocked = (ev) => {
     if (!unlockedEvidences.some(e => e.id === ev.id)) {
       setUnlockedEvidences(prev => [...prev, ev]);
@@ -258,7 +258,7 @@ export default function GameTribunal3D({ onComplete }) {
           <span className={`px-2.5 py-1 rounded-xl transition ${
             trialStage === 'forensics' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold' : 'text-slate-500'
           }`}>
-            2. Enquête Forensique
+            2. Enquête Numérique
           </span>
           <span className="text-slate-600">→</span>
           <span className={`px-2.5 py-1 rounded-xl transition ${
@@ -294,7 +294,7 @@ export default function GameTribunal3D({ onComplete }) {
           )}
         </div>
 
-        {/* Panneau de Pilotage Judiciaire & Forensique (5 colonnes) */}
+        {/* Panneau de Pilotage Judiciaire & Expertise Numérique (5 colonnes) */}
         <div className="lg:col-span-5 flex flex-col gap-3 h-full overflow-y-auto pr-1">
           {/* =============================================================
               ÉTAPE 1 : DÉPOSITION DU TÉMOIN
@@ -332,13 +332,13 @@ export default function GameTribunal3D({ onComplete }) {
                 }}
                 className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-black text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 transition cursor-pointer shadow-lg shadow-cyan-500/20"
               >
-                Ouvrir le Laboratoire Forensique →
+                Ouvrir le Laboratoire d'Expertise Numérique →
               </button>
             </div>
           )}
 
           {/* =============================================================
-              ÉTAPE 2 : RECHERCHE DE PREUVES FORENSIQUES
+              ÉTAPE 2 : RECHERCHE DE PREUVES NUMÉRIQUES
           ============================================================= */}
           {trialStage === 'forensics' && (
             <div className="flex flex-col gap-3 h-full animate-in fade-in">

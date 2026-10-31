@@ -136,7 +136,7 @@ function createScreenGridTexture() {
   // Texte cyber vert fluo
   ctx.fillStyle = '#34d399';
   ctx.font = '10px monospace';
-  ctx.fillText('FORENSIC_DEEPFAKE_SCAN', 14, 28);
+  ctx.fillText('SCAN_EXPERTISE_NUMERIQUE', 14, 28);
   ctx.fillText('STATUS: ANALYZING_ARTEFACTS', 14, 46);
   ctx.fillStyle = '#38bdf8';
   ctx.fillText('RVC_VOICE_SPECTRUM: 11.2 kHz', 14, 64);
@@ -192,7 +192,7 @@ export const FACT_CHECK_ENIGMAS = [
     id: 'enigma_2',
     station: 'microscope',
     title: "2. Les Micro-Artefacts du Portrait Deepfake",
-    category: "Forensic Visuel & Midjourney",
+    category: "Expertise Visuelle & Midjourney",
     stationName: "Station Spectrale & Microscope",
     difficulty: "Confirmé",
     xp: 75,
@@ -461,13 +461,13 @@ export const FACT_CHECK_ENIGMAS = [
     difficulty: "Grand Maître",
     xp: 100,
     clue: "Consolidez l'ensemble des 10 preuves pour sceller le rapport d'investigation.",
-    virtualUrl: "https://sar.hech.be/forensic-methodology-charte-2026",
+    virtualUrl: "https://sar.hech.be/verification-methodology-charte-2026",
     resourceType: "social_media",
     context: `Vous devez transmettre au doyen et au jury votre protocole définitif pour valider n'importe quelle information trouvée sur le web ou synthétisée par une IA.`,
     evidenceType: "master_methodology",
     pillars: [
       "1. Remonter à la Source Primaire Originelle (DOI certifié, publication légale, institution officielle)",
-      "2. Recherche Inversée d'Images & Analyse Forensique des Métadonnées EXIF",
+      "2. Recherche Inversée d'Images & Analyse Technique des Métadonnées EXIF",
       "3. Règle des 3 Sources Indépendantes : Aucun fait n'est certifié sans double corroboration contradictoire"
     ],
     hints: [
@@ -885,7 +885,7 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
       associatedEnigmas: ['enigma_1', 'enigma_8']
     });
 
-    // --- STATION 3 : LA STATION FORENSIQUE & MICROSCOPE DEEPFAKE (DROITE) ---
+    // --- STATION 3 : LA STATION D'INVESTIGATION NUMÉRIQUE & MICROSCOPE DEEPFAKE (DROITE) ---
     const microscopeGroup = new THREE.Group();
     microscopeGroup.position.set(4.5, 0, -0.5);
     microscopeGroup.name = "station_microscope";
@@ -1463,7 +1463,7 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
       </div>
 
       {/* ==================================================================== */}
-      {/* FENÊTRE D'INVESTIGATION FORENSIQUE : CYBERSCOPE OS V3.2               */}
+      {/* FENÊTRE D'INVESTIGATION NUMÉRIQUE : CYBERSCOPE OS V3.2               */}
       {/* ==================================================================== */}
       {currentEnigma && (
         <div className="absolute inset-0 z-40 bg-black/85 backdrop-blur-xl flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-200">
@@ -1497,13 +1497,13 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
               </button>
             </div>
 
-            {/* BARRE DE NAVIGATION WEB FORENSIQUE CYBERSCOPE */}
+            {/* BARRE DE NAVIGATION D'ENQUÊTE CYBERSCOPE */}
             <div className="bg-slate-900/90 rounded-2xl p-2.5 border border-slate-800 flex items-center gap-2 text-xs font-mono">
               <span className="text-emerald-400 flex items-center gap-1 font-bold">
                 <Lock className="w-3.5 h-3.5" /> HTTPS
               </span>
               <div className="flex-1 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 text-slate-300 truncate">
-                {currentEnigma.virtualUrl || "https://cyberscope.hech.be/forensic-feed"}
+                {currentEnigma.virtualUrl || "https://cyberscope.hech.be/investigation-feed"}
               </div>
               <span className="text-[10px] text-cyan-400 font-sans font-bold px-2 py-1 rounded-lg bg-cyan-950/80 border border-cyan-500/30">
                 SANDBOX SÉCURISÉE
@@ -1538,7 +1538,7 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
                 }`}
               >
                 <Cpu className="w-3.5 h-3.5" />
-                <span>🔬 Analyse Forensique Spectrale</span>
+                <span>🔬 Analyse Technique Spectrale</span>
               </button>
 
               <button
@@ -1618,7 +1618,7 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
                       <div className="flex items-center justify-between text-xs text-slate-400 pb-2 border-b border-slate-800">
                         <span className="font-bold text-white flex items-center gap-1.5">
                           <Eye className="w-4 h-4 text-cyan-400" />
-                          <span>Visionneuse Forensique d'Images (Canal Spectral)</span>
+                          <span>Visionneuse d'Investigation d'Images (Canal Spectral)</span>
                         </span>
                         <span className="text-[10px] text-slate-500">Midjourney v6.1 RAW</span>
                       </div>
@@ -1748,7 +1748,7 @@ export default function GameFactChecking3D({ onComplete, onBack }) {
                 </div>
               )}
 
-              {/* --- ONGLET 2 : OUTILS FORENSIQUES SPECTRAUX --- */}
+              {/* --- ONGLET 2 : OUTILS D'ANALYSE SPECTRALE --- */}
               {activeInspectorTab === 'forensic' && (
                 <div className="p-4 rounded-2xl bg-slate-950 border border-indigo-500/40 space-y-3 font-mono text-xs animate-in fade-in duration-150">
                   <span className="text-indigo-400 font-bold block uppercase text-xs">

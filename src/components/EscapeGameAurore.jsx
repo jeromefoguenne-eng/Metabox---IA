@@ -469,7 +469,7 @@ export default function EscapeGameAurore({ onClose }) {
             <div className="space-y-3 animate-in fade-in h-full flex flex-col">
               <div className="flex items-center justify-between pb-2 border-b border-slate-800">
                 <span className="text-xs font-mono text-cyan-400 font-bold uppercase">
-                  AILE NORD (QUAI DE ROME) · LABORATOIRE FORENSIQUE DE FACT-CHECKING 3D
+                  AILE NORD (QUAI DE ROME) · LABORATOIRE D'INVESTIGATION NUMÉRIQUE DE FACT-CHECKING 3D
                 </span>
                 <button 
                   onClick={handleBackToHub}
@@ -525,9 +525,9 @@ export default function EscapeGameAurore({ onClose }) {
                           ? 'bg-purple-600 text-white shadow'
                           : 'text-slate-400 hover:text-white'
                       }`}
-                      title="Procès 2030 : 3 Affaires complètes (Julien, Léo, AlgoRH) avec Outils Forensiques & Objection"
+                      title="Procès 2030 : 3 Affaires complètes (Julien, Léo, AlgoRH) avec Outils d'Enquête Numérique & Objection"
                     >
-                      ⚖️ 3 Affaires & Forensique (Julien / Léo / AlgoRH)
+                      ⚖️ 3 Affaires & Enquête Numérique (Julien / Léo / AlgoRH)
                     </button>
                   </div>
                 </div>
