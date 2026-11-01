@@ -63,6 +63,10 @@ class SoundManager {
     return this.muted;
   }
 
+  isVoicePlaying() {
+    return !!(this.currentVoiceAudio && !this.currentVoiceAudio.paused && !this.currentVoiceAudio.ended);
+  }
+
   // --- Joueur Audio MP3 avec mise en cache, Callback de fin & Anti-Superposition Stricte ---
   playAudioFile(path, volume = 1.0, loop = false, onEnded = null) {
     if (this.muted) return null;

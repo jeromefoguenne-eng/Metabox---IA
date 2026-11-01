@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentCorp 3D Studio — maxime_3d</title>
+    <style>
+        body { margin: 0; background: #090d16; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #f8fafc; }
+        #info { position: absolute; top: 16px; left: 16px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); padding: 14px 20px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 10; }
+        h1 { margin: 0 0 6px 0; font-size: 15px; font-weight: 700; color: #38bdf8; letter-spacing: -0.3px; }
+        p { margin: 0 0 4px 0; font-size: 12px; color: #94a3b8; }
+        .badge { display: inline-block; background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-weight: 600; padding: 2px 8px; border-radius: 6px; font-size: 11px; margin-top: 6px; }
+        #controls-panel { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); padding: 8px 14px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.12); z-index: 10; }
+        button { background: #1e293b; color: #f8fafc; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
+        button:hover { background: #38bdf8; color: #090d16; }
+    </style>
+    <!-- Three.js + OrbitControls + GLTFLoader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+</head>
+<body>
+    <div id="info">
+        <h1>AgentCorp 3D Studio</h1>
+        <p>Modèle : <strong>maxime_3d.glb</strong></p>
+        <p>Géométrie : 174,052 faces | 87,030 sommets</p>
+        <span class="badge">ACES Filmic Studio HDR</span>
+    </div>
+    <div id="controls-panel">
+        <button id="btn-rotate">Auto-Rotation: ON</button>
+        <button id="btn-reset">Recentrer</button>
+    </div>
+    <script>
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x090d16);
+        
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(0, 1.2, 2.8);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        
+        // Configuration Cinématographique (Standard ACES Filmic)
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.15;
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+        
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.maxPolarAngle = Math.PI / 2 + 0.05; // Empêche de passer sous le sol
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 2.0;
+        
+        // 1. Éclairage Studio 3 Points Haute Fidélité
+        const keyLight = new THREE.DirectionalLight(0xfff6ea, 2.2);
+        keyLight.position.set(4, 6, 4);
+        keyLight.castShadow = true;
+        keyLight.shadow.mapSize.width = 2048;
+        keyLight.shadow.mapSize.height = 2048;
+        keyLight.shadow.camera.near = 0.5;
+        keyLight.shadow.camera.far = 15;
+        keyLight.shadow.bias = -0.0001;
+        keyLight.shadow.radius = 3;
+        scene.add(keyLight);
+        
+        const fillLight = new THREE.DirectionalLight(0x88b0e8, 0.9);
+        fillLight.position.set(-4, 3, -2);
+        scene.add(fillLight);
+        
+        const rimLight = new THREE.DirectionalLight(0xffffff, 1.6);
+        rimLight.position.set(0, 4, -5);
+        scene.add(rimLight);
+        
+        const hemiLight = new THREE.HemisphereLight(0xffffff, 0x1e293b, 0.7);
+        scene.add(hemiLight);
+        
+        // 2. Sol Studio & Ombre de Contact (Contact Shadow)
+        const shadowPlane = new THREE.Mesh(
+            new THREE.PlaneGeometry(10, 10),
+            new THREE.ShadowMaterial({ opacity: 0.35 })
+        );
+        shadowPlane.rotation.x = -Math.PI / 2;
+        shadowPlane.position.y = -0.01;
+        shadowPlane.receiveShadow = true;
+        scene.add(shadowPlane);
+        
+        const gridHelper = new THREE.GridHelper(10, 20, 0x38bdf8, 0x1e293b);
+        gridHelper.position.y = -0.015;
+        scene.add(gridHelper);
+        
+        // 3. Chargement et Optimisation des Matériaux du Modèle
+        let currentModel = null;
+        const loader = new THREE.GLTFLoader();
+        loader.load('maxime_3d.glb', (gltf) => {
+            const obj = gltf.scene;
+            
+            // Calcul de la boîte englobante pour centrage parfait
+            const box = new THREE.Box3().setFromObject(obj);
+            const center = box.getCenter(new THREE.Vector3());
+            const size = box.getSize(new THREE.Vector3());
+            
+            // Repose l'objet sur le sol (y = 0)
+            obj.position.x = -center.x;
+            obj.position.y = -box.min.y;
+            obj.position.z = -center.z;
+            
+            // Amélioration PBR des matériaux
+            obj.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                    if (child.material) {
+                        child.material.roughness = Math.max(child.material.roughness || 0.4, 0.25);
+                        child.material.envMapIntensity = 1.0;
+                    }
+                }
+            });
+            
+            currentModel = obj;
+            scene.add(obj);
+        });
+        
+        // Boutons de contrôle
+        const btnRotate = document.getElementById('btn-rotate');
+        btnRotate.addEventListener('click', () => {
+            controls.autoRotate = !controls.autoRotate;
+            btnRotate.innerText = controls.autoRotate ? 'Auto-Rotation: ON' : 'Auto-Rotation: OFF';
+        });
+        
+        document.getElementById('btn-reset').addEventListener('click', () => {
+            camera.position.set(0, 1.2, 2.8);
+            controls.target.set(0, 0.5, 0);
+        });
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>
