@@ -307,7 +307,7 @@ export default function Courtroom3DCanvas({
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.25;
+    renderer.toneMappingExposure = 0.82;
     rendererRef.current = renderer;
 
     container.appendChild(renderer.domElement);
@@ -324,49 +324,49 @@ export default function Courtroom3DCanvas({
     composer.addPass(renderPass);
     const bloomPass = new UnrealBloomPass(
       new THREE.Vector2(width, height),
-      0.24, // Bloom subtil et élégant
-      0.40, // Rayon
-      0.82  // Seuil pour ne faire luire que les vitraux et lampes dorées
+      0.05, // Bloom très feutré et délicat
+      0.18, // Rayon réduit
+      0.98  // Seuil élevé : seules les flammes et ampoules réelles scintillent
     );
     composer.addPass(bloomPass);
     const outputPass = new OutputPass();
     composer.addPass(outputPass);
     composerRef.current = composer;
 
-    // 2. Éclairage Studio Magistral
-    const hemiLight = new THREE.HemisphereLight(0xfff5ea, 0x27181c, 1.30);
+    // 2. Éclairage Feutré & Réaliste de Tribunal (Ambiance Chaleureuse & Tamisée)
+    const hemiLight = new THREE.HemisphereLight(0xffedd5, 0x1a0f0d, 0.40);
     scene.add(hemiLight);
 
-    const ambientLight = new THREE.AmbientLight(0xffecd6, 0.45);
+    const ambientLight = new THREE.AmbientLight(0x78350f, 0.16);
     scene.add(ambientLight);
 
-    // Key Light douce dorée
-    const keySpot = new THREE.SpotLight(0xfff3df, 3.8);
-    keySpot.position.set(3, 10.5, 6);
-    keySpot.angle = Math.PI / 4.0;
-    keySpot.penumbra = 0.85;
+    // Key Light douce et tamisée (Lustre central)
+    const keySpot = new THREE.SpotLight(0xffedd5, 0.95);
+    keySpot.position.set(2.5, 9.5, 5.0);
+    keySpot.angle = Math.PI / 4.6;
+    keySpot.penumbra = 0.95;
     keySpot.castShadow = true;
     keySpot.shadow.mapSize.width = 2048;
     keySpot.shadow.mapSize.height = 2048;
     keySpot.shadow.bias = -0.0001;
-    keySpot.shadow.radius = 3.0;
+    keySpot.shadow.radius = 4.0;
     scene.add(keySpot);
 
-    // Rims bicolores (Cyan froid & Ambre chaud)
-    const rimCyan = new THREE.DirectionalLight(0x38bdf8, 2.2);
-    rimCyan.position.set(-8, 7, -2);
-    scene.add(rimCyan);
+    // Découpe feutrée douce (Ardoise & Ambre doux)
+    const rimSlate = new THREE.DirectionalLight(0x64748b, 0.22);
+    rimSlate.position.set(-8, 7, -2);
+    scene.add(rimSlate);
 
-    const rimWarm = new THREE.DirectionalLight(0xf59e0b, 2.4);
+    const rimWarm = new THREE.DirectionalLight(0xd97706, 0.35);
     rimWarm.position.set(8, 7, -2);
     scene.add(rimWarm);
 
-    // Spot or théâtral sur le Juge
-    const judgeSpot = new THREE.SpotLight(0xfbbf24, 3.6);
+    // Éclairage tamisé doux sur le Juge
+    const judgeSpot = new THREE.SpotLight(0xfde68a, 0.45);
     judgeSpot.position.set(0, 9.5, -2.5);
     judgeSpot.target.position.set(0, 3.2, -5.2);
     judgeSpot.angle = Math.PI / 4.5;
-    judgeSpot.penumbra = 0.6;
+    judgeSpot.penumbra = 0.85;
     scene.add(judgeSpot);
     scene.add(judgeSpot.target);
 
@@ -425,11 +425,11 @@ export default function Courtroom3DCanvas({
     const floorParquet = new THREE.MeshPhysicalMaterial({ 
       map: parquetTex, 
       bumpMap: parquetBumpTex,
-      bumpScale: 0.025,
-      roughness: 0.18, 
-      metalness: 0.06,
-      clearcoat: 0.65,
-      clearcoatRoughness: 0.15
+      bumpScale: 0.020,
+      roughness: 0.58, // Chêne ciré mat satiné, sans reflet blanc aveuglant
+      metalness: 0.02,
+      clearcoat: 0.08,
+      clearcoatRoughness: 0.45
     });
 
     const goldMat = new THREE.MeshStandardMaterial({ 
@@ -480,17 +480,17 @@ export default function Courtroom3DCanvas({
 
     // Peaux Lisses Veloutées Style Pixar (Subsurface Glow & Clearcoat léger)
     const skinToneJudge = new THREE.MeshPhysicalMaterial({ 
-      color: 0xfed7aa, 
-      roughness: 0.32, 
-      clearcoat: 0.08,
+      color: 0xdfb496, 
+      roughness: 0.65, 
+      clearcoat: 0.00,
       clearcoatRoughness: 0.25,
       flatShading: false 
     });
 
     const skinToneWitness = new THREE.MeshPhysicalMaterial({ 
-      color: 0xfde2d0, 
-      roughness: 0.30, 
-      clearcoat: 0.10,
+      color: 0xe0bca2, 
+      roughness: 0.65, 
+      clearcoat: 0.00,
       clearcoatRoughness: 0.20,
       flatShading: false 
     });
@@ -607,7 +607,7 @@ export default function Courtroom3DCanvas({
         chanGroup.add(bulb);
       }
 
-      const chanLight = new THREE.PointLight(0xfef3c7, 1.8, 12);
+      const chanLight = new THREE.PointLight(0xfef3c7, 0.75, 10);
       chanLight.position.set(0, 0, 0);
       chanGroup.add(chanLight);
 
@@ -657,18 +657,7 @@ export default function Courtroom3DCanvas({
       mullionH2.position.set(x, 7.6, -8.85);
       scene.add(mullionH2);
 
-      // Faisceau volumétrique de soleil coloré
-      const beamMat = new THREE.MeshBasicMaterial({
-        color: windowColors[idx],
-        transparent: true,
-        opacity: 0.08,
-        blending: THREE.AdditiveBlending,
-        side: THREE.DoubleSide
-      });
-      const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 2.4, 10.5, 24), beamMat);
-      beam.position.set(x * 0.85, 4.2, -4.2);
-      beam.rotation.x = Math.PI / 4.8;
-      scene.add(beam);
+      // Vitrail feutré sans faisceau additif aveuglant
     });
 
     // Texture du logo officiel HECh
@@ -936,7 +925,7 @@ export default function Courtroom3DCanvas({
     judgeHeadGroup.add(jaw);
 
     // Perruque classique de magistrat blanche sculptée avec rouleaux latéraux
-    const wigMat = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.85 });
+    const wigMat = new THREE.MeshStandardMaterial({ color: 0xa8adb5, roughness: 0.95 });
     const wigDome = new THREE.Mesh(new THREE.SphereGeometry(0.28, 32, 24), wigMat);
     wigDome.scale.set(1.08, 0.95, 1.12);
     wigDome.position.set(0, 0.15, -0.04);
