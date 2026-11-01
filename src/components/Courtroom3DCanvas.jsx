@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { Camera, ZoomIn, Eye, Sparkles, Film, ShieldCheck } from 'lucide-react';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
@@ -744,6 +745,37 @@ export default function Courtroom3DCanvas({
     dais.position.set(0, 0.45, -5.8);
     dais.receiveShadow = true;
     scene.add(dais);
+
+    // --- Asset Low-Poly Stylisé Studio (Blender 5.3) : Pupitre Biseauté & Accessoires ---
+    const gltfLoader = new GLTFLoader();
+    gltfLoader.load(
+      '/models/courtroom_bench_stylized.glb',
+      (gltf) => {
+        const stylizedBench = gltf.scene;
+        stylizedBench.position.set(0, 0.90, -4.5);
+        stylizedBench.traverse((child) => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            if (child.material) {
+              child.material.envMapIntensity = 1.3;
+            }
+          }
+        });
+        scene.add(stylizedBench);
+        // Remplacer les volumes bruts par le modèle biseauté
+        benchDesk.visible = false;
+        benchTopTrim.visible = false;
+        if (typeof soundBlock !== 'undefined') soundBlock.visible = false;
+        if (typeof soundRing !== 'undefined') soundRing.visible = false;
+        if (typeof book1 !== 'undefined') book1.visible = false;
+        if (typeof book2 !== 'undefined') book2.visible = false;
+      },
+      undefined,
+      (err) => {
+        console.warn('Fallback au pupitre procédural:', err);
+      }
+    );
 
     const benchGroup = new THREE.Group();
     benchGroup.position.set(0, 1.8, -4.5);
