@@ -102,12 +102,8 @@ export default function EscapeGameAurore({ onClose }) {
 
   // Audio & Timer
   useEffect(() => {
-    // Ne jouer l'alerte du doyen que lors de l'intro initiale
-    sounds.playVoice('doyen_alert_intro', () => {
-      sounds.scheduleTimeout(() => {
-        sounds.playVoice('aurore_intro_hd');
-      }, 600);
-    });
+    // Voix feminine officielle d'Aurore en direct des l'ouverture du studio
+    sounds.playVoice('aurore_intro_hd');
 
     return () => {
       sounds.stopAllVoice();
