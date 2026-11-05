@@ -146,12 +146,26 @@ export default function GameTribunal3D({ onComplete }) {
 
   const currentCase = CASES[currentCaseIdx];
 
-  // Lancement de la voix au changement d'étape
+  // Lancement de la voix : Le Juge introduit chaque affaire avant le témoin
   useEffect(() => {
     if (trialStage === 'statement') {
-      setWitnessState('speaking');
-      setCameraView('WITNESS');
-      sounds.playAudioFile(`/audio/voices/${currentCase.statementVoice}.mp3`, 1.0);
+      const caseJudgeVoiceMap = [
+        '/audio/voices/tribunal_judge_case1_intro.mp3',
+        '/audio/voices/tribunal_judge_case2_intro.mp3',
+        '/audio/voices/tribunal_judge_case3_intro.mp3'
+      ];
+      const judgeVoice = caseJudgeVoiceMap[currentCaseIdx] || caseJudgeVoiceMap[0];
+
+      // Le Juge ouvre les débats de l'affaire
+      setCameraView('JUDGE');
+      setJudgeState('speaking');
+      sounds.playAudioFile(judgeVoice, 1.0, false, () => {
+        setJudgeState('idle');
+        // Puis le témoin dépose à la barre
+        setCameraView('WITNESS');
+        setWitnessState('speaking');
+        sounds.playAudioFile(`/audio/voices/${currentCase.statementVoice}.mp3`, 1.0);
+      });
     }
   }, [currentCaseIdx, trialStage]);
 
@@ -170,18 +184,33 @@ export default function GameTribunal3D({ onComplete }) {
     sounds.playTensionHeartbeat();
   };
 
-  // Déclenchement de l'OBJECTION !
+  // Déclenchement de l'OBJECTION sans blocage ni gel d'écran
   const handleTriggerObjection = () => {
+    if (objectionTriggered) return;
     sounds.playObjectionImpact();
     setObjectionTriggered(true);
     setWitnessState('stressed');
-    setCameraView('JUDGE');
+    setCameraView('DEFENSE');
 
+    // 1. Zoom sur le Juge qui retient l'objection (900ms)
     setTimeout(() => {
+      setCameraView('JUDGE');
+      setJudgeState('speaking');
+      sounds.playAudioFile(`/audio/voices/${currentCase.objectionVoice}.mp3`, 1.0);
+    }, 900);
+
+    // 2. Le témoin s'effondre à la barre et révèle ses aveux (3.6s)
+    setTimeout(() => {
+      setJudgeState('idle');
       setCameraView('WITNESS');
       setWitnessState('broken');
       sounds.playAudioFile(`/audio/voices/${currentCase.objectionVoice}.mp3`, 1.0);
-    }, 1200);
+    }, 3600);
+
+    // 3. Rétablissement de la vue globale d'audience (7.2s)
+    setTimeout(() => {
+      setCameraView('TV_WIDE');
+    }, 7200);
   };
 
   // Rendu du Verdict & Frappe du Marteau

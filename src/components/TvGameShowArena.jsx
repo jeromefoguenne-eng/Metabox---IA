@@ -108,6 +108,11 @@ function TvGameShowArenaContent({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMuted, setIsMuted] = useState(sounds.isMuted());
 
+  // Compteur 5s après victoire avant relance de question sous tension
+  const [autoAdvanceSeconds, setAutoAdvanceSeconds] = useState(null);
+  const autoAdvanceTimerRef = useRef(null);
+  const autoAdvanceIntervalRef = useRef(null);
+
   // Génération dynamique d'une banque renouvelée de questions pour Qui veut gagner des crédits & La Roue des Accords
   const [sessionQuestions, setSessionQuestions] = useState(() => {
     if (showType === 'millionnaire') {
@@ -217,9 +222,11 @@ function TvGameShowArenaContent({
     }
   };
 
-  // Stop suspense when component unmounts
+  // Stop suspense & clear timers when component unmounts
   useEffect(() => {
     return () => {
+      if (autoAdvanceTimerRef.current) clearTimeout(autoAdvanceTimerRef.current);
+      if (autoAdvanceIntervalRef.current) clearInterval(autoAdvanceIntervalRef.current);
       sounds.stopSuspense();
       sounds.stopAllVoice();
     };
@@ -294,12 +301,14 @@ function TvGameShowArenaContent({
       const isTier2 = currentIdx >= 3 && currentIdx < 7;
       const isTier3 = currentIdx >= 7;
 
-      if (isTier1) {
-        dialogueText = `🎙️ Henri : « Question ${currentIdx + 1} pour ${reward} crédits ECTS... Échauffement en douceur : que signifie « ${currentQ.verb || ''} » ? »`;
+      if (currentIdx === 0) {
+        dialogueText = `🎙️ Henri : « Question 1 pour ${reward} crédits ECTS... Échauffement en douceur : que signifie « ${currentQ.verb || ''} » ? »`;
+      } else if (isTier1) {
+        dialogueText = `🎙️ Henri : « Le calme revient en plateau... Ambiance feutrée et tendue. Question ${currentIdx + 1} pour ${reward} crédits ECTS : que signifie « ${currentQ.verb || ''} » ? »`;
       } else if (isTier2) {
-        dialogueText = `🎙️ Henri : « Question ${currentIdx + 1} pour ${reward} crédits. La pression monte d'un cran... Prenez garde : que signifie « ${currentQ.verb || ''} » ? »`;
+        dialogueText = `🎙️ Henri : « Silence en studio... Vous êtes dans le Palier 2, l'atmosphère devient oppressante ! Question ${currentIdx + 1} pour ${reward} crédits : que signifie « ${currentQ.verb || ''} » ? »`;
       } else {
-        dialogueText = `🎙️ Henri : « Silence en studio... Question ${currentIdx + 1} de HAUTE EXIGENCE pour ${reward} crédits ECTS ! Que signifie avec rigueur « ${currentQ.verb || ''} » ? Est-ce votre dernier mot ? »`;
+        dialogueText = `🎙️ Henri : « Tension maximale... Obscurité totale sur le plateau ! Question ${currentIdx + 1} au sommet de la pyramide pour ${reward} crédits ECTS ! Que signifie « ${currentQ.verb || ''} » ? Est-ce votre dernier mot ? »`;
       }
 
       // Start or escalate oppressive suspense music based on tier
@@ -646,6 +655,38 @@ function TvGameShowArenaContent({
         setHostDialogue("🎉 OUI ! Excellente réponse validée par les arbitres de la HECh !");
 
         confetti({ particleCount: 80, spread: 80, origin: { y: 0.6 } });
+
+        // Dans "qui veut gagner des crédits" (millionnaire) :
+        // Le présentateur célèbre pendant exactement 5 secondes, puis la célébration s'arrête
+        // et la question suivante est soumise dans une ambiance tendue et oppressante
+        if (showType === 'millionnaire' && currentIdx + 1 < totalQuestions) {
+          setAutoAdvanceSeconds(5);
+          let remaining = 5;
+
+          if (autoAdvanceIntervalRef.current) clearInterval(autoAdvanceIntervalRef.current);
+          autoAdvanceIntervalRef.current = setInterval(() => {
+            remaining -= 1;
+            if (remaining <= 0) {
+              clearInterval(autoAdvanceIntervalRef.current);
+              autoAdvanceIntervalRef.current = null;
+              setAutoAdvanceSeconds(null);
+            } else {
+              setAutoAdvanceSeconds(remaining);
+            }
+          }, 1000);
+
+          if (autoAdvanceTimerRef.current) clearTimeout(autoAdvanceTimerRef.current);
+          autoAdvanceTimerRef.current = setTimeout(() => {
+            autoAdvanceTimerRef.current = null;
+            if (autoAdvanceIntervalRef.current) {
+              clearInterval(autoAdvanceIntervalRef.current);
+              autoAdvanceIntervalRef.current = null;
+            }
+            setAutoAdvanceSeconds(null);
+            // Fin de la célébration : passage direct à la question suivante
+            handleNextQuestion();
+          }, 5000);
+        }
       } else {
         setReaction('wrong');
         sounds.playBuzzer();
@@ -671,8 +712,21 @@ function TvGameShowArenaContent({
   };
 
   const handleNextQuestion = () => {
+    // Annulation immédiate des compteurs automatiques en cas de clic anticipé
+    if (autoAdvanceTimerRef.current) {
+      clearTimeout(autoAdvanceTimerRef.current);
+      autoAdvanceTimerRef.current = null;
+    }
+    if (autoAdvanceIntervalRef.current) {
+      clearInterval(autoAdvanceIntervalRef.current);
+      autoAdvanceIntervalRef.current = null;
+    }
+    setAutoAdvanceSeconds(null);
+
     sounds.playPop();
     if (currentIdx + 1 < totalQuestions) {
+      // Arrêt immédiat de la célébration : retour à la posture de concentration sous tension
+      setReaction('speaking');
       setCurrentIdx(prev => prev + 1);
     } else {
       setGameOver(true);
@@ -1504,10 +1558,18 @@ function TvGameShowArenaContent({
                       (!isGameLost || showType !== 'millionnaire') && (
                         <button
                           onClick={handleNextQuestion}
-                          className="px-7 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-outfit font-black text-sm tracking-wide shadow-xl shadow-emerald-500/30 transition flex items-center gap-2 cursor-pointer"
+                          className="px-7 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-outfit font-black text-sm tracking-wide shadow-xl shadow-emerald-500/30 transition flex items-center gap-2.5 cursor-pointer group"
                         >
-                          <span>{currentIdx + 1 < totalQuestions ? "Épreuve Suivante" : "Voir le Palmarès Final"}</span>
-                          <ArrowRight className="w-4 h-4" />
+                          {showType === 'millionnaire' && autoAdvanceSeconds !== null ? (
+                            <span className="flex items-center gap-2">
+                              <span className="w-2.5 h-2.5 rounded-full bg-slate-950 animate-ping" />
+                              <span>Question suivante sous tension dans {autoAdvanceSeconds}s</span>
+                              <span className="text-xs font-normal opacity-75 hidden sm:inline">(ou passer direct ➔)</span>
+                            </span>
+                          ) : (
+                            <span>{currentIdx + 1 < totalQuestions ? "Épreuve Suivante" : "Voir le Palmarès Final"}</span>
+                          )}
+                          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                         </button>
                       )
                     )}

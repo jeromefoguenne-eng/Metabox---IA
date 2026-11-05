@@ -185,8 +185,8 @@ La solution :
 • Le rappel espacé (J+1, J+3, J+7, J+21, J+60).
 • L'auto-test actif (flashcards, quiz) plutôt que la simple relecture passive.
 • Le double codage (associer un schéma conceptuel à une définition verbale).`,
-        hasExercises: true,
-        exerciseIds: ["exo-meth-ebbinghaus"]
+        hasExercises: false,
+        exerciseIds: []
       },
       {
         id: "meth-mod2",

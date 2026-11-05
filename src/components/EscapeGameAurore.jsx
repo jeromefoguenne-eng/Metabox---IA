@@ -1,3 +1,4 @@
+import { getAssetPath } from "../utils/assetPath";
 import React, { useState, useEffect } from 'react';
 import { 
   ShieldAlert, 
@@ -203,7 +204,7 @@ export default function EscapeGameAurore({ onClose }) {
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 p-1 rounded-xl bg-white border border-slate-700 shadow-sm flex items-center justify-center">
             <img
-              src="/images/hech_logo_officiel.png"
+              src={getAssetPath("/images/hech_logo_officiel.png")}
               alt="Haute École Charlemagne"
               className="w-full h-full object-contain"
             />
@@ -353,7 +354,7 @@ export default function EscapeGameAurore({ onClose }) {
               <div className="flex items-center justify-center gap-3">
                 <div className="w-14 h-14 p-1.5 rounded-2xl bg-white border border-slate-700 shadow-xl flex items-center justify-center">
                   <img
-                    src="/images/hech_logo_officiel.png"
+                    src={getAssetPath("/images/hech_logo_officiel.png")}
                     alt="Haute École Charlemagne"
                     className="w-full h-full object-contain"
                   />

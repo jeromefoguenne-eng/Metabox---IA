@@ -1,3 +1,4 @@
+import { getAssetPath } from "../utils/assetPath";
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Trophy, 
@@ -22,7 +23,8 @@ import {
   Flame,
   Radio,
   Send,
-  Sliders
+  Sliders,
+  Clock
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import GameShow3D from './GameShow3D';
@@ -77,6 +79,7 @@ export default function GrandConcours3ManchesArena({
   const [m1Timer, setM1Timer] = useState(10); // 10 secondes pour saisir la réponse
   const [m1Feedback, setM1Feedback] = useState(null);
   const [m1QualifiedPlayer, setM1QualifiedPlayer] = useState(null);
+  const m1InputRef = useRef(null);
 
   const currentRapQ = (m1Questions && m1Questions.length > 0)
     ? m1Questions[m1Idx % m1Questions.length]
@@ -599,7 +602,7 @@ export default function GrandConcours3ManchesArena({
         <div className="px-5 py-3 bg-gradient-to-r from-cyan-900/60 via-slate-900 to-indigo-900/60 border-b border-cyan-500/30 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <img 
-              src="/images/hech_logo_officiel.png" 
+              src={getAssetPath("/images/hech_logo_officiel.png")} 
               alt="Logo HECh" 
               className="h-8 w-auto object-contain hidden xs:block drop-shadow-md" 
             />
@@ -619,19 +622,37 @@ export default function GrandConcours3ManchesArena({
             </div>
           </div>
 
-          {/* Stepper des 3 Manches */}
+          {/* Stepper des 3 Manches (Interractif) */}
           <div className="hidden md:flex items-center gap-2 bg-slate-950/60 px-3 py-1.5 rounded-2xl border border-slate-800">
-            <span className={`text-xs font-bold px-2.5 py-1 rounded-xl transition ${currentRound === 'manche1_rapidite' ? 'bg-cyan-500 text-slate-950 font-black' : 'text-slate-400'}`}>
+            <button
+              onClick={() => {
+                sounds.playPop();
+                setCurrentRound('manche1_rapidite');
+              }}
+              className={`text-xs font-bold px-2.5 py-1 rounded-xl transition cursor-pointer ${currentRound === 'manche1_rapidite' ? 'bg-cyan-500 text-slate-950 font-black' : 'text-slate-400 hover:text-white'}`}
+            >
               1. Questions de Rapidité
-            </span>
+            </button>
             <span className="text-slate-600">→</span>
-            <span className={`text-xs font-bold px-2.5 py-1 rounded-xl transition ${currentRound === 'manche2_quatreasuite' ? 'bg-amber-500 text-slate-950 font-black' : 'text-slate-400'}`}>
+            <button
+              onClick={() => {
+                sounds.playPop();
+                setCurrentRound('manche2_quatreasuite');
+              }}
+              className={`text-xs font-bold px-2.5 py-1 rounded-xl transition cursor-pointer ${currentRound === 'manche2_quatreasuite' ? 'bg-amber-500 text-slate-950 font-black' : 'text-slate-400 hover:text-white'}`}
+            >
               2. Quatre à la Suite
-            </span>
+            </button>
             <span className="text-slate-600">→</span>
-            <span className={`text-xs font-bold px-2.5 py-1 rounded-xl transition ${currentRound === 'manche3_faceaface' ? 'bg-emerald-500 text-slate-950 font-black' : 'text-slate-400'}`}>
+            <button
+              onClick={() => {
+                sounds.playPop();
+                setCurrentRound('manche3_faceaface');
+              }}
+              className={`text-xs font-bold px-2.5 py-1 rounded-xl transition cursor-pointer ${currentRound === 'manche3_faceaface' ? 'bg-emerald-500 text-slate-950 font-black' : 'text-slate-400 hover:text-white'}`}
+            >
               3. Le Face-à-Face
-            </span>
+            </button>
           </div>
 
           <div className="flex items-center gap-2">
@@ -678,7 +699,7 @@ export default function GrandConcours3ManchesArena({
         {/* ========================================================================= */}
         {/* UPPER SECTION: SCÈNE 3D DU PLATEAU TV TEMPS RÉEL (POUR TOUTES LES MANCHES) */}
         {/* ========================================================================= */}
-        <div className="h-[36vh] sm:h-[42vh] min-h-[220px] max-h-[350px] w-full relative bg-slate-950 overflow-hidden border-b border-cyan-500/30 shrink-0">
+        <div className="h-[26vh] sm:h-[30vh] min-h-[180px] max-h-[260px] w-full relative bg-slate-950 overflow-hidden border-b border-cyan-500/30 shrink-0">
           <GameShow3D 
             reaction={reaction} 
             theme="concours" 
@@ -815,9 +836,9 @@ export default function GrandConcours3ManchesArena({
                 </div>
 
                 {/* Adversaires */}
-                {m1Opponents.map((opp) => {
+                {opponents.map((opp) => {
                   const score = oppScoresM1[opp.id] || 0;
-                  const isBuzzing = m1BuzzerState === 'opponent_buzzed' && m1CurrentBuzzParticipant?.id === opp.id;
+                  const isBuzzing = m1BuzzerState === 'opponent_buzzed' && m1BuzzedOpponent?.id === opp.id;
                   return (
                     <div
                       key={opp.id}
@@ -924,10 +945,10 @@ export default function GrandConcours3ManchesArena({
                 {m1BuzzerState === 'opponent_buzzed' && (
                   <div className="py-6 flex flex-col items-center justify-center space-y-3 animate-in fade-in">
                     <div className="text-4xl animate-bounce">
-                      {m1CurrentBuzzParticipant?.avatar}
+                      {m1BuzzedOpponent?.avatar}
                     </div>
                     <div className="text-base font-black text-amber-300">
-                      ⚡ {m1CurrentBuzzParticipant?.name} ({m1CurrentBuzzParticipant?.campus}) a buzzé !
+                      ⚡ {m1BuzzedOpponent?.name} ({m1BuzzedOpponent?.campus}) a buzzé !
                     </div>
                     <p className="text-xs text-slate-400 font-mono animate-pulse">
                       Le candidat formule sa réponse...
@@ -939,11 +960,11 @@ export default function GrandConcours3ManchesArena({
                 {m1BuzzerState === 'feedback' && (
                   <div className="py-4 space-y-3 animate-in zoom-in-95 duration-200">
                     <div className={`p-4 rounded-2xl border text-center ${
-                      m1FeedbackText.includes('Excellente') || m1FeedbackText.includes('Bonne réponse')
+                      m1Feedback?.isCorrect
                         ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-200'
                         : 'bg-rose-500/20 border-rose-500/50 text-rose-200'
                     }`}>
-                      <p className="text-sm font-black">{m1FeedbackText}</p>
+                      <p className="text-sm font-black">{m1Feedback?.text}</p>
                       <p className="text-xs text-slate-300 mt-1.5">
                         Bonne(s) réponse(s) acceptée(s) : <span className="font-bold text-white">{currentRapQ.acceptedAnswers.join(', ')}</span>
                       </p>

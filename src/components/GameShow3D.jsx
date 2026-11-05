@@ -786,14 +786,25 @@ export default function GameShow3D({
       screenCtx.textAlign = 'start';
       screenTexture.needsUpdate = true;
 
+      // Ambiance d'éclairage dynamique (célébration vs ambiance tendue & oppressante pour Qui veut gagner des crédits)
+      const isCelebrating = currentReaction === 'correct' || currentReaction === 'victory';
+      if (theme === 'millionnaire') {
+        const targetAmbient = isCelebrating ? 0.70 : 0.16; // Chute dans l'obscurité feutrée
+        const targetFill = isCelebrating ? 1.80 : 0.45;    // Ombres bleu nuit oppressantes
+        const targetKey = isCelebrating ? 4.5 : 6.5;      // Faisceau zénithal percutant braqué sur le présentateur
+        ambientLight.intensity += (targetAmbient - ambientLight.intensity) * 0.08;
+        fillLight.intensity += (targetFill - fillLight.intensity) * 0.08;
+        keyLight.intensity += (targetKey - keyLight.intensity) * 0.08;
+      }
+
       // 2. Camera Cinematic Subtle Drift
       camera.position.x = Math.sin(elapsed * 0.28) * 0.45;
       camera.position.y = 2.7 + Math.cos(elapsed * 0.35) * 0.12;
       camera.lookAt(0, 1.4, 0);
 
-      // 3. Moving Spotlights Sweeping
+      // 3. Moving Spotlights Sweeping (Balayage festif rapide en victoire, lent et oppressant en question)
       beamSpots.forEach((spot, idx) => {
-        const sweepSpeed = 0.75 + idx * 0.25;
+        const sweepSpeed = isCelebrating ? (1.5 + idx * 0.4) : (0.28 + idx * 0.12);
         const targetX = Math.sin(elapsed * sweepSpeed + idx) * 3.2;
         const targetZ = Math.cos(elapsed * sweepSpeed * 0.7 + idx) * 2.2;
         spot.target.position.set(targetX, 0.5, targetZ);
@@ -809,14 +820,15 @@ export default function GameShow3D({
       torsoGroup.position.y = 0.9 + Math.sin(elapsed * 2.2) * 0.015;
 
       if (currentReaction === 'speaking') {
-        headGroup.rotation.x = Math.sin(elapsed * 6) * 0.08;
-        headGroup.rotation.y = Math.sin(elapsed * 3) * 0.12;
+        hostGroup.position.y = 0.15; // Ancré au sol, posture solennelle et tendue
+        headGroup.rotation.x = Math.sin(elapsed * 4) * 0.04;
+        headGroup.rotation.y = Math.sin(elapsed * 2) * 0.06;
 
-        rightArmGroup.rotation.x = -0.7 + Math.sin(elapsed * 5) * 0.15;
-        rightArmGroup.rotation.z = -0.3 + Math.cos(elapsed * 3) * 0.08;
+        rightArmGroup.rotation.x = -0.6 + Math.sin(elapsed * 3) * 0.08;
+        rightArmGroup.rotation.z = -0.2;
 
-        leftArmGroup.rotation.x = -0.4 + Math.sin(elapsed * 4) * 0.2;
-        leftArmGroup.rotation.y = Math.cos(elapsed * 2) * 0.2;
+        leftArmGroup.rotation.x = -0.5 + Math.sin(elapsed * 2.5) * 0.08;
+        leftArmGroup.rotation.y = 0.1;
 
       } else if (currentReaction === 'correct' || currentReaction === 'victory') {
         const jump = Math.abs(Math.sin(elapsed * 8)) * 0.18;

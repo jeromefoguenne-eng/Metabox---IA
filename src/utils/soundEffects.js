@@ -67,9 +67,56 @@ class SoundManager {
     return !!(this.currentVoiceAudio && !this.currentVoiceAudio.paused && !this.currentVoiceAudio.ended);
   }
 
+  // Niveau d'amplitude et cadence de parole en direct (Lip-Sync précis 60 FPS)
+  getVoiceLevel() {
+    if (!this.currentVoiceAudio || this.currentVoiceAudio.paused || this.currentVoiceAudio.ended) {
+      return 0;
+    }
+
+    const t = this.currentVoiceAudio.currentTime;
+    if (t <= 0.05) return 0;
+
+    // Cadence syllabique naturelle de la langue française (~4.4 syllabes par seconde)
+    const syllableFreq = 4.4;
+    const phase = (t * syllableFreq * Math.PI * 2) % (Math.PI * 2);
+
+    // Demi-onde positive avec attaque vive simulant l'ouverture de la mâchoire
+    let syllableWave = Math.sin(phase);
+    if (syllableWave < 0) syllableWave = 0;
+    syllableWave = Math.pow(syllableWave, 0.72);
+
+    // Modulation phonétique des voyelles et consonnes (variabilité naturelle du timbre)
+    const phonemeVar = 0.68 + 0.32 * Math.sin(t * 19.3) * Math.cos(t * 7.1);
+
+    // Micro-pauses respiratoires naturelles entre les propositions syntaxiques
+    const pauseCycle = Math.sin(t * 2.8);
+    const isPausing = (pauseCycle < -0.84);
+    if (isPausing) return 0;
+
+    return Math.max(0, Math.min(1.0, syllableWave * phonemeVar));
+  }
+
+  resolveAssetPath(path) {
+    if (!path) return '';
+    if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:') || path.startsWith('blob:')) {
+      return path;
+    }
+    const base = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) || '/';
+    const cleanBase = base.endsWith('/') ? base : `${base}/`;
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+    return `${cleanBase}${cleanPath}`;
+  }
+
   // --- Joueur Audio MP3 avec mise en cache, Callback de fin & Anti-Superposition Stricte ---
-  playAudioFile(path, volume = 1.0, loop = false, onEnded = null) {
-    if (this.muted) return null;
+  playAudioFile(rawPath, volume = 1.0, loop = false, onEnded = null) {
+    if (!rawPath) return null;
+    const path = this.resolveAssetPath(rawPath);
+    if (this.muted) {
+      if (typeof onEnded === 'function') {
+        setTimeout(onEnded, 80);
+      }
+      return null;
+    }
 
     // Détection stricte de toute piste vocale
     const isVoiceTrack = path.includes('/voices/') || 
@@ -94,7 +141,10 @@ class SoundManager {
         audio.currentTime = 0;
       }
 
+      let hasEnded = false;
       const handleEnded = () => {
+        if (hasEnded) return;
+        hasEnded = true;
         if (isVoiceTrack) {
           this.activeVoicesSet.delete(audio);
           if (this.currentVoiceAudio === audio) {
@@ -107,6 +157,10 @@ class SoundManager {
       };
 
       audio.onended = handleEnded;
+      audio.onerror = () => {
+        console.warn("Audio file error or missing:", path);
+        handleEnded();
+      };
 
       if (isVoiceTrack) {
         this.currentVoiceAudio = audio;
@@ -117,10 +171,11 @@ class SoundManager {
       audio.loop = loop;
       const playPromise = audio.play();
       if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // Fallback or autoplay policy catch
+        playPromise.catch((err) => {
+          console.warn("Audio play blocked/failed for:", path, err);
+          // Fallback automatique rapide pour ne jamais geler l'interface utilisateur
           if (typeof onEnded === 'function') {
-            setTimeout(onEnded, 4000);
+            setTimeout(handleEnded, 1800);
           }
         });
       }
@@ -134,29 +189,40 @@ class SoundManager {
 
   // Jouer une voix neurale humaine pré-enregistrée
   playVoice(voiceKey, onEndedCallback) {
-    if (this.muted) return;
+    if (this.muted) {
+      if (typeof onEndedCallback === 'function') {
+        setTimeout(onEndedCallback, 80);
+      }
+      return;
+    }
 
     this.stopAllVoice();
 
-    const voicePath = `/audio/voices/${voiceKey}.mp3`;
+    const voicePath = this.resolveAssetPath(`/audio/voices/${voiceKey}.mp3`);
     try {
       const audio = new Audio(voicePath);
       this.currentVoiceAudio = audio;
       this.activeVoicesSet.add(audio);
       audio.volume = 0.95;
 
-      audio.onended = () => {
+      let hasEnded = false;
+      const finish = () => {
+        if (hasEnded) return;
+        hasEnded = true;
         this.activeVoicesSet.delete(audio);
         if (this.currentVoiceAudio === audio) {
           this.currentVoiceAudio = null;
         }
-        if (onEndedCallback) onEndedCallback();
+        if (typeof onEndedCallback === 'function') {
+          onEndedCallback();
+        }
       };
 
+      audio.onended = finish;
+
       audio.onerror = () => {
-        this.activeVoicesSet.delete(audio);
         console.warn(`Voice file missing: ${voicePath}, falling back.`);
-        this.currentVoiceAudio = null;
+        finish();
       };
 
       const p = audio.play();
@@ -164,10 +230,16 @@ class SoundManager {
         p.catch(() => {
           this.activeVoicesSet.delete(audio);
           this.currentVoiceAudio = null;
+          if (typeof onEndedCallback === 'function') {
+            setTimeout(finish, 1800);
+          }
         });
       }
-    } catch {
-      this.currentVoiceAudio = null;
+    } catch (e) {
+      console.warn("Voice error:", e);
+      if (typeof onEndedCallback === 'function') {
+        onEndedCallback();
+      }
     }
   }
 
@@ -239,7 +311,7 @@ class SoundManager {
       return null;
     }
 
-    const themePath = `/audio/sfx/theme_${themeType}.mp3`;
+    const themePath = this.resolveAssetPath(`/audio/sfx/theme_${themeType}.mp3`);
     try {
       const audio = new Audio(themePath);
       audio.volume = 0.9;
@@ -308,7 +380,7 @@ class SoundManager {
       ? 'tension_tier2' 
       : 'tension_tier1';
     
-    const audioPath = `/audio/sfx/${trackName}.mp3`;
+    const audioPath = this.resolveAssetPath(`/audio/sfx/${trackName}.mp3`);
 
     // If already playing the exact track, just adjust volume
     if (this.suspenseAudio && this.currentSuspenseTier === tier) {
@@ -782,3 +854,6 @@ class SoundManager {
 }
 
 export const sounds = new SoundManager();
+if (typeof window !== 'undefined') {
+  window.sounds = sounds;
+}

@@ -1,3 +1,4 @@
+import { getAssetPath } from "../utils/assetPath";
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -104,7 +105,7 @@ function createMarbleTexture() {
   canvas.height = 512;
   const ctx = canvas.getContext('2d');
 
-  ctx.fillStyle = '#f5efe6';
+  ctx.fillStyle = '#9c846f';
   ctx.fillRect(0, 0, 512, 512);
 
   ctx.lineWidth = 2.2;
@@ -178,33 +179,33 @@ function createMahoganyBumpTexture() {
 // Presets de Caméra Cinématographique
 export const CAMERA_PRESETS = {
   TV_WIDE: {
-    pos: [0, 4.4, 8.2],
+    pos: [0, 3.8, 7.2],
     look: [0, 1.8, -1.8],
-    fov: 46,
+    fov: 44,
     label: "Plan d'Ensemble Tribunal"
   },
   JUDGE: {
-    pos: [0, 3.4, -1.6],
-    look: [0, 3.2, -5.2],
-    fov: 34,
-    label: "Plan Serré Juge"
+    pos: [0, 3.2, -2.4],
+    look: [0, 2.9, -5.2],
+    fov: 30,
+    label: "Plan Rapproché Juge"
   },
   WITNESS: {
-    pos: [0, 2.0, 3.4],
-    look: [0, 1.7, 0.7],
-    fov: 34,
+    pos: [0.35, 2.24, -0.25],
+    look: [0, 2.22, 0.72],
+    fov: 32,
     label: "Plan Face Maxime"
   },
   DEFENSE: {
-    pos: [2.5, 2.3, 2.8],
-    look: [4.4, 1.8, -0.2],
-    fov: 36,
+    pos: [2.8, 2.15, 1.1],
+    look: [4.4, 1.78, -0.2],
+    fov: 30,
     label: "Banc de la Défense"
   },
   PROSECUTION: {
-    pos: [-2.5, 2.3, 2.8],
-    look: [-4.4, 1.8, -0.2],
-    fov: 36,
+    pos: [-2.8, 2.15, 1.1],
+    look: [-4.4, 1.78, -0.2],
+    fov: 30,
     label: "Banc de l'Accusation"
   },
   AUDIENCE: {
@@ -214,6 +215,74 @@ export const CAMERA_PRESETS = {
     label: "Tribune du Public"
   }
 };
+
+// --- HELPERS PIXAR 3D : YEUX EXPRESSIFS & BOUCHES ARTICULÉES ---
+function createExpressiveEye(side, posX, posY, posZ, irisColorHex, radius = 0.058) {
+  const eyeGroup = new THREE.Group();
+  eyeGroup.position.set(posX, posY, posZ);
+
+  // Sclère blanche satinée
+  const eyeWhiteMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.08 });
+  const eyeBall = new THREE.Mesh(new THREE.SphereGeometry(radius, 16, 16), eyeWhiteMat);
+  eyeBall.scale.set(1.0, 0.95, 0.85);
+  eyeGroup.add(eyeBall);
+
+  // Iris colorée vive
+  const irisMat = new THREE.MeshStandardMaterial({ color: irisColorHex, roughness: 0.12 });
+  const iris = new THREE.Mesh(new THREE.SphereGeometry(radius * 0.64, 16, 16), irisMat);
+  iris.position.set(0, 0, radius * 0.58);
+  iris.scale.set(1, 1, 0.35);
+  eyeGroup.add(iris);
+
+  // Pupille noire profonde
+  const pupMat = new THREE.MeshBasicMaterial({ color: 0x050508 });
+  const pupil = new THREE.Mesh(new THREE.SphereGeometry(radius * 0.35, 14, 14), pupMat);
+  pupil.position.set(0, 0, radius * 0.76);
+  pupil.scale.set(1, 1, 0.25);
+  eyeGroup.add(pupil);
+
+  // Double éclat Pixar (Catchlights)
+  const glintMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const glint1 = new THREE.Mesh(new THREE.SphereGeometry(radius * 0.15, 8, 8), glintMat);
+  glint1.position.set(radius * 0.22, radius * 0.22, radius * 0.82);
+  eyeGroup.add(glint1);
+
+  const glint2 = new THREE.Mesh(new THREE.SphereGeometry(radius * 0.08, 8, 8), glintMat);
+  glint2.position.set(-radius * 0.14, -radius * 0.14, radius * 0.82);
+  eyeGroup.add(glint2);
+
+  return { eyeGroup, iris, pupil };
+}
+
+function createExpressiveMouth(lipColorHex, width = 0.22, height = 0.045) {
+  const mouthGroup = new THREE.Group();
+
+  // Cavité buccale sombre
+  const cavityMat = new THREE.MeshBasicMaterial({ color: 0x180308 });
+  const cavity = new THREE.Mesh(new THREE.BoxGeometry(width * 0.88, height * 1.8, 0.04), cavityMat);
+  cavity.position.set(0, 0, 0.01);
+  cavity.scale.set(1, 0.15, 1);
+  mouthGroup.add(cavity);
+
+  // Dents blanches supérieures
+  const teethMat = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.1 });
+  const teeth = new THREE.Mesh(new THREE.BoxGeometry(width * 0.68, 0.018, 0.03), teethMat);
+  teeth.position.set(0, 0.012, 0.02);
+  mouthGroup.add(teeth);
+
+  // Lèvre supérieure
+  const lipMat = new THREE.MeshStandardMaterial({ color: lipColorHex, roughness: 0.3 });
+  const lipUpper = new THREE.Mesh(new THREE.BoxGeometry(width, 0.022, 0.05), lipMat);
+  lipUpper.position.set(0, 0.018, 0.03);
+  mouthGroup.add(lipUpper);
+
+  // Lèvre inférieure mobile
+  const lipLower = new THREE.Mesh(new THREE.BoxGeometry(width * 0.92, 0.024, 0.05), lipMat);
+  lipLower.position.set(0, -0.018, 0.03);
+  mouthGroup.add(lipLower);
+
+  return { mouthGroup, cavity, teeth, lipUpper, lipLower };
+}
 
 export default function Courtroom3DCanvas({
   witnessState = 'idle',
@@ -254,8 +323,17 @@ export default function Courtroom3DCanvas({
   
   const prosArmRef = useRef(null);
   const prosHeadRef = useRef(null);
+  const prosMouthRef = useRef(null);
+  const prosEyesRef = useRef([]);
+  const prosLeftBrowRef = useRef(null);
+  const prosRightBrowRef = useRef(null);
+
   const defArmRef = useRef(null);
   const defHeadRef = useRef(null);
+  const defMouthRef = useRef(null);
+  const defEyesRef = useRef([]);
+  const defLeftBrowRef = useRef(null);
+  const defRightBrowRef = useRef(null);
 
   const shockwaveRef = useRef(null);
   const audienceMembersRef = useRef([]);
@@ -307,7 +385,7 @@ export default function Courtroom3DCanvas({
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.82;
+    renderer.toneMappingExposure = 0.70;
     rendererRef.current = renderer;
 
     container.appendChild(renderer.domElement);
@@ -316,7 +394,7 @@ export default function Courtroom3DCanvas({
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
     pmremGenerator.compileEquirectangularShader();
     const roomEnv = new RoomEnvironment();
-    scene.environment = pmremGenerator.fromScene(roomEnv, 0.04).texture;
+    scene.environment = pmremGenerator.fromScene(roomEnv, 0.02).texture;
 
     // Post-Processing Cinéma : EffectComposer + UnrealBloomPass
     const composer = new EffectComposer(renderer);
@@ -324,9 +402,9 @@ export default function Courtroom3DCanvas({
     composer.addPass(renderPass);
     const bloomPass = new UnrealBloomPass(
       new THREE.Vector2(width, height),
-      0.05, // Bloom très feutré et délicat
-      0.18, // Rayon réduit
-      0.98  // Seuil élevé : seules les flammes et ampoules réelles scintillent
+      0.0,  // Bloom desactivé pour éliminer tout reflet blanc aveuglant
+      0.0,
+      1.0
     );
     composer.addPass(bloomPass);
     const outputPass = new OutputPass();
@@ -334,14 +412,14 @@ export default function Courtroom3DCanvas({
     composerRef.current = composer;
 
     // 2. Éclairage Feutré & Réaliste de Tribunal (Ambiance Chaleureuse & Tamisée)
-    const hemiLight = new THREE.HemisphereLight(0xffedd5, 0x1a0f0d, 0.40);
+    const hemiLight = new THREE.HemisphereLight(0xffedd5, 0x1a0f0d, 0.28);
     scene.add(hemiLight);
 
-    const ambientLight = new THREE.AmbientLight(0x78350f, 0.16);
+    const ambientLight = new THREE.AmbientLight(0x451a03, 0.10);
     scene.add(ambientLight);
 
     // Key Light douce et tamisée (Lustre central)
-    const keySpot = new THREE.SpotLight(0xffedd5, 0.95);
+    const keySpot = new THREE.SpotLight(0xffeedd, 0.50);
     keySpot.position.set(2.5, 9.5, 5.0);
     keySpot.angle = Math.PI / 4.6;
     keySpot.penumbra = 0.95;
@@ -353,16 +431,16 @@ export default function Courtroom3DCanvas({
     scene.add(keySpot);
 
     // Découpe feutrée douce (Ardoise & Ambre doux)
-    const rimSlate = new THREE.DirectionalLight(0x64748b, 0.22);
+    const rimSlate = new THREE.DirectionalLight(0x64748b, 0.12);
     rimSlate.position.set(-8, 7, -2);
     scene.add(rimSlate);
 
-    const rimWarm = new THREE.DirectionalLight(0xd97706, 0.35);
+    const rimWarm = new THREE.DirectionalLight(0xd97706, 0.15);
     rimWarm.position.set(8, 7, -2);
     scene.add(rimWarm);
 
     // Éclairage tamisé doux sur le Juge
-    const judgeSpot = new THREE.SpotLight(0xfde68a, 0.45);
+    const judgeSpot = new THREE.SpotLight(0xfde68a, 0.22);
     judgeSpot.position.set(0, 9.5, -2.5);
     judgeSpot.target.position.set(0, 3.2, -5.2);
     judgeSpot.angle = Math.PI / 4.5;
@@ -401,18 +479,19 @@ export default function Courtroom3DCanvas({
       map: mahoganyTex, 
       bumpMap: mahoganyBumpTex,
       bumpScale: 0.02,
-      roughness: 0.22, 
-      metalness: 0.05,
-      clearcoat: 0.35,
+      roughness: 0.55,
+      metalness: 0.02,
+      clearcoat: 0.05,
       clearcoatRoughness: 0.20
     });
 
     const marblePillar = new THREE.MeshPhysicalMaterial({ 
       map: marbleTex, 
-      roughness: 0.14, 
-      metalness: 0.04,
-      clearcoat: 0.70,
-      clearcoatRoughness: 0.10
+      color: 0x786350,
+      roughness: 0.85, 
+      metalness: 0.0,
+      clearcoat: 0.0,
+      clearcoatRoughness: 0.50
     });
 
     const woodDarkOak = new THREE.MeshPhysicalMaterial({ 
@@ -426,10 +505,10 @@ export default function Courtroom3DCanvas({
       map: parquetTex, 
       bumpMap: parquetBumpTex,
       bumpScale: 0.020,
-      roughness: 0.58, // Chêne ciré mat satiné, sans reflet blanc aveuglant
-      metalness: 0.02,
-      clearcoat: 0.08,
-      clearcoatRoughness: 0.45
+      roughness: 0.70,
+      metalness: 0.0,
+      clearcoat: 0.0,
+      clearcoatRoughness: 0.50
     });
 
     const goldMat = new THREE.MeshStandardMaterial({ 
@@ -496,18 +575,18 @@ export default function Courtroom3DCanvas({
     });
 
     const skinTonePros = new THREE.MeshPhysicalMaterial({ 
-      color: 0xfce7d2, 
-      roughness: 0.28, 
-      clearcoat: 0.12,
-      clearcoatRoughness: 0.20,
+      color: 0xd4a78c, 
+      roughness: 0.82, 
+      clearcoat: 0.0,
+      clearcoatRoughness: 0.30,
       flatShading: false 
     });
 
     const skinToneDef = new THREE.MeshPhysicalMaterial({ 
-      color: 0xfed7aa, 
-      roughness: 0.30, 
-      clearcoat: 0.10,
-      clearcoatRoughness: 0.20,
+      color: 0xd6a482, 
+      roughness: 0.82, 
+      clearcoat: 0.0,
+      clearcoatRoughness: 0.30,
       flatShading: false 
     });
 
@@ -607,7 +686,7 @@ export default function Courtroom3DCanvas({
         chanGroup.add(bulb);
       }
 
-      const chanLight = new THREE.PointLight(0xfef3c7, 0.75, 10);
+      const chanLight = new THREE.PointLight(0xfef3c7, 0.25, 10);
       chanLight.position.set(0, 0, 0);
       chanGroup.add(chanLight);
 
@@ -662,7 +741,7 @@ export default function Courtroom3DCanvas({
 
     // Texture du logo officiel HECh
     const textureLoader = new THREE.TextureLoader();
-    const hechLogoTex = textureLoader.load('/images/hech_logo_officiel.png');
+    const hechLogoTex = textureLoader.load(getAssetPath('/images/hech_logo_officiel.png'));
 
     // Grand Écusson de la Justice HECh au-dessus du Juge
     const sealGroup = new THREE.Group();
@@ -738,7 +817,7 @@ export default function Courtroom3DCanvas({
     // --- Asset Low-Poly Stylisé Studio (Blender 5.3) : Pupitre Biseauté & Accessoires ---
     const gltfLoader = new GLTFLoader();
     gltfLoader.load(
-      '/models/courtroom_bench_stylized.glb',
+      getAssetPath('/models/courtroom_bench_stylized.glb'),
       (gltf) => {
         const stylizedBench = gltf.scene;
         stylizedBench.position.set(0, 0.90, -4.5);
@@ -944,23 +1023,9 @@ export default function Courtroom3DCanvas({
     // Yeux expressifs avec double catchlight Pixar
     const judgeEyes = [];
     for (let side of [-1, 1]) {
-      const eyeBall = new THREE.Mesh(new THREE.SphereGeometry(0.048, 16, 16), eyeWhite);
-      eyeBall.position.set(side * 0.105, 0.04, 0.235);
-      judgeHeadGroup.add(eyeBall);
-
-      const eyeIris = new THREE.Mesh(new THREE.SphereGeometry(0.030, 16, 16), new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.2 }));
-      eyeIris.position.set(side * 0.105, 0.04, 0.262);
-      judgeHeadGroup.add(eyeIris);
-
-      const eyePup = new THREE.Mesh(new THREE.SphereGeometry(0.016, 12, 12), eyePupil);
-      eyePup.position.set(side * 0.105, 0.04, 0.278);
-      judgeHeadGroup.add(eyePup);
-
-      const glint = new THREE.Mesh(new THREE.SphereGeometry(0.007, 8, 8), eyeGlintMat);
-      glint.position.set(side * 0.105 + 0.009, 0.049, 0.286);
-      judgeHeadGroup.add(glint);
-
-      judgeEyes.push(eyeBall);
+      const eyeData = createExpressiveEye(side, side * 0.11, 0.045, 0.24, 0x1d4ed8, 0.060);
+      judgeHeadGroup.add(eyeData.eyeGroup);
+      judgeEyes.push(eyeData);
     }
     judgeEyesRef.current = judgeEyes;
 
@@ -970,17 +1035,14 @@ export default function Courtroom3DCanvas({
     judgeNose.rotation.x = 0.2;
     judgeHeadGroup.add(judgeNose);
 
-    // Bouche articulée pour les répliques et l'exaspération
-    const judgeMouth = new THREE.Mesh(
-      new THREE.BoxGeometry(0.18, 0.05, 0.06),
-      new THREE.MeshBasicMaterial({ color: 0x475569 })
-    );
-    judgeMouth.position.set(0, -0.16, 0.26);
-    judgeHeadGroup.add(judgeMouth);
-    judgeMouthRef.current = judgeMouth;
+    // Bouche articulée expressive (Lèvres, dents, cavité)
+    const judgeMouthData = createExpressiveMouth(0x64748b, 0.24, 0.048);
+    judgeMouthData.mouthGroup.position.set(0, -0.16, 0.26);
+    judgeHeadGroup.add(judgeMouthData.mouthGroup);
+    judgeMouthRef.current = judgeMouthData;
 
     // Sourcils mobiles
-    const browGeo = new THREE.BoxGeometry(0.14, 0.04, 0.05);
+    const browGeo = new THREE.BoxGeometry(0.16, 0.045, 0.05);
     const browMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.9 });
     const browL = new THREE.Mesh(browGeo, browMat);
     browL.position.set(-0.11, 0.14, 0.25);
@@ -1078,7 +1140,7 @@ export default function Courtroom3DCanvas({
     // =========================================================================
     const witnessGroup = new THREE.Group();
     witnessGroup.position.set(0, 0, 0.72);
-    witnessGroup.rotation.y = Math.PI; // Face au Juge
+    witnessGroup.rotation.y = Math.PI * 0.86; // 3/4 face visible au tribunal
 
     // Sweat à capuche étudiant bleu canard doux
     const witBodyMat = new THREE.MeshPhysicalMaterial({ 
@@ -1123,26 +1185,12 @@ export default function Courtroom3DCanvas({
       witHeadGroup.add(blush);
     }
 
-    // Yeux marron ambré de Maxime avec double étincelle
+    // Yeux marron ambré expressifs de Maxime
     const witEyes = [];
     for (let side of [-1, 1]) {
-      const eyeBall = new THREE.Mesh(new THREE.SphereGeometry(0.048, 16, 16), eyeWhite);
-      eyeBall.position.set(side * 0.10, 0.03, 0.225);
-      witHeadGroup.add(eyeBall);
-
-      const eyeIris = new THREE.Mesh(new THREE.SphereGeometry(0.030, 16, 16), new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.2 }));
-      eyeIris.position.set(side * 0.10, 0.03, 0.252);
-      witHeadGroup.add(eyeIris);
-
-      const eyePup = new THREE.Mesh(new THREE.SphereGeometry(0.016, 12, 12), eyePupil);
-      eyePup.position.set(side * 0.10, 0.03, 0.268);
-      witHeadGroup.add(eyePup);
-
-      const glint = new THREE.Mesh(new THREE.SphereGeometry(0.007, 8, 8), eyeGlintMat);
-      glint.position.set(side * 0.10 + 0.008, 0.040, 0.276);
-      witHeadGroup.add(glint);
-
-      witEyes.push(eyeBall);
+      const eyeData = createExpressiveEye(side, side * 0.10, 0.035, 0.24, 0x92400e, 0.056);
+      witHeadGroup.add(eyeData.eyeGroup);
+      witEyes.push(eyeData);
     }
     witnessEyesRef.current = witEyes;
 
@@ -1151,16 +1199,14 @@ export default function Courtroom3DCanvas({
     witNose.rotation.x = 0.22;
     witHeadGroup.add(witNose);
 
-    const witMouth = new THREE.Mesh(
-      new THREE.BoxGeometry(0.18, 0.04, 0.06),
-      new THREE.MeshBasicMaterial({ color: 0x991b1b })
-    );
-    witMouth.position.set(0, -0.12, 0.25);
-    witHeadGroup.add(witMouth);
-    witnessMouthRef.current = witMouth;
+    // Bouche articulée et expressive pour Maxime
+    const witMouthData = createExpressiveMouth(0xbe123c, 0.22, 0.044);
+    witMouthData.mouthGroup.position.set(0, -0.12, 0.25);
+    witHeadGroup.add(witMouthData.mouthGroup);
+    witnessMouthRef.current = witMouthData;
 
-    // Sourcils
-    const witBrowGeo = new THREE.BoxGeometry(0.14, 0.035, 0.05);
+    // Sourcils expressifs
+    const witBrowGeo = new THREE.BoxGeometry(0.14, 0.038, 0.05);
     const witBrowMat = new THREE.MeshStandardMaterial({ color: 0x3e2316, roughness: 0.8 });
     const witBrowL = new THREE.Mesh(witBrowGeo, witBrowMat);
     witBrowL.position.set(-0.11, 0.13, 0.24);
@@ -1233,7 +1279,7 @@ export default function Courtroom3DCanvas({
 
     const defGroup = new THREE.Group();
     defGroup.position.set(4.4, 0, -0.2);
-    defGroup.rotation.y = -Math.PI / 6;
+    defGroup.rotation.y = -Math.PI / 4.5;
 
     const defLawyer = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.30, 1.25, 32), clothNavy);
     defLawyer.position.y = 1.38;
@@ -1258,6 +1304,36 @@ export default function Courtroom3DCanvas({
     defHair.scale.set(1.02, 0.86, 1.06);
     defHair.position.set(0, 0.12, -0.02);
     defHeadGroup.add(defHair);
+
+    // Yeux expressifs de la défense
+    const defEyes = [];
+    for (let side of [-1, 1]) {
+      const eyeData = createExpressiveEye(side, side * 0.10, 0.045, 0.23, 0x0284c7, 0.056);
+      defHeadGroup.add(eyeData.eyeGroup);
+      defEyes.push(eyeData);
+    }
+    defEyesRef.current = defEyes;
+
+    // Bouche expressive de l'avocat de la défense
+    const defMouthData = createExpressiveMouth(0x475569, 0.22, 0.044);
+    defMouthData.mouthGroup.position.set(0, -0.12, 0.24);
+    defHeadGroup.add(defMouthData.mouthGroup);
+    defMouthRef.current = defMouthData;
+
+    // Sourcils plaidants déterminés
+    const defBrowGeo = new THREE.BoxGeometry(0.13, 0.035, 0.04);
+    const defBrowMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8 });
+    const defBrowL = new THREE.Mesh(defBrowGeo, defBrowMat);
+    defBrowL.position.set(-0.10, 0.12, 0.23);
+    defBrowL.rotation.z = 0.14;
+    defHeadGroup.add(defBrowL);
+    defLeftBrowRef.current = defBrowL;
+
+    const defBrowR = new THREE.Mesh(defBrowGeo, defBrowMat);
+    defBrowR.position.set(0.10, 0.12, 0.23);
+    defBrowR.rotation.z = -0.14;
+    defHeadGroup.add(defBrowR);
+    defRightBrowRef.current = defBrowR;
 
     defGroup.add(defHeadGroup);
     defHeadRef.current = defHeadGroup;
@@ -1287,7 +1363,7 @@ export default function Courtroom3DCanvas({
 
     const prosGroup = new THREE.Group();
     prosGroup.position.set(-4.4, 0, -0.2);
-    prosGroup.rotation.y = Math.PI / 6;
+    prosGroup.rotation.y = Math.PI / 4.5;
 
     const prosLawyer = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.31, 1.25, 32), clothBlack);
     prosLawyer.position.y = 1.38;
@@ -1313,16 +1389,34 @@ export default function Courtroom3DCanvas({
     prosHair.position.set(0, 0.12, -0.02);
     prosHeadGroup.add(prosHair);
 
+    const prosEyes = [];
     for (let side of [-1, 1]) {
-      const eyeBall = new THREE.Mesh(new THREE.SphereGeometry(0.040, 16, 16), eyePupil);
-      eyeBall.scale.set(1.2, 0.5, 1.0);
-      eyeBall.position.set(side * 0.10, 0.05, 0.22);
-      prosHeadGroup.add(eyeBall);
-
-      const glint = new THREE.Mesh(new THREE.SphereGeometry(0.006, 8, 8), eyeGlintMat);
-      glint.position.set(side * 0.10 + 0.008, 0.062, 0.235);
-      prosHeadGroup.add(glint);
+      const eyeData = createExpressiveEye(side, side * 0.10, 0.05, 0.22, 0xb45309, 0.058);
+      prosHeadGroup.add(eyeData.eyeGroup);
+      prosEyes.push(eyeData);
     }
+    prosEyesRef.current = prosEyes;
+
+    // Bouche accusatrice du Procureur
+    const prosMouthData = createExpressiveMouth(0x9f1239, 0.24, 0.046);
+    prosMouthData.mouthGroup.position.set(0, -0.13, 0.24);
+    prosHeadGroup.add(prosMouthData.mouthGroup);
+    prosMouthRef.current = prosMouthData;
+
+    // Sourcils agressifs et froncés
+    const prosBrowGeo = new THREE.BoxGeometry(0.14, 0.038, 0.04);
+    const prosBrowMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.8 });
+    const prosBrowL = new THREE.Mesh(prosBrowGeo, prosBrowMat);
+    prosBrowL.position.set(-0.10, 0.13, 0.23);
+    prosBrowL.rotation.z = -0.36;
+    prosHeadGroup.add(prosBrowL);
+    prosLeftBrowRef.current = prosBrowL;
+
+    const prosBrowR = new THREE.Mesh(prosBrowGeo, prosBrowMat);
+    prosBrowR.position.set(0.10, 0.13, 0.23);
+    prosBrowR.rotation.z = 0.36;
+    prosHeadGroup.add(prosBrowR);
+    prosRightBrowRef.current = prosBrowR;
 
     prosGroup.add(prosHeadGroup);
     prosHeadRef.current = prosHeadGroup;
@@ -1438,6 +1532,7 @@ export default function Courtroom3DCanvas({
     let clock = new THREE.Clock();
     let isGavelStriking = false;
     let gavelTimer = 0;
+    let lastJudgeStateForGavel = 'idle';
     let blinkTimer = 0;
 
     const animate = () => {
@@ -1453,90 +1548,161 @@ export default function Courtroom3DCanvas({
       }
       dustGeo.attributes.position.needsUpdate = true;
 
-      // Clignement d'yeux naturel
+      // Clignement d'yeux naturel & Saccades du regard pour TOUS les protagonistes
       blinkTimer += delta;
-      if (blinkTimer > 3.8) {
-        const blinkScale = Math.max(0.1, Math.sin(elapsedTime * 20));
-        judgeEyesRef.current.forEach(e => e.scale.y = blinkScale);
-        witnessEyesRef.current.forEach(e => e.scale.y = blinkScale);
-        if (blinkTimer > 4.1) {
-          judgeEyesRef.current.forEach(e => e.scale.y = 1);
-          witnessEyesRef.current.forEach(e => e.scale.y = 1);
-          blinkTimer = 0;
-        }
-      }
+      const isBlinking = blinkTimer > 3.2 && blinkTimer < 3.38;
+      const blinkScale = isBlinking ? 0.08 : 1.0;
+      if (blinkTimer > 3.6) blinkTimer = 0;
+
+      // Micro-saccades vivantes du regard
+      const gazeX = Math.sin(elapsedTime * 0.9) * 0.007 + Math.sin(elapsedTime * 2.3) * 0.003;
+      const gazeY = Math.cos(elapsedTime * 0.7) * 0.003;
+
+      const updateCharacterEyes = (eyesList) => {
+        if (!eyesList) return;
+        eyesList.forEach(e => {
+          if (e && e.eyeGroup) {
+            e.eyeGroup.scale.y = blinkScale;
+            if (e.iris && e.pupil) {
+              e.iris.position.x = gazeX;
+              e.iris.position.y = gazeY;
+              e.pupil.position.x = gazeX * 1.1;
+              e.pupil.position.y = gazeY * 1.1;
+            }
+          }
+        });
+      };
+
+      updateCharacterEyes(judgeEyesRef.current);
+      updateCharacterEyes(witnessEyesRef.current);
+      updateCharacterEyes(defEyesRef.current);
+      updateCharacterEyes(prosEyesRef.current);
 
       // Interpolation fluide de la caméra cinématique
       camera.position.lerp(targetCamPos.current, 0.045);
       currentCamLook.current.lerp(targetCamLook.current, 0.045);
       camera.lookAt(currentCamLook.current);
 
-      // Animation de Maxime (Témoin)
+      // --- ANIMATION TÉMOIN (MAXIME) ---
       const curWitnessState = witnessStateRef.current;
+      const witM = witnessMouthRef.current;
       if (witnessHeadRef.current) {
         if (curWitnessState === 'speaking') {
+          const witSpeech = Math.max(0, Math.sin(elapsedTime * 15)) * (0.6 + 0.4 * Math.sin(elapsedTime * 22));
           witnessHeadRef.current.rotation.x = Math.sin(elapsedTime * 4) * 0.06;
           witnessHeadRef.current.rotation.y = Math.sin(elapsedTime * 2) * 0.08;
-          if (witnessMouthRef.current) {
-            witnessMouthRef.current.scale.y = 1.0 + Math.sin(elapsedTime * 14) * 0.8;
+          if (witM) {
+            witM.cavity.scale.y = 0.3 + witSpeech * 2.2;
+            witM.lipLower.position.y = -0.018 - witSpeech * 0.04;
           }
         } else if (curWitnessState === 'stressed') {
           witnessHeadRef.current.rotation.x = 0.12;
-          witnessHeadRef.current.rotation.y = Math.sin(elapsedTime * 8) * 0.12;
+          witnessHeadRef.current.rotation.y = Math.sin(elapsedTime * 10) * 0.10;
           if (witnessLeftBrowRef.current && witnessRightBrowRef.current) {
-            witnessLeftBrowRef.current.rotation.z = 0.28;
-            witnessRightBrowRef.current.rotation.z = -0.28;
+            witnessLeftBrowRef.current.rotation.z = 0.35;
+            witnessRightBrowRef.current.rotation.z = -0.35;
+          }
+          if (witM) {
+            witM.cavity.scale.y = 0.25;
+            witM.mouthGroup.scale.set(0.95, 1.15, 1);
           }
         } else {
           witnessHeadRef.current.rotation.x = Math.sin(elapsedTime * 1.5) * 0.03;
           witnessHeadRef.current.rotation.y = 0;
-          if (witnessMouthRef.current) witnessMouthRef.current.scale.y = 1.0;
+          if (witM) {
+            witM.cavity.scale.y = 0.15 + Math.sin(elapsedTime * 2.0) * 0.03;
+            witM.lipLower.position.y = -0.018;
+            witM.mouthGroup.scale.set(1, 1, 1);
+          }
         }
       }
 
-      // Animation du Procureur
+      // --- ANIMATION PROCUREUR (ACCUSATION) ---
       const curProsState = prosecutorStateRef.current;
+      const prosM = prosMouthRef.current;
       if (prosArmRef.current) {
         if (curProsState === 'speaking' || curProsState === 'attacking') {
+          const prosSpeech = Math.max(0, Math.sin(elapsedTime * 16)) * (0.7 + 0.3 * Math.sin(elapsedTime * 25));
           prosArmRef.current.rotation.x = -Math.PI / 3 + Math.sin(elapsedTime * 4) * 0.25;
           prosArmRef.current.rotation.z = Math.sin(elapsedTime * 3) * 0.15;
           if (prosHeadRef.current) {
-            prosHeadRef.current.rotation.y = Math.sin(elapsedTime * 4) * 0.12;
+            prosHeadRef.current.rotation.y = Math.sin(elapsedTime * 4) * 0.14;
+            prosHeadRef.current.rotation.x = -0.06 + Math.sin(elapsedTime * 8) * 0.05;
+          }
+          if (prosM) {
+            prosM.cavity.scale.y = 0.4 + prosSpeech * 2.6;
+            prosM.lipLower.position.y = -0.018 - prosSpeech * 0.048;
+          }
+          if (prosLeftBrowRef.current && prosRightBrowRef.current) {
+            prosLeftBrowRef.current.rotation.z = -0.44;
+            prosRightBrowRef.current.rotation.z = 0.44;
           }
         } else {
           prosArmRef.current.rotation.x = 0;
           prosArmRef.current.rotation.z = 0;
+          if (prosM) {
+            prosM.cavity.scale.y = 0.15;
+            prosM.lipLower.position.y = -0.018;
+          }
+          if (prosLeftBrowRef.current && prosRightBrowRef.current) {
+            prosLeftBrowRef.current.rotation.z = -0.32;
+            prosRightBrowRef.current.rotation.z = 0.32;
+          }
         }
       }
 
-      // Animation de la Défense (Me Alex)
+      // --- ANIMATION DÉFENSE (ME ALEX) ---
       const curDefState = defenseStateRef.current;
+      const defM = defMouthRef.current;
       if (defArmRef.current) {
-        if (curDefState === 'pleading') {
+        if (curDefState === 'pleading' || curDefState === 'speaking') {
+          const defSpeech = Math.max(0, Math.sin(elapsedTime * 14)) * (0.65 + 0.35 * Math.cos(elapsedTime * 8));
           defArmRef.current.rotation.x = -Math.PI / 3.2 + Math.sin(elapsedTime * 3.5) * 0.22;
           defArmRef.current.rotation.z = -Math.sin(elapsedTime * 2.5) * 0.18;
           if (defHeadRef.current) {
-            defHeadRef.current.rotation.y = Math.sin(elapsedTime * 3) * 0.10;
+            defHeadRef.current.rotation.y = Math.sin(elapsedTime * 3) * 0.12;
+            defHeadRef.current.rotation.x = 0.05 + Math.sin(elapsedTime * 5) * 0.05;
+          }
+          if (defM) {
+            defM.cavity.scale.y = 0.35 + defSpeech * 2.4;
+            defM.lipLower.position.y = -0.018 - defSpeech * 0.042;
+          }
+          if (defLeftBrowRef.current && defRightBrowRef.current) {
+            defLeftBrowRef.current.position.y = 0.15;
+            defLeftBrowRef.current.rotation.z = 0.20;
+            defRightBrowRef.current.position.y = 0.15;
+            defRightBrowRef.current.rotation.z = -0.20;
           }
         } else {
           defArmRef.current.rotation.x = 0;
           defArmRef.current.rotation.z = 0;
+          if (defM) {
+            defM.cavity.scale.y = 0.15;
+            defM.lipLower.position.y = -0.018;
+          }
+          if (defLeftBrowRef.current && defRightBrowRef.current) {
+            defLeftBrowRef.current.position.y = 0.12;
+            defLeftBrowRef.current.rotation.z = 0.14;
+            defRightBrowRef.current.position.y = 0.12;
+            defRightBrowRef.current.rotation.z = -0.14;
+          }
         }
       }
 
-      // Réaction Faciale Précise du Juge (Sourire vs Moue vs Exaspération Gavel)
+      // --- RÉACTION FACIALE PRÉCISE DU JUGE & LIP-SYNC ---
       const currentJudgeReaction = judgeReactionRef.current;
       const currentJudgeState = judgeStateRef.current;
+      const jM = judgeMouthRef.current;
 
-      if (judgeHeadRef.current && judgeMouthRef.current) {
+      if (judgeHeadRef.current && jM) {
         if (currentJudgeState === 'gavel' || isGavelStriking) {
-          // EXASPÉRATION DU JUGE : Sourcils froncés très bas, bouche grande ouverte rouge colère, secouement agacé
           judgeHeadRef.current.rotation.x = -0.12;
           judgeHeadRef.current.rotation.y = Math.sin(elapsedTime * 18) * 0.14;
           judgeHeadRef.current.rotation.z = Math.sin(elapsedTime * 14) * 0.05;
-          judgeMouthRef.current.position.y = -0.20;
-          judgeMouthRef.current.scale.set(1.7, 2.3, 1);
-          judgeMouthRef.current.material.color.setHex(0xdc2626);
+          jM.cavity.scale.y = 2.8;
+          jM.lipLower.position.y = -0.065;
+          jM.lipUpper.position.y = 0.025;
+          jM.mouthGroup.scale.set(1.4, 1.4, 1);
 
           if (judgeLeftBrowRef.current && judgeRightBrowRef.current) {
             judgeLeftBrowRef.current.position.y = 0.08;
@@ -1544,39 +1710,47 @@ export default function Courtroom3DCanvas({
             judgeRightBrowRef.current.position.y = 0.08;
             judgeRightBrowRef.current.rotation.z = 0.45;
           }
+        } else if (currentJudgeState === 'speaking') {
+          // Parole animée du juge
+          const judgeSpeech = Math.max(0, Math.sin(elapsedTime * 14)) * (0.6 + 0.4 * Math.cos(elapsedTime * 6));
+          judgeHeadRef.current.rotation.x = 0.04 + Math.sin(elapsedTime * 3.5) * 0.04;
+          judgeHeadRef.current.rotation.y = Math.sin(elapsedTime * 2) * 0.06;
+          jM.cavity.scale.y = 0.4 + judgeSpeech * 2.2;
+          jM.lipLower.position.y = -0.018 - judgeSpeech * 0.042;
+          jM.lipUpper.position.y = 0.018 + judgeSpeech * 0.012;
+          jM.mouthGroup.scale.set(1.1, 1.1, 1);
         } else if (currentJudgeReaction === 'smile') {
           judgeHeadRef.current.rotation.x = 0.12 + Math.sin(elapsedTime * 6) * 0.08;
           judgeHeadRef.current.rotation.y = 0;
-          judgeHeadRef.current.rotation.z = 0;
-          judgeMouthRef.current.position.y = -0.13 + Math.sin(elapsedTime * 4) * 0.01;
-          judgeMouthRef.current.scale.set(1.4, 1.5, 1);
-          judgeMouthRef.current.material.color.setHex(0x10b981);
+          jM.cavity.scale.y = 0.2;
+          jM.lipLower.position.y = -0.015;
+          jM.mouthGroup.scale.set(1.4, 1.2, 1);
 
           if (judgeLeftBrowRef.current && judgeRightBrowRef.current) {
             judgeLeftBrowRef.current.position.y = 0.17;
-            judgeLeftBrowRef.current.rotation.z = 0.15;
+            judgeLeftBrowRef.current.rotation.z = 0.18;
             judgeRightBrowRef.current.position.y = 0.17;
-            judgeRightBrowRef.current.rotation.z = -0.15;
+            judgeRightBrowRef.current.rotation.z = -0.18;
           }
         } else if (currentJudgeReaction === 'frown') {
           judgeHeadRef.current.rotation.x = -0.08;
-          judgeHeadRef.current.rotation.y = Math.sin(elapsedTime * 10) * 0.22;
-          judgeHeadRef.current.rotation.z = -0.06;
-          judgeMouthRef.current.position.y = -0.18;
-          judgeMouthRef.current.scale.set(1.1, 1.4, 1);
-          judgeMouthRef.current.material.color.setHex(0xef4444);
+          judgeHeadRef.current.rotation.y = Math.sin(elapsedTime * 10) * 0.18;
+          jM.cavity.scale.y = 0.8;
+          jM.lipLower.position.y = -0.035;
+          jM.mouthGroup.scale.set(1.1, 1.3, 1);
 
           if (judgeLeftBrowRef.current && judgeRightBrowRef.current) {
             judgeLeftBrowRef.current.position.y = 0.10;
-            judgeLeftBrowRef.current.rotation.z = -0.35;
+            judgeLeftBrowRef.current.rotation.z = -0.38;
             judgeRightBrowRef.current.position.y = 0.10;
-            judgeRightBrowRef.current.rotation.z = 0.35;
+            judgeRightBrowRef.current.rotation.z = 0.38;
           }
         } else {
           judgeHeadRef.current.rotation.set(0, 0, 0);
-          judgeMouthRef.current.position.y = -0.16;
-          judgeMouthRef.current.scale.set(1, 1, 1);
-          judgeMouthRef.current.material.color.setHex(0x475569);
+          jM.cavity.scale.y = 0.15 + Math.sin(elapsedTime * 2.0) * 0.03;
+          jM.lipLower.position.y = -0.018;
+          jM.lipUpper.position.y = 0.018;
+          jM.mouthGroup.scale.set(1, 1, 1);
           if (judgeLeftBrowRef.current && judgeRightBrowRef.current) {
             judgeLeftBrowRef.current.position.y = 0.14;
             judgeLeftBrowRef.current.rotation.z = 0;
@@ -1588,10 +1762,11 @@ export default function Courtroom3DCanvas({
 
       // Animation du Juge et Frappe du Marteau (Triple frappe sèche et autoritaire "PAN ! PAN ! PAN !")
       if (judgeArmRef.current) {
-        if (currentJudgeState === 'gavel' && !isGavelStriking) {
+        if (currentJudgeState === 'gavel' && lastJudgeStateForGavel !== 'gavel') {
           isGavelStriking = true;
           gavelTimer = 0;
         }
+        lastJudgeStateForGavel = currentJudgeState;
 
         if (isGavelStriking) {
           gavelTimer += 0.045;
@@ -1746,7 +1921,7 @@ export default function Courtroom3DCanvas({
         <div className="flex items-center gap-2 pointer-events-auto">
           <div className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-900/80 border border-amber-500/30 text-[10px] font-mono text-amber-300 backdrop-blur-md">
             <Sparkles className="w-3 h-3 text-amber-400" />
-            <span>RENDU PBR & BLOOM STUDIO · 60 FPS</span>
+            <span>AMBIANCE FEUTRÉE & PBR STUDIO · 60 FPS</span>
           </div>
         </div>
       </div>

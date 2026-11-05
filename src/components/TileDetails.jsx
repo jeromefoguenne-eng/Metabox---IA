@@ -1,4 +1,6 @@
+import { getAssetPath } from "../utils/assetPath";
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { 
   Newspaper, 
   BookOpenCheck, 
@@ -176,21 +178,28 @@ export default function TileDetails({
   };
 
   return (
-    <div className={`space-y-8 animate-in fade-in duration-200 p-4 sm:p-6 rounded-3xl border-2 ${getTilePageBg(tile.id)} shadow-xs`}>
+    <motion.div 
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      className={`space-y-8 p-4 sm:p-6 rounded-3xl border-2 ${getTilePageBg(tile.id)} shadow-xs`}
+    >
       {/* Back to Dashboard Navigation & Logo Officiel HECh */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         {onBackToDashboard && (
-          <button
+          <motion.button
+            whileHover={{ scale: 1.03, x: -3 }}
+            whileTap={{ scale: 0.97 }}
             onClick={handleBack}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-bold text-slate-700 hover:text-indigo-600 transition shadow-xs"
           >
             <ArrowRight className="w-4 h-4 rotate-180" />
             Retour au Dashboard des Quêtes
-          </button>
+          </motion.button>
         )}
-        <div className="h-10 px-2.5 py-1 rounded-xl bg-white border border-slate-200 shadow-xs flex items-center gap-2">
+        <div className="h-10 px-3 py-1 rounded-xl bg-white border border-slate-200 shadow-xs flex items-center gap-2">
           <img
-            src="/images/hech_logo_officiel.png"
+            src={getAssetPath("/images/hech_logo_officiel.png")}
             alt="Haute École Charlemagne"
             className="h-7 w-7 object-contain"
           />
@@ -201,11 +210,11 @@ export default function TileDetails({
       </div>
 
       {/* Visual Image Header Banner */}
-      <div className="relative rounded-3xl overflow-hidden border border-slate-200 shadow-md h-64 md:h-72 bg-slate-900">
+      <div className="relative rounded-3xl overflow-hidden border border-slate-200 shadow-md h-64 md:h-72 bg-slate-900 group">
         <img 
           src={tile.image} 
           alt={tile.title} 
-          className="w-full h-full object-cover filter brightness-[0.65] transform hover:scale-105 transition-transform duration-700" 
+          className="w-full h-full object-cover filter brightness-[0.65] transform group-hover:scale-105 transition-transform duration-700" 
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
 
@@ -213,14 +222,16 @@ export default function TileDetails({
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-slate-900 shadow">
-                Tuile {tile.number} sur 7
+                Tuile {tile.number} sur 8
               </span>
               <span className="text-xs font-bold px-3 py-1 rounded-full bg-indigo-500/80 backdrop-blur-md text-white shadow">
                 {tile.badge}
               </span>
             </div>
 
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => {
                 sounds.playSuccess();
                 onMarkComplete(tile.id);
@@ -233,7 +244,7 @@ export default function TileDetails({
             >
               <CheckCircle2 className={`w-4 h-4 ${isCompleted ? 'text-white' : 'text-slate-400'}`} />
               {isCompleted ? 'Quête Validée ✅' : 'Marquer comme lu (+XP)'}
-            </button>
+            </motion.button>
           </div>
 
           <div>
@@ -527,23 +538,6 @@ export default function TileDetails({
                 <p className="text-xs text-emerald-800 mt-1">Ancrage définitif via rappels à J+1, J+3, J+7, J+21.</p>
               </div>
             </div>
-
-            {/* Launch Ebbinghaus Quiz */}
-            <div className="pt-4 border-t border-slate-100">
-              <button
-                onClick={() => {
-                  sounds.playPop();
-                  setIsTvShowMode(true);
-                  setActiveQuizId('exo-meth-ebbinghaus');
-                }}
-                className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 text-xs sm:text-sm font-outfit font-black tracking-wide transition shadow-lg shadow-amber-500/25 cursor-pointer"
-              >
-                <Play className="w-4 h-4 fill-current" /> 
-                🎬 Lancer le Jeu TV en Plein Écran (Courbe d'Ebbinghaus)
-              </button>
-
-              {renderQuizExperience('exo-meth-ebbinghaus')}
-            </div>
           </div>
 
           {/* Interactive Eisenhower Matrix */}
@@ -728,6 +722,6 @@ export default function TileDetails({
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }

@@ -1,3 +1,4 @@
+import { getAssetPath } from "../utils/assetPath";
 import React, { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -21,7 +22,7 @@ export default function PixarStyleScene3D({
   const mountRef = useRef(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const characterModelRef = useRef(null);
-  const morphMeshRef = useRef(null);
+  const morphMeshesRef = useRef([]);
 
   useEffect(() => {
     const currentMount = mountRef.current;
@@ -51,14 +52,14 @@ export default function PixarStyleScene3D({
     currentMount.appendChild(renderer.domElement);
 
     // --- 3. Éclairage Studio Pixar 3-Points ---
-    const hemiLight = new THREE.HemisphereLight(0xfff6ee, 0x1f1630, 1.6);
+    const hemiLight = new THREE.HemisphereLight(0xfff6ee, 0x1f1630, 0.65);
     scene.add(hemiLight);
 
-    const ambientLight = new THREE.AmbientLight(0xffedd5, 0.7);
+    const ambientLight = new THREE.AmbientLight(0xffedd5, 0.25);
     scene.add(ambientLight);
 
     // Key Light : Lumière dorée douce principale
-    const keyLight = new THREE.DirectionalLight(0xfff1de, 3.0);
+    const keyLight = new THREE.DirectionalLight(0xfff1de, 1.4);
     keyLight.position.set(1.5, 2.8, 2.4);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.width = 1024;
@@ -68,17 +69,17 @@ export default function PixarStyleScene3D({
     scene.add(keyLight);
 
     // Fill Light : Ciel poudré lavande
-    const fillLight = new THREE.DirectionalLight(0xb4c6fc, 1.5);
+    const fillLight = new THREE.DirectionalLight(0xb4c6fc, 0.65);
     fillLight.position.set(-1.8, 1.8, 1.6);
     scene.add(fillLight);
 
     // Rim / Hair Light : Or chaud éclatant pour sublimer les cheveux blonds
-    const rimLight = new THREE.DirectionalLight(0xfde047, 3.4);
+    const rimLight = new THREE.DirectionalLight(0xfde047, 1.6);
     rimLight.position.set(-0.7, 2.8, -1.9);
     scene.add(rimLight);
 
     // Kicker bas : Lueur cyan technologique
-    const kickerLight = new THREE.PointLight(0x38bdf8, 1.2, 5);
+    const kickerLight = new THREE.PointLight(0x38bdf8, 0.8, 5);
     kickerLight.position.set(1.2, 0.8, -0.4);
     scene.add(kickerLight);
 
@@ -179,11 +180,13 @@ export default function PixarStyleScene3D({
 
     let baseScale = 1.0;
     let basePosY = 0.07;
-    let baseRotY = -Math.PI / 2; // Orientation face caméra
+    let baseRotY = Math.PI; // Face caméra dans Three.js
+
+    morphMeshesRef.current = [];
 
     const gltfLoader = new GLTFLoader();
     gltfLoader.load(
-      '/models/aurore_blender_pixar.glb',
+      getAssetPath('/models/aurore_lowpoly_stylized.glb'),
       (gltf) => {
         const model = gltf.scene;
 
@@ -211,15 +214,27 @@ export default function PixarStyleScene3D({
             child.castShadow = true;
             child.receiveShadow = true;
             if (child.morphTargetDictionary && child.morphTargetInfluences) {
-              morphMeshRef.current = child;
-              console.log("[Aurore 3D HD] Shape Keys Blender détectées :", Object.keys(child.morphTargetDictionary));
+              morphMeshesRef.current.push(child);
+              console.log("[Aurore Low-Poly 3D] Shape Keys détectées sur", child.name, Object.keys(child.morphTargetDictionary));
             }
             if (child.geometry) {
               child.geometry.computeVertexNormals();
             }
             if (child.material) {
-              child.material.roughness = 0.40;
-              child.material.metalness = 0.02;
+              const mName = child.material.name || '';
+              if (mName.includes('Gold') || mName.includes('Trim')) {
+                child.material.roughness = 0.15;
+                child.material.metalness = 0.95;
+              } else if (mName.includes('Navy') || mName.includes('Suit')) {
+                child.material.roughness = 0.48;
+                child.material.metalness = 0.05;
+              } else if (mName.includes('Silk') || mName.includes('Blouse')) {
+                child.material.roughness = 0.28;
+                child.material.metalness = 0.02;
+              } else {
+                child.material.roughness = 0.40;
+                child.material.metalness = 0.02;
+              }
               if (child.material.map) {
                 child.material.map.anisotropy = 16;
                 child.material.map.generateMipmaps = true;
@@ -283,26 +298,38 @@ export default function PixarStyleScene3D({
         // --- ANIMATION DE PAROLE EN DIRECT (LIP-SYNC MOTION & SHAPE KEYS BLENDER) ---
         const isVoiceActive = sounds.isVoicePlaying() || characterMood === 'speaking';
 
-        // Pilotage dynamique des Shape Keys (Morph Targets)
-        if (morphMeshRef.current && morphMeshRef.current.morphTargetDictionary && morphMeshRef.current.morphTargetInfluences) {
-          const dict = morphMeshRef.current.morphTargetDictionary;
-          const influences = morphMeshRef.current.morphTargetInfluences;
+        // Pilotage dynamique de toutes les Shape Keys (Visemes de parole & émotions réalistes)
+        const isBlinking = (Math.sin(t * 1.6) > 0.985);
+        const targetMouth = isVoiceActive 
+          ? (Math.sin(t * 15) * 0.45 + Math.sin(t * 24) * 0.30 + 0.35)
+          : 0.0;
+        const targetSmile = (!isVoiceActive && characterMood !== 'worried' && !isAlert) ? 0.75 : 0.15;
+        const targetBrow = (characterMood === 'thinking' || isAlert) ? 0.60 : 0.0;
 
-          const mouthIdx = dict['mouthOpen'];
-          const smileIdx = dict['smile'];
+        morphMeshesRef.current.forEach(mesh => {
+          if (mesh.morphTargetDictionary && mesh.morphTargetInfluences) {
+            const dict = mesh.morphTargetDictionary;
+            const inf = mesh.morphTargetInfluences;
 
-          if (mouthIdx !== undefined) {
-            const targetMouth = isVoiceActive 
-              ? (Math.sin(t * 16) * 0.45 + Math.sin(t * 26) * 0.25 + 0.35)
-              : 0.0;
-            influences[mouthIdx] = THREE.MathUtils.lerp(influences[mouthIdx], Math.max(0, targetMouth), 0.35);
+            const mouthIdx = dict['mouth_open'] ?? dict['mouthOpen'];
+            const smileIdx = dict['mouth_smile'] ?? dict['smile'];
+            const blinkIdx = dict['blink'];
+            const browIdx = dict['brow_raise'];
+
+            if (mouthIdx !== undefined) {
+              inf[mouthIdx] = THREE.MathUtils.lerp(inf[mouthIdx], Math.max(0, targetMouth), 0.4);
+            }
+            if (smileIdx !== undefined) {
+              inf[smileIdx] = THREE.MathUtils.lerp(inf[smileIdx], targetSmile, 0.2);
+            }
+            if (blinkIdx !== undefined) {
+              inf[blinkIdx] = isBlinking ? 1.0 : 0.0;
+            }
+            if (browIdx !== undefined) {
+              inf[browIdx] = THREE.MathUtils.lerp(inf[browIdx], targetBrow, 0.2);
+            }
           }
-
-          if (smileIdx !== undefined) {
-            const targetSmile = (!isVoiceActive && characterMood !== 'worried' && !isAlert) ? 0.80 : 0.25;
-            influences[smileIdx] = THREE.MathUtils.lerp(influences[smileIdx], targetSmile, 0.20);
-          }
-        }
+        });
 
         if (isVoiceActive) {
           // Micro-gestuelle vive quand Aurore parle (hochements, inclinaisons expressives)

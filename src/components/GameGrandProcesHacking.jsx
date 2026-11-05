@@ -44,7 +44,7 @@ export default function GameGrandProcesHacking({ onComplete }) {
   const [currentAssaultIdx, setCurrentAssaultIdx] = useState(0);
   const [stage, setStage] = useState('intro'); // 'intro' | 'attack' | 'investigation' | 'pleading' | 'reaction' | 'verdict_cinematic'
   const [cameraView, setCameraView] = useState('TV_WIDE');
-  const [showBriefing, setShowBriefing] = useState(true);
+  const [showBriefing, setShowBriefing] = useState(false);
 
   // États 3D
   const [witnessState, setWitnessState] = useState('idle'); // 'idle' | 'speaking' | 'stressed' | 'confident'
@@ -608,6 +608,11 @@ export default function GameGrandProcesHacking({ onComplete }) {
         setStage('reaction_fail');
         setCameraView('JUDGE');
         setJudgeState('speaking');
+        // Sécurité : apaiser le Juge après son intervention pour ne pas bloquer la scène
+        setTimeout(() => {
+          setJudgeState('idle');
+          setCameraView('TV_WIDE');
+        }, 3200);
       }, 2200);
     }
   };

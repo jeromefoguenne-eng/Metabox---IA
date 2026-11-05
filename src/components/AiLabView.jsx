@@ -1,4 +1,6 @@
+import { getAssetPath } from "../utils/assetPath";
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { 
   Sparkles, 
   BrainCircuit, 
@@ -9,13 +11,13 @@ import {
   CheckCircle2, 
   AlertCircle, 
   HelpCircle, 
-  ChevronRight,
-  Send,
-  RefreshCw,
-  PlusCircle,
-  Award,
-  ShieldAlert,
-  Play
+  ChevronRight, 
+  Send, 
+  RefreshCw, 
+  PlusCircle, 
+  Award, 
+  ShieldAlert, 
+  Play 
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import SpeedChallengeGame from './SpeedChallengeGame';
@@ -205,9 +207,11 @@ export default function AiLabView() {
           </div>
         </div>
 
-        {/* Navigation Tabs inside IA Lab */}
+        {/* Navigation Tabs inside IA Lab avec Animations Fluides */}
         <div className="flex flex-wrap gap-2.5 mt-8 pt-6 border-t border-white/20">
-          <button
+          <motion.button
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => handleTabChange('escape')}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-black tracking-wide transition shadow-lg ${
               activeTab === 'escape'
@@ -216,51 +220,59 @@ export default function AiLabView() {
             }`}
           >
             <ShieldAlert className="w-4 h-4 text-rose-200" /> 🔐 Escape Game : Panique au Jury !
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => handleTabChange('analyzer')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition ${
               activeTab === 'analyzer'
-                ? 'bg-white text-indigo-700 shadow-md'
+                ? 'bg-white text-indigo-700 shadow-md font-black'
                 : 'bg-white/20 text-white hover:bg-white/30'
             }`}
           >
             <Search className="w-4 h-4" /> 1. Analyseur de Consignes IA
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => handleTabChange('simulator')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition ${
               activeTab === 'simulator'
-                ? 'bg-white text-indigo-700 shadow-md'
+                ? 'bg-white text-indigo-700 shadow-md font-black'
                 : 'bg-white/20 text-white hover:bg-white/30'
             }`}
           >
             <MessageSquareCheck className="w-4 h-4" /> 2. Simulateur de Feedback & Notation
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => handleTabChange('games')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition ${
               activeTab === 'games'
-                ? 'bg-white text-indigo-700 shadow-md'
+                ? 'bg-white text-indigo-700 shadow-md font-black'
                 : 'bg-white/20 text-white hover:bg-white/30'
             }`}
           >
             <Gamepad2 className="w-4 h-4" /> 3. Serious Games (Défi Express ⚡️)
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => handleTabChange('creator')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition ${
               activeTab === 'creator'
-                ? 'bg-white text-indigo-700 shadow-md'
+                ? 'bg-white text-indigo-700 shadow-md font-black'
                 : 'bg-white/20 text-white hover:bg-white/30'
             }`}
           >
             <PlusCircle className="w-4 h-4" /> 4. Atelier Enseignant (Co-Création)
-          </button>
+          </motion.button>
         </div>
       </div>
 
@@ -275,7 +287,7 @@ export default function AiLabView() {
             <div className="flex items-center gap-3 flex-wrap">
               <div className="h-9 w-9 p-0.5 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-center">
                 <img
-                  src="/images/hech_logo_officiel.png"
+                  src={getAssetPath("/images/hech_logo_officiel.png")}
                   alt="Haute École Charlemagne"
                   className="w-full h-full object-contain"
                 />

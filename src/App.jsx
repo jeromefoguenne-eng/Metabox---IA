@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Newspaper, 
   BookOpenCheck, 
@@ -17,7 +18,8 @@ import {
   LayoutGrid,
   Trophy,
   Flame,
-  Zap
+  Zap,
+  ArrowLeft
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import Header from './components/Header';
@@ -81,8 +83,6 @@ export default function App() {
       return ['badge-first-step'];
     }
   });
-
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Sync to localStorage
   useEffect(() => {
@@ -157,7 +157,7 @@ export default function App() {
   const handleSelectTileWithSound = (id) => {
     sounds.playPop();
     setActiveTileId(id);
-    setMobileMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const activeTile = TILES.find(t => t.id === activeTileId);
@@ -181,179 +181,112 @@ export default function App() {
         onPlayIntro={() => setShowIntro(true)}
       />
 
-      {/* Main Container */}
-      <div className="flex-1 max-w-[1560px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
-        
-        {/* Mobile Navigation Toggle */}
-        <div className="lg:hidden flex items-center justify-between bg-white border border-slate-200 p-4 rounded-2xl shadow-xs">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-400">Section :</span>
-            <span className="text-xs font-bold text-indigo-600 truncate max-w-[180px]">
-              {activeTileId === 'dashboard' ? 'Dashboard Quêtes' : activeTile?.title || 'Lab IA'}
-            </span>
-          </div>
-          <button
-            onClick={() => {
-              sounds.playPop();
-              setMobileMenuOpen(!mobileMenuOpen);
-            }}
-            className="p-2 rounded-xl bg-slate-100 text-slate-700"
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-        </div>
-
-        {/* Sidebar / Quick Navigation Menu */}
-        <aside className={`lg:w-80 shrink-0 ${mobileMenuOpen ? 'block' : 'hidden lg:block'}`}>
-          <div className="sticky top-24 space-y-4">
-            
-            {/* Dashboard Switch Button */}
-            <button
+      {/* Barre de navigation horizontale compacte (présente uniquement lorsqu'on explore une tuile) */}
+      {activeTileId !== 'dashboard' && (
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-20 z-40 shadow-xs"
+        >
+          <div className="max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-4 overflow-x-auto">
+            {/* Bouton Retour Accueil */}
+            <motion.button
+              whileHover={{ scale: 1.04, x: -2 }}
+              whileTap={{ scale: 0.96 }}
               onClick={() => handleSelectTileWithSound('dashboard')}
-              className={`w-full p-4 rounded-2xl border-2 transition-all flex items-center gap-3.5 font-bold text-sm shadow-xs ${
-                activeTileId === 'dashboard'
-                  ? 'bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-600/20'
-                  : 'bg-white border-slate-200 hover:border-indigo-300 text-slate-700 hover:bg-indigo-50/50'
-              }`}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-xs sm:text-sm font-bold text-indigo-700 transition shrink-0"
             >
-              <div className={`p-2 rounded-xl ${activeTileId === 'dashboard' ? 'bg-white/20 text-white' : 'bg-indigo-50 text-indigo-600'}`}>
-                <LayoutGrid className="w-5 h-5" />
-              </div>
-              <div className="text-left">
-                <div className="font-['Outfit'] font-bold text-base leading-tight">Dashboard Quêtes</div>
-                <div className={`text-xs font-normal ${activeTileId === 'dashboard' ? 'text-indigo-100' : 'text-slate-400'}`}>
-                  Vue d'ensemble des 8 tuiles
-                </div>
-              </div>
-            </button>
+              <ArrowLeft className="w-4 h-4" />
+              <span>← Dashboard des Quêtes</span>
+            </motion.button>
 
-            <div className="flex items-center justify-between px-1 pt-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                Modules & Quêtes
-              </span>
-              <span className="text-xs font-mono font-bold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200">
-                {completedTiles.length}/8 validés
-              </span>
-            </div>
-
-            {/* List of 8 Tiles in Sidebar */}
-            <div className="space-y-2 max-h-[55vh] overflow-y-auto pr-1">
+            {/* Sélecteur de Tuiles Rapide Horizontal */}
+            <div className="flex items-center gap-1.5 overflow-x-auto py-1 scrollbar-none">
               {TILES.map((tile) => {
-                const IconComponent = ICONS[tile.icon] || BookOpenCheck;
                 const isActive = activeTileId === tile.id;
                 const isCompleted = completedTiles.includes(tile.id);
-
-                // Thèmes de couleurs spécifiques pour la sidebar
-                const SIDEBAR_COLOR_MAP = {
-                  1: { icon: "bg-sky-100 text-sky-700", active: "bg-sky-50/90 border-sky-500 text-sky-950 ring-1 ring-sky-500", hover: "hover:border-sky-300" },
-                  2: { icon: "bg-indigo-100 text-indigo-700", active: "bg-indigo-50/90 border-indigo-500 text-indigo-950 ring-1 ring-indigo-500", hover: "hover:border-indigo-300" },
-                  3: { icon: "bg-emerald-100 text-emerald-700", active: "bg-emerald-50/90 border-emerald-500 text-emerald-950 ring-1 ring-emerald-500", hover: "hover:border-emerald-300" },
-                  4: { icon: "bg-amber-100 text-amber-800", active: "bg-amber-50/90 border-amber-500 text-amber-950 ring-1 ring-amber-500", hover: "hover:border-amber-300" },
-                  5: { icon: "bg-violet-100 text-violet-700", active: "bg-violet-50/90 border-violet-500 text-violet-950 ring-1 ring-violet-500", hover: "hover:border-violet-300" },
-                  6: { icon: "bg-cyan-100 text-cyan-700", active: "bg-cyan-50/90 border-cyan-500 text-cyan-950 ring-1 ring-cyan-500", hover: "hover:border-cyan-300" },
-                  7: { icon: "bg-rose-100 text-rose-700", active: "bg-rose-50/90 border-rose-500 text-rose-950 ring-1 ring-rose-500", hover: "hover:border-rose-300" },
-                  8: { icon: "bg-fuchsia-100 text-fuchsia-700", active: "bg-gradient-to-r from-fuchsia-50 to-indigo-50 border-fuchsia-400 text-slate-900 ring-2 ring-fuchsia-400/40", hover: "hover:border-fuchsia-300" }
-                };
-
-                const colorStyle = SIDEBAR_COLOR_MAP[tile.number] || SIDEBAR_COLOR_MAP[1];
-
                 return (
-                  <button
+                  <motion.button
                     key={tile.id}
+                    whileHover={{ scale: 1.06 }}
+                    whileTap={{ scale: 0.94 }}
                     onClick={() => handleSelectTileWithSound(tile.id)}
-                    className={`w-full text-left p-3 rounded-2xl border transition-all flex items-center justify-between gap-3 group ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
                       isActive
-                        ? colorStyle.active
-                        : `bg-white border-slate-200 hover:bg-slate-50/80 ${colorStyle.hover} text-slate-700`
+                        ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                     }`}
                   >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className={`p-2 rounded-xl shrink-0 transition ${
-                        isActive
-                          ? 'bg-slate-900 text-white shadow-sm'
-                          : colorStyle.icon
-                      }`}>
-                        <IconComponent className="w-4 h-4" />
-                      </div>
-
-                      <div className="min-w-0">
-                        <div className="font-['Outfit'] text-sm font-bold text-slate-900 truncate">
-                          {tile.title}
-                        </div>
-                        <p className="text-xs text-slate-500 truncate">
-                          Tuile {tile.number} · +{tile.xp} XP
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="shrink-0">
-                      {isCompleted ? (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      ) : (
-                        <ChevronRight className={`w-4 h-4 transition ${
-                          isActive ? 'text-indigo-600 translate-x-0.5' : 'text-slate-400'
-                        }`} />
-                      )}
-                    </div>
-                  </button>
+                    <span>T{tile.number}</span>
+                    {isCompleted && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    )}
+                  </motion.button>
                 );
               })}
             </div>
 
-            {/* Level Mini Card */}
-            <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2.5 mt-4">
-              <div className="flex items-center justify-between">
-                <span className="font-['Outfit'] font-bold text-slate-900 text-sm">Niveau Étudiant</span>
-                <span className="text-xs bg-indigo-50 text-indigo-700 border border-indigo-200 px-2.5 py-0.5 rounded-full font-bold">
-                  Niveau {userLevel}
-                </span>
-              </div>
-              <div className="text-xs text-slate-500 font-medium">
-                {getLevelTitle(userLevel)}
-              </div>
-              <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200">
-                <div 
-                  className="bg-gradient-to-r from-amber-400 to-indigo-600 h-full rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min(100, Math.round((userXp % 250) / 2.5))}%` }}
-                />
-              </div>
-              <div className="text-xs text-slate-400 text-right font-mono font-medium">
-                {userXp} / {userLevel * 250} XP
-              </div>
+            {/* Badge Titre Actif */}
+            <div className="hidden md:flex items-center gap-2 text-xs font-bold text-slate-500 shrink-0">
+              <span className="text-slate-400">En cours :</span>
+              <span className="text-indigo-600 truncate max-w-[200px]">{activeTile?.title || 'Lab IA'}</span>
             </div>
           </div>
-        </aside>
+        </motion.div>
+      )}
 
-        {/* Main Content Area */}
-        <main className="flex-1 min-w-0">
-          {activeTileId === 'dashboard' ? (
-            <BentoGrid
-              onSelectTile={(tileId) => handleSelectTileWithSound(tileId)}
-              completedTiles={completedTiles}
-              userXp={userXp}
-              userLevel={userLevel}
-              levelTitle={getLevelTitle(userLevel)}
-              unlockedBadges={unlockedBadges}
-            />
-          ) : activeTileId === 'tile-ia' ? (
-            <div className="space-y-4">
-              <button
-                onClick={() => handleSelectTileWithSound('dashboard')}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-bold text-slate-700 hover:text-indigo-600 transition shadow-xs"
+      {/* Main Container Pleine Largeur (Sans colonnes latérales sur l'accueil) */}
+      <div className="flex-1 max-w-[1720px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col">
+        <main className="w-full flex-1">
+          <AnimatePresence mode="wait">
+            {activeTileId === 'dashboard' ? (
+              <motion.div
+                key="dashboard-view"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.3 }}
+                className="w-full"
               >
-                ← Retour au Dashboard des Quêtes
-              </button>
-              <AiLabView />
-            </div>
-          ) : (
-            <TileDetails
-              tile={activeTile}
-              isCompleted={completedTiles.includes(activeTileId)}
-              onMarkComplete={handleToggleTileCompletion}
-              onLaunchQuiz={handleQuizComplete}
-              onBackToDashboard={() => handleSelectTileWithSound('dashboard')}
-            />
-          )}
+                <BentoGrid
+                  onSelectTile={(tileId) => handleSelectTileWithSound(tileId)}
+                  completedTiles={completedTiles}
+                  userXp={userXp}
+                  userLevel={userLevel}
+                  levelTitle={getLevelTitle(userLevel)}
+                  unlockedBadges={unlockedBadges}
+                />
+              </motion.div>
+            ) : activeTileId === 'tile-ia' ? (
+              <motion.div
+                key="ia-view"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.3 }}
+                className="w-full space-y-6"
+              >
+                <AiLabView />
+              </motion.div>
+            ) : (
+              <motion.div
+                key={`tile-${activeTileId}`}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.3 }}
+                className="w-full"
+              >
+                <TileDetails
+                  tile={activeTile}
+                  isCompleted={completedTiles.includes(activeTileId)}
+                  onMarkComplete={handleToggleTileCompletion}
+                  onLaunchQuiz={handleQuizComplete}
+                  onBackToDashboard={() => handleSelectTileWithSound('dashboard')}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </main>
       </div>
 
@@ -366,7 +299,7 @@ export default function App() {
 
       {/* Footer Clair & Épuré avec Logo Officiel HECh */}
       <footer className="mt-auto border-t border-slate-200 bg-white py-8 text-xs sm:text-sm text-slate-500">
-        <div className="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="h-9 w-9 p-0.5 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center">
               <img
@@ -376,7 +309,7 @@ export default function App() {
               />
             </div>
             <div>
-              <span className="font-['Outfit'] font-bold text-slate-800">Petite Réussite - Métabox IA (Édition Lumineuse 2.1)</span> · SAR Haute École Charlemagne
+              <span className="font-['Outfit'] font-bold text-slate-800">Petite Réussite - Métabox IA (Édition Épurée & Vivante 2.2)</span> · SAR Haute École Charlemagne
             </div>
           </div>
           <div className="flex items-center gap-4">
