@@ -146,10 +146,10 @@ export default function EscapeGameAurore({ onClose }) {
     sounds.playPop();
 
     const videoMapping = {
-      'room_north': '/video/transitions/trans_investigation_os.mp4',
-      'room_west': '/video/transitions/trans_tribunal_2030.mp4',
-      'room_south': '/video/transitions/trans_survivant_novel.mp4',
-      'room_east': '/video/transitions/trans_prompt_wars.mp4'
+      'room_north': getAssetPath('/video/transitions/trans_investigation_os.mp4'),
+      'room_west': getAssetPath('/video/transitions/trans_tribunal_2030.mp4'),
+      'room_south': getAssetPath('/video/transitions/trans_survivant_novel.mp4'),
+      'room_east': getAssetPath('/video/transitions/trans_prompt_wars.mp4')
     };
 
     const targetVid = videoMapping[roomKey];

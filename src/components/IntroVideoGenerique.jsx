@@ -1,6 +1,6 @@
 import { getAssetPath } from "../utils/assetPath";
 import React, { useState, useRef, useEffect } from 'react';
-import { Volume2, VolumeX, SkipForward, Play, Film } from 'lucide-react';
+import { Volume2, VolumeX, SkipForward, Play } from 'lucide-react';
 
 export default function IntroVideoGenerique({ onFinish }) {
   const videoRef = useRef(null);
@@ -13,27 +13,36 @@ export default function IntroVideoGenerique({ onFinish }) {
     const video = videoRef.current;
     if (!video) return;
 
-    // Tentative de lecture automatique
+    let cancelled = false;
+
     const attemptPlay = async () => {
+      if (cancelled || !video || !video.paused) return;
       try {
         video.muted = false;
+        setIsMuted(false);
         await video.play();
-        setIsPlaying(true);
-      } catch (err) {
-        // Si le navigateur bloque l'autoplay avec le son, démarrer en sourdine
-        console.warn("Autoplay audio bloqué par le navigateur, bascule en muet :", err);
+        if (!cancelled) setIsPlaying(true);
+      } catch {
+        // Si le navigateur bloque l'autoplay audio initial, démarrer immédiatement en muet
+        if (cancelled || !video) return;
         try {
           video.muted = true;
           setIsMuted(true);
           await video.play();
-          setIsPlaying(true);
+          if (!cancelled) setIsPlaying(true);
         } catch (e2) {
-          console.error("Échec de la lecture automatique :", e2);
+          console.warn("Lecture automatique en attente :", e2);
         }
       }
     };
 
     attemptPlay();
+
+    const handleReady = () => {
+      if (video.paused && !cancelled) {
+        attemptPlay();
+      }
+    };
 
     const handleTimeUpdate = () => {
       if (video.duration) {
@@ -41,15 +50,26 @@ export default function IntroVideoGenerique({ onFinish }) {
       }
     };
 
-    const handleEnded = () => {
-      triggerFadeOut();
-    };
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+    const handleEnded = () => triggerFadeOut();
 
+    video.addEventListener('loadeddata', handleReady);
+    video.addEventListener('canplay', handleReady);
     video.addEventListener('timeupdate', handleTimeUpdate);
+    video.addEventListener('play', handlePlay);
+    video.addEventListener('playing', handlePlay);
+    video.addEventListener('pause', handlePause);
     video.addEventListener('ended', handleEnded);
 
     return () => {
+      cancelled = true;
+      video.removeEventListener('loadeddata', handleReady);
+      video.removeEventListener('canplay', handleReady);
       video.removeEventListener('timeupdate', handleTimeUpdate);
+      video.removeEventListener('play', handlePlay);
+      video.removeEventListener('playing', handlePlay);
+      video.removeEventListener('pause', handlePause);
       video.removeEventListener('ended', handleEnded);
     };
   }, []);
@@ -65,8 +85,12 @@ export default function IntroVideoGenerique({ onFinish }) {
     e.stopPropagation();
     const video = videoRef.current;
     if (video) {
-      video.muted = !video.muted;
-      setIsMuted(video.muted);
+      const nextMuted = !video.muted;
+      video.muted = nextMuted;
+      setIsMuted(nextMuted);
+      if (video.paused) {
+        video.play().then(() => setIsPlaying(true)).catch(() => {});
+      }
     }
   };
 
@@ -74,8 +98,16 @@ export default function IntroVideoGenerique({ onFinish }) {
     const video = videoRef.current;
     if (video) {
       if (video.paused) {
-        video.play();
-        setIsPlaying(true);
+        video.muted = false;
+        setIsMuted(false);
+        video.play().then(() => setIsPlaying(true)).catch(() => {
+          video.muted = true;
+          setIsMuted(true);
+          video.play().then(() => setIsPlaying(true)).catch(() => {});
+        });
+      } else if (video.muted) {
+        video.muted = false;
+        setIsMuted(false);
       }
     }
   };
@@ -89,10 +121,12 @@ export default function IntroVideoGenerique({ onFinish }) {
       {/* Lecteur Vidéo Plein Écran */}
       <video
         ref={videoRef}
-        src="/videos/generique_metabox.mp4"
+        src={getAssetPath("/videos/generique_metabox.mp4")}
+        muted={isMuted}
         playsInline
         autoPlay
-        className="w-full h-full object-contain md:object-cover"
+        preload="auto"
+        className="w-full h-full object-contain md:object-cover cursor-pointer"
         onClick={handleManualPlay}
       />
 
@@ -108,7 +142,8 @@ export default function IntroVideoGenerique({ onFinish }) {
       {!isPlaying && (
         <button
           onClick={handleManualPlay}
-          className="absolute inset-0 m-auto w-24 h-24 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white transition hover:scale-110 shadow-2xl group"
+          className="absolute inset-0 m-auto w-24 h-24 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-md border border-white/40 flex items-center justify-center text-white transition hover:scale-110 shadow-2xl group cursor-pointer"
+          title="Lancer le générique"
         >
           <Play className="w-10 h-10 ml-1 fill-white text-white group-hover:scale-110 transition" />
         </button>
@@ -133,7 +168,7 @@ export default function IntroVideoGenerique({ onFinish }) {
         {/* Toggle Son */}
         <button
           onClick={handleToggleMute}
-          className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/20 text-white transition hover:scale-105 shadow-lg text-xs font-bold"
+          className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/20 text-white transition hover:scale-105 shadow-lg text-xs font-bold cursor-pointer"
           title={isMuted ? "Activer le son" : "Couper le son"}
         >
           {isMuted ? (
@@ -152,7 +187,7 @@ export default function IntroVideoGenerique({ onFinish }) {
         {/* Bouton Passer l'intro */}
         <button
           onClick={triggerFadeOut}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs sm:text-sm shadow-xl hover:shadow-indigo-500/30 transition hover:scale-105 border border-white/20"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs sm:text-sm shadow-xl hover:shadow-indigo-500/30 transition hover:scale-105 border border-white/20 cursor-pointer"
         >
           <span>Passer le générique</span>
           <SkipForward className="w-4 h-4" />
