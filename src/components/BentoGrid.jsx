@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { TILES } from '../data/metaboxData';
 import { sounds } from '../utils/soundEffects';
+import HexagonalCurriculumMap from './HexagonalCurriculumMap';
 
 const ICONS = {
   Newspaper,
@@ -138,7 +139,8 @@ export default function BentoGrid({
   streakDays = 3,
   unlockedBadges = []
 }) {
-  const [activeFilter, setActiveFilter] = useState('all'); // 'all' | 'methodo' | 'digital' | 'completed'
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [showCurriculumMap, setShowCurriculumMap] = useState(false); // 'all' | 'methodo' | 'digital' | 'completed'
   const currentLevelProgress = Math.min(100, Math.round((userXp % 250) / 2.5));
 
   const handleTileClick = (id) => {
@@ -274,6 +276,7 @@ export default function BentoGrid({
               { id: 'methodo', label: 'Axe Méthodologie', count: 4 },
               { id: 'digital', label: 'Axe Numérique & IA', count: 4 },
               { id: 'completed', label: 'Quêtes Validées', count: completedTiles.length }
+
             ].map(f => (
               <motion.button
                 key={f.id}
@@ -294,6 +297,24 @@ export default function BentoGrid({
                 </span>
               </motion.button>
             ))}
+
+            {/* Bouton d'accès à la Cartographie Conceptuelle SAR */}
+            <motion.button
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
+              onClick={() => {
+                sounds.playPop();
+                setShowCurriculumMap(!showCurriculumMap);
+              }}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                showCurriculumMap
+                  ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black shadow-lg shadow-amber-500/30'
+                  : 'bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-400/40'
+              }`}
+            >
+              <Compass className="w-3.5 h-3.5" />
+              <span>{showCurriculumMap ? 'Masquer la Cartographie SAR' : '🗺️ Cartographie SAR (Langage & Méthodo)'}</span>
+            </motion.button>
           </div>
 
           <div className="text-xs text-indigo-300/80 font-medium hidden sm:flex items-center gap-1.5">
@@ -304,6 +325,23 @@ export default function BentoGrid({
       </motion.div>
 
       {/* ============================================================== */}
+            {/* ============================================================== */}
+      {/* VUE CARTOGRAPHIE CONCEPTUELLE SAR (INFOGRAPHIE HEXAGONALE) */}
+      {/* ============================================================== */}
+      <AnimatePresence>
+        {showCurriculumMap && (
+          <motion.div
+            initial={{ opacity: 0, height: 0, y: -10 }}
+            animate={{ opacity: 1, height: 'auto', y: 0 }}
+            exit={{ opacity: 0, height: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="mb-8 overflow-hidden"
+          >
+            <HexagonalCurriculumMap onNavigateToTile={handleTileClick} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* GRILLE BENTO GRAND FORMAT SANS COLONNES LATÉRALES (PLEINE LARGEUR) */}
       {/* ============================================================== */}
       <AnimatePresence mode="wait">

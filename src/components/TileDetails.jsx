@@ -26,6 +26,10 @@ import QuizPlayer from './QuizPlayer';
 import EisenhowerBoard from './EisenhowerBoard';
 import TvGameShowArena from './TvGameShowArena';
 import GrandConcours3ManchesArena from './GrandConcours3ManchesArena';
+import MethodoOutilsSuite from './MethodoOutilsSuite';
+import EvaluationTypesGuide from './EvaluationTypesGuide';
+import DiagnosticLangageModal from './DiagnosticLangageModal';
+
 import { GLOSSARY_ITEMS, QUIZ_DATABASE } from '../data/metaboxData';
 import { sounds } from '../utils/soundEffects';
 
@@ -38,6 +42,7 @@ export default function TileDetails({
 }) {
   // Tile 2 module selection
   const [selectedModuleIdx, setSelectedModuleIdx] = useState(0);
+  const [showDiagnosticModal, setShowDiagnosticModal] = useState(false);
 
   // Glossary search & filter
   const [glossarySearch, setGlossarySearch] = useState('');
@@ -316,6 +321,36 @@ export default function TileDetails({
       {/* TUILE 2 : PARTIE LANGAGIÈRE */}
       {tile.id === 'tile-lang' && (
         <div className="space-y-6">
+          {/* Bannière Évaluation Diagnostique Initiale (Schéma Pédagogique SAR) */}
+          <div className="bg-gradient-to-r from-orange-500/15 via-amber-500/10 to-orange-500/15 border-2 border-orange-500/30 rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-orange-500/20 border border-orange-400/50 flex items-center justify-center text-orange-600 shrink-0">
+                <Sparkles className="w-6 h-6" />
+              </div>
+              <div>
+                <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-700 border border-orange-400/30">
+                  Cartographie SAR · Pôle Le Langage
+                </span>
+                <h4 className="font-['Outfit'] text-lg font-black text-slate-900 mt-1">
+                  Évaluation Diagnostique Initiale (5 Questions Clés)
+                </h4>
+                <p className="text-xs text-slate-600">
+                  Analysez les consignes, décryptez les verbes d'action et adaptez vos réponses écrites aux attentes des évaluateurs.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                sounds.playPop();
+                setShowDiagnosticModal(true);
+              }}
+              className="px-6 py-3 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-slate-950 font-black text-xs transition cursor-pointer shadow-md shadow-orange-500/25 shrink-0 flex items-center gap-2"
+            >
+              <span>🎯 Lancer le Diagnostic Initial</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+
           {/* Module Selector Tabs */}
           <div className="flex flex-wrap gap-2 p-1.5 bg-slate-100 border border-slate-200 rounded-2xl">
             {tile.modules.map((mod, idx) => (
@@ -541,7 +576,11 @@ export default function TileDetails({
           </div>
 
           {/* Interactive Eisenhower Matrix */}
-          <EisenhowerBoard />
+          {/* Suite Complète des 4 Outils de Gestion (Eisenhower, Pomodoro, Parkinson, Pareto) */}
+          <MethodoOutilsSuite />
+
+          {/* Guide Méthodologique des Types d'Évaluations (QCM, SGI, Vrai/Faux, QRO) */}
+          <EvaluationTypesGuide />
         </div>
       )}
 
@@ -722,6 +761,11 @@ export default function TileDetails({
           </div>
         </div>
       )}
+      {/* Modal Évaluation Diagnostique Initiale */}
+      <DiagnosticLangageModal
+        isOpen={showDiagnosticModal}
+        onClose={() => setShowDiagnosticModal(false)}
+      />
     </motion.div>
   );
 }
