@@ -97,7 +97,7 @@ export default function HexagonalCurriculumMap({ onNavigateToTile }) {
         "Mobiliser les outils de gestion de productivité"
       ],
       targetTile: 'tile-methodo',
-      actionText: "Ouvrir la Méthodologie Active (Tuile 4)"
+      actionText: "Ouvrir la Méthodologie (Tuile 4)"
     },
     outils_gestion: {
       id: 'outils_gestion',

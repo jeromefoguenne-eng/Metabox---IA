@@ -166,7 +166,7 @@ export const TILES = [
   {
     id: "tile-methodo",
     number: 4,
-    title: "Méthodologie Active",
+    title: "Méthodologie",
     shortDesc: "Mémorisation active, loi de Parkinson, planification hebdomadaire et matrice Eisenhower",
     questTitle: "Quête 4 : Dompter la Courbe de l'Oubli",
     icon: "BrainCircuit",
