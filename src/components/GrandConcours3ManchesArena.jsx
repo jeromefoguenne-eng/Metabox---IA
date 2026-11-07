@@ -142,6 +142,8 @@ export default function GrandConcours3ManchesArena({
     ? FACE_A_FACE_QUESTIONS[m3QuestionIdx % FACE_A_FACE_QUESTIONS.length]
     : { category: 'Général', targetTerm: '', clues: [{ points: 4, text: 'Indice...' }], options: [], correctIndex: 0 };
 
+  const handleOpponentBuzzRef = useRef(null);
+
   // Défilement automatique des indices du Face-à-Face (4 -> 3 -> 2 -> 1 points)
   useEffect(() => {
     if (currentRound !== 'manche3_faceaface' || m3IsBuzzed || m3RoundAnswered) return;
@@ -152,12 +154,15 @@ export default function GrandConcours3ManchesArena({
           sounds.playPop();
           return prev - 1;
         }
-        // Si personne n'a buzzé à 1 point, l'adversaire buzze parfois
-        if (Math.random() < 0.6) {
-          handleOpponentBuzz(1);
-        }
         return 1;
       });
+
+      // Si les indices sont descendus à 1 point sans que personne ne buzze, l'adversaire tente sa chance
+      if (m3ActiveClueLevel <= 1 && Math.random() < 0.6) {
+        if (handleOpponentBuzzRef.current) {
+          handleOpponentBuzzRef.current(1);
+        }
+      }
     }, 4500);
 
     return () => clearInterval(clueTimer);
@@ -368,6 +373,35 @@ export default function GrandConcours3ManchesArena({
     }, 1600);
   };
 
+  // Recommencer une partie intégrale (Reset des 3 manches)
+  const handleFullRestart = () => {
+    sounds.playPop();
+    setUserScoreM1(0);
+    setOppScoresM1({ lucas: 0, manon: 0, alexandre: 0, sarah: 0 });
+    setM1BuzzerState('open');
+    setM1BuzzedOpponent(null);
+    setM1UserAnswer('');
+    setM1Idx(0);
+    setSelectedThemeId(null);
+    setM2Streak(0);
+    setM2MaxStreak(0);
+    setM2QuestionIdx(0);
+    setM2TimeLeft(90);
+    setM2IsPlaying(false);
+    setM3UserScore(0);
+    setM3OpponentScore(0);
+    setM3QuestionIdx(0);
+    setM3ActiveClueLevel(4);
+    setM3IsBuzzed(false);
+    setM3BuzzerWinner(null);
+    setM3ShowOptions(false);
+    setM3RoundAnswered(false);
+    setShowBriefing(false);
+    setCurrentRound('manche1_rapidite');
+    setReaction('speaking');
+    setHostDialogue("🎙️ Henri : « Nouvelle partie du Grand Concours ! Le buzzer est ouvert pour la Manche 1 ! »");
+  };
+
   // Recommencer la Manche 1
   const handleRestartManche1 = () => {
     sounds.playPop();
@@ -536,6 +570,8 @@ export default function GrandConcours3ManchesArena({
       }
     }, 1800);
   };
+
+  handleOpponentBuzzRef.current = handleOpponentBuzz;
 
   const handleUserFafAnswer = (optionIdx) => {
     if (!m3ShowOptions || m3RoundAnswered) return;
@@ -1351,13 +1387,11 @@ export default function GrandConcours3ManchesArena({
 
               <div className="flex gap-3 justify-center">
                 <button
-                  onClick={() => {
-                    sounds.playPop();
-                    setCurrentRound('intro');
-                  }}
-                  className="px-6 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm transition"
+                  onClick={handleFullRestart}
+                  className="px-6 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm transition flex items-center gap-2 cursor-pointer"
                 >
-                  🔄 Rejouer une Partie
+                  <RotateCcw className="w-4 h-4" />
+                  <span>Rejouer une Partie Complète</span>
                 </button>
                 <button
                   onClick={() => {

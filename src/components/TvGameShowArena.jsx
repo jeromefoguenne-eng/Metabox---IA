@@ -29,7 +29,12 @@ import GameShow3D from './GameShow3D';
 import { sounds } from '../utils/soundEffects';
 import CharacterAvatar from './CharacterAvatar';
 import GrandConcours3ManchesArena from './GrandConcours3ManchesArena';
-import { generateMillionnaireSessionQuestions } from '../data/verbesConsignesBank';
+import { 
+  generateMillionnaireSessionQuestions,
+  VERBES_BANK_TIER_1,
+  VERBES_BANK_TIER_2,
+  VERBES_BANK_TIER_3 
+} from '../data/verbesConsignesBank';
 import { generateRoueSessionQuestions } from '../data/roueAccordsBank';
 import AuroreGameBriefingModal from './AuroreGameBriefingModal';
 
@@ -134,6 +139,7 @@ function TvGameShowArenaContent({
   const [audiencePoll, setAudiencePoll] = useState(null);
   const [jokerSarUsed, setJokerSarUsed] = useState(false);
   const [sarTip, setSarTip] = useState(null);
+  const [jokerSwitchUsed, setJokerSwitchUsed] = useState(false);
 
   // --- SPECIFIC: LA ROUE DES ACCORDS (Word Wall & Wheel) ---
   const [revealedLetters, setRevealedLetters] = useState(new Set());
@@ -623,6 +629,68 @@ function TvGameShowArenaContent({
     });
   };
 
+  // 4e Joker : Switch de Question (Qui veut gagner des crédits)
+  const handleUseSwitch = () => {
+    if (jokerSwitchUsed || isAnswerLocked || showType !== 'millionnaire') return;
+    sounds.playPop();
+    setJokerSwitchUsed(true);
+
+    // Sélection d'une nouvelle question du même tier
+    const tier = currentQ.tier || (currentIdx < 3 ? 1 : currentIdx < 7 ? 2 : 3);
+    const bank = tier === 1 ? VERBES_BANK_TIER_1 : tier === 2 ? VERBES_BANK_TIER_2 : VERBES_BANK_TIER_3;
+    const candidates = bank.filter(q => q.verb !== currentQ.verb);
+    const chosen = candidates[Math.floor(Math.random() * candidates.length)] || bank[0];
+
+    // Shuffler les 4 options pour la nouvelle question
+    const originalOptions = chosen.options.map((opt, i) => ({
+      text: opt,
+      isCorrect: i === chosen.correctIndex
+    }));
+    const shuffledOptions = [...originalOptions].sort(() => Math.random() - 0.5);
+    const newCorrectIndex = shuffledOptions.findIndex(o => o.isCorrect);
+
+    const replacementQ = {
+      ...chosen,
+      id: `millionnaire_switch_${Date.now()}`,
+      rewardEcts: currentQ.rewardEcts,
+      options: shuffledOptions.map(o => o.text),
+      correctIndex: newCorrectIndex,
+      isSafetyTier: currentQ.isSafetyTier
+    };
+
+    setSessionQuestions(prev => {
+      const copy = [...prev];
+      copy[currentIdx] = replacementQ;
+      return copy;
+    });
+
+    setHiddenOptions([]);
+    setSelectedOption(null);
+    setAudiencePoll(null);
+    setSarTip(null);
+    sounds.playSuccess();
+    setHostDialogue(`🔄 « JOKER SWITCH ACTIVÉ ! L'ordinateur écarte « ${currentQ.verb} » et soumet une nouvelle épreuve : « ${chosen.verb} » ! »`);
+    sounds.speakHost(`Joker switch activé. Nouvelle question pour ${currentQ.rewardEcts} crédits : que signifie le verbe ${chosen.verb} ?`);
+  };
+
+  // Partir avec ses gains (Walk away comme dans le vrai jeu télévisé)
+  const handleWalkAway = () => {
+    if (isAnswerLocked || gameOver || currentIdx === 0 || showType !== 'millionnaire') return;
+    sounds.playPop();
+    sounds.stopSuspense();
+    setIsAnswerLocked(true);
+    setReaction('victory');
+    sounds.playApplause();
+    sounds.playSuccess();
+    const bankedEcts = currentIdx * 6; // gains de la dernière question réussie
+    setScoreEcts(bankedEcts);
+    setGameOver(true);
+    setHostDialogue(`🎙️ Henri : « Sage et remarquable décision ! Vous préférez empocher vos ${bankedEcts} crédits ECTS plutôt que de risquer la chute ! Félicitations pour ce parcours ! »`);
+    sounds.speakHost(`Excellente stratégie ! Vous quittez le jeu avec ${bankedEcts} crédits ECTS sécurisés.`);
+    confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+    if (onFinishGame) onFinishGame(bankedEcts);
+  };
+
   // Handle Option Select in TV Game (Multiple choice)
   const handleSelectOption = (idx) => {
     if (isAnswerLocked || (buzzWinner && buzzWinner !== 'player')) return;
@@ -698,8 +766,21 @@ function TvGameShowArenaContent({
         if (showType === 'millionnaire') {
           setIsGameLost(true);
           sounds.stopSuspense();
-          setHostDialogue(`❌ ÉLIMINATION DIRECTE ! Mauvaise réponse... C'était : « ${currentQ.options[currentQ.correctIndex]} ». Vous perdez la partie ! Vous devez recommencer l'ascension.`);
-          sounds.speakHost(`Erreur fatale sur le verbe ${currentQ.verb || ''} ! Vous perdez la partie et devez recommencer.`);
+
+          // Paliers de sécurité garantis :
+          // Échec à Q1..Q4 (currentIdx 0..3) -> 0 ECTS
+          // Échec à Q5..Q7 (currentIdx 4..6) -> Palier 1 validé : 24 ECTS garantis !
+          // Échec à Q8..Q10 (currentIdx 7..9) -> Palier 2 validé : 42 ECTS garantis !
+          const safetyBankedEcts = currentIdx >= 7 ? 42 : currentIdx >= 4 ? 24 : 0;
+          setScoreEcts(safetyBankedEcts);
+
+          if (safetyBankedEcts > 0) {
+            setHostDialogue(`❌ ÉLIMINATION ! Mauvaise réponse... C'était : « ${currentQ.options[currentQ.correctIndex]} ». Mais grâce à votre palier de sécurité garanti, vous repartez avec ${safetyBankedEcts} crédits ECTS !`);
+            sounds.speakHost(`Erreur fatale sur le verbe ${currentQ.verb || ''}. Mais vous ne repartez pas les mains vides : vous conservez vos ${safetyBankedEcts} crédits garantis !`);
+          } else {
+            setHostDialogue(`❌ ÉLIMINATION DIRECTE avant le premier palier ! Mauvaise réponse... C'était : « ${currentQ.options[currentQ.correctIndex]} ». Vous repartez avec 0 crédit ECTS.`);
+            sounds.speakHost(`Erreur fatale avant le premier palier sur le verbe ${currentQ.verb || ''} ! Vous repartez sans crédit.`);
+          }
           
           setTimeout(() => {
             setGameOver(true);
@@ -752,7 +833,7 @@ function TvGameShowArenaContent({
     } else if (showType === 'roue') {
       setSessionQuestions(generateRoueSessionQuestions());
     }
-    setIsShowingIntro(true);
+    setIsShowingIntro(false); // Relance immédiate de la partie sans re-bloquer sur le briefing modal
     setCurrentIdx(0);
     setScoreEcts(0);
     setLives(3);
@@ -762,6 +843,10 @@ function TvGameShowArenaContent({
     setJoker50Used(false);
     setJokerAudienceUsed(false);
     setJokerSarUsed(false);
+    setJokerSwitchUsed(false);
+    setHiddenOptions([]);
+    setAudiencePoll(null);
+    setSarTip(null);
     setIsAnswerLocked(false);
     setSelectedOption(null);
   };
@@ -795,10 +880,10 @@ function TvGameShowArenaContent({
     { num: 10, verb: "Comparer", ects: 60, tier: 3, label: "Haute Exigence (Sommet)" },
     { num: 9, verb: "Compléter", ects: 54, tier: 3, label: "Haute Exigence" },
     { num: 8, verb: "Définir", ects: 48, tier: 3, label: "Haute Exigence" },
-    { num: 7, verb: "Classer", ects: 42, tier: 2, label: "Intermédiaire" },
+    { num: 7, verb: "Distinguer", ects: 42, tier: 2, label: "⭐ PALIER SÉCURITÉ GARANTI 2", isSafety: true },
     { num: 6, verb: "Énumérer", ects: 36, tier: 2, label: "Intermédiaire" },
     { num: 5, verb: "Citer", ects: 30, tier: 2, label: "Intermédiaire" },
-    { num: 4, verb: "Relier", ects: 24, tier: 2, label: "⭐ PALIER SÉCURITÉ GARANTI", isSafety: true },
+    { num: 4, verb: "Relier", ects: 24, tier: 2, label: "⭐ PALIER SÉCURITÉ GARANTI 1", isSafety: true },
     { num: 3, verb: "Biffer", ects: 18, tier: 1, label: "Facile" },
     { num: 2, verb: "Cocher", ects: 12, tier: 1, label: "Facile" },
     { num: 1, verb: "Souligner", ects: 6, tier: 1, label: "Facile" }
@@ -969,11 +1054,14 @@ function TvGameShowArenaContent({
                     </span>
 
                     <h3 className="text-3xl font-outfit font-black text-white">
-                      💀 PARTIE PERDUE !
+                      {scoreEcts > 0 ? "🛡️ PALIER DE SÉCURITÉ GARANTI SÉCURISÉ !" : "💀 PARTIE TERMINÉE !"}
                     </h3>
 
                     <p className="text-slate-300 font-lexend text-sm max-w-lg mx-auto leading-relaxed">
-                      Vous avez échoué à l'épreuve #{currentIdx + 1} face au verbe <strong className="text-rose-400">« {currentQ?.verb || 'de consigne'} »</strong>. Dans <em>Qui veut gagner des crédits</em>, la moindre erreur de consigne est éliminatoire ! L'ascension est interrompue.
+                      {scoreEcts > 0 
+                        ? `L'ascension s'arrête à l'épreuve #${currentIdx + 1} face au verbe « ${currentQ?.verb || 'de consigne'} ». Mais grâce à votre solidité sur les épreuves précédentes, vous conservez votre palier garanti de ${scoreEcts} crédits ECTS !`
+                        : `Vous avez échoué à l'épreuve #${currentIdx + 1} face au verbe « ${currentQ?.verb || 'de consigne'} » avant d'atteindre le premier palier de sécurité (24 ECTS). Vous repartez avec 0 crédit.`
+                      }
                     </p>
 
                     <div className="p-4 rounded-2xl bg-slate-900 border border-rose-500/30 text-left text-xs text-slate-300 space-y-1.5 shadow-lg">
@@ -1104,14 +1192,23 @@ function TvGameShowArenaContent({
                           Niveau {currentQ.tier} : {currentQ.difficulty}
                         </span>
                         {currentQ.isSafetyTier && (
-                          <span className="px-2 py-0.5 rounded-md bg-amber-400 text-slate-950 font-outfit font-black text-[10px] uppercase shadow-xs">
-                            🌟 Palier de Sécurité 24 ECTS
+                          <span className="px-2 py-0.5 rounded-md bg-amber-400 text-slate-950 font-outfit font-black text-[10px] uppercase shadow-xs flex items-center gap-1 animate-pulse">
+                            🌟 Palier Garanti ({currentQ.rewardEcts} ECTS)
                           </span>
                         )}
                       </div>
 
-                      {/* Jokers */}
-                      <div className="flex gap-2">
+                      {/* Jokers & Option Partir avec ses gains */}
+                      <div className="flex flex-wrap items-center gap-2">
+                        {currentIdx >= 1 && !isAnswerLocked && (
+                          <button
+                            onClick={handleWalkAway}
+                            className="px-3 py-1.5 rounded-xl text-xs font-black bg-rose-950/70 hover:bg-rose-800 border border-rose-500/60 text-rose-200 hover:text-white transition cursor-pointer flex items-center gap-1.5 shadow-md animate-in fade-in"
+                            title="Quitter le jeu avec vos crédits validés sans risquer d'élimination"
+                          >
+                            🛑 Partir ({currentIdx * 6} ECTS)
+                          </button>
+                        )}
                         <button
                           onClick={handleUse5050}
                           disabled={joker50Used || isAnswerLocked}
@@ -1146,6 +1243,18 @@ function TvGameShowArenaContent({
                         >
                           <PhoneCall className="w-3.5 h-3.5" />
                           Appel SAR
+                        </button>
+                        <button
+                          onClick={handleUseSwitch}
+                          disabled={jokerSwitchUsed || isAnswerLocked}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${
+                            jokerSwitchUsed 
+                              ? 'bg-slate-800 text-slate-600 cursor-not-allowed line-through' 
+                              : 'bg-cyan-600/30 hover:bg-cyan-600 text-cyan-200 hover:text-white border border-cyan-500/40 cursor-pointer shadow-xs'
+                          }`}
+                          title="Échange la question en cours contre une autre du même palier d'exigence académique"
+                        >
+                          🔄 Switch
                         </button>
                       </div>
                     </div>

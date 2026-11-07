@@ -1,9 +1,9 @@
 // Banque étendue de questions pour « Qui veut gagner des Crédits ? »
 // Référentiel des verbes de consigne académiques FWB & Haute École Charlemagne
 // 3 Paliers d'exigence :
-// - Palier 1 (Questions 1 à 3 : 6, 12, 18 ECTS) : Tâches mécaniques directes
-// - Palier 2 (Questions 4 à 7 : 24, 30, 36, 42 ECTS) : Traitement intermédiaire & structuration
-// - Palier 3 (Questions 8 à 10 : 48, 54, 60 ECTS) : Haute exigence conceptuelle & esprit critique
+// - Palier 1 (Questions 1 à 3 : 6, 12, 18 ECTS) : Tâches mécaniques directes & repérage
+// - Palier 2 (Questions 4 à 7 : 24, 30, 36, 42 ECTS) : Traitement intermédiaire & structuration (Paliers garantis à Q4 et Q7)
+// - Palier 3 (Questions 8 à 10 : 48, 54, 60 ECTS) : Haute exigence conceptuelle, analyse critique & synthèse
 
 export const VERBES_BANK_TIER_1 = [
   {
@@ -11,65 +11,65 @@ export const VERBES_BANK_TIER_1 = [
     difficulty: "Facile",
     tier: 1,
     options: [
-      "Tracer un trait continu sous le mot ou la proposition désignée",
-      "Tracer un cercle ou un ovale fermé autour de l'élément",
-      "Séparer les mots par des barres obliques",
-      "Recopier le mot en lettres majuscules d'imprimerie"
+      "Tracer un trait continu sous le mot ou la proposition sans masquer les caractères",
+      "Recouvrir les lettres d'une couche de surligneur jaune ou vert fluorescent",
+      "Tracer un encadrement rectangulaire fermé autour du mot",
+      "Barrer d'un trait horizontal médian le mot pour signaler une correction"
     ],
     correctIndex: 0,
-    explanation: "Souligner signifie tracer une ligne continue directement sous les termes ciblés."
+    explanation: "Souligner consiste à tracer une ligne continue directement sous les termes ciblés, sans toucher ni masquer les lettres."
   },
   {
     verb: "Cocher",
     difficulty: "Facile",
     tier: 1,
     options: [
-      "Assembler plusieurs feuillets d'examen",
-      "Placer un petit trait ou une croix (✓ ou ✗) dans une case prédéfinie",
-      "Effacer au correcteur blanc les mauvaises réponses",
-      "Numéroter les paragraphes dans la marge de droite"
+      "Placer un signe distinctif (✓ ou ✗) à l'intérieur de la case prévue à cet effet",
+      "Noircir et remplir intégralement la case au stylo ou au feutre",
+      "Inscrire le numéro de la réponse dans la marge gauche de la feuille",
+      "Relier la question à la bonne réponse par un trait continu"
     ],
-    correctIndex: 1,
-    explanation: "Cocher impose de marquer une case à l'aide d'un signe distinctif sans déborder."
+    correctIndex: 0,
+    explanation: "Cocher impose de marquer la case d'une croix ou d'un trait sans déborder ni noircir la case."
   },
   {
     verb: "Biffer",
     difficulty: "Facile",
     tier: 1,
     options: [
-      "Barrer d'un trait net pour annuler ou éliminer un élément erroné",
-      "Gommer soigneusement pour faire disparaître l'encre",
-      "Surligner au feutre jaune fluorescent",
-      "Mettre le terme entre parenthèses sans le rayer"
+      "Barrer d'un trait net un mot ou une mention pour l'annuler et l'exclure formellement",
+      "Recouvrir d'un correcteur blanc opaque pour faire disparaître l'encre",
+      "Mettre le terme entre parenthèses sans le rayer pour indiquer un doute",
+      "Gommer le mot au crayon pour effacer toute trace d'écriture"
     ],
     correctIndex: 0,
-    explanation: "Biffer consiste à tracer un trait sur un mot ou une phrase pour l'annuler formellement."
+    explanation: "Biffer consiste à tracer un trait horizontal sur un élément pour signifier son annulation sans ambiguïté."
   },
   {
     verb: "Entourer",
     difficulty: "Facile",
     tier: 1,
     options: [
-      "Tracer une ligne fermée (cercle ou boucle) englobant l'élément cible",
-      "Tracer un trait horizontal sous le groupe de mots",
-      "Placer deux astérisques de part et d'autre du texte",
-      "Encadrer dans un rectangle tracé à la règle"
+      "Tracer une ligne continue fermée (cercle ou ovale) englobant l'élément cible",
+      "Tracer une ligne droite sous le groupe de mots",
+      "Placer deux astérisques ou guillemets de part et d'autre de l'expression",
+      "Tracer quatre segments à la règle formant un polygone rectangulaire"
     ],
     correctIndex: 0,
-    explanation: "Entourer exige de cercler l'élément sans couper les lettres."
+    explanation: "Entourer exige d'enfermer l'élément dans un contour continu sans sectionner les lettres."
   },
   {
     verb: "Encadrer",
     difficulty: "Facile",
     tier: 1,
     options: [
-      "Tracer un cadre rectangulaire ou carré autour de la réponse",
-      "Colorier entièrement l'arrière-plan de la phrase",
-      "Tracer une ligne ondulée sous la formule mathématique",
-      "Placer la réponse tout en haut de la page"
+      "Tracer un rectangle ou un carré fermé dont les bordures délimitent la réponse",
+      "Tracer un ovale fluide à main levée autour du terme",
+      "Colorier la zone d'arrière-plan de la formule ou de la réponse",
+      "Placer des crochets droits au début et à la fin de la proposition"
     ],
     correctIndex: 0,
-    explanation: "Encadrer consiste à tracer les quatre côtés d'un rectangle entourant la formule ou le mot."
+    explanation: "Encadrer consiste à enfermer la formule ou la phrase dans les quatre côtés d'un cadre géométrique net."
   },
   {
     verb: "Surligner",
@@ -77,74 +77,74 @@ export const VERBES_BANK_TIER_1 = [
     tier: 1,
     options: [
       "Appliquer une couleur transparente vive par-dessus le texte pour le mettre en valeur",
-      "Écrire en caractères gras avec un stylo plume",
-      "Tracer une flèche dans la marge pointant vers le mot",
-      "Effacer les mots inutiles au blanco"
+      "Tracer un trait à la règle sous la ligne de base du texte",
+      "Réécrire le terme en lettres majuscules d'imprimerie épaisses",
+      "Entourer les mots clés d'un tracé au stylo à bille"
     ],
     correctIndex: 0,
-    explanation: "Surligner consiste à rendre visible une information par transparence colorée sans masquer le texte."
+    explanation: "Surligner consiste à faire ressortir une information par transparence colorée sans en masquer la lisibilité."
   },
   {
     verb: "Numéroter",
     difficulty: "Facile",
     tier: 1,
     options: [
-      "Attribuer un ordre chiffré séquentiel (1, 2, 3...) aux différents éléments",
-      "Compter le nombre total de mots du texte",
-      "Calculer la moyenne arithmétique des notes",
-      "Indiquer l'heure exacte de remise de la copie"
+      "Attribuer un chiffre d'ordre séquentiel (1, 2, 3...) à chaque élément selon une logique précise",
+      "Compter le nombre total de mots ou d'occurrences présents dans le texte",
+      "Calculer la moyenne arithmétique ou le pourcentage des résultats",
+      "Classer par ordre alphabétique sans inscrire de chiffres"
     ],
     correctIndex: 0,
-    explanation: "Numéroter impose d'affecter un numéro d'ordre logique ou chronologique à chaque item."
+    explanation: "Numéroter impose d'affecter un numéro d'ordre identifiable (1, 2, 3...) à chaque item d'un ensemble."
   },
   {
     verb: "Recopier",
     difficulty: "Facile",
     tier: 1,
     options: [
-      "Reproduire fidèlement et à l'identique un texte ou une citation sans altération",
-      "Résumer le texte avec ses propres mots",
-      "Traduire le texte dans un registre plus familier",
-      "Corriger les fautes de l'auteur original"
+      "Reproduire fidèlement et intégralement un texte ou un extrait sans aucune modification",
+      "Reformuler l'idée principale dans un vocabulaire personnel plus moderne",
+      "Résumer le passage en sélectionnant uniquement les mots porteurs de sens",
+      "Traduire le passage dans une autre langue ou un autre registre"
     ],
     correctIndex: 0,
-    explanation: "Recopier exige une transcription littérale exacte sans aucune modification."
+    explanation: "Recopier exige une reproduction à l'identique (mots, ponctuation, orthographe) sans aucune altération."
   },
   {
     verb: "Compléter",
     difficulty: "Facile",
     tier: 1,
     options: [
-      "Insérer l'information ou le terme manquant dans un texte à trous ou un schéma",
-      "Rédiger un paragraphe entièrement nouveau de 20 lignes",
-      "Choisir une réponse au hasard parmi des distracteurs",
-      "Signer son nom au bas du document d'évaluation"
+      "Ajouter les éléments manquants dans un énoncé lacunaire pour le rendre complet",
+      "Rédiger un paragraphe inédit prolongeant la réflexion de l'auteur",
+      "Corriger les erreurs d'orthographe présentes dans le texte source",
+      "Remplacer l'ensemble de la phrase par une formulation synonyme"
     ],
     correctIndex: 0,
-    explanation: "Compléter implique d'ajouter uniquement les pièces manquantes pour rendre l'ensemble cohérent."
+    explanation: "Compléter consiste à renseigner avec exactitude les blancs laissés vides dans une structure préexistante."
   },
   {
-    verb: "Lister",
+    verb: "Nommer",
     difficulty: "Facile",
     tier: 1,
     options: [
-      "Écrire une suite d'éléments les uns en dessous des autres sous forme d'énumération",
-      "Rédiger une dissertation littéraire continue sans retours à la ligne",
-      "Donner son avis argumenté sur le sujet",
-      "Tracer un graphique en courbes statistiques"
+      "Désigner un objet, un concept ou une personne par son terme propre ou son appellation exacte",
+      "Fournir une définition détaillée en plusieurs phrases des caractéristiques de l'objet",
+      "Expliquer l'origine étymologique et historique de l'appellation",
+      "Donner une métaphore ou une image poétique pour évoquer la réalité"
     ],
     correctIndex: 0,
-    explanation: "Lister impose une présentation aérée sous forme de tirets ou de puces verticales."
+    explanation: "Nommer se limite à énoncer l'appellation exacte (le nom propre ou le substantif précis) sans développement."
   },
   {
     verb: "Pointer",
     difficulty: "Facile",
     tier: 1,
     options: [
-      "Désigner ou marquer précisément un élément d'une flèche ou d'un symbole",
-      "Écrire un poème en rimes croisées",
-      "Contredire le professeur pendant l'épreuve",
-      "Effacer une erreur d'un coup de gomme"
+      "Désigner ou marquer précisément l'emplacement exact d'un élément sur un schéma ou un texte",
+      "Faire un commentaire général sur l'esthétique du document graphique",
+      "Mesurer la distance en centimètres entre deux points du schéma",
+      "Redessiner entièrement la figure sur une feuille annexe"
     ],
     correctIndex: 0,
     explanation: "Pointer consiste à cibler visuellement et de manière univoque un endroit précis du document."
@@ -154,13 +154,13 @@ export const VERBES_BANK_TIER_1 = [
     difficulty: "Facile",
     tier: 1,
     options: [
-      "Tracer une ligne continue sur un mot pour signifier son rejet ou son erreur",
-      "Dessiner des rayures décoratives dans la marge",
-      "Mettre le texte en italique",
-      "Agrafer deux feuilles ensemble"
+      "Tracer une ligne continue sur un mot pour signifier son rejet ou son invalidation",
+      "Souligner le mot deux fois d'affilée pour insister sur son importance",
+      "Écrire la mention 'Faux' en rouge au-dessus du mot sans y toucher",
+      "Découper aux ciseaux la partie de la feuille contenant l'erreur"
     ],
     correctIndex: 0,
-    explanation: "Rayer consiste à neutraliser un mot ou une phrase en le biffant d'un trait horizontal."
+    explanation: "Rayer consiste à neutraliser un mot ou une phrase en le biffant d'un trait horizontal net."
   }
 ];
 
@@ -169,184 +169,172 @@ export const VERBES_BANK_TIER_2 = [
     verb: "Relier",
     difficulty: "Intermédiaire",
     tier: 2,
-    isSafetyTier: true, // PALIER DE SÉCURITÉ GARANTI !
+    isSafetyTier: true, // ⭐ PALIER DE SÉCURITÉ GARANTI 1 (Q4 = 24 ECTS)
     options: [
-      "Tracer un trait ou une flèche matérialisant la correspondance exacte entre deux éléments",
-      "Placer deux feuilles côte à côte sans les attacher",
-      "Lire une seconde fois la consigne à voix haute",
-      "Fusionner deux paragraphes en un seul bloc compact"
+      "Tracer un trait ou une flèche matérialisant la correspondance exacte entre deux éléments associés",
+      "Placer les deux éléments dans une même phrase rédigée sans symbole graphique",
+      "Fusionner les deux définitions en un paragraphe synthétique unique",
+      "Classer les éléments par ordre alphabétique dans deux colonnes séparées"
     ],
     correctIndex: 0,
-    explanation: "Relier exige d'établir un lien visuel direct (flèche ou segment) entre les deux correspondances."
+    explanation: "Relier exige d'établir un lien visuel direct (segment ou flèche) entre les items appariés."
   },
   {
     verb: "Citer",
     difficulty: "Intermédiaire",
     tier: 2,
     options: [
-      "Nommer ou reproduire textuellement un passage, auteur ou donnée sans le paraphraser",
-      "Développer une longue explication philosophique de 3 pages",
-      "Donner son opinion personnelle sur la moralité de l'auteur",
-      "Traduire le terme technique en anglais des affaires"
+      "Rapporter textuellement et fidèlement un passage ou des données entre guillemets sans les altérer",
+      "Résumer l'idée générale de l'auteur avec ses propres mots sans reproduire le texte",
+      "Exprimer son accord ou son désaccord argumenté avec la position de l'auteur",
+      "Traduire le terme technique dans un registre de langue plus courant"
     ],
     correctIndex: 0,
-    explanation: "Citer exige de rapporter fidèlement l'énoncé ou la source (souvent entre guillemets) sans digression."
+    explanation: "Citer exige de retranscrire à la lettre l'énoncé source entre guillemets sans en modifier un seul terme."
   },
   {
     verb: "Énumérer",
     difficulty: "Intermédiaire",
     tier: 2,
     options: [
-      "Nommer successivement et de façon exhaustive les composantes d'un ensemble",
-      "Rédiger un paragraphe narratif sans alinéa",
-      "Effectuer un calcul intégral complexe",
-      "Donner un seul exemple anecdotique"
+      "Nommer successivement et de façon exhaustive tous les composants d'un ensemble sans omission",
+      "Rédiger un paragraphe narratif continu décrivant l'évolution historique du sujet",
+      "Sélectionner un seul exemple significatif et le développer sur une page",
+      "Regrouper les composantes en catégories abstraites hiérarchisées"
     ],
     correctIndex: 0,
-    explanation: "Énumérer consiste à passer en revue l'un après l'autre tous les éléments d'une liste finie."
+    explanation: "Énumérer consiste à dresser la liste complète, terme à terme, de tous les éléments sans omission."
   },
   {
     verb: "Classer",
     difficulty: "Intermédiaire",
     tier: 2,
     options: [
-      "Distribuer des éléments dans des catégories ordonnées selon un critère rationnel précis",
-      "Ranger ses stylos dans sa trousse avant la fin du cours",
-      "Recopier sa copie au propre sans ratures",
-      "Mettre toutes les dates en gras dans le texte"
+      "Distribuer des éléments dans des catégories ordonnées selon un critère logique ou une grille explicite",
+      "Lister les éléments au fil de la plume sans distinction de catégorie ni de hiérarchie",
+      "Séparer arbitrairement les éléments en deux moitiés égales sans règle directrice",
+      "Nommer chaque élément par son appellation officielle sans créer de groupes"
     ],
     correctIndex: 0,
-    explanation: "Classer implique d'appliquer un critère taxonomique logique pour regrouper ou hiérarchiser."
+    explanation: "Classer implique d'appliquer un critère taxonomique logique pour regrouper ou hiérarchiser des items."
   },
   {
     verb: "Décrire",
     difficulty: "Intermédiaire",
     tier: 2,
     options: [
-      "Détailler les caractéristiques observables, la structure et l'état d'un objet ou phénomène",
-      "Démontrer mathématiquement le pourquoi d'une réaction chimique",
-      "Prendre position pour ou contre une thèse politique",
-      "Résumer un livre entier en un seul mot"
+      "Présenter les caractéristiques observables, l'aspect et la structure d'un fait sans spéculer sur les causes",
+      "Démontrer les mécanismes de cause à effet qui produisent le phénomène",
+      "Porter un jugement de valeur moral ou esthétique sur l'objet étudié",
+      "Formuler une hypothèse prospective sur l'évolution future du fait"
     ],
     correctIndex: 0,
-    explanation: "Décrire consiste à faire un état des lieux minutieux de 'comment c'est fait' sans spéculer sur les causes profondes."
+    explanation: "Décrire consiste à faire un état des lieux factuel et minutieux de ce qui est observable sans chercher le pourquoi profond."
   },
   {
     verb: "Illustrer",
     difficulty: "Intermédiaire",
     tier: 2,
     options: [
-      "Appuyer et éclairer une affirmation abstraite par un exemple concret, une donnée ou un cas réel",
-      "Faire obligatoirement un dessin artistique aux crayons de couleur",
-      "Répéter la consigne deux fois de suite",
-      "Souligner tous les adjectifs qualificatifs du texte"
+      "Appuyer une règle abstraite ou un concept par un exemple contextualisé, un fait réel ou une donnée concrète",
+      "Établir la validité formelle d'un théorème par une démonstration mathématique",
+      "Tracer obligatoirement un schéma abstrait ou un organigramme sans texte",
+      "Reformuler la définition théorique en employant d'autres mots savants"
     ],
     correctIndex: 0,
-    explanation: "Illustrer signifie rendre tangible une notion théorique au moyen d'un cas pratique ou d'un exemple probant."
+    explanation: "Illustrer signifie rendre tangible une notion abstraite au moyen d'un cas pratique ou d'un exemple probant."
   },
   {
     verb: "Identifier",
     difficulty: "Intermédiaire",
     tier: 2,
     options: [
-      "Reconnaître et désigner avec précision un élément précis parmi plusieurs d'après ses critères spécifiques",
-      "Inventer un nouveau concept théorique",
-      "Donner son propre nom sur le document",
-      "Calculer la racine carrée d'un nombre"
+      "Reconnaître et isoler avec certitude un élément précis au sein d'un corpus d'après ses propriétés caractéristiques",
+      "Créer une nouvelle catégorie théorique pour regrouper des éléments disparates",
+      "Expliquer en détail les causes de l'apparition de l'élément dans le document",
+      "Donner son avis sur l'utilité pratique de l'élément dans la vie courante"
     ],
     correctIndex: 0,
-    explanation: "Identifier exige de repérer sans ambiguïté la nature ou la fonction exacte de l'objet d'étude."
+    explanation: "Identifier consiste à repérer et désigner un composant cible en s'appuyant sur ses indices distinctifs."
   },
   {
-    verb: "Résumer",
+    verb: "Distinguer",
     difficulty: "Intermédiaire",
     tier: 2,
+    isSafetyTier: true, // ⭐ PALIER DE SÉCURITÉ GARANTI 2 (Q7 = 42 ECTS)
     options: [
-      "Restituer de manière condensée et neutre la substantifique moelle d'un texte sans avis personnel",
-      "Recopier le texte en supprimant seulement un paragraphe sur deux",
-      "Rédiger une critique cinglante de l'argumentation de l'auteur",
-      "Doubler la longueur du texte initial avec des métaphores"
+      "Discerner et expliciter les différences singulières qui empêchent de confondre deux notions voisines",
+      "Traiter les deux notions comme strictement équivalentes et interchangeables",
+      "Raconter la genèse historique commune des deux concepts",
+      "Choisir arbitrairement l'une des deux notions en ignorant l'autre"
     ],
     correctIndex: 0,
-    explanation: "Résumer exige de respecter la pensée de l'auteur en éliminant les détails superflus tout en restant concis."
+    explanation: "Distinguer exige d'isoler les critères spécifiques qui discriminent sans confusion deux éléments proches."
   },
   {
     verb: "Schématiser",
     difficulty: "Intermédiaire",
     tier: 2,
     options: [
-      "Représenter de manière simplifiée et synthétique les relations clés d'un système (flèches, blocs, flux)",
-      "Écrire un roman de fiction sur le sujet",
-      "Dessiner un portrait réaliste d'une personne",
-      "Recopier un dictionnaire médical"
+      "Représenter sous une forme graphique simplifiée les relations fonctionnelles et composantes clés",
+      "Rédiger un essai discursif exhaustif de plusieurs pages sans support visuel",
+      "Reproduire un dessin hyperréaliste avec ombrages et détails minutieux",
+      "Lister les formules mathématiques brutes sans symboles relationnels"
     ],
     correctIndex: 0,
-    explanation: "Schématiser consiste à traduire visuellement la logique fonctionnelle d'un concept en dépouillant les détails secondaires."
+    explanation: "Schématiser consiste à épurer la complexité d'une réalité pour en faire ressortir la logique fonctionnelle en un tracé clair."
   },
   {
-    verb: "Reformuler",
+    verb: "Traduire",
     difficulty: "Intermédiaire",
     tier: 2,
     options: [
-      "Exprimer la même idée fondamentale avec d'autres termes plus clairs sans en dénaturer le sens",
-      "Traduire mot à mot avec un dictionnaire bilingue",
-      "Changer complètement le sens de la phrase originale",
-      "Mettre la phrase à la voix passive sans réfléchir"
+      "Transposer un message d'un système de signes vers un autre (langue, graphique, code) en préservant son sens exact",
+      "Commenter librement les intentions cachées de l'auteur d'un document",
+      "Raccourcir un texte en éliminant les passages les plus complexes",
+      "Améliorer le style littéraire d'un auteur en modifiant ses idées d'origine"
     ],
     correctIndex: 0,
-    explanation: "Reformuler teste la compréhension véritable : dire la même vérité avec un vocabulaire personnel et rigoureux."
+    explanation: "Traduire impose de transférer fidèlement le sens d'un langage source vers un langage cible sans trahison conceptuelle."
   },
   {
-    verb: "Distinguer",
+    verb: "Expliciter",
     difficulty: "Intermédiaire",
     tier: 2,
     options: [
-      "Faire ressortir nettement la différence spécifique qui sépare deux notions facilement confondues",
-      "Traiter les deux notions comme parfaitement identiques",
-      "Attribuer une médaille d'honneur à un étudiant",
-      "Supprimer les deux termes du syllabus"
+      "Exprimer clairement et formellement ce qui était sous-entendu, implicite ou resté à l'état d'intuition",
+      "Répéter exactement la phrase initiale sans aucun apport de clarification",
+      "Résumer le texte en masquant les détails techniques délicats",
+      "Insérer des digressions personnelles pour enrichir le sujet"
     ],
     correctIndex: 0,
-    explanation: "Distinguer exige d'isoler la ligne de démarcation conceptuelle qui empêche toute confusion sémantique."
+    explanation: "Expliciter consiste à dévoiler et formuler en termes limpides ce que l'énoncé laissait implicite."
   },
   {
-    verb: "Catégoriser",
+    verb: "Ordonner",
     difficulty: "Intermédiaire",
     tier: 2,
     options: [
-      "Regrouper des données ou concepts dans des classes logiques selon leurs propriétés communes",
-      "Écrire en caractères gothiques",
-      "Attribuer une note chiffrée de 0 à 20",
-      "Mélanger tous les arguments sans structure"
+      "Disposer des éléments selon une progression logique, chronologique ou hiérarchique déterminée",
+      "Mélanger aléatoirement les propositions pour tester l'attention du lecteur",
+      "Regrouper les termes uniquement en fonction de leur longueur en lettres",
+      "Conserver strictement l'ordre d'apparition sans poser de critère de tri"
     ],
     correctIndex: 0,
-    explanation: "Catégoriser consiste à ordonner la réalité dans des tiroirs conceptuels étanches et pertinents."
+    explanation: "Ordonner exige d'agencer les données selon une suite structurée continue (temporelle, causale ou déductive)."
   }
 ];
 
 export const VERBES_BANK_TIER_3 = [
   {
-    verb: "Définir",
-    difficulty: "Haute Exigence",
-    tier: 3,
-    options: [
-      "Énoncer avec rigueur et exactitude la signification essentielle et les limites d'un concept",
-      "Donner son sentiment intime sur un mot sans référence théorique",
-      "Terminer l'examen le premier en rendant sa copie en avance",
-      "Citer un exemple anecdotique sans expliquer le principe"
-    ],
-    correctIndex: 0,
-    explanation: "Définir exige d'isoler le genre prochain et la différence spécifique d'un concept pour le circonscrire sans faille."
-  },
-  {
     verb: "Comparer",
     difficulty: "Haute Exigence",
     tier: 3,
     options: [
-      "Mettre en regard deux objets ou théories en dégageant obligatoirement leurs ressemblances ET leurs divergences",
-      "Choisir son camp et insulter les partisans de l'autre théorie",
-      "Résumer la première théorie sans jamais mentionner la seconde",
-      "Classer par ordre purement chronologique d'invention"
+      "Confronter méthodiquement deux objets ou thèses pour dégager à la fois leurs convergences ET divergences",
+      "Décrire successivement le premier élément puis le second sans croiser les critères d'analyse",
+      "Désigner le meilleur des deux éléments en émettant une préférence subjective immédiate",
+      "Relever exclusivement les points de désaccord en occultant tout terrain d'entente"
     ],
     correctIndex: 0,
     explanation: "Comparer impose une analyse croisée bilatérale : pointer les points de convergence ET les dissemblances fondamentales."
@@ -356,49 +344,49 @@ export const VERBES_BANK_TIER_3 = [
     difficulty: "Haute Exigence",
     tier: 3,
     options: [
-      "Décomposer un ensemble complexe en ses éléments constituants pour en élucider les interactions et la logique interne",
-      "Donner un rapide avis superficiel en 2 lignes",
-      "Recopier l'introduction et la conclusion du texte",
-      "Compter le nombre de voyelles et de consonnes d'un texte"
+      "Décomposer un tout complexe en ses éléments constitutifs pour comprendre leur agencement et leurs interactions",
+      "Faire une lecture rapide superficielle et formuler une appréciation globale en une phrase",
+      "Recopier l'introduction et la conclusion pour en extraire le message général",
+      "Condenser le texte de manière linéaire sans interroger les ressorts de son argumentation"
     ],
     correctIndex: 0,
-    explanation: "Analyser consiste à disséquer la mécanique d'une pensée pour en comprendre les rouages invisibles."
+    explanation: "Analyser consiste à disséquer la structure interne d'une réalité pour en comprendre les rouages invisibles."
   },
   {
     verb: "Synthétiser",
     difficulty: "Haute Exigence",
     tier: 3,
     options: [
-      "Rassembler divers éléments d'information hétérogènes en un tout cohérent, structuré et unifié",
-      "Écrire une liste d'idées en vrac sans aucun lien logique",
-      "Séparer définitivement les arguments en les isolant",
-      "Traduire un texte en langage SMS"
+      "Rassembler et restructurer les idées maîtresses de sources diverses en une production unifiée et cohérente",
+      "Résumer un document unique en suivant pas à pas l'ordre linéaire des paragraphes d'origine",
+      "Compiler bout à bout des extraits choisis sans articulation conceptuelle personnelle",
+      "Rédiger une dissertation littéraire sans contrainte de concision ni d'objectivité"
     ],
     correctIndex: 0,
-    explanation: "Synthétiser est le mouvement inverse de l'analyse : c'est l'art de recomposer une vue globale harmonieuse et limpide."
+    explanation: "Synthétiser est l'art de refondre des éléments hétérogènes en une vision globale, hiérarchisée et autonome."
   },
   {
     verb: "Justifier",
     difficulty: "Haute Exigence",
     tier: 3,
     options: [
-      "Apporter des preuves rationnelles, arguments logiques ou données tangibles qui démontrent le bien-fondé de la réponse",
-      "Répéter son affirmation avec plus de points d'exclamation",
-      "Dire que 'c'est évident' sans rien expliquer d'autre",
-      "Affirmer que c'est une intuition personnelle inexplicable"
+      "Apporter les arguments rationnels, références textuelles ou preuves empiriques qui légitiment une affirmation",
+      "Répéter sa réponse avec plus d'insistance stylistique pour convaincre son correcteur",
+      "Formuler une affirmation péremptoire en soutenant qu'elle relève de l'évidence absolue",
+      "Paraphraser l'énoncé de la question en modifiant simplement quelques synonymes"
     ],
     correctIndex: 0,
-    explanation: "Justifier interdit l'affirmation gratuite : chaque allégation doit être adossée à une démonstration irréfutable."
+    explanation: "Justifier interdit l'affirmation gratuite : chaque allégation doit être adossée à une démonstration probante."
   },
   {
     verb: "Argumenter",
     difficulty: "Haute Exigence",
     tier: 3,
     options: [
-      "Construire un raisonnement méthodique agencé de prémisses, de liens logiques et de conclusions pour convaincre rationnellement",
-      "Hauser le ton pour intimider son interlocuteur",
-      "Affirmer son opinion sans jamais fournir de preuve",
-      "Recopier la thèse d'autrui sans la comprendre"
+      "Développer une suite méthodique de prémisses, preuves et conclusions logiques visant à emporter l'adhésion rationnelle",
+      "Imposer son opinion par un ton assertif et l'accumulation d'exclamations",
+      "Exprimer une conviction personnelle intime fondée sur son ressenti émotionnel",
+      "Citer une suite de faits bruts sans jamais expliciter le lien logique qui les relie"
     ],
     correctIndex: 0,
     explanation: "Argumenter exige d'agencer des preuves solides au sein d'une rhétorique rigoureuse pour emporter l'adhésion de la raison."
@@ -408,10 +396,10 @@ export const VERBES_BANK_TIER_3 = [
     difficulty: "Haute Exigence",
     tier: 3,
     options: [
-      "Faire comprendre les causes, les mécanismes et le fonctionnement sous-jacent d'un phénomène (le 'POURQUOI' et le 'COMMENT')",
-      "Décrire simplement l'apparence visuelle extérieure sans rien analyser",
-      "Se contenter de dire que c'est le hasard de la nature",
-      "Résumer le texte en trois mots vagues"
+      "Faire comprendre un phénomène en détaillant son fonctionnement, ses causes profondes et ses mécanismes déterministes",
+      "Se borner à décrire l'aspect visuel extérieur ou le déroulement chronologique superficiel",
+      "Formuler une règle prescriptive ou des conseils pratiques sur ce qu'il conviendrait de faire",
+      "Traduire le vocabulaire de la consigne dans un registre familier sans analyser la causalité"
     ],
     correctIndex: 0,
     explanation: "Expliquer va au-delà de la description : il dévoile la causalité invisible et la chaîne déterministe d'un phénomène."
@@ -421,10 +409,10 @@ export const VERBES_BANK_TIER_3 = [
     difficulty: "Haute Exigence",
     tier: 3,
     options: [
-      "Porter un jugement raisonné et critique sur la valeur, la portée ou l'efficacité d'un dispositif à l'aide de critères explicites",
-      "Attribuer une note au hasard sans grille critériée",
-      "Féliciter tout le monde sans lire le travail",
-      "Rejeter un travail simplement parce qu'on n'aime pas la mise en page"
+      "Porter un jugement raisonné sur la valeur, l'efficience ou la pertinence d'un travail à l'aide de critères explicites",
+      "Attribuer une appréciation impulsive et arbitraire sans grille de référence",
+      "Approuver par complaisance l'ensemble de la proposition pour éviter tout conflit",
+      "Rejeter un dispositif sur la base d'un détail secondaire sans considérer l'ensemble"
     ],
     correctIndex: 0,
     explanation: "Évaluer requiert de confronter une réalité à une grille de standards ou d'objectifs pour en apprécier la pertinence."
@@ -434,10 +422,10 @@ export const VERBES_BANK_TIER_3 = [
     difficulty: "Haute Exigence",
     tier: 3,
     options: [
-      "Examiner de manière objective les forces, les faiblesses, les postulats et les limites d'une thèse ou méthodologie",
-      "Dénigrer méchamment et insulter l'auteur d'une étude",
-      "Accepter béatement tout ce qui est écrit sur internet",
-      "Refuser de lire un texte sous prétexte qu'il est trop difficile"
+      "Examiner avec méthode les forces, limites, postulats et biais d'une démarche d'après des critères fondés",
+      "Dénigrer systématiquement une thèse par hostilité ou parti pris idéologique",
+      "Accepter passivement l'autorité de l'auteur en s'interdisant toute mise en perspective",
+      "Se contenter de relever les coquilles typographiques et la mise en page du document"
     ],
     correctIndex: 0,
     explanation: "Au sens noble académique, critiquer n'est pas dénigrer : c'est peser le pour et le contre avec rigueur épistémique."
@@ -447,36 +435,49 @@ export const VERBES_BANK_TIER_3 = [
     difficulty: "Haute Exigence",
     tier: 3,
     options: [
-      "Tirer logiquement une conséquence nécessaire et irréfutable à partir de prémisses ou de lois générales vérifiées",
-      "Deviner au pifomètre ce qui pourrait arriver",
-      "Interroger un astrologue sur l'avenir de l'école",
-      "Inventer une nouvelle loi physique"
+      "Tirer logiquement une conséquence nécessaire et spécifique à partir de lois générales ou de prémisses vérifiées",
+      "Généraliser abusivement à tout un domaine une conclusion tirée d'une seule observation isolée",
+      "Deviner par intuition spontanée le résultat attendu sans pouvoir retracer le calcul",
+      "Attendre la fin de l'épreuve pour demander la réponse officielle au professeur"
     ],
     correctIndex: 0,
-    explanation: "Déduire procède du général vers le particulier selon les lois strictes du syllogisme et de la logique pure."
+    explanation: "La déduction est le mouvement rigoureux qui va du général ou de la règle vers l'application particulière nécessaire."
+  },
+  {
+    verb: "Induire",
+    difficulty: "Haute Exigence",
+    tier: 3,
+    options: [
+      "Formuler une loi générale ou un principe théorique à partir de l'observation répétée de faits particuliers",
+      "Appliquer machinalement une formule mathématique préétablie à un cas particulier",
+      "Inventer une hypothèse sans aucun ancrage dans l'observation des faits",
+      "Réfuter une théorie sans apporter de contre-exemple empirique tangible"
+    ],
+    correctIndex: 0,
+    explanation: "L'induction est le processus qui s'élève de l'observation empirique de cas particuliers vers la loi générale."
   },
   {
     verb: "Démontrer",
     difficulty: "Haute Exigence",
     tier: 3,
     options: [
-      "Établir la vérité incontestable d'une proposition par un enchaînement déductif sans faille appuyé sur des axiomes",
-      "Répéter dix fois que l'on a raison jusqu'à ce que l'autre cède",
-      "Demander à l'auditoire de voter à main levée",
-      "Montrer une photo sans légende"
+      "Établir la vérité irréfutable d'une proposition par un enchaînement déductif contraignant selon des règles formelles",
+      "Convaincre son auditoire en faisant appel à ses émotions et à son empathie",
+      "Multiplier les exemples isolés pour donner l'impression que la règle est universelle",
+      "Affirmer son accord personnel avec l'opinion majoritaire du groupe"
     ],
     correctIndex: 0,
-    explanation: "Démontrer ne laisse aucune place au doute : le raisonnement lie les vérités de manière mathématique et nécessaire."
+    explanation: "Démontrer consiste à prouver la nécessité logique d'une conclusion par un raisonnement exempt de faille."
   },
   {
     verb: "Confronter",
     difficulty: "Haute Exigence",
     tier: 3,
     options: [
-      "Mettre face à face deux théories divergentes ou deux témoignages pour faire éclater leurs contradictions et leurs complémentarités",
-      "Organiser un combat de boxe entre deux chercheurs",
-      "Faire semblant que tout le monde est d'accord",
-      "Ignorer les arguments de la partie adverse"
+      "Mettre face à face deux théories ou points de vue contradictoires pour éprouver leur robustesse et leurs limites",
+      "Éviter délibérément de mentionner la thèse adverse pour préserver la paix académique",
+      "Déclarer arbitrairement qu'une thèse est nulle sans examiner ses arguments",
+      "Fusionner artificiellement deux thèses opposées en niant leurs contradictions réelles"
     ],
     correctIndex: 0,
     explanation: "Confronter consiste à orchestrer le débat contradictoire entre deux positions pour tester leur robustesse respective."
@@ -486,7 +487,7 @@ export const VERBES_BANK_TIER_3 = [
 /**
  * Générateur de 10 questions aléatoires progressives pour une partie unique de Millionnaire :
  * - 3 questions tirées au hasard dans le Palier 1 (Paliers 6, 12, 18 ECTS)
- * - 4 questions tirées au hasard dans le Palier 2 (Paliers 24, 30, 36, 42 ECTS)
+ * - 4 questions tirées au hasard dans le Palier 2 (Paliers 24, 30, 36, 42 ECTS) - Paliers Garantis à Q4 (24) et Q7 (42)
  * - 3 questions tirées au hasard dans le Palier 3 (Paliers 48, 54, 60 ECTS)
  */
 export function generateMillionnaireSessionQuestions() {
@@ -510,11 +511,11 @@ export function generateMillionnaireSessionQuestions() {
     const newCorrectIndex = shuffledOptions.findIndex(o => o.isCorrect);
 
     return {
-      id: `millionnaire_q_${idx + 1}_${Date.now()}`,
+      id: `millionnaire_q_${idx + 1}_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       verb: item.verb,
       difficulty: item.difficulty,
       tier: item.tier,
-      isSafetyTier: idx === 3, // Palier 24 crédits garanti
+      isSafetyTier: idx === 3 || idx === 6, // Paliers garantis : Q4 (24 ECTS) & Q7 (42 ECTS)
       rewardEcts: rewards[idx],
       options: shuffledOptions.map(o => o.text),
       correctIndex: newCorrectIndex,
