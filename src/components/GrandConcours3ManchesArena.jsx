@@ -923,10 +923,12 @@ export default function GrandConcours3ManchesArena({
                   <div className="pt-3 pb-2 flex flex-col items-center justify-center space-y-4">
                     <button
                       onClick={handleUserBuzzM1}
-                      className="group relative w-36 h-36 rounded-full bg-gradient-to-b from-rose-500 via-rose-600 to-rose-700 hover:from-rose-400 hover:to-rose-600 active:scale-95 shadow-2xl shadow-rose-600/50 flex flex-col items-center justify-center transition-all cursor-pointer border-4 border-rose-300 ring-8 ring-rose-500/20 hover:ring-rose-500/40"
+                      className="group relative w-36 h-36 rounded-full bg-gradient-to-b from-rose-500 via-rose-600 to-rose-800 hover:from-rose-400 hover:to-rose-600 active:scale-95 active:translate-y-1 shadow-[0_12px_32px_rgba(225,29,72,0.65)] flex flex-col items-center justify-center transition-all duration-100 cursor-pointer border-4 border-rose-200 ring-8 ring-rose-500/25 hover:ring-rose-500/50"
                     >
-                      <Zap className="w-10 h-10 text-white animate-pulse" />
-                      <span className="text-sm font-black text-white tracking-widest uppercase mt-1">
+                      {/* Top Glass Acrylic Glint */}
+                      <div className="absolute top-2 left-6 right-6 h-9 rounded-full bg-gradient-to-b from-white/45 to-transparent pointer-events-none" />
+                      <Zap className="w-10 h-10 text-white animate-pulse drop-shadow-md" />
+                      <span className="text-sm font-black text-white tracking-widest uppercase mt-1 drop-shadow-md">
                         BUZZER !
                       </span>
                     </button>
@@ -1090,14 +1092,14 @@ export default function GrandConcours3ManchesArena({
                     <span className="text-[10px] font-mono font-bold text-amber-300 uppercase tracking-wider">
                       Série active : {m2Streak} / 4
                     </span>
-                    <div className="flex items-center gap-1.5 bg-slate-950/80 px-3.5 py-1.5 rounded-2xl border border-slate-800">
+                    <div className="flex items-center gap-2 bg-slate-950/90 px-4 py-2 rounded-2xl border border-slate-800 shadow-inner">
                       {[1, 2, 3, 4].map(step => (
                         <div
                           key={step}
-                          className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black transition-all ${
+                          className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-black transition-all duration-300 ${
                             m2Streak >= step 
-                              ? 'bg-amber-400 text-slate-950 scale-110 shadow-lg shadow-amber-400/40 font-black animate-pulse' 
-                              : 'bg-slate-800 text-slate-500'
+                              ? 'bg-gradient-to-tr from-amber-400 to-yellow-300 text-slate-950 scale-110 shadow-[0_0_18px_rgba(245,158,11,0.6)] font-black animate-pulse border-2 border-white' 
+                              : 'bg-slate-800/80 text-slate-500 border border-slate-700/60'
                           }`}
                         >
                           {step}
@@ -1287,23 +1289,23 @@ export default function GrandConcours3ManchesArena({
               </div>
 
               {/* LES 4 CASES DESCENDANTES DU FACE-À-FACE (4, 3, 2, 1 POINTS) */}
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-4 gap-2.5">
                 {[4, 3, 2, 1].map(pts => {
                   const isActive = m3ActiveClueLevel === pts && !m3IsBuzzed;
                   const isPassed = m3ActiveClueLevel < pts;
                   return (
                     <div
                       key={pts}
-                      className={`p-3 rounded-2xl border text-center transition-all ${
+                      className={`p-3.5 rounded-2xl border text-center transition-all duration-300 shadow-md ${
                         isActive
-                          ? 'bg-amber-500 text-slate-950 border-amber-300 scale-105 shadow-xl shadow-amber-500/40 font-black'
+                          ? 'bg-gradient-to-b from-amber-400 via-amber-500 to-yellow-600 text-slate-950 border-amber-200 scale-105 shadow-[0_0_25px_rgba(245,158,11,0.5)] font-black ring-2 ring-amber-300 animate-pulse'
                           : isPassed
-                          ? 'bg-slate-900/40 border-slate-800 text-slate-600'
-                          : 'bg-slate-900/80 border-slate-700 text-slate-400'
+                          ? 'bg-slate-900/40 border-slate-800/80 text-slate-600 opacity-50 scale-95'
+                          : 'bg-slate-900/90 border-slate-700 text-slate-300'
                       }`}
                     >
-                      <span className="text-xs font-black uppercase tracking-wider">Case</span>
-                      <div className="text-xl sm:text-2xl font-black">{pts} PTS</div>
+                      <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider block opacity-80">Indice</span>
+                      <div className="text-xl sm:text-3xl font-black">{pts} PTS</div>
                     </div>
                   );
                 })}

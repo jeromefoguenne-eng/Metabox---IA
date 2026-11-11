@@ -34,6 +34,7 @@ export default function SpeedChallengeGame({ onFinishGame }) {
   const [shuffledOptions, setShuffledOptions] = useState([]);
   const [feedback, setFeedback] = useState(null); // 'correct' | 'wrong'
   const [streakTier, setStreakTier] = useState(1);
+  const [floatingScore, setFloatingScore] = useState(null); // { text, id }
 
   // Shuffle options for the current question
   const prepareQuestion = (idx) => {
@@ -106,11 +107,13 @@ export default function SpeedChallengeGame({ onFinishGame }) {
       if (newCombo > maxCombo) setMaxCombo(newCombo);
       setStreakTier(newCombo >= 6 ? 3 : newCombo >= 3 ? 2 : 1);
       setFeedback('correct');
+      setFloatingScore({ text: `+${points} ${newCombo >= 2 ? `(x${newCombo})` : ''}`, id: Date.now() });
     } else {
       sounds.playError();
       setCombo(0);
       setStreakTier(1);
       setFeedback('wrong');
+      setFloatingScore({ text: 'Rupture !', isWrong: true, id: Date.now() });
     }
 
     setTimeout(() => {
@@ -226,16 +229,33 @@ export default function SpeedChallengeGame({ onFinishGame }) {
               Verbe de consigne à identifier :
             </span>
 
-            <div className={`font-['Outfit'] text-4xl sm:text-6xl font-black mt-3 p-6 rounded-3xl border-2 transition-all shadow-2xl relative overflow-hidden ${
+            <div className={`font-['Outfit'] text-4xl sm:text-6xl font-black mt-3 p-6 rounded-3xl border-2 transition-all duration-200 shadow-2xl relative overflow-hidden ${
               feedback === 'correct' 
-                ? 'border-emerald-400 bg-emerald-950/80 text-emerald-200 scale-105 shadow-emerald-500/30' 
+                ? 'border-emerald-400 bg-emerald-950/90 text-emerald-200 scale-105 shadow-[0_0_30px_rgba(52,211,153,0.4)]' 
                 : feedback === 'wrong' 
-                  ? 'border-rose-500 bg-rose-950/80 text-rose-200 scale-95 shadow-rose-500/30' 
-                  : 'border-cyan-500/50 bg-slate-900/90 text-white shadow-cyan-500/20'
+                  ? 'border-rose-500 bg-rose-950/90 text-rose-200 scale-95 shadow-[0_0_30px_rgba(244,63,94,0.4)]' 
+                  : streakTier === 3
+                  ? 'border-rose-400/80 bg-slate-900/95 text-white shadow-[0_0_35px_rgba(244,63,94,0.35)] ring-2 ring-rose-500/40'
+                  : streakTier === 2
+                  ? 'border-amber-400/70 bg-slate-900/95 text-white shadow-[0_0_25px_rgba(245,158,11,0.3)] ring-1 ring-amber-400/40'
+                  : 'border-cyan-500/50 bg-slate-900/90 text-white shadow-[0_0_20px_rgba(6,182,212,0.25)]'
             }`}>
               {/* Pulse scanline */}
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-400/5 to-transparent pointer-events-none animate-pulse" />
-              {currentQ.verb}
+              
+              {/* Floating score popup particle */}
+              {floatingScore && (
+                <div 
+                  key={floatingScore.id}
+                  className={`absolute top-2 right-4 text-sm sm:text-base font-mono font-black animate-out fade-out slide-out-to-top duration-700 select-none ${
+                    floatingScore.isWrong ? 'text-rose-400' : 'text-amber-300 drop-shadow-[0_2px_8px_rgba(245,158,11,0.8)]'
+                  }`}
+                >
+                  {floatingScore.text}
+                </div>
+              )}
+
+              <span className="drop-shadow-md tracking-tight">{currentQ.verb}</span>
             </div>
           </div>
 
@@ -246,10 +266,10 @@ export default function SpeedChallengeGame({ onFinishGame }) {
                 key={idx}
                 disabled={feedback !== null}
                 onClick={() => handleAnswer(opt.isCorrect)}
-                className="w-full text-left p-4 sm:p-5 rounded-2xl bg-slate-900/90 hover:bg-indigo-900/40 active:scale-[0.98] border-2 border-slate-800 hover:border-cyan-400/80 text-white text-sm sm:text-base font-semibold transition-all flex items-center justify-between gap-3 shadow-md hover:shadow-cyan-500/20 cursor-pointer group"
+                className="w-full text-left p-4 sm:p-5 rounded-2xl bg-slate-900/90 hover:bg-indigo-900/50 active:scale-[0.98] border-2 border-slate-800 hover:border-cyan-400 text-white text-sm sm:text-base font-semibold transition-all duration-150 ease-out flex items-center justify-between gap-3 shadow-md hover:shadow-[0_4px_20px_rgba(6,182,212,0.25)] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] cursor-pointer group"
               >
-                <span className="leading-snug">{opt.text}</span>
-                <span className="w-8 h-8 rounded-xl bg-slate-800 group-hover:bg-cyan-500 group-hover:text-slate-950 border border-slate-700 group-hover:border-cyan-400 flex items-center justify-center text-xs font-mono font-bold text-cyan-300 transition shrink-0">
+                <span className="leading-snug text-slate-100 group-hover:text-white transition-colors">{opt.text}</span>
+                <span className="w-9 h-9 rounded-xl bg-slate-950 group-hover:bg-gradient-to-tr group-hover:from-cyan-400 group-hover:to-indigo-500 group-hover:text-slate-950 border border-slate-700 group-hover:border-cyan-300 flex items-center justify-center text-xs font-mono font-black text-cyan-300 transition-all duration-150 shadow-sm shrink-0">
                   {idx + 1}
                 </span>
               </button>

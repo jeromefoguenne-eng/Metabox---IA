@@ -1369,17 +1369,21 @@ function TvGameShowArenaContent({
                               return (
                                 <div 
                                   key={cIdx}
-                                  className={`w-7 h-9 sm:w-8 sm:h-11 md:w-9 md:h-12 rounded-lg sm:rounded-xl border-2 flex items-center justify-center font-mono text-sm sm:text-base md:text-xl font-black transition-all duration-300 shadow-md ${
-                                    !isLetter
-                                      ? 'bg-transparent text-amber-300 border-transparent text-lg font-black'
-                                      : isRevealed
-                                      ? isTargetVerbPart
-                                        ? 'bg-gradient-to-b from-amber-300 to-yellow-500 text-slate-950 border-amber-200 shadow-amber-500/30 scale-105'
-                                        : 'bg-gradient-to-b from-slate-100 to-slate-200 text-slate-950 border-white scale-100'
-                                      : 'bg-indigo-950/90 text-transparent border-indigo-500/40 shadow-inner hover:border-indigo-400/60'
-                                  }`}
+                                  className="relative [perspective:600px] w-7 h-9 sm:w-8 sm:h-11 md:w-9 md:h-12 shrink-0 select-none"
                                 >
-                                  {isRevealed ? char : ''}
+                                  <div 
+                                    className={`w-full h-full rounded-lg sm:rounded-xl border-2 flex items-center justify-center font-mono text-sm sm:text-base md:text-xl font-black transition-all duration-500 shadow-md [transform-style:preserve-3d] ${
+                                      !isLetter
+                                        ? 'bg-transparent text-amber-300 border-transparent text-lg font-black'
+                                        : isRevealed
+                                        ? isTargetVerbPart
+                                          ? 'bg-gradient-to-b from-amber-300 via-yellow-400 to-amber-500 text-slate-950 border-amber-100 shadow-[0_0_15px_rgba(245,158,11,0.5)] scale-105 [transform:rotateY(0deg)] ring-2 ring-amber-300/40'
+                                          : 'bg-gradient-to-b from-white via-slate-100 to-slate-200 text-slate-950 border-white shadow-md [transform:rotateY(0deg)]'
+                                        : 'bg-gradient-to-br from-indigo-950 to-slate-900 text-transparent border-indigo-500/40 shadow-inner hover:border-indigo-400/70 [transform:rotateY(180deg)]'
+                                    }`}
+                                  >
+                                    <span className="drop-shadow-xs">{isRevealed ? char : ''}</span>
+                                  </div>
                                 </div>
                               );
                             })}
@@ -1400,20 +1404,39 @@ function TvGameShowArenaContent({
                       <div className="flex flex-col items-center justify-center">
                         <div className="relative w-56 h-56 sm:w-64 sm:h-64 flex items-center justify-center">
                           
-                          {/* Pointer Arrow at 12 o'clock (strictement centré au zénith) */}
-                          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 z-20 pointer-events-none">
-                            <div className="w-0 h-0 border-l-[14px] border-l-transparent border-r-[14px] border-r-transparent border-t-[24px] border-t-amber-400 drop-shadow-[0_2px_8px_rgba(245,158,11,0.8)] animate-pulse" />
+                          {/* Pointer Arrow at 12 o'clock with spring physical ticker animation */}
+                          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-3 z-30 pointer-events-none">
+                            <div 
+                              className={`w-0 h-0 border-l-[14px] border-l-transparent border-r-[14px] border-r-transparent border-t-[26px] border-t-amber-400 drop-shadow-[0_4px_12px_rgba(245,158,11,0.9)] origin-top transition-transform ${
+                                isSpinningWheel ? 'animate-[bounce_0.14s_infinite]' : ''
+                              }`} 
+                            />
+                            {/* Chrome Pin Pivot */}
+                            <div className="w-3 h-3 rounded-full bg-gradient-to-tr from-slate-300 via-white to-slate-400 -mt-7 mx-auto shadow-md border border-slate-600" />
                           </div>
 
-                          {/* SVG ROTATING WHEEL */}
+                          {/* HIGH-DEFINITION ROTATING BROADCAST WHEEL */}
                           <div 
-                            className="w-full h-full rounded-full shadow-[0_0_35px_rgba(236,72,153,0.35)] border-4 border-slate-800"
+                            className="w-full h-full rounded-full shadow-[0_0_45px_rgba(236,72,153,0.45)] border-4 border-amber-500/80 p-1 bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-600 ring-4 ring-slate-900"
                             style={{
                               transform: `rotate(${wheelRotation}deg)`,
                               transition: isSpinningWheel ? 'transform 3.8s cubic-bezier(0.12, 0.95, 0.22, 1.0)' : 'none'
                             }}
                           >
-                            <svg viewBox="0 0 240 240" className="w-full h-full">
+                            <svg viewBox="0 0 240 240" className="w-full h-full rounded-full overflow-hidden">
+                              <defs>
+                                <radialGradient id="hubGrad" cx="50%" cy="50%" r="50%">
+                                  <stop offset="0%" stopColor="#fef08a" />
+                                  <stop offset="60%" stopColor="#d97706" />
+                                  <stop offset="100%" stopColor="#78350f" />
+                                </radialGradient>
+                                <radialGradient id="rimGrad" cx="50%" cy="50%" r="50%">
+                                  <stop offset="85%" stopColor="transparent" />
+                                  <stop offset="95%" stopColor="#f59e0b" />
+                                  <stop offset="100%" stopColor="#78350f" />
+                                </radialGradient>
+                              </defs>
+
                               {WHEEL_WEDGES.map((wedge, wIdx) => {
                                 const angle = 360 / WHEEL_WEDGES.length;
                                 const startAngle = (wIdx * angle - 90) * (Math.PI / 180);
@@ -1434,16 +1457,17 @@ function TvGameShowArenaContent({
 
                                 return (
                                   <g key={wedge.id}>
-                                    <path d={pathData} fill={wedge.fill} stroke="#0f172a" strokeWidth="1.5" />
+                                    <path d={pathData} fill={wedge.fill} stroke="#0f172a" strokeWidth="1.8" />
                                     <text
                                       x={tx}
                                       y={ty}
                                       fill={wedge.textColor}
-                                      fontSize={wedge.isSpecial ? "8" : "9"}
+                                      fontSize={wedge.isSpecial ? "8.5" : "9.5"}
                                       fontWeight="900"
                                       textAnchor="middle"
                                       dominantBaseline="central"
                                       transform={`rotate(${midAngle + 90}, ${tx}, ${ty})`}
+                                      style={{ filter: 'drop-shadow(0px 1px 2px rgba(0,0,0,0.8))' }}
                                     >
                                       {wedge.isSpecial ? (wedge.type === 'bankrupt' ? 'BANQUE' : 'HOLD') : wedge.value}
                                     </text>
@@ -1451,9 +1475,27 @@ function TvGameShowArenaContent({
                                 );
                               })}
 
-                              {/* Center Hub with HECh Monogram */}
-                              <circle cx="120" cy="120" r="28" fill="#0f172a" stroke="#f59e0b" strokeWidth="3" />
-                              <text x="120" y="125" fill="#f59e0b" fontSize="13" fontWeight="900" textAnchor="middle">
+                              {/* 24 Chrome & Gold Peripheral Pegs/Pins */}
+                              {Array.from({ length: 24 }).map((_, pIdx) => {
+                                const pAngle = (pIdx * (360 / 24) - 90) * (Math.PI / 180);
+                                const px = 120 + 114 * Math.cos(pAngle);
+                                const py = 120 + 114 * Math.sin(pAngle);
+                                return (
+                                  <g key={pIdx}>
+                                    <circle cx={px} cy={py} r="2.8" fill="#fef08a" stroke="#78350f" strokeWidth="0.8" />
+                                    <circle cx={px - 0.7} cy={py - 0.7} r="1.0" fill="#ffffff" />
+                                  </g>
+                                );
+                              })}
+
+                              {/* Heavy Metallic Rim Ring */}
+                              <circle cx="120" cy="120" r="116" fill="none" stroke="url(#rimGrad)" strokeWidth="8" />
+
+                              {/* Center 3D Gold Medallion with HECh Crest */}
+                              <circle cx="120" cy="120" r="32" fill="#090d1a" stroke="url(#hubGrad)" strokeWidth="4" />
+                              <circle cx="120" cy="120" r="26" fill="url(#hubGrad)" />
+                              <circle cx="120" cy="120" r="23" fill="#0f172a" />
+                              <text x="120" y="125" fill="#fcd34d" fontSize="13" fontWeight="900" textAnchor="middle" letterSpacing="0.05em">
                                 HECh
                               </text>
                             </svg>
@@ -1621,7 +1663,7 @@ function TvGameShowArenaContent({
                           key={idx}
                           onClick={() => handleSelectOption(idx)}
                           disabled={isAnswerLocked || (buzzWinner && buzzWinner !== 'player')}
-                          className={`p-3.5 sm:p-4 rounded-2xl border text-left transition-all duration-200 font-lexend flex items-center justify-between gap-3 shadow-md relative group cursor-pointer ${btnStyle} ${
+                          className={`p-3.5 sm:p-4 rounded-2xl border text-left transition-all duration-150 ease-out active:scale-[0.98] font-lexend flex items-center justify-between gap-3 shadow-md hover:shadow-lg relative group cursor-pointer shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] ${btnStyle} ${
                             buzzWinner && buzzWinner !== 'player' ? 'opacity-40 cursor-not-allowed' : ''
                           }`}
                         >
