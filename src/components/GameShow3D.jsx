@@ -449,72 +449,40 @@ export default function GameShow3D({
     podBase.castShadow = true;
     podiumGroup.add(podBase);
 
-    // Illuminated Acrylic Front Shield with OFFICIAL HECH LOGO
-    const podFrontGeo = new THREE.CylinderGeometry(0.56, 0.67, 0.78, 32, 1, true, -Math.PI * 0.38, Math.PI * 0.76);
-    
-    const hechPodCanvas = document.createElement('canvas');
-    hechPodCanvas.width = 1024;
-    hechPodCanvas.height = 512;
-    const pCtx = hechPodCanvas.getContext('2d');
+    // Plaque Acrylique Rétroéclairée avec le VRAI LOGO OFFICIEL HECh
+    const hechOfficialTex = new THREE.TextureLoader().load(getAssetPath('/images/hech_podium_plaque_officiel.png'));
+    hechOfficialTex.colorSpace = THREE.SRGBColorSpace;
 
-    pCtx.fillStyle = '#060a14';
-    pCtx.fillRect(0, 0, 1024, 512);
-
-    // Glowing border
-    pCtx.strokeStyle = themeCfg.primaryColor;
-    pCtx.lineWidth = 8;
-    pCtx.strokeRect(10, 10, 1004, 492);
-
-    // HECh Red Shield
-    pCtx.fillStyle = '#e11d48';
-    pCtx.beginPath();
-    if (typeof pCtx.roundRect === 'function') {
-      pCtx.roundRect(80, 104, 210, 210, [48]);
-    } else {
-      pCtx.rect(80, 104, 210, 210);
-    }
-    pCtx.fill();
-
-    // Gold Accent
-    pCtx.fillStyle = '#f59e0b';
-    pCtx.beginPath();
-    pCtx.arc(240, 264, 36, 0, Math.PI * 2);
-    pCtx.fill();
-
-    // H inside shield
-    pCtx.fillStyle = '#ffffff';
-    pCtx.font = '900 136px sans-serif';
-    pCtx.fillText('H', 140, 268);
-
-    // "HECh" bold text
-    pCtx.fillStyle = '#ffffff';
-    pCtx.font = '900 124px sans-serif';
-    pCtx.fillText('HECh', 340, 224);
-
-    pCtx.fillStyle = '#fb7185';
-    pCtx.font = 'bold 36px sans-serif';
-    pCtx.fillText('HAUTE ÉCOLE CHARLEMAGNE', 344, 290);
-
-    pCtx.fillStyle = themeCfg.primaryColor;
-    pCtx.font = 'bold 30px sans-serif';
-    pCtx.fillText('SAR · Service d\'Accompagnement à la Réussite', 344, 344);
-
-    const hechPodTexture = new THREE.CanvasTexture(hechPodCanvas);
-
+    // Plaque incurvée ajustée sur la face avant du pupitre
+    const podFrontGeo = new THREE.CylinderGeometry(0.56, 0.67, 0.68, 32, 1, true, -Math.PI * 0.32, Math.PI * 0.64);
     const podFrontMat = new THREE.MeshPhysicalMaterial({
-      map: hechPodTexture,
-      color: 0xffffff,
+      map: hechOfficialTex,
       emissive: 0xffffff,
-      emissiveMap: hechPodTexture,
+      emissiveMap: hechOfficialTex,
       emissiveIntensity: 0.95,
       transparent: true,
-      opacity: 0.96,
-      roughness: 0.08,
-      clearcoat: 0.8
+      opacity: 0.98,
+      roughness: 0.10,
+      metalness: 0.05,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.04
     });
     const podFront = new THREE.Mesh(podFrontGeo, podFrontMat);
-    podFront.position.y = 0.48;
+    podFront.position.y = 0.50;
     podiumGroup.add(podFront);
+
+    // Cadre doré biseauté entourant la plaque officielle
+    const podGoldTrimGeo = new THREE.TorusGeometry(0.61, 0.018, 8, 32, Math.PI * 0.66);
+    const podGoldTrimMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.85, roughness: 0.2 });
+    const podGoldTrimTop = new THREE.Mesh(podGoldTrimGeo, podGoldTrimMat);
+    podGoldTrimTop.rotation.x = Math.PI / 2;
+    podGoldTrimTop.rotation.z = -Math.PI * 0.33;
+    podGoldTrimTop.position.y = 0.84;
+    podiumGroup.add(podGoldTrimTop);
+
+    const podGoldTrimBottom = podGoldTrimTop.clone();
+    podGoldTrimBottom.position.y = 0.16;
+    podiumGroup.add(podGoldTrimBottom);
 
     // Top Desktop with Tablet & Gooseneck Mic
     const podTopGeo = new THREE.BoxGeometry(1.0, 0.08, 0.74);
@@ -602,18 +570,32 @@ export default function GameShow3D({
         model.position.y = 0.08 - box.min.y * scale;
         model.position.z = -center.z * scale;
 
-        // Amélioration PBR du maillage
+        // Amélioration PBR du maillage & Activation des Vertex Colors Pixar
         model.traverse((child) => {
           if (child.isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
             if (child.geometry) child.geometry.computeVertexNormals();
-            if (child.material) {
-              child.material.roughness = 0.40;
-              child.material.metalness = 0.15;
-            }
+            child.material = new THREE.MeshStandardMaterial({
+              vertexColors: true,
+              roughness: 0.35,
+              metalness: 0.08
+            });
           }
         });
+
+        // Éclairage Studio Pixar 3-Points dédié pour Henri (Key, Fill, Rim)
+        const henriKeyLight = new THREE.PointLight(0xffedd5, 2.2, 5.0);
+        henriKeyLight.position.set(-0.85, 2.2, 2.0);
+        scene.add(henriKeyLight);
+
+        const henriRimLight = new THREE.DirectionalLight(0xfef08a, 2.8);
+        henriRimLight.position.set(-0.85, 3.6, -1.8);
+        scene.add(henriRimLight);
+
+        const henriFillLight = new THREE.PointLight(0x93c5fd, 1.1, 4.0);
+        henriFillLight.position.set(-2.2, 1.8, 1.2);
+        scene.add(henriFillLight);
 
         hostModelContainer.add(model);
         // Masquer les primitives géométriques de substitution
@@ -828,22 +810,33 @@ export default function GameShow3D({
     const balconyGroup = new THREE.Group();
     balconyGroup.position.set(0, 0, -1.0);
 
+    const pixarSpectatorStyles = [
+      { sweater: 0xbe123c, hair: 0x3f2c20, skin: 0xfbd2b8, hairStyle: 'pompadour', glasses: true },
+      { sweater: 0xd97706, hair: 0x1c1917, skin: 0xdf9b77, hairStyle: 'curly', glasses: false },
+      { sweater: 0x1d4ed8, hair: 0xb45309, skin: 0xfed7aa, hairStyle: 'parted', glasses: true },
+      { sweater: 0x059669, hair: 0x451a03, skin: 0xc68662, hairStyle: 'beanie', glasses: false },
+      { sweater: 0x7c3aed, hair: 0x18181b, skin: 0xfce7f3, hairStyle: 'ponytail', glasses: false },
+      { sweater: 0xe11d48, hair: 0x78350f, skin: 0xfddcc4, hairStyle: 'curly', glasses: true },
+      { sweater: 0x0891b2, hair: 0x27272a, skin: 0xfbcfe8, hairStyle: 'parted', glasses: false },
+      { sweater: 0xc2410c, hair: 0x581c87, skin: 0xfbd2b8, hairStyle: 'beanie', glasses: false }
+    ];
+
     const balconyTiers = [
-      { radius: 6.8, height: 0.6, color: 0x3a1b10 },
-      { radius: 7.8, height: 1.2, color: 0x2e140b },
-      { radius: 8.8, height: 1.8, color: 0x240f07 }
+      { radius: 6.8, height: 0.6, color: 0x3a1b10, count: 9 },
+      { radius: 7.8, height: 1.2, color: 0x2e140b, count: 11 },
+      { radius: 8.8, height: 1.8, color: 0x240f07, count: 13 }
     ];
 
     balconyTiers.forEach((tier) => {
       // Gradin en boiseries chaudes
-      const tierGeo = new THREE.CylinderGeometry(tier.radius + 0.4, tier.radius + 0.4, 0.45, 48, 1, true, -Math.PI * 0.55, Math.PI * 1.1);
+      const tierGeo = new THREE.CylinderGeometry(tier.radius + 0.5, tier.radius + 0.5, 0.45, 48, 1, true, -Math.PI * 0.55, Math.PI * 1.1);
       const tierMat = new THREE.MeshStandardMaterial({ color: tier.color, roughness: 0.5, metalness: 0.1 });
       const tierMesh = new THREE.Mesh(tierGeo, tierMat);
       tierMesh.position.y = tier.height;
       balconyGroup.add(tierMesh);
 
       // Liseré or chaud le long de chaque balcon
-      const goldRailGeo = new THREE.TorusGeometry(tier.radius + 0.42, 0.035, 8, 48, Math.PI * 1.05);
+      const goldRailGeo = new THREE.TorusGeometry(tier.radius + 0.52, 0.035, 8, 48, Math.PI * 1.05);
       const goldRailMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.85, roughness: 0.2 });
       const rail = new THREE.Mesh(goldRailGeo, goldRailMat);
       rail.rotation.x = Math.PI / 2;
@@ -854,8 +847,8 @@ export default function GameShow3D({
       // Petites veilleuses d'ambiance de théâtre douces (Warm Theater Sconces)
       for (let s = -4; s <= 4; s++) {
         const sAngle = (s / 4.5) * Math.PI * 0.45;
-        const sx = Math.sin(sAngle) * (tier.radius + 0.4);
-        const sz = -Math.cos(sAngle) * (tier.radius + 0.4) * 0.6;
+        const sx = Math.sin(sAngle) * (tier.radius + 0.5);
+        const sz = -Math.cos(sAngle) * (tier.radius + 0.5) * 0.6;
         const sconce = new THREE.Mesh(
           new THREE.SphereGeometry(0.045, 12, 12),
           new THREE.MeshBasicMaterial({ color: 0xfde047 })
@@ -863,7 +856,164 @@ export default function GameShow3D({
         sconce.position.set(sx, tier.height + 0.26, sz);
         balconyGroup.add(sconce);
       }
+
+      // Modélisation des spectateurs 3D style Pixar sur ce balcon
+      for (let i = 0; i < tier.count; i++) {
+        const style = pixarSpectatorStyles[(i + Math.floor(tier.height * 3)) % pixarSpectatorStyles.length];
+        const spectatorGroup = new THREE.Group();
+
+        // Siège tabouret de théâtre
+        const stool = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.16, 0.18, 0.30, 12),
+          new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.7 })
+        );
+        stool.position.y = 0.15;
+        spectatorGroup.add(stool);
+
+        // Buste / Sweat universitaire HECh aux couleurs chaleureuses
+        const sweaterMat = new THREE.MeshStandardMaterial({ color: style.sweater, roughness: 0.55, metalness: 0.05 });
+        const torso = new THREE.Mesh(new THREE.SphereGeometry(0.24, 14, 14), sweaterMat);
+        torso.scale.set(1.0, 1.25, 0.85);
+        torso.position.y = 0.52;
+        spectatorGroup.add(torso);
+
+        // Col ou capuche
+        const collar = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.035, 8, 16), sweaterMat);
+        collar.rotation.x = Math.PI / 2;
+        collar.position.y = 0.72;
+        spectatorGroup.add(collar);
+
+        // Tête Pixar expressive
+        const headGroup = new THREE.Group();
+        headGroup.position.set(0, 0.86, 0);
+
+        const skinMat = new THREE.MeshStandardMaterial({ color: style.skin, roughness: 0.45, metalness: 0.02 });
+        const head = new THREE.Mesh(new THREE.SphereGeometry(0.16, 16, 16), skinMat);
+        head.scale.set(0.95, 1.05, 0.95);
+        headGroup.add(head);
+
+        // Cheveux sculptés Pixar ou bonnet
+        const hairMat = new THREE.MeshStandardMaterial({ color: style.hair, roughness: 0.38 });
+        if (style.hairStyle === 'beanie') {
+          const beanie = new THREE.Mesh(
+            new THREE.SphereGeometry(0.17, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.55),
+            sweaterMat
+          );
+          beanie.position.y = 0.06;
+          headGroup.add(beanie);
+          const pompom = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 8), new THREE.MeshStandardMaterial({ color: 0xf8fafc }));
+          pompom.position.y = 0.22;
+          headGroup.add(pompom);
+        } else if (style.hairStyle === 'curly') {
+          for (let c = 0; c < 7; c++) {
+            const curl = new THREE.Mesh(new THREE.SphereGeometry(0.065, 8, 8), hairMat);
+            const a = (c / 7) * Math.PI * 2;
+            curl.position.set(Math.cos(a) * 0.11, 0.07 + (c % 2) * 0.03, Math.sin(a) * 0.11);
+            headGroup.add(curl);
+          }
+        } else if (style.hairStyle === 'ponytail') {
+          const hairTop = new THREE.Mesh(new THREE.SphereGeometry(0.17, 14, 14, 0, Math.PI * 2, 0, Math.PI * 0.55), hairMat);
+          hairTop.position.y = 0.04;
+          headGroup.add(hairTop);
+          const tail = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.20, 8), hairMat);
+          tail.rotation.x = -Math.PI * 0.35;
+          tail.position.set(0, 0.02, -0.19);
+          headGroup.add(tail);
+        } else {
+          const hair = new THREE.Mesh(new THREE.SphereGeometry(0.17, 14, 14, 0, Math.PI * 2, 0, Math.PI * 0.55), hairMat);
+          hair.position.y = 0.05;
+          headGroup.add(hair);
+        }
+
+        // Yeux expressifs Pixar
+        const eyeMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const pupilMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
+        [-0.05, 0.05].forEach((ex) => {
+          const eye = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 8), eyeMat);
+          eye.scale.set(1.0, 1.15, 0.6);
+          eye.position.set(ex, 0.01, 0.135);
+          headGroup.add(eye);
+          const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.018, 6, 6), pupilMat);
+          pupil.position.set(ex, 0.01, 0.152);
+          headGroup.add(pupil);
+        });
+
+        // Lunettes pour certains spectateurs
+        if (style.glasses) {
+          const frameMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.8, roughness: 0.2 });
+          [-0.05, 0.05].forEach((gx) => {
+            const rim = new THREE.Mesh(new THREE.TorusGeometry(0.042, 0.006, 6, 14), frameMat);
+            rim.position.set(gx, 0.01, 0.155);
+            headGroup.add(rim);
+          });
+          const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.006, 0.006), frameMat);
+          bridge.position.set(0, 0.01, 0.155);
+          headGroup.add(bridge);
+        }
+
+        spectatorGroup.add(headGroup);
+
+        // Bras gauche & droit articulés pour l'animation
+        const armLGroup = new THREE.Group();
+        armLGroup.position.set(-0.20, 0.58, 0);
+        const armL = new THREE.Mesh(new THREE.CapsuleGeometry(0.04, 0.20, 6, 6), sweaterMat);
+        armL.position.set(-0.05, -0.09, 0.08);
+        armL.rotation.z = 0.35;
+        armL.rotation.x = 0.85;
+        armLGroup.add(armL);
+        const handL = new THREE.Mesh(new THREE.SphereGeometry(0.04, 6, 6), skinMat);
+        handL.position.set(-0.06, -0.20, 0.16);
+        armLGroup.add(handL);
+        spectatorGroup.add(armLGroup);
+
+        const armRGroup = new THREE.Group();
+        armRGroup.position.set(0.20, 0.58, 0);
+        const armR = new THREE.Mesh(new THREE.CapsuleGeometry(0.04, 0.20, 6, 6), sweaterMat);
+        armR.position.set(0.05, -0.09, 0.08);
+        armR.rotation.z = -0.35;
+        armR.rotation.x = 0.85;
+        armRGroup.add(armR);
+        const handR = new THREE.Mesh(new THREE.SphereGeometry(0.04, 6, 6), skinMat);
+        handR.position.set(0.06, -0.20, 0.16);
+        armRGroup.add(handR);
+        spectatorGroup.add(armRGroup);
+
+        // Positionnement en arc le long du balcon
+        const angle = (i / (tier.count - 1) - 0.5) * Math.PI * 0.90;
+        const specRadius = tier.radius - 0.15;
+        const px = Math.sin(angle) * specRadius;
+        const pz = -Math.cos(angle) * specRadius * 0.62;
+        spectatorGroup.position.set(px, tier.height, pz);
+        spectatorGroup.lookAt(0, 0.8, 0);
+        balconyGroup.add(spectatorGroup);
+
+        audienceMembers.push({
+          group: spectatorGroup,
+          head: headGroup,
+          armL: armLGroup,
+          armR: armRGroup,
+          baseY: tier.height,
+          phase: Math.random() * Math.PI * 2
+        });
+      }
     });
+
+    // Modèles 3D Invités VIP sur les loges avant (Aurore & Maxime)
+    gltfLoader.load(getAssetPath('/models/aurore_pixar_3d.glb'), (gltf) => {
+      const auroreVIP = gltf.scene;
+      auroreVIP.scale.set(0.85, 0.85, 0.85);
+      auroreVIP.position.set(-4.2, 0.62, -2.6);
+      auroreVIP.lookAt(0, 0.8, 0);
+      balconyGroup.add(auroreVIP);
+    }, undefined, () => {});
+
+    gltfLoader.load(getAssetPath('/models/maxime_3d.glb'), (gltf) => {
+      const maximeVIP = gltf.scene;
+      maximeVIP.scale.set(0.85, 0.85, 0.85);
+      maximeVIP.position.set(4.2, 0.62, -2.6);
+      maximeVIP.lookAt(0, 0.8, 0);
+      balconyGroup.add(maximeVIP);
+    }, undefined, () => {});
 
     scene.add(balconyGroup);
 
@@ -1135,6 +1285,10 @@ export default function GameShow3D({
           npc.group.rotation.x = 0;
           npc.armL.rotation.x = -0.3 + Math.sin(elapsed * 2 + npc.phase) * 0.05;
           npc.armR.rotation.x = -0.3 + Math.sin(elapsed * 2 + npc.phase) * 0.05;
+          if (npc.head) {
+            npc.head.rotation.y = Math.sin(elapsed * 1.2 + npc.phase) * 0.10;
+            npc.head.rotation.x = Math.sin(elapsed * 0.8 + npc.phase) * 0.05;
+          }
         }
       });
 
@@ -1178,7 +1332,7 @@ export default function GameShow3D({
       floorTexture.dispose();
       contactShadowTexture.dispose();
       screenTexture.dispose();
-      hechPodTexture.dispose();
+      hechOfficialTex.dispose();
     };
   }, [theme, themeColor]);
 
