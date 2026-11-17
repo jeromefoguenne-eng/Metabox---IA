@@ -1,3 +1,5 @@
+import { getAssetPath } from "../utils/assetPath";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
@@ -65,6 +67,49 @@ const SHOW_THEMES = {
  * GÉNÉRATEUR PROCÉDURAL DE TEXTURE DE SOL STUDIO PBR (AAA Glossy Tile Stage)
  * Crée des dalles acoustiques noires laquées avec micro-chanfreins et joints or/cyan.
  */
+/**
+ * GÉNÉRATEUR PROCÉDURAL DE BOISERIES DE THÉÂTRE PIXAR (Vertical Wood Slats with Gold Inlays)
+ */
+function createStudioWallTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+
+  // Boiseries d'amphithéâtre chaleureuses style Pixar (Chêne Miel & Acajou Lumineux)
+  ctx.fillStyle = '#4a2514';
+  ctx.fillRect(0, 0, 1024, 512);
+
+  const slatW = 28;
+  for (let x = 0; x < 1024; x += slatW) {
+    const grad = ctx.createLinearGradient(x, 0, x + slatW, 0);
+    grad.addColorStop(0, '#421f10');
+    grad.addColorStop(0.3, '#6e381c');
+    grad.addColorStop(0.7, '#8f4d28');
+    grad.addColorStop(1, '#421f10');
+    ctx.fillStyle = grad;
+    ctx.fillRect(x + 1.5, 0, slatW - 3, 512);
+
+    // Liseré or brossé réfléchissant sur chaque panneau
+    ctx.fillStyle = 'rgba(251, 191, 36, 0.45)';
+    ctx.fillRect(x + 3, 0, 2.2, 512);
+  }
+
+  // Éclairage studio diffus chaud (Cove lighting ambré)
+  const vGrad = ctx.createLinearGradient(0, 0, 0, 512);
+  vGrad.addColorStop(0, 'rgba(254, 215, 170, 0.25)');
+  vGrad.addColorStop(0.4, 'rgba(255, 237, 213, 0.15)');
+  vGrad.addColorStop(1, 'rgba(40, 18, 9, 0.55)');
+  ctx.fillStyle = vGrad;
+  ctx.fillRect(0, 0, 1024, 512);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.ClampToEdgeWrapping;
+  texture.repeat.set(8, 1);
+  return texture;
+}
+
 function createStudioFloorTexture(themeCfg) {
   const canvas = document.createElement('canvas');
   canvas.width = 1024;
@@ -175,8 +220,9 @@ export default function GameShow3D({
 
     // --- 1. Scene, Camera & High-Resolution PBR Renderer ---
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(themeCfg.bgHex);
-    scene.fog = new THREE.FogExp2(themeCfg.bgHex, 0.022);
+    // Ambiance de théâtre Pixar chaleureuse (bois ambré et lueurs solaires)
+    scene.background = new THREE.Color(0x2d170e); // Ambiance chaleureuse Pixar
+    scene.fog = new THREE.FogExp2(0x2d170e, 0.012);
 
     const camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 100);
     camera.position.set(0, 2.7, 7.4);
@@ -261,7 +307,7 @@ export default function GameShow3D({
       const coneMat = new THREE.MeshBasicMaterial({
         color: colorHex,
         transparent: true,
-        opacity: 0.16,
+        opacity: 0.04,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
         depthWrite: false
@@ -276,35 +322,37 @@ export default function GameShow3D({
     // --- 3. Studio Architecture & PBR Set Décor ---
     const floorTexture = createStudioFloorTexture(themeCfg);
 
-    // Curved Backdrop Cyclorama
-    const cycGeo = new THREE.CylinderGeometry(10.5, 10.5, 8.5, 48, 1, true, -Math.PI * 0.75, Math.PI * 1.5);
+    // Curved Backdrop Cyclorama - Boiseries de Théâtre Amphithéâtre Pixar (360° complet sans aucun vide noir)
+    const wallTexture = createStudioWallTexture();
+    const cycGeo = new THREE.CylinderGeometry(13.5, 13.5, 12.0, 64, 1, true); // Cylindre 360° complet
     const cycMat = new THREE.MeshStandardMaterial({
-      color: themeCfg.floorColor,
-      roughness: 0.65,
-      metalness: 0.35,
+      map: wallTexture,
+      roughness: 0.38,
+      metalness: 0.15,
+      emissive: new THREE.Color(0x3a1d10),
+      emissiveIntensity: 0.35,
       side: THREE.BackSide
     });
     const cyc = new THREE.Mesh(cycGeo, cycMat);
-    cyc.position.set(0, 3.6, 0);
+    cyc.position.set(0, 4.8, 0);
     scene.add(cyc);
 
-    // Neon Horizon Arches on Backdrop
-    for (let h = 1.2; h <= 5.2; h += 1.3) {
-      const arcGeo = new THREE.TorusGeometry(10.4, 0.045, 12, 64, Math.PI * 1.2);
+    // Anneaux lumineux dorés et néon panoramiques complets
+    for (let h = 1.6; h <= 5.6; h += 1.3) {
+      const arcGeo = new THREE.TorusGeometry(12.8, 0.038, 12, 64);
       const arcMat = new THREE.MeshBasicMaterial({
-        color: new THREE.Color(themeCfg.primaryColor),
+        color: new THREE.Color(h > 3.5 ? themeCfg.goldColor : themeCfg.primaryColor),
         transparent: true,
-        opacity: 0.55
+        opacity: 0.45
       });
       const arc = new THREE.Mesh(arcGeo, arcMat);
       arc.rotation.x = Math.PI / 2;
-      arc.rotation.z = -Math.PI * 0.6;
       arc.position.set(0, h, 0);
       scene.add(arc);
     }
 
     // --- Giant Curved LED Broadcast Screen (2048x1024 Ultra-Resolution) ---
-    const screenGeo = new THREE.CylinderGeometry(8.2, 8.2, 3.1, 48, 1, true, -Math.PI * 0.32, Math.PI * 0.64);
+    const screenGeo = new THREE.CylinderGeometry(6.6, 6.6, 3.2, 64, 1, true, -Math.PI * 0.38, Math.PI * 0.76);
     const screenCanvas = document.createElement('canvas');
     screenCanvas.width = 2048;
     screenCanvas.height = 1024;
@@ -319,7 +367,7 @@ export default function GameShow3D({
       side: THREE.BackSide
     });
     const giantScreen = new THREE.Mesh(screenGeo, screenMat);
-    giantScreen.position.set(0, 3.3, 0);
+    giantScreen.position.set(0, 2.9, 0);
     scene.add(giantScreen);
 
     // Multi-tier Concentric Stage Platform with PBR Tiles
@@ -381,7 +429,7 @@ export default function GameShow3D({
     // Contact shadow under podium
     const podShadow = new THREE.Mesh(
       new THREE.PlaneGeometry(2.0, 2.0),
-      new THREE.MeshBasicMaterial({ map: contactShadowTexture, transparent: true, opacity: 0.75, depthWrite: false })
+      new THREE.MeshBasicMaterial({ map: contactShadowTexture, transparent: true, opacity: 0.35, depthWrite: false })
     );
     podShadow.rotation.x = -Math.PI / 2;
     podShadow.position.set(-0.85, 0.163, 0.85);
@@ -392,9 +440,9 @@ export default function GameShow3D({
 
     const podBaseGeo = new THREE.CylinderGeometry(0.54, 0.65, 0.96, 32);
     const podBaseMat = new THREE.MeshStandardMaterial({
-      color: 0x0f172a,
-      metalness: 0.88,
-      roughness: 0.15
+      color: 0x3d1a0e, // Acajou chaleureux verni
+      metalness: 0.25,
+      roughness: 0.35
     });
     const podBase = new THREE.Mesh(podBaseGeo, podBaseMat);
     podBase.position.y = 0.48;
@@ -514,7 +562,7 @@ export default function GameShow3D({
     // Contact shadow under Henri
     const hostShadow = new THREE.Mesh(
       new THREE.PlaneGeometry(1.6, 1.6),
-      new THREE.MeshBasicMaterial({ map: contactShadowTexture, transparent: true, opacity: 0.75, depthWrite: false })
+      new THREE.MeshBasicMaterial({ map: contactShadowTexture, transparent: true, opacity: 0.35, depthWrite: false })
     );
     hostShadow.rotation.x = -Math.PI / 2;
     hostShadow.position.set(-0.85, 0.163, 0.18);
@@ -522,6 +570,61 @@ export default function GameShow3D({
 
     const hostGroup = new THREE.Group();
     hostGroup.position.set(-0.85, 0.15, 0.18);
+
+    // Conteneur dédié pour le modèle 3D sculpté Haute Définition (.GLB)
+    const hostModelContainer = new THREE.Group();
+    hostGroup.add(hostModelContainer);
+
+    // Groupe pour la version géométrique primitive (masqué dès chargement du .GLB)
+    const primitiveHostGroup = new THREE.Group();
+    hostGroup.add(primitiveHostGroup);
+
+    // Chargement du modèle 3D Pixar de l'animateur Henri (.GLB)
+    const gltfLoader = new GLTFLoader();
+    gltfLoader.load(
+      getAssetPath('/models/henri_host_pixar.glb'),
+      (gltf) => {
+        const model = gltf.scene;
+        const box = new THREE.Box3().setFromObject(model);
+        const size = box.getSize(new THREE.Vector3());
+        const center = box.getCenter(new THREE.Vector3());
+
+        // Mise à l'échelle idéale pour un présentateur TV expressif au pupitre
+        const targetHeight = 2.15;
+        const scale = targetHeight / (size.y || 1);
+        model.scale.set(scale, scale, scale);
+
+        // Rotation pour faire face DIRECTEMENT à la caméra (vers +Z)
+        model.rotation.y = -Math.PI * 0.5;
+
+        // Centrage exact et élévation du buste au-dessus du pupitre
+        model.position.x = -center.x * scale;
+        model.position.y = 0.08 - box.min.y * scale;
+        model.position.z = -center.z * scale;
+
+        // Amélioration PBR du maillage
+        model.traverse((child) => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            if (child.geometry) child.geometry.computeVertexNormals();
+            if (child.material) {
+              child.material.roughness = 0.40;
+              child.material.metalness = 0.15;
+            }
+          }
+        });
+
+        hostModelContainer.add(model);
+        // Masquer les primitives géométriques de substitution
+        primitiveHostGroup.visible = false;
+        console.log("[GameShow3D] Modèle 3D Pixar Henri chargé avec succès !");
+      },
+      undefined,
+      (err) => {
+        console.warn("[GameShow3D] Fallback géométrique actif (modèle en cours de chargement) :", err);
+      }
+    );
 
     const skinMat = new THREE.MeshStandardMaterial({
       color: 0xfbd2b8,
@@ -568,12 +671,12 @@ export default function GameShow3D({
       shoe.castShadow = true;
       legsGroup.add(shoe);
     });
-    hostGroup.add(legsGroup);
+    primitiveHostGroup.add(legsGroup);
 
     // Torso & Suit Jacket
     const torsoGroup = new THREE.Group();
     torsoGroup.position.y = 0.9;
-    hostGroup.add(torsoGroup);
+    primitiveHostGroup.add(torsoGroup);
 
     const jacketGeo = new THREE.CylinderGeometry(0.28, 0.25, 0.72, 20);
     jacketGeo.scale(1.15, 1.0, 0.85);
@@ -720,102 +823,52 @@ export default function GameShow3D({
 
     scene.add(hostGroup);
 
-    // --- 6. 30 Animated Audience NPCs with Glowsticks in Tiered Amphitheater ---
+    // --- 6. Warm Tiered Balconies & Pixar Theater Gallery ---
     const audienceMembers = [];
-    const audiencePalette = [
-      0x38bdf8, 0x10b981, 0xf43f5e, 0xa855f7, 0xf59e0b, 0x06b6d4, 0xec4899, 0xffffff
-    ];
-    const hairPalette = [0x1c1917, 0x78350f, 0xd97706, 0x451a03, 0x0f172a];
+    const balconyGroup = new THREE.Group();
+    balconyGroup.position.set(0, 0, -1.0);
 
-    const rows = [
-      { radius: 6.2, count: 8, height: 0.7, startAngle: -0.65, endAngle: 0.65 },
-      { radius: 7.2, count: 10, height: 1.3, startAngle: -0.85, endAngle: 0.85 },
-      { radius: 8.2, count: 12, height: 1.9, startAngle: -0.95, endAngle: 0.95 }
+    const balconyTiers = [
+      { radius: 6.8, height: 0.6, color: 0x3a1b10 },
+      { radius: 7.8, height: 1.2, color: 0x2e140b },
+      { radius: 8.8, height: 1.8, color: 0x240f07 }
     ];
 
-    rows.forEach((row) => {
-      const benchGeo = new THREE.CylinderGeometry(row.radius + 0.35, row.radius + 0.35, 0.2, 36, 1, true, row.startAngle - 0.1, (row.endAngle - row.startAngle) + 0.2);
-      const benchMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.7 });
-      const bench = new THREE.Mesh(benchGeo, benchMat);
-      bench.position.set(0, row.height - 0.1, -1.0);
-      scene.add(bench);
+    balconyTiers.forEach((tier) => {
+      // Gradin en boiseries chaudes
+      const tierGeo = new THREE.CylinderGeometry(tier.radius + 0.4, tier.radius + 0.4, 0.45, 48, 1, true, -Math.PI * 0.55, Math.PI * 1.1);
+      const tierMat = new THREE.MeshStandardMaterial({ color: tier.color, roughness: 0.5, metalness: 0.1 });
+      const tierMesh = new THREE.Mesh(tierGeo, tierMat);
+      tierMesh.position.y = tier.height;
+      balconyGroup.add(tierMesh);
 
-      for (let i = 0; i < row.count; i++) {
-        const step = (row.endAngle - row.startAngle) / (row.count - 1 || 1);
-        const theta = row.startAngle + i * step;
+      // Liseré or chaud le long de chaque balcon
+      const goldRailGeo = new THREE.TorusGeometry(tier.radius + 0.42, 0.035, 8, 48, Math.PI * 1.05);
+      const goldRailMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.85, roughness: 0.2 });
+      const rail = new THREE.Mesh(goldRailGeo, goldRailMat);
+      rail.rotation.x = Math.PI / 2;
+      rail.rotation.z = -Math.PI * 0.525;
+      rail.position.y = tier.height + 0.24;
+      balconyGroup.add(rail);
 
-        const npcX = Math.sin(theta) * row.radius;
-        const npcZ = -Math.cos(theta) * row.radius * 0.55 - 1.0;
-
-        const shirtColor = audiencePalette[(i + row.count) % audiencePalette.length];
-        const hairColor = hairPalette[(i * 3) % hairPalette.length];
-
-        const npcGroup = new THREE.Group();
-        npcGroup.position.set(npcX, row.height, npcZ);
-        npcGroup.lookAt(0, 1.2, 0);
-
-        const npcTorso = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.18, 0.16, 0.5, 12),
-          new THREE.MeshStandardMaterial({ color: shirtColor, roughness: 0.55 })
+      // Petites veilleuses d'ambiance de théâtre douces (Warm Theater Sconces)
+      for (let s = -4; s <= 4; s++) {
+        const sAngle = (s / 4.5) * Math.PI * 0.45;
+        const sx = Math.sin(sAngle) * (tier.radius + 0.4);
+        const sz = -Math.cos(sAngle) * (tier.radius + 0.4) * 0.6;
+        const sconce = new THREE.Mesh(
+          new THREE.SphereGeometry(0.045, 12, 12),
+          new THREE.MeshBasicMaterial({ color: 0xfde047 })
         );
-        npcTorso.position.y = 0.25;
-        npcGroup.add(npcTorso);
-
-        const npcHead = new THREE.Mesh(
-          new THREE.SphereGeometry(0.13, 14, 14),
-          skinMat
-        );
-        npcHead.position.y = 0.62;
-        npcGroup.add(npcHead);
-
-        const npcH = new THREE.Mesh(
-          new THREE.SphereGeometry(0.14, 12, 12),
-          new THREE.MeshStandardMaterial({ color: hairColor, roughness: 0.4 })
-        );
-        npcH.position.set(0, 0.65, -0.02);
-        npcGroup.add(npcH);
-
-        const npcArmL = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.045, 0.04, 0.35, 8),
-          new THREE.MeshStandardMaterial({ color: shirtColor, roughness: 0.6 })
-        );
-        npcArmL.position.set(-0.22, 0.35, 0.08);
-        npcArmL.rotation.x = -0.3;
-        npcGroup.add(npcArmL);
-
-        const npcArmR = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.045, 0.04, 0.35, 8),
-          new THREE.MeshStandardMaterial({ color: shirtColor, roughness: 0.6 })
-        );
-        npcArmR.position.set(0.22, 0.35, 0.08);
-        npcArmR.rotation.x = -0.3;
-        npcGroup.add(npcArmR);
-
-        // Every 3rd NPC holds a glowing neon cheer light
-        if (i % 3 === 0) {
-          const glowstick = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.015, 0.015, 0.28, 8),
-            new THREE.MeshBasicMaterial({ color: shirtColor })
-          );
-          glowstick.position.set(0, -0.15, 0.05);
-          glowstick.rotation.x = Math.PI / 4;
-          npcArmR.add(glowstick);
-        }
-
-        scene.add(npcGroup);
-
-        audienceMembers.push({
-          group: npcGroup,
-          armL: npcArmL,
-          armR: npcArmR,
-          baseY: row.height,
-          phase: Math.random() * Math.PI * 2
-        });
+        sconce.position.set(sx, tier.height + 0.26, sz);
+        balconyGroup.add(sconce);
       }
     });
 
+    scene.add(balconyGroup);
+
     // --- 7. Floating Studio Sparkles / Golden Motes ---
-    const particleCount = 100;
+    const particleCount = 45;
     const particleGeo = new THREE.BufferGeometry();
     const particlePositions = new Float32Array(particleCount * 3);
 
@@ -828,9 +881,9 @@ export default function GameShow3D({
 
     const particleMat = new THREE.PointsMaterial({
       color: new THREE.Color(themeCfg.goldColor),
-      size: 0.07,
+      size: 0.028,
       transparent: true,
-      opacity: 0.75,
+      opacity: 0.35,
       blending: THREE.AdditiveBlending
     });
     const particles = new THREE.Points(particleGeo, particleMat);
@@ -1005,6 +1058,8 @@ export default function GameShow3D({
 
       // Host Animation Rig with Natural Breathing & Expressiveness
       torsoGroup.position.y = 0.9 + Math.sin(elapsed * 2.4) * 0.016;
+      hostModelContainer.position.y = Math.sin(elapsed * 2.4) * 0.016;
+      hostModelContainer.rotation.y = THREE.MathUtils.lerp(hostModelContainer.rotation.y, mouse.x * 0.35, 0.08);
 
       // Host head tracks mouse with natural limitation
       headGroup.rotation.y = THREE.MathUtils.lerp(headGroup.rotation.y, mouse.x * 0.5, 0.08);
