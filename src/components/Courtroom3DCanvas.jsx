@@ -1869,14 +1869,12 @@ export default function Courtroom3DCanvas({
         }
       });
 
-      const isWide = (cameraViewRef.current === 'TV_WIDE');
-      courtroomMeshesGroup.visible = !isWide;
-      scene.background = isWide ? null : new THREE.Color(0x140c11);
+      // Maintien de tous les personnages 3D actifs et animés dans toutes les vues
+      courtroomMeshesGroup.visible = true;
+      scene.background = null;
 
       // Rendu via EffectComposer ou direct
-      if (isWide) {
-        renderer.render(scene, camera);
-      } else if (composerRef.current) {
+      if (composerRef.current) {
         composerRef.current.render();
       } else {
         renderer.render(scene, camera);
