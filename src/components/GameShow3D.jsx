@@ -5,57 +5,57 @@ import * as THREE from 'three';
 const SHOW_THEMES = {
   millionnaire: {
     title: "QUI VEUT GAGNER DES CRÉDITS ?",
-    subtitle: "PUPITRE ACADÉMIQUE · PALIER 60 ECTS",
-    bgHex: 0x030712,
-    ambientHex: 0x1e293b,
-    floorColor: 0x070d1e,
+    subtitle: "ÉVALUATION FORMATIVE & MÉTHODES",
+    bgHex: 0x0c192e,
+    ambientHex: 0x312e81,
+    floorColor: 0x3b1d0c,
     primaryColor: '#38bdf8',
-    secondaryColor: '#6366f1',
-    goldColor: '#f59e0b',
-    rimHex: 0x38bdf8,
-    spotColors: [0x38bdf8, 0xf59e0b, 0x2563eb, 0xfbbf24],
+    secondaryColor: '#f59e0b',
+    goldColor: '#fde047',
+    rimHex: 0xfde047,
+    spotColors: [0x38bdf8, 0xfbbf24, 0xa78bfa, 0x34d399],
     screenType: 'pyramid',
     emblem: 'ECTS 60'
   },
   champion: {
     title: "QUESTIONS POUR UN MAJOR",
     subtitle: "NEUROSCIENCES & MÉMOIRE ACTIVE",
-    bgHex: 0x0c0702,
-    ambientHex: 0x3c1d06,
-    floorColor: 0x160c04,
-    primaryColor: '#f59e0b',
-    secondaryColor: '#ea580c',
-    goldColor: '#06b6d4',
-    rimHex: 0xf59e0b,
-    spotColors: [0xf59e0b, 0x06b6d4, 0xf97316, 0x38bdf8],
+    bgHex: 0x1c0f06,
+    ambientHex: 0x78350f,
+    floorColor: 0x451e08,
+    primaryColor: '#fbbf24',
+    secondaryColor: '#f97316',
+    goldColor: '#38bdf8',
+    rimHex: 0xfde047,
+    spotColors: [0xfbbf24, 0x38bdf8, 0xf97316, 0x60a5fa],
     screenType: 'timer_grid',
     emblem: 'MAJOR 1'
   },
   roue: {
     title: "LA ROUE DES ACCORDS",
     subtitle: "ORTHO'EXPRESS & CONJUGAISON PIÈGE",
-    bgHex: 0x0e0317,
-    ambientHex: 0x3b0764,
-    floorColor: 0x1a0526,
-    primaryColor: '#ec4899',
-    secondaryColor: '#a855f7',
-    goldColor: '#fcd34d',
-    rimHex: 0xec4899,
-    spotColors: [0xec4899, 0xa855f7, 0x10b981, 0xf43f5e],
+    bgHex: 0x1a0a2a,
+    ambientHex: 0x581c87,
+    floorColor: 0x381224,
+    primaryColor: '#f43f5e',
+    secondaryColor: '#c084fc',
+    goldColor: '#fde047',
+    rimHex: 0xf472b6,
+    spotColors: [0xf43f5e, 0xc084fc, 0x34d399, 0xfbbf24],
     screenType: 'roulette',
     emblem: 'ROUE'
   },
   concours: {
     title: "LE GRAND CONCOURS DE LA HECH",
     subtitle: "RÈGLEMENTS, DROITS & VIE ÉTUDIANTE",
-    bgHex: 0x080417,
-    ambientHex: 0x2e1065,
-    floorColor: 0x120824,
-    primaryColor: '#06b6d4',
-    secondaryColor: '#8b5cf6',
-    goldColor: '#f59e0b',
-    rimHex: 0x06b6d4,
-    spotColors: [0x06b6d4, 0xf59e0b, 0x7c3aed, 0x0ea5e9],
+    bgHex: 0x0f2038,
+    ambientHex: 0x1e40af,
+    floorColor: 0x2e183b,
+    primaryColor: '#38bdf8',
+    secondaryColor: '#a855f7',
+    goldColor: '#fbbf24',
+    rimHex: 0x38bdf8,
+    spotColors: [0x38bdf8, 0xfbbf24, 0x818cf8, 0x2dd4bf],
     screenType: 'arena',
     emblem: 'CAMPUS'
   }
@@ -71,51 +71,57 @@ function createStudioFloorTexture(themeCfg) {
   canvas.height = 1024;
   const ctx = canvas.getContext('2d');
 
-  // Fond laqué noir profond
-  ctx.fillStyle = '#070a14';
+  // Sol Parquet Chêne Miel Chaleureux Style Studio Pixar
+  ctx.fillStyle = '#2c1409';
   ctx.fillRect(0, 0, 1024, 1024);
 
-  const tileSize = 128;
-  const rows = 1024 / tileSize;
-  const cols = 1024 / tileSize;
+  const plankW = 256;
+  const plankH = 64;
+  const rows = 1024 / plankH;
 
   for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const x = c * tileSize;
-      const y = r * tileSize;
+    const y = r * plankH;
+    const offset = (r % 2) * (plankW / 2);
+    for (let x = -plankW; x < 1024 + plankW; x += plankW) {
+      const px = x + offset;
+      const shade = Math.sin(r * 8.7 + px * 0.02) * 0.5 + 0.5;
+      const rV = Math.floor(74 + shade * 38);
+      const gV = Math.floor(38 + shade * 24);
+      const bV = Math.floor(18 + shade * 14);
 
-      // Dégradé spéculaire subtil par dalle
-      const tileGrad = ctx.createRadialGradient(x + tileSize * 0.5, y + tileSize * 0.5, 5, x + tileSize * 0.5, y + tileSize * 0.5, tileSize * 0.7);
-      const isAlt = (r + c) % 2 === 0;
-      tileGrad.addColorStop(0, isAlt ? '#111827' : '#0b1120');
-      tileGrad.addColorStop(1, '#050811');
-      ctx.fillStyle = tileGrad;
-      ctx.fillRect(x + 2, y + 2, tileSize - 4, tileSize - 4);
+      // Lame de parquet verni avec dégradé doux
+      const grad = ctx.createLinearGradient(px, y, px + plankW, y + plankH);
+      grad.addColorStop(0, `rgb(${rV + 8}, ${gV + 6}, ${bV + 4})`);
+      grad.addColorStop(1, `rgb(${rV - 6}, ${gV - 5}, ${bV - 3})`);
+      ctx.fillStyle = grad;
+      ctx.fillRect(px + 2, y + 2, plankW - 4, plankH - 4);
 
-      // Chanfrein biseauté ultra-fin
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(x + 3, y + 3, tileSize - 6, tileSize - 6);
+      // Veines douces de bois chêne naturel
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.14)';
+      for (let v = 0; v < 3; v++) {
+        ctx.fillRect(px + 8, y + 10 + v * 16, plankW - 16, 2.2);
+      }
 
-      // Micro-points métalliques de fixation aux intersections
-      ctx.fillStyle = themeCfg.goldColor;
-      ctx.beginPath();
-      ctx.arc(x, y, 2.5, 0, Math.PI * 2);
-      ctx.fill();
+      // Rehaussé de reflet spéculaire ambré
+      ctx.fillStyle = 'rgba(255, 215, 140, 0.10)';
+      ctx.fillRect(px + 3, y + 3, plankW - 6, 3.5);
     }
+    // Rainure fine dorée et sombre
+    ctx.fillStyle = '#170803';
+    ctx.fillRect(0, y, 1024, 2.5);
   }
 
-  // Liserés circulaires néon incrustés dans le sol
-  ctx.strokeStyle = themeCfg.primaryColor;
-  ctx.lineWidth = 3;
+  // Liserés circulaires dorés et néon incrustés dans le sol façon plateau Pixar
+  ctx.strokeStyle = themeCfg.goldColor;
+  ctx.lineWidth = 6;
   ctx.beginPath();
-  ctx.arc(512, 512, 400, 0, Math.PI * 2);
+  ctx.arc(512, 512, 410, 0, Math.PI * 2);
   ctx.stroke();
 
-  ctx.strokeStyle = themeCfg.goldColor;
-  ctx.lineWidth = 2;
+  ctx.strokeStyle = themeCfg.primaryColor;
+  ctx.lineWidth = 3.5;
   ctx.beginPath();
-  ctx.arc(512, 512, 220, 0, Math.PI * 2);
+  ctx.arc(512, 512, 230, 0, Math.PI * 2);
   ctx.stroke();
 
   const texture = new THREE.CanvasTexture(canvas);

@@ -385,7 +385,7 @@ export default function Courtroom3DCanvas({
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.70;
+    renderer.toneMappingExposure = 1.12; // Pixar warm court
     rendererRef.current = renderer;
 
     container.appendChild(renderer.domElement);
@@ -412,14 +412,15 @@ export default function Courtroom3DCanvas({
     composerRef.current = composer;
 
     // 2. Éclairage Feutré & Réaliste de Tribunal (Ambiance Chaleureuse & Tamisée)
-    const hemiLight = new THREE.HemisphereLight(0xffedd5, 0x1a0f0d, 0.28);
+    // Éclairage Studio Pixar Chaleureux & Enveloppant (Honey & Gold Wood)
+    const hemiLight = new THREE.HemisphereLight(0xffedd5, 0x2e1814, 0.65);
     scene.add(hemiLight);
 
-    const ambientLight = new THREE.AmbientLight(0x451a03, 0.10);
+    const ambientLight = new THREE.AmbientLight(0x78350f, 0.35);
     scene.add(ambientLight);
 
-    // Key Light douce et tamisée (Lustre central)
-    const keySpot = new THREE.SpotLight(0xffeedd, 0.50);
+    // Key Light dorée chaude principale
+    const keySpot = new THREE.SpotLight(0xffedd5, 1.25);
     keySpot.position.set(2.5, 9.5, 5.0);
     keySpot.angle = Math.PI / 4.6;
     keySpot.penumbra = 0.95;

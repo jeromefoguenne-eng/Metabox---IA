@@ -74,19 +74,20 @@ const SHOW_META = {
 };
 
 // 12 WEDGES FOR LA ROUE DES ACCORDS (with 3 Banqueroutes)
+// 12 WEDGES FOR LA ROUE DES ACCORDS (Palette Bonbon Jouet Rétro Style Pixar)
 const WHEEL_WEDGES = [
-  { id: 0, label: "100 ECTS", value: 100, fill: "#10b981", textColor: "#ffffff", isSpecial: false },
+  { id: 0, label: "100 ECTS", value: 100, fill: "#06b6d4", textColor: "#ffffff", isSpecial: false },
   { id: 1, label: "250 ECTS", value: 250, fill: "#3b82f6", textColor: "#ffffff", isSpecial: false },
-  { id: 2, label: "💥 BANQUEROUTE", value: 0, fill: "#b91c1c", textColor: "#fef08a", isSpecial: true, type: "bankrupt" },
+  { id: 2, label: "💥 BANQUEROUTE", value: 0, fill: "#dc2626", textColor: "#fef08a", isSpecial: true, type: "bankrupt" },
   { id: 3, label: "500 ECTS", value: 500, fill: "#f59e0b", textColor: "#ffffff", isSpecial: false },
-  { id: 4, label: "⭐ HOLD-UP", value: 750, fill: "#8b5cf6", textColor: "#ffffff", isSpecial: true, type: "holdup" },
-  { id: 5, label: "💥 BANQUEROUTE", value: 0, fill: "#991b1b", textColor: "#fef08a", isSpecial: true, type: "bankrupt" },
-  { id: 6, label: "1000 ECTS", value: 1000, fill: "#eab308", textColor: "#0f172a", isSpecial: false },
-  { id: 7, label: "150 ECTS", value: 150, fill: "#06b6d4", textColor: "#ffffff", isSpecial: false },
-  { id: 8, label: "300 ECTS", value: 300, fill: "#6366f1", textColor: "#ffffff", isSpecial: false },
+  { id: 4, label: "⭐ HOLD-UP", value: 750, fill: "#a855f7", textColor: "#ffffff", isSpecial: true, type: "holdup" },
+  { id: 5, label: "💥 BANQUEROUTE", value: 0, fill: "#b91c1c", textColor: "#fef08a", isSpecial: true, type: "bankrupt" },
+  { id: 6, label: "1000 ECTS", value: 1000, fill: "#facc15", textColor: "#1e1b4b", isSpecial: false },
+  { id: 7, label: "150 ECTS", value: 150, fill: "#10b981", textColor: "#ffffff", isSpecial: false },
+  { id: 8, label: "300 ECTS", value: 300, fill: "#8b5cf6", textColor: "#ffffff", isSpecial: false },
   { id: 9, label: "400 ECTS", value: 400, fill: "#f97316", textColor: "#ffffff", isSpecial: false },
   { id: 10, label: "750 ECTS", value: 750, fill: "#ec4899", textColor: "#ffffff", isSpecial: false },
-  { id: 11, label: "💥 BANQUEROUTE", value: 0, fill: "#dc2626", textColor: "#fef08a", isSpecial: true, type: "bankrupt" }
+  { id: 11, label: "💥 BANQUEROUTE", value: 0, fill: "#e11d48", textColor: "#fef08a", isSpecial: true, type: "bankrupt" }
 ];
 
 function TvGameShowArenaContent({ 

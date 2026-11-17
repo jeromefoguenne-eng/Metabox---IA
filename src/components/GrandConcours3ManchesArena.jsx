@@ -921,14 +921,16 @@ export default function GrandConcours3ManchesArena({
                 {/* ÉTAT 1 : BUZZER OUVERT (TOUT LE MONDE PEUT BUZZER) */}
                 {m1BuzzerState === 'open' && (
                   <div className="pt-3 pb-2 flex flex-col items-center justify-center space-y-4">
+                    {/* Gros Buzzer Dôme Champignon Rouge Stylisé Pixar (Toy Arcade Polish) */}
                     <button
                       onClick={handleUserBuzzM1}
-                      className="group relative w-36 h-36 rounded-full bg-gradient-to-b from-rose-500 via-rose-600 to-rose-800 hover:from-rose-400 hover:to-rose-600 active:scale-95 active:translate-y-1 shadow-[0_12px_32px_rgba(225,29,72,0.65)] flex flex-col items-center justify-center transition-all duration-100 cursor-pointer border-4 border-rose-200 ring-8 ring-rose-500/25 hover:ring-rose-500/50"
+                      className="group relative w-40 h-40 rounded-full bg-gradient-to-b from-rose-400 via-rose-600 to-rose-900 hover:from-rose-300 hover:to-rose-600 active:scale-90 active:translate-y-2 shadow-[0_20px_45px_rgba(225,29,72,0.7),inset_0_4px_16px_rgba(255,255,255,0.7)] flex flex-col items-center justify-center transition-all duration-150 cursor-pointer border-4 border-amber-300/80 ring-[10px] ring-slate-800 ring-offset-4 ring-offset-slate-950 hover:ring-rose-500/60"
                     >
-                      {/* Top Glass Acrylic Glint */}
-                      <div className="absolute top-2 left-6 right-6 h-9 rounded-full bg-gradient-to-b from-white/45 to-transparent pointer-events-none" />
-                      <Zap className="w-10 h-10 text-white animate-pulse drop-shadow-md" />
-                      <span className="text-sm font-black text-white tracking-widest uppercase mt-1 drop-shadow-md">
+                      {/* Double Éclat Verre Acrylique Pixar (Catchlights) */}
+                      <div className="absolute top-2.5 left-7 right-7 h-11 rounded-full bg-gradient-to-b from-white/70 via-white/20 to-transparent pointer-events-none" />
+                      <div className="absolute top-4 left-9 w-4 h-2.5 rounded-full bg-white/80 pointer-events-none blur-[0.5px]" />
+                      <Zap className="w-11 h-11 text-white animate-pulse drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]" />
+                      <span className="text-sm font-black text-white tracking-widest uppercase mt-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                         BUZZER !
                       </span>
                     </button>
@@ -1328,10 +1330,11 @@ export default function GrandConcours3ManchesArena({
                   <div className="pt-2">
                     <button
                       onClick={handleUserBuzz}
-                      className="px-10 py-4 rounded-3xl bg-gradient-to-r from-rose-600 via-red-500 to-rose-600 hover:from-rose-500 hover:to-red-400 text-white font-black text-xl shadow-2xl shadow-rose-600/50 cursor-pointer transition transform hover:scale-105 active:scale-95 border-2 border-rose-300 flex items-center justify-center gap-3 mx-auto"
+                      className="group relative px-12 py-5 rounded-full bg-gradient-to-b from-rose-400 via-rose-600 to-rose-900 hover:from-rose-300 hover:to-rose-600 text-white font-black text-xl shadow-[0_16px_36px_rgba(225,29,72,0.65),inset_0_3px_12px_rgba(255,255,255,0.6)] cursor-pointer transition-all active:scale-90 active:translate-y-2 border-4 border-amber-300/80 ring-[8px] ring-slate-800 ring-offset-2 ring-offset-slate-950 flex items-center justify-center gap-3.5 mx-auto"
                     >
-                      <Zap className="w-6 h-6 animate-pulse" />
-                      <span>BUZZER POUR {m3ActiveClueLevel} POINTS !</span>
+                      <div className="absolute top-2 left-8 right-8 h-6 rounded-full bg-gradient-to-b from-white/60 to-transparent pointer-events-none" />
+                      <Zap className="w-7 h-7 text-amber-200 animate-pulse drop-shadow" />
+                      <span className="tracking-wider uppercase drop-shadow-md">BUZZER POUR {m3ActiveClueLevel} POINTS !</span>
                     </button>
                   </div>
                 )}
