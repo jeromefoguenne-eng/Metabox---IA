@@ -1010,7 +1010,7 @@ function TvGameShowArenaContent({
       <div className="flex-1 flex flex-col relative overflow-hidden">
         
         {/* Upper Half: 3D TV Studio Scene (100% Raccord & Temps Réel) */}
-        <div className="h-[46vh] min-h-[260px] w-full relative bg-slate-950 overflow-hidden">
+        <div className="h-[48vh] min-h-[300px] w-full relative bg-slate-950 overflow-hidden shadow-2xl">
           <GameShow3D 
             reaction={reaction} 
             theme={showType}
@@ -1023,23 +1023,21 @@ function TvGameShowArenaContent({
             isOpen={isShowingIntro}
             onClose={() => setIsShowingIntro(false)}
           />
-
-          {/* Host Prompter Banner avec Avatar Raccord */}
-          {!isShowingIntro && (
-            <div className="absolute bottom-3 left-4 right-4 max-w-4xl mx-auto z-10 pointer-events-none">
-              <div className="bg-slate-900/90 backdrop-blur-md border border-indigo-500/40 rounded-2xl px-5 py-3 shadow-2xl flex items-center gap-3">
-                <CharacterAvatar characterId="aurore" size={36} />
-                <p className="text-sm font-lexend text-white font-medium leading-relaxed drop-shadow-sm">
-                  {hostDialogue}
-                </p>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Lower Half: Interactive Broadcast Controls & HUD */}
         <div className="flex-1 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 border-t border-slate-800 p-4 sm:p-5 overflow-y-auto flex flex-col justify-between">
-          <div className="max-w-5xl mx-auto w-full">
+          <div className="max-w-5xl mx-auto w-full space-y-3">
+
+            {/* Host Prompter Banner avec Avatar Raccord (Élégamment placé au-dessus des contrôles) */}
+            {!isShowingIntro && (
+              <div className="bg-slate-900/90 backdrop-blur-md border border-indigo-500/40 rounded-2xl px-5 py-2.5 shadow-xl flex items-center gap-3">
+                <CharacterAvatar characterId="aurore" size={32} />
+                <p className="text-xs sm:text-sm font-lexend text-white font-medium leading-relaxed drop-shadow-sm">
+                  {hostDialogue}
+                </p>
+              </div>
+            )}
 
             {/* Game Over Screen WITH HALL OF FAME LEADERBOARD */}
             {gameOver ? (
