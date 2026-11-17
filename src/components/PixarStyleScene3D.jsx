@@ -180,13 +180,13 @@ export default function PixarStyleScene3D({
 
     let baseScale = 1.0;
     let basePosY = 0.07;
-    let baseRotY = Math.PI; // Face caméra dans Three.js
+    let baseRotY = -0.65; // Face caméra parfaitement centrée
 
     morphMeshesRef.current = [];
 
     const gltfLoader = new GLTFLoader();
     gltfLoader.load(
-      getAssetPath('/models/aurore_lowpoly_stylized.glb'),
+      getAssetPath('/models/aurore_blender_pixar_hd.glb'),
       (gltf) => {
         const model = gltf.scene;
 

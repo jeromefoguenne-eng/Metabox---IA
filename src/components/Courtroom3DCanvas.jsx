@@ -348,6 +348,8 @@ export default function Courtroom3DCanvas({
   const judgeStateRef = useRef(judgeState);
   const judgeReactionRef = useRef(judgeReaction);
   const audienceStateRef = useRef(audienceState);
+  const cameraViewRef = useRef(cameraView);
+  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
 
   useEffect(() => { witnessStateRef.current = witnessState; }, [witnessState]);
   useEffect(() => { prosecutorStateRef.current = prosecutorState; }, [prosecutorState]);
@@ -355,6 +357,15 @@ export default function Courtroom3DCanvas({
   useEffect(() => { judgeStateRef.current = judgeState; }, [judgeState]);
   useEffect(() => { judgeReactionRef.current = judgeReaction; }, [judgeReaction]);
   useEffect(() => { audienceStateRef.current = audienceState; }, [audienceState]);
+  useEffect(() => { cameraViewRef.current = cameraView; }, [cameraView]);
+
+  const handleMouseMove = (e) => {
+    if (!mountRef.current) return;
+    const rect = mountRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    setMouseOffset({ x, y });
+  };
 
   useEffect(() => {
     const preset = CAMERA_PRESETS[cameraView] || CAMERA_PRESETS.TV_WIDE;
@@ -379,7 +390,7 @@ export default function Courtroom3DCanvas({
     camera.position.set(0, 4.4, 8.2);
     cameraRef.current = camera;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
@@ -601,6 +612,17 @@ export default function Courtroom3DCanvas({
     // =========================================================================
     // 4. ARCHITECTURE COMPLÈTE & ENCEINTE FERMÉE DU TRIBUNAL
     // =========================================================================
+    const courtroomMeshesGroup = new THREE.Group();
+    scene.add(courtroomMeshesGroup);
+    const origSceneAdd = scene.add.bind(scene);
+    scene.add = (...args) => {
+      const item = args[0];
+      if (item === shockwave) {
+        origSceneAdd(...args);
+      } else {
+        courtroomMeshesGroup.add(...args);
+      }
+    };
 
     // Sol Parquet à chevrons verni
     const floorGeo = new THREE.PlaneGeometry(26, 26);
@@ -1847,8 +1869,14 @@ export default function Courtroom3DCanvas({
         }
       });
 
-      // Rendu via EffectComposer (Post-processing PBR Studio)
-      if (composerRef.current) {
+      const isWide = (cameraViewRef.current === 'TV_WIDE');
+      courtroomMeshesGroup.visible = !isWide;
+      scene.background = isWide ? null : new THREE.Color(0x140c11);
+
+      // Rendu via EffectComposer ou direct
+      if (isWide) {
+        renderer.render(scene, camera);
+      } else if (composerRef.current) {
         composerRef.current.render();
       } else {
         renderer.render(scene, camera);
@@ -1884,9 +1912,39 @@ export default function Courtroom3DCanvas({
   }, []);
 
   return (
-    <div className="relative w-full h-full min-h-[480px] bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 shadow-2xl">
+    <div 
+      onMouseMove={handleMouseMove}
+      className="relative w-full h-full min-h-[480px] bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 shadow-2xl"
+    >
+      {/* 1. Mode Pixar Broadcast 2K (Vue d'Ensemble Solennelle du Tribunal HECh) */}
+      {cameraView === 'TV_WIDE' && (
+        <div 
+          className="absolute inset-0 w-full h-full pointer-events-none transition-transform duration-300 ease-out z-0"
+          style={{
+            transform: `translate3d(${mouseOffset.x * 14}px, ${mouseOffset.y * 10}px, 0) scale(1.02)`,
+            transformOrigin: 'center center'
+          }}
+        >
+          <img
+            src={getAssetPath('/images/pixar_courtroom_arena_2k.webp')}
+            alt="Tribunal Universitaire Pixar HECh"
+            className="w-full h-full object-cover object-center filter saturate-[1.06] contrast-[1.03]"
+          />
+          <div 
+            className="absolute inset-0 pointer-events-none transition-opacity duration-500"
+            style={{
+              background: judgeReaction === 'anger' || judgeReaction === 'rejection'
+                ? 'radial-gradient(circle at 50% 40%, rgba(225, 29, 72, 0.25) 0%, transparent 75%)'
+                : judgeReaction === 'approval'
+                ? 'radial-gradient(circle at 50% 40%, rgba(16, 185, 129, 0.22) 0%, transparent 75%)'
+                : 'radial-gradient(circle at 50% 30%, rgba(245, 158, 11, 0.08) 0%, transparent 65%)'
+            }}
+          />
+        </div>
+      )}
+
       {/* Canvas WebGL Three.js PBR Studio */}
-      <div ref={mountRef} className="w-full h-full absolute inset-0 cursor-grab active:cursor-grabbing" />
+      <div ref={mountRef} className="w-full h-full absolute inset-0 cursor-grab active:cursor-grabbing z-10" />
 
       {/* Barre d'Outils Supérieure : Régie Caméra TV */}
       <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-20">
