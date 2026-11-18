@@ -34,11 +34,15 @@ export default function GameShow3D({
     if (reaction === 'victory') return getAssetPath('/videos/tv_show_victoire.mp4');
     if (reaction === 'correct') return getAssetPath('/videos/tv_show_celebration.mp4');
     if (reaction === 'wrong' || reaction === 'defeat') return getAssetPath('/videos/tv_show_defeat.mp4');
+    if (reaction === 'joker_5050') return getAssetPath('/videos/tv_show_joker_5050.mp4');
+    if (reaction === 'joker_public') return getAssetPath('/videos/tv_show_joker_public.mp4');
+    if (reaction === 'joker_sar') return getAssetPath('/videos/tv_show_joker_sar.mp4');
     if (reaction === 'joker') return getAssetPath('/videos/tv_show_joker.mp4');
     if (reaction === 'suspense') return getAssetPath('/videos/tv_show_suspense_intense.mp4');
     if (reaction === 'pressure') return getAssetPath('/videos/tv_show_pressure.mp4');
-    if (reaction === 'focus') return getAssetPath('/videos/tv_show_focus.mp4');
-    return getAssetPath('/videos/tv_show_intro.mp4');
+    if (reaction === 'speaking' || reaction === 'intro_presentation') return getAssetPath('/videos/tv_show_intro.mp4');
+    // En attente / écoute : Henri bouche fermée attentif et concentré
+    return getAssetPath('/videos/tv_show_focus.mp4');
   };
 
   const [currentVideo, setCurrentVideo] = useState(getVideoSrc());
@@ -46,6 +50,10 @@ export default function GameShow3D({
   useEffect(() => {
     const nextSrc = getVideoSrc();
     setCurrentVideo(nextSrc);
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+      videoRef.current.play().catch(() => {});
+    }
   }, [reaction]);
 
   // Célébrations interactives (confettis, sons)
@@ -281,14 +289,14 @@ export default function GameShow3D({
           src={currentVideo}
           poster={getAssetPath('/images/pixar_millionaire_dark_studio.jpg')}
           autoPlay
-          loop={reaction === 'idle' || reaction === 'speaking'}
+          loop={reaction === 'idle' || reaction === 'speaking' || reaction === 'focus'}
           muted
           playsInline
           className="w-full h-full object-cover object-[center_26%] filter saturate-[1.08] contrast-[1.04]"
           onEnded={() => {
-            // Revenir à la boucle d'intro si la célébration ou l'erreur se termine
-            if (reaction !== 'idle' && reaction !== 'speaking' && reaction !== 'victory') {
-              setCurrentVideo(getAssetPath('/videos/tv_show_intro.mp4'));
+            // Revenir à l'écoute attentive bouche fermée si un joker ou une réplique se termine
+            if (reaction !== 'focus' && reaction !== 'victory') {
+              setCurrentVideo(getAssetPath('/videos/tv_show_focus.mp4'));
             }
           }}
           onError={(e) => {

@@ -22,7 +22,8 @@ import {
   Star,
   Award,
   AlertTriangle,
-  Send
+  Send,
+  ChevronRight
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import GameShow3D from './GameShow3D';
@@ -102,6 +103,7 @@ function TvGameShowArenaContent({
   // TV Intro / Générique State
   const [isShowingIntro, setIsShowingIntro] = useState(true);
   const [isPixarMode, setIsPixarMode] = useState(true);
+  const [isAuroreBriefingOpen, setIsAuroreBriefingOpen] = useState(false);
 
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -193,21 +195,35 @@ function TvGameShowArenaContent({
   useEffect(() => {
     if (isShowingIntro) {
       setReaction('speaking');
-      setHostDialogue(`🎬 Générique TV : « ${meta.title} » en direct du studio HECh !`);
-      sounds.playTheme(showType);
-      
-      const timerVoice = setTimeout(() => {
-        sounds.playVoice(`intro_${showType}`);
-      }, 700);
+      if (showType === 'millionnaire') {
+        setHostDialogue("🎙️ Henri : « Bienvenue sur le plateau de QUI VEUT GAGNER DES CRÉDITS ! 10 paliers, 60 crédits ECTS en jeu ! »");
+        sounds.playTheme('millionnaire');
+        const timerVoice = setTimeout(() => {
+          sounds.playVoice('intro_presentation_show', () => {
+            setIsShowingIntro(false);
+          });
+        }, 800);
+        return () => {
+          clearTimeout(timerVoice);
+          sounds.stopAllVoice();
+        };
+      } else {
+        setHostDialogue(`🎬 Générique TV : « ${meta.title} » en direct du studio HECh !`);
+        sounds.playTheme(showType);
+        
+        const timerVoice = setTimeout(() => {
+          sounds.playVoice(`intro_${showType}`);
+        }, 700);
 
-      const timerAutoStart = setTimeout(() => {
-        setIsShowingIntro(false);
-      }, 4300);
+        const timerAutoStart = setTimeout(() => {
+          setIsShowingIntro(false);
+        }, 4300);
 
-      return () => {
-        clearTimeout(timerVoice);
-        clearTimeout(timerAutoStart);
-      };
+        return () => {
+          clearTimeout(timerVoice);
+          clearTimeout(timerAutoStart);
+        };
+      }
     }
   }, [isShowingIntro, showType]);
 
@@ -257,10 +273,16 @@ function TvGameShowArenaContent({
 
         // Psychological pressure dialogue by Henri after 12s of hesitation in Tier 2/3
         if (next === 12 && currentQ.tier === 2) {
-          sounds.playVoice("pressure_hesitate_tier2");
+          setReaction('pressure');
+          sounds.playVoice("pressure_hesitate_tier2", () => {
+            setReaction('focus');
+          });
           setHostDialogue("🎙️ Henri : « Prenez votre temps... Mais rappelez-vous qu'à ce niveau de la pyramide, chaque seconde d'hésitation fait monter la pression ! »");
         } else if (next === 10 && currentQ.tier === 3) {
-          sounds.playVoice("pressure_hesitate_tier3");
+          setReaction('pressure');
+          sounds.playVoice("pressure_hesitate_tier3", () => {
+            setReaction('focus');
+          });
           setHostDialogue("🎙️ Henri : « Le studio est plongé dans le noir... Sentez-vous la tension ? Réfléchissez bien avant de verrouiller votre choix définitif ! »");
         }
 
@@ -281,16 +303,7 @@ function TvGameShowArenaContent({
     setAudiencePoll(null);
     setSarTip(null);
     if (showType === 'millionnaire') {
-      if (currentIdx === 0) setReaction('intro');
-      else if (currentIdx === 1) setReaction('focus');
-      else if (currentIdx === 2) setReaction('pressure');
-      else if (currentIdx === 3) setReaction('focus');
-      else if (currentIdx === 4) setReaction('pressure');
-      else if (currentIdx === 5) setReaction('pressure');
-      else if (currentIdx === 6) setReaction('suspense');
-      else if (currentIdx === 7) setReaction('pressure');
-      else if (currentIdx === 8) setReaction('suspense');
-      else setReaction('suspense');
+      setReaction(currentIdx >= 7 ? 'pressure' : 'speaking');
     } else {
       setReaction('speaking');
     }
@@ -353,7 +366,11 @@ function TvGameShowArenaContent({
     }
 
     setHostDialogue(dialogueText);
-    sounds.playVoice(voiceKey);
+    sounds.playVoice(voiceKey, () => {
+      // Synchronisation labiale : dès que la phrase est finie de prononcer, Henri ferme la bouche
+      // et passe en posture d'écoute attentive et concentrée !
+      setReaction('focus');
+    });
 
   }, [currentIdx, showType, gameOver, isShowingIntro]);
 
@@ -600,7 +617,7 @@ function TvGameShowArenaContent({
     if (joker50Used || isAnswerLocked || !isMultipleChoice) return;
     sounds.playPop();
     setJoker50Used(true);
-    setReaction('joker');
+    setReaction('joker_5050');
 
     const wrongIndexes = currentQ.options
       .map((_, idx) => idx)
@@ -609,14 +626,16 @@ function TvGameShowArenaContent({
     const toHide = wrongIndexes.sort(() => Math.random() - 0.5).slice(0, 2);
     setHiddenOptions(toHide);
     setHostDialogue("⚡ « L'ordinateur élimine immédiatement deux mauvaises propositions ! Plus que 2 choix ! »");
-    sounds.playVoice("joker_5050");
+    sounds.playVoice("joker_5050", () => {
+      setReaction('focus');
+    });
   };
 
   const handleUseAudience = () => {
     if (jokerAudienceUsed || isAnswerLocked || !isMultipleChoice) return;
     sounds.playPop();
     setJokerAudienceUsed(true);
-    setReaction('joker');
+    setReaction('joker_public');
 
     const poll = currentQ.options.map((_, idx) => {
       if (idx === currentQ.correctIndex) {
@@ -627,21 +646,26 @@ function TvGameShowArenaContent({
 
     setAudiencePoll(poll);
     setHostDialogue("👥 « Le public en studio vote sur ses boîtiers électroniques ! Regardez les résultats ! »");
-    sounds.playVoice("joker_public");
+    sounds.playVoice("joker_public", () => {
+      setReaction('focus');
+    });
   };
 
   const handleUseSar = () => {
     if (jokerSarUsed || isAnswerLocked) return;
     sounds.playPop();
     setJokerSarUsed(true);
+    setReaction('joker_sar');
 
     const tip = currentQ.explanation || "Analysez attentivement la racine du verbe et isolez la consigne de son contexte !";
     setSarTip(tip);
-    setHostDialogue("📞 « Liaison établie avec le SAR de la HECh ! Écoutons le conseil pédagogique en direct ! »");
+    setHostDialogue("📞 « Liaison téléphonique établie avec le SAR de la HECh ! Écoutons le professeur référent en direct ! »");
     
     sounds.playVoice("joker_sar", () => {
       const tipVoice = showType === 'champion' ? "sar_tip_ebbinghaus" : "sar_tip_default";
-      sounds.playVoice(tipVoice);
+      sounds.playVoice(tipVoice, () => {
+        setReaction('focus');
+      });
     });
   };
 
@@ -1034,8 +1058,8 @@ function TvGameShowArenaContent({
           {/* BRIEFING OFFICIEL D'AURORE AU DÉBUT DU JEU TV (Scénario de l'Escape Game, Enjeu & Règles) */}
           <AuroreGameBriefingModal
             gameId={showType}
-            isOpen={isShowingIntro}
-            onClose={() => setIsShowingIntro(false)}
+            isOpen={showType === 'millionnaire' ? isAuroreBriefingOpen : isShowingIntro}
+            onClose={() => showType === 'millionnaire' ? setIsAuroreBriefingOpen(false) : setIsShowingIntro(false)}
           />
         </div>
 
@@ -1053,8 +1077,86 @@ function TvGameShowArenaContent({
               </div>
             )}
 
-            {/* Game Over Screen WITH HALL OF FAME LEADERBOARD */}
-            {gameOver ? (
+            {/* 0. Écran de Présentation Officielle WWTBAM (Générique TV & Présentation de l'émission par Henri) */}
+            {isShowingIntro && showType === 'millionnaire' ? (
+              <div className="max-w-4xl mx-auto w-full p-5 sm:p-6 rounded-3xl bg-slate-900/95 backdrop-blur-xl border border-amber-500/30 shadow-[0_0_40px_rgba(245,158,11,0.15)] flex flex-col items-center text-center space-y-4 animate-in fade-in zoom-in-95 duration-400">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono font-bold uppercase tracking-wider">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-spin" style={{ animationDuration: '6s' }} />
+                  <span>Plateau TV Officiel HECh Broadcast • Présenté par Henri</span>
+                </div>
+
+                <div className="space-y-1">
+                  <h1 className="text-2xl sm:text-3xl font-extrabold font-lexend text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-500 drop-shadow-md">
+                    QUI VEUT GAGNER DES CRÉDITS ?
+                  </h1>
+                  <p className="text-xs sm:text-sm text-slate-300 max-w-2xl font-medium">
+                    L'arène est plongée dans le noir, le halo zénithal se focalise sur vous. 10 paliers d'exigence académique pour conquérir les 60 crédits ECTS !
+                  </p>
+                </div>
+
+                {/* 3 Cartes de Règles Clés */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-2xl text-left">
+                  <div className="p-3 rounded-2xl bg-slate-800/80 border border-slate-700/80 flex items-start gap-2.5">
+                    <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400 font-bold text-sm shrink-0">
+                      🏆 10
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-white">10 Paliers</h4>
+                      <p className="text-[11px] text-slate-400 leading-tight mt-0.5">De 6 à 60 ECTS. Difficulté croissante des consignes.</p>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-2xl bg-slate-800/80 border border-slate-700/80 flex items-start gap-2.5">
+                    <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 font-bold text-sm shrink-0">
+                      🛡️ 2
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-white">Paliers Sécurisés</h4>
+                      <p className="text-[11px] text-slate-400 leading-tight mt-0.5">18 ECTS (Q3) et 42 ECTS (Q7) garantis à vie.</p>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-2xl bg-slate-800/80 border border-slate-700/80 flex items-start gap-2.5">
+                    <div className="p-2 rounded-xl bg-purple-500/20 text-purple-400 font-bold text-sm shrink-0">
+                      🃏 3
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-white">3 Jokers</h4>
+                      <p className="text-[11px] text-slate-400 leading-tight mt-0.5">50/50, Vote du Public et Appel au SAR.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Host Dialogue Prompter en direct pendant la présentation */}
+                <div className="w-full max-w-2xl bg-slate-950/80 border border-indigo-500/40 rounded-2xl px-4 py-2.5 flex items-center gap-3">
+                  <Volume2 className="w-4 h-4 text-amber-400 shrink-0 animate-pulse" />
+                  <p className="text-xs font-lexend text-amber-100 text-left italic">
+                    {hostDialogue}
+                  </p>
+                </div>
+
+                {/* Boutons d'action */}
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+                  <button
+                    onClick={handleStartFromIntro}
+                    className="px-6 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-xs sm:text-sm transition transform hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(245,158,11,0.4)] cursor-pointer flex items-center gap-2"
+                  >
+                    <span>Lancer la Première Question</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      sounds.playPop();
+                      setIsAuroreBriefingOpen(true);
+                    }}
+                    className="px-4 py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
+                  >
+                    <span>ℹ️ Briefing Aurore</span>
+                  </button>
+                </div>
+              </div>
+            ) : gameOver ? (
               <div className="text-center py-4 animate-in zoom-in-95 duration-400">
                 {isGameLost ? (
                   <div className="max-w-xl mx-auto space-y-4">
