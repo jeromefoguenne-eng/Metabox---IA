@@ -359,6 +359,29 @@ export default function Courtroom3DCanvas({
   useEffect(() => { audienceStateRef.current = audienceState; }, [audienceState]);
   useEffect(() => { cameraViewRef.current = cameraView; }, [cameraView]);
 
+  // Détermination de la source vidéo broadcast Wan 2.1 selon les interventions et plans de caméra
+  const getCourtVideoSrc = () => {
+    if (judgeState === 'gavel' || (audienceShoutText && (audienceShoutText.includes('JUGE') || audienceShoutText.includes('Juge') || audienceShoutText.includes('Silence') || audienceShoutText.includes('SILENCE'))) || cameraView === 'JUDGE') {
+      return getAssetPath('/videos/tribunal_silence.mp4');
+    }
+    if (prosecutorState === 'speaking' || prosecutorState === 'pointing' || prosecutorState === 'angry' || cameraView === 'PROSECUTION') {
+      return getAssetPath('/videos/tribunal_procureur.mp4');
+    }
+    if (witnessState === 'speaking' || witnessState === 'relieved' || witnessState === 'nervous' || cameraView === 'WITNESS') {
+      return getAssetPath('/videos/tribunal_verdict_maxime.mp4');
+    }
+    if (audienceState === 'murmur' || audienceShoutText || cameraView === 'AUDIENCE') {
+      return getAssetPath('/videos/tribunal_foule.mp4');
+    }
+    return getAssetPath('/videos/tribunal_intro.mp4');
+  };
+
+  const [courtVideoSrc, setCourtVideoSrc] = useState(getCourtVideoSrc());
+
+  useEffect(() => {
+    setCourtVideoSrc(getCourtVideoSrc());
+  }, [judgeState, prosecutorState, witnessState, audienceState, audienceShoutText, judgeReaction, cameraView]);
+
   const handleMouseMove = (e) => {
     if (!mountRef.current) return;
     const rect = mountRef.current.getBoundingClientRect();
@@ -1914,8 +1937,8 @@ export default function Courtroom3DCanvas({
       onMouseMove={handleMouseMove}
       className="relative w-full h-full min-h-[480px] bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 shadow-2xl"
     >
-      {/* 1. Mode Pixar Broadcast 2K (Vue d'Ensemble Solennelle du Tribunal HECh) */}
-      {cameraView === 'TV_WIDE' && (
+      {/* 1. Mode Pixar Broadcast Wan 2.1 (Animation Vivante du Tribunal) */}
+      {(cameraView === 'TV_WIDE' || cameraView === 'JUDGE' || cameraView === 'PROSECUTION' || cameraView === 'WITNESS' || cameraView === 'AUDIENCE') && (
         <div 
           className="absolute inset-0 w-full h-full pointer-events-none transition-transform duration-300 ease-out z-0"
           style={{
@@ -1923,10 +1946,22 @@ export default function Courtroom3DCanvas({
             transformOrigin: 'center center'
           }}
         >
-          <img
-            src={getAssetPath('/images/pixar_courtroom_arena_2k.webp')}
-            alt="Tribunal Universitaire Pixar HECh"
+          <video
+            key={courtVideoSrc}
+            src={courtVideoSrc}
+            autoPlay
+            loop={!judgeState || judgeState === 'idle'}
+            muted
+            playsInline
             className="w-full h-full object-cover object-center filter saturate-[1.06] contrast-[1.03]"
+            onEnded={() => {
+              // Retour à l'ambiance vivante de la salle
+              setCourtVideoSrc(getAssetPath('/videos/tribunal_foule.mp4'));
+            }}
+            onError={(e) => {
+              console.warn("[Courtroom3DCanvas] Fallback vers vidéo intro :", e);
+              setCourtVideoSrc(getAssetPath('/videos/tribunal_intro.mp4'));
+            }}
           />
           <div 
             className="absolute inset-0 pointer-events-none transition-opacity duration-500"

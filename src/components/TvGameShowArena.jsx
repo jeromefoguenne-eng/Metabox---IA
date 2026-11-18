@@ -587,6 +587,7 @@ function TvGameShowArenaContent({
     if (joker50Used || isAnswerLocked || !isMultipleChoice) return;
     sounds.playPop();
     setJoker50Used(true);
+    setReaction('joker');
 
     const wrongIndexes = currentQ.options
       .map((_, idx) => idx)
@@ -602,6 +603,7 @@ function TvGameShowArenaContent({
     if (jokerAudienceUsed || isAnswerLocked || !isMultipleChoice) return;
     sounds.playPop();
     setJokerAudienceUsed(true);
+    setReaction('joker');
 
     const poll = currentQ.options.map((_, idx) => {
       if (idx === currentQ.correctIndex) {
@@ -1010,7 +1012,7 @@ function TvGameShowArenaContent({
       <div className="flex-1 flex flex-col relative overflow-hidden">
         
         {/* Upper Half: 3D TV Studio Scene (100% Raccord & Temps Réel) */}
-        <div className="h-[48vh] min-h-[300px] w-full relative bg-slate-950 overflow-hidden shadow-2xl">
+        <div className="h-[52vh] min-h-[340px] w-full relative bg-slate-950 overflow-hidden shadow-2xl">
           <GameShow3D 
             reaction={reaction} 
             theme={showType}

@@ -275,27 +275,53 @@ export default function EscapeGameAurore({ onClose }) {
         {currentStage !== 'room_west' && (
           <div className="lg:col-span-5 border-r border-slate-800/80 bg-slate-950 p-4 flex flex-col justify-between relative overflow-hidden">
             <div className="flex-1 w-full relative rounded-3xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-950">
-              {/* Personnage 3D Temps Réel Animé Style Arcane (Three.js 60 FPS) */}
-              <PixarStyleScene3D 
-                theme={
-                  currentStage === 'room_north' ? 'factcheck' :
-                  currentStage === 'room_south' ? 'datacenter' :
-                  currentStage === 'room_east' ? 'promptwars' :
-                  currentStage === 'boss' ? 'boss' : 'hub'
-                }
-                isAlert={currentStage === 'boss' || timeLeft < 15 * 60}
-                characterMood={
-                  totalKeysObtained === 4 ? 'victorious' :
-                  currentStage === 'boss' ? 'worried' : 'thinking'
-                }
-              />
+              {/* Animation Pixar Wan 2.1 Vivante ou Rendu 3D Interactif */}
+              {isPixarVideoMode ? (
+                <div className="w-full h-full relative overflow-hidden bg-slate-950">
+                  <video
+                    src={getAssetPath('/videos/aurore_presentatrice.mp4')}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover object-center filter saturate-[1.08] contrast-[1.04]"
+                    onError={() => setIsPixarVideoMode(false)}
+                  />
+                  <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_60%,rgba(13,11,26,0.65)_100%)]" />
+                </div>
+              ) : (
+                /* Personnage 3D Temps Réel Animé Style Arcane (Three.js 60 FPS) */
+                <PixarStyleScene3D 
+                  theme={
+                    currentStage === 'room_north' ? 'factcheck' :
+                    currentStage === 'room_south' ? 'datacenter' :
+                    currentStage === 'room_east' ? 'promptwars' :
+                    currentStage === 'boss' ? 'boss' : 'hub'
+                  }
+                  isAlert={currentStage === 'boss' || timeLeft < 15 * 60}
+                  characterMood={
+                    totalKeysObtained === 4 ? 'victorious' :
+                    currentStage === 'boss' ? 'worried' : 'thinking'
+                  }
+                />
+              )}
 
-              {/* A.U.R.O.R.E. Overlay Badge Canonique Arcane */}
-              <div className="absolute top-4 left-4 z-20 bg-slate-950/90 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-cyan-400/50 flex items-center gap-2 shadow-lg shadow-purple-950/50">
-                <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping" />
-                <span className="text-xs font-mono font-bold text-cyan-200">
-                  A.U.R.O.R.E. (Animée 3D Temps Réel 60 FPS)
-                </span>
+              {/* A.U.R.O.R.E. Overlay Badge & Sélecteur Vidéo / 3D */}
+              <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none">
+                <div className="bg-slate-950/90 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-cyan-400/50 flex items-center gap-2 shadow-lg shadow-purple-950/50">
+                  <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping" />
+                  <span className="text-xs font-mono font-bold text-cyan-200">
+                    {isPixarVideoMode ? 'A.U.R.O.R.E. · Animation Wan 2.1 Pixar' : 'A.U.R.O.R.E. · 3D Temps Réel 60 FPS'}
+                  </span>
+                </div>
+
+                <button
+                  onClick={() => setIsPixarVideoMode(!isPixarVideoMode)}
+                  className="pointer-events-auto px-2.5 py-1 rounded-xl bg-slate-900/85 hover:bg-slate-800 text-[10px] font-mono font-bold text-cyan-300 border border-cyan-500/40 transition cursor-pointer backdrop-blur-md shadow-md"
+                  title="Basculer entre la vidéo animée Pixar Wan 2.1 et le rendu 3D interactif"
+                >
+                  {isPixarVideoMode ? '🧊 Vue 3D' : '🎬 Vidéo Wan'}
+                </button>
               </div>
 
               {/* Visualiseur d'ondes audio holographique en bas */}
