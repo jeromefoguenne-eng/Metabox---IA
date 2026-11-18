@@ -33,8 +33,11 @@ export default function GameShow3D({
   const getVideoSrc = () => {
     if (reaction === 'victory') return getAssetPath('/videos/tv_show_victoire.mp4');
     if (reaction === 'correct') return getAssetPath('/videos/tv_show_celebration.mp4');
-    if (reaction === 'wrong') return getAssetPath('/videos/tv_show_wrong.mp4');
+    if (reaction === 'wrong' || reaction === 'defeat') return getAssetPath('/videos/tv_show_defeat.mp4');
     if (reaction === 'joker') return getAssetPath('/videos/tv_show_joker.mp4');
+    if (reaction === 'suspense') return getAssetPath('/videos/tv_show_suspense_intense.mp4');
+    if (reaction === 'pressure') return getAssetPath('/videos/tv_show_pressure.mp4');
+    if (reaction === 'focus') return getAssetPath('/videos/tv_show_focus.mp4');
     return getAssetPath('/videos/tv_show_intro.mp4');
   };
 
@@ -276,7 +279,7 @@ export default function GameShow3D({
           ref={videoRef}
           key={currentVideo}
           src={currentVideo}
-          poster={getAssetPath('/images/pixar_studio_official_preview.jpg')}
+          poster={getAssetPath('/images/pixar_millionaire_dark_studio.jpg')}
           autoPlay
           loop={reaction === 'idle' || reaction === 'speaking'}
           muted

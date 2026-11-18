@@ -280,7 +280,20 @@ function TvGameShowArenaContent({
     setHiddenOptions([]);
     setAudiencePoll(null);
     setSarTip(null);
-    setReaction('speaking');
+    if (showType === 'millionnaire') {
+      if (currentIdx === 0) setReaction('intro');
+      else if (currentIdx === 1) setReaction('focus');
+      else if (currentIdx === 2) setReaction('pressure');
+      else if (currentIdx === 3) setReaction('focus');
+      else if (currentIdx === 4) setReaction('pressure');
+      else if (currentIdx === 5) setReaction('pressure');
+      else if (currentIdx === 6) setReaction('suspense');
+      else if (currentIdx === 7) setReaction('pressure');
+      else if (currentIdx === 8) setReaction('suspense');
+      else setReaction('suspense');
+    } else {
+      setReaction('speaking');
+    }
     setTimeLeft(showType === 'champion' ? 12 : showType === 'concours' ? 18 : 15);
     setHasBuzzed(showType !== 'champion');
 
@@ -705,6 +718,7 @@ function TvGameShowArenaContent({
 
     if (showType === 'millionnaire') {
       const isHighTier = (currentQ.tier || 1) >= 2;
+      setReaction('suspense');
       setHostDialogue(`🎙️ Henri : « C'est votre dernier mot pour ${currentQ.rewardEcts || 6} crédits ECTS ? ... Suspense ... »`);
       // Brief heartbeat silence before explosion or victory
       setTimeout(() => sounds.stopSuspense(), 1200);
@@ -718,8 +732,7 @@ function TvGameShowArenaContent({
         sounds.playApplause();
         sounds.playSuccess();
         
-        const randomCorrect = `feedback_correct_${(currentIdx % 3) + 1}`;
-        sounds.playVoice(randomCorrect);
+        sounds.playVoice('feedback_correct_millionaire');
         
         const earned = showType === 'concours' ? 12 : (currentQ.rewardEcts || 6);
         setScoreEcts(prev => prev + earned);
@@ -763,8 +776,7 @@ function TvGameShowArenaContent({
         sounds.playBuzzer();
         sounds.playGroan();
 
-        const randomWrong = `feedback_wrong_${(currentIdx % 2) + 1}`;
-        sounds.playVoice(randomWrong);
+        sounds.playVoice('feedback_wrong_millionaire');
 
         if (showType === 'millionnaire') {
           setIsGameLost(true);
