@@ -42,20 +42,20 @@ export default function GameShow3D({
     if (reaction === 'suspense') return getAssetPath('/videos/tv_show_suspense_intense.mp4');
     if (reaction === 'pressure') return getAssetPath('/videos/tv_show_pressure.mp4');
 
-    // Quand Henri parle pour poser une question : gestuelle adaptée au palier !
+    // Quand Henri parle pour poser une question : plans longs différenciés par palier !
     if (reaction === 'speaking' || reaction === 'intro_presentation') {
       if (reaction === 'intro_presentation') return getAssetPath('/videos/tv_show_intro.mp4');
 
-      // Paliers 1 à 3 (Questions faciles - Échauffement & accueil détendu)
+      // Paliers 1 à 3 (Questions faciles - Plan Long Accueil & Détente)
       if (currentQuestionIdx <= 2) {
-        return getAssetPath('/videos/tv_show_intro.mp4');
+        return getAssetPath('/videos/tv_show_q_easy.mp4');
       }
-      // Paliers 4 à 7 (Questions intermédiaires - Analyse méthodique & pédagogie)
+      // Paliers 4 à 7 (Questions intermédiaires - Plan Long Réflexion Analytique)
       if (currentQuestionIdx <= 6) {
-        return getAssetPath('/videos/tv_show_pressure.mp4');
+        return getAssetPath('/videos/tv_show_q_medium.mp4');
       }
-      // Paliers 8 à 10 (Sommet de la pyramide - Tension dramatique maximale & silence)
-      return getAssetPath('/videos/tv_show_suspense_intense.mp4');
+      // Paliers 8 à 10 (Sommet de la pyramide - Plan Long Suspense Ultime)
+      return getAssetPath('/videos/tv_show_q_hard.mp4');
     }
 
     // En attente / écoute : Henri bouche fermée attentif et concentré
@@ -311,7 +311,7 @@ export default function GameShow3D({
           ref={videoRef}
           key={currentVideo}
           src={currentVideo}
-          poster={getAssetPath('/images/pixar_millionaire_dark_studio.jpg')}
+          poster={getAssetPath('/images/henri_real_logo_plan1.jpg')}
           autoPlay
           loop={reaction === 'idle' || reaction === 'speaking' || reaction === 'focus' || reaction === 'pressure'}
           muted

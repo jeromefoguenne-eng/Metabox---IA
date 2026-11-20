@@ -334,15 +334,23 @@ class SoundManager {
   // --- Bruitages de Studio Télévisé ---
   playApplause() {
     if (this.muted) return;
-    const audio = this.playAudioFile('/audio/sfx/applause_cheers.mp3', 0.85);
+    const audio = this.playAudioFile('/audio/sfx/applause_cheers.mp3', 1.0);
     if (!audio) {
       this.playSynthApplause();
     }
   }
 
+  playBigOvation() {
+    if (this.muted) return;
+    const audio = this.playAudioFile('/audio/sfx/crowd_ovation_big.mp3', 1.0);
+    if (!audio) {
+      this.playApplause();
+    }
+  }
+
   playBuzzer() {
     if (this.muted) return;
-    const audio = this.playAudioFile('/audio/sfx/buzzer.mp3', 0.9);
+    const audio = this.playAudioFile('/audio/sfx/buzzer.mp3', 0.85);
     if (!audio) {
       this.playSynthBuzzer();
     }
@@ -350,7 +358,7 @@ class SoundManager {
 
   playSuccess() {
     if (this.muted) return;
-    const audio = this.playAudioFile('/audio/sfx/correct_jingle.mp3', 0.85);
+    const audio = this.playAudioFile('/audio/sfx/correct_jingle.mp3', 0.8);
     if (!audio) {
       this.playSynthSuccess();
     }
@@ -358,7 +366,7 @@ class SoundManager {
 
   playGroan() {
     if (this.muted) return;
-    const audio = this.playAudioFile('/audio/sfx/groan_disappointment.mp3', 0.85);
+    const audio = this.playAudioFile('/audio/sfx/groan_disappointment.mp3', 1.0);
     if (!audio) {
       this.playSynthGroan();
     }

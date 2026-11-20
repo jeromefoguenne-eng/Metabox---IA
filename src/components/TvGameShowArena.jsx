@@ -753,10 +753,18 @@ function TvGameShowArenaContent({
     setTimeout(() => {
       if (isCorrect) {
         setReaction('correct');
-        sounds.playApplause();
+        const isBigTier = currentIdx === 2 || currentIdx === 6 || currentIdx === 9;
+        if (isBigTier) {
+          sounds.playBigOvation();
+        } else {
+          sounds.playApplause();
+        }
         sounds.playSuccess();
         
-        sounds.playVoice('feedback_correct_millionaire');
+        // Laisser exploser les applaudissements du public 450ms avant le commentaire humain du présentateur
+        sounds.scheduleTimeout(() => {
+          sounds.playVoice('feedback_correct_millionaire');
+        }, 450);
         
         const earned = showType === 'concours' ? 12 : (currentQ.rewardEcts || 6);
         setScoreEcts(prev => prev + earned);
@@ -800,7 +808,10 @@ function TvGameShowArenaContent({
         sounds.playBuzzer();
         sounds.playGroan();
 
-        sounds.playVoice('feedback_wrong_millionaire');
+        // Laisser entendre la déception collective du public 550ms avant la réaction empathique humaine
+        sounds.scheduleTimeout(() => {
+          sounds.playVoice('feedback_wrong_millionaire');
+        }, 550);
 
         if (showType === 'millionnaire') {
           setIsGameLost(true);
@@ -815,10 +826,8 @@ function TvGameShowArenaContent({
 
           if (safetyBankedEcts > 0) {
             setHostDialogue(`❌ ÉLIMINATION ! Mauvaise réponse... C'était : « ${currentQ.options[currentQ.correctIndex]} ». Mais grâce à votre palier de sécurité garanti, vous repartez avec ${safetyBankedEcts} crédits ECTS !`);
-            sounds.speakHost(`Erreur fatale sur le verbe ${currentQ.verb || ''}. Mais vous ne repartez pas les mains vides : vous conservez vos ${safetyBankedEcts} crédits garantis !`);
           } else {
             setHostDialogue(`❌ ÉLIMINATION DIRECTE avant le premier palier ! Mauvaise réponse... C'était : « ${currentQ.options[currentQ.correctIndex]} ». Vous repartez avec 0 crédit ECTS.`);
-            sounds.speakHost(`Erreur fatale avant le premier palier sur le verbe ${currentQ.verb || ''} ! Vous repartez sans crédit.`);
           }
           
           setTimeout(() => {
@@ -851,7 +860,7 @@ function TvGameShowArenaContent({
     } else {
       setGameOver(true);
       setReaction('victory');
-      sounds.playApplause();
+      sounds.playBigOvation();
       sounds.playFanfare();
 
       const victoryVoice = showType === 'roue' ? "roue_victory_10" : `victory_${showType}`;
