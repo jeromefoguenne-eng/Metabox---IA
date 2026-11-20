@@ -19,9 +19,10 @@ import { sounds } from '../utils/soundEffects';
  * - Gerbes de confettis dorés et effets sonores synchronisés.
  */
 export default function GameShow3D({
-  reaction = 'idle', // 'idle' | 'speaking' | 'correct' | 'wrong' | 'victory'
+  reaction = 'idle', // 'idle' | 'speaking' | 'focus' | 'correct' | 'wrong' | 'victory' | 'suspense' | 'pressure' | 'joker_5050' | 'joker_public' | 'joker_sar'
   theme = 'millionnaire',
-  themeColor = '#38bdf8'
+  themeColor = '#38bdf8',
+  currentQuestionIdx = 0
 }) {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
@@ -29,7 +30,7 @@ export default function GameShow3D({
   const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
   const reactionPrevRef = useRef(reaction);
 
-  // Détermination de la source vidéo selon la réaction
+  // Détermination de la source vidéo selon la réaction et le palier de questions (Zéro répétition)
   const getVideoSrc = () => {
     if (reaction === 'victory') return getAssetPath('/videos/tv_show_victoire.mp4');
     if (reaction === 'correct') return getAssetPath('/videos/tv_show_celebration.mp4');
@@ -40,7 +41,23 @@ export default function GameShow3D({
     if (reaction === 'joker') return getAssetPath('/videos/tv_show_joker.mp4');
     if (reaction === 'suspense') return getAssetPath('/videos/tv_show_suspense_intense.mp4');
     if (reaction === 'pressure') return getAssetPath('/videos/tv_show_pressure.mp4');
-    if (reaction === 'speaking' || reaction === 'intro_presentation') return getAssetPath('/videos/tv_show_intro.mp4');
+
+    // Quand Henri parle pour poser une question : gestuelle adaptée au palier !
+    if (reaction === 'speaking' || reaction === 'intro_presentation') {
+      if (reaction === 'intro_presentation') return getAssetPath('/videos/tv_show_intro.mp4');
+
+      // Paliers 1 à 3 (Questions faciles - Échauffement & accueil détendu)
+      if (currentQuestionIdx <= 2) {
+        return getAssetPath('/videos/tv_show_intro.mp4');
+      }
+      // Paliers 4 à 7 (Questions intermédiaires - Analyse méthodique & pédagogie)
+      if (currentQuestionIdx <= 6) {
+        return getAssetPath('/videos/tv_show_pressure.mp4');
+      }
+      // Paliers 8 à 10 (Sommet de la pyramide - Tension dramatique maximale & silence)
+      return getAssetPath('/videos/tv_show_suspense_intense.mp4');
+    }
+
     // En attente / écoute : Henri bouche fermée attentif et concentré
     return getAssetPath('/videos/tv_show_focus.mp4');
   };
@@ -54,7 +71,7 @@ export default function GameShow3D({
       videoRef.current.currentTime = 0;
       videoRef.current.play().catch(() => {});
     }
-  }, [reaction]);
+  }, [reaction, currentQuestionIdx]);
 
   // Célébrations interactives (confettis, sons)
   useEffect(() => {
@@ -273,13 +290,20 @@ export default function GameShow3D({
       className="w-full h-full relative select-none overflow-hidden bg-slate-950 flex items-center justify-center"
       style={{ minHeight: '320px' }}
     >
+      {/* Fond de décor de studio étendu pour les écrans ultra-larges */}
+      <img
+        src={getAssetPath('/images/pixar_millionaire_dark_studio.jpg')}
+        alt="Studio WWTBAM"
+        className="absolute inset-0 w-full h-full object-cover filter blur-sm brightness-[0.55] opacity-80 pointer-events-none"
+      />
+
       {/* =========================================================================
           1. MOTEUR VIDÉO BROADCAST WAN 2.1 (ANIMATION PIXAR VIVANTE EN CONTINU)
           ========================================================================= */}
       <div 
-        className="absolute inset-0 w-full h-full pointer-events-none transition-transform duration-300 ease-out"
+        className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none transition-transform duration-300 ease-out"
         style={{
-          transform: `translate3d(${mouseOffset.x * 8}px, ${mouseOffset.y * 5}px, 0) scale(1.02)`,
+          transform: `translate3d(${mouseOffset.x * 6}px, ${mouseOffset.y * 4}px, 0)`,
           transformOrigin: 'center center'
         }}
       >
@@ -289,10 +313,10 @@ export default function GameShow3D({
           src={currentVideo}
           poster={getAssetPath('/images/pixar_millionaire_dark_studio.jpg')}
           autoPlay
-          loop={reaction === 'idle' || reaction === 'speaking' || reaction === 'focus'}
+          loop={reaction === 'idle' || reaction === 'speaking' || reaction === 'focus' || reaction === 'pressure'}
           muted
           playsInline
-          className="w-full h-full object-cover object-[center_26%] filter saturate-[1.08] contrast-[1.04]"
+          className="h-full w-auto max-w-full object-contain filter saturate-[1.06] contrast-[1.04] drop-shadow-[0_15px_40px_rgba(0,0,0,0.85)]"
           onEnded={() => {
             // Revenir à l'écoute attentive bouche fermée si un joker ou une réplique se termine
             if (reaction !== 'focus' && reaction !== 'victory') {
@@ -301,7 +325,7 @@ export default function GameShow3D({
           }}
           onError={(e) => {
             console.warn("[GameShow3D] Fallback vers vidéo standard :", e);
-            setCurrentVideo(getAssetPath('/videos/tv_show_intro.mp4'));
+            setCurrentVideo(getAssetPath('/videos/tv_show_focus.mp4'));
           }}
         />
 

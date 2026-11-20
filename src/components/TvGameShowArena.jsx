@@ -1053,6 +1053,7 @@ function TvGameShowArenaContent({
             reaction={reaction} 
             theme={showType}
             themeColor={themeColor}
+            currentQuestionIdx={currentIdx}
           />
 
           {/* BRIEFING OFFICIEL D'AURORE AU DÉBUT DU JEU TV (Scénario de l'Escape Game, Enjeu & Règles) */}
