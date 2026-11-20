@@ -348,12 +348,6 @@ function TvGameShowArenaContent({
       const tierLevel = currentQ.tier || (isTier3 ? 3 : isTier2 ? 2 : 1);
       sounds.startSuspense(tierLevel);
 
-      if (currentQ.isSafetyTier) {
-        setTimeout(() => sounds.playVoice("tier_safety"), 4500);
-      } else if (currentQ.tier === 3 && currentIdx === 7) {
-        setTimeout(() => sounds.playVoice("tier_final"), 4500);
-      }
-
     } else if (showType === 'champion') {
       voiceKey = `q_meth_${currentIdx + 1}`;
       dialogueText = `🎙️ Henri : « Top chrono ! Question ${currentIdx + 1} de sciences cognitives : buzzez dès que vous êtes prêt ! »`;
@@ -763,7 +757,9 @@ function TvGameShowArenaContent({
         
         // Laisser exploser les applaudissements du public 450ms avant le commentaire humain du présentateur
         sounds.scheduleTimeout(() => {
-          sounds.playVoice('feedback_correct_millionaire');
+          sounds.playVoice('feedback_correct_millionaire', () => {
+            setReaction('focus');
+          });
         }, 450);
         
         const earned = showType === 'concours' ? 12 : (currentQ.rewardEcts || 6);

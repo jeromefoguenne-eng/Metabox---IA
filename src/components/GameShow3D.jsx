@@ -63,15 +63,78 @@ export default function GameShow3D({
   };
 
   const [currentVideo, setCurrentVideo] = useState(getVideoSrc());
+  const [prevVideo, setPrevVideo] = useState(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const silenceFramesRef = useRef(0);
+  const noVoiceFramesRef = useRef(0);
+
+  // Transition fluide sans flash noir (Crossfade 300ms entre deux plans de même esthétique)
+  const switchVideoSmoothly = (nextSrc) => {
+    setCurrentVideo((curr) => {
+      if (curr === nextSrc) return curr;
+      setPrevVideo(curr);
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setIsTransitioning(false);
+        setPrevVideo(null);
+      }, 320);
+      return nextSrc;
+    });
+  };
 
   useEffect(() => {
     const nextSrc = getVideoSrc();
-    setCurrentVideo(nextSrc);
+    silenceFramesRef.current = 0;
+    noVoiceFramesRef.current = 0;
+    switchVideoSmoothly(nextSrc);
     if (videoRef.current) {
-      videoRef.current.currentTime = 0;
+      videoRef.current.playbackRate = 1.0;
       videoRef.current.play().catch(() => {});
     }
   }, [reaction, currentQuestionIdx]);
+
+  // Synchronisation Audio -> Vidéo en temps réel (60 FPS via Web Audio AnalyserNode)
+  useEffect(() => {
+    let rafId;
+    const isVocalState = ['speaking', 'intro_presentation', 'pressure', 'joker_5050', 'joker_public', 'joker_sar'].includes(reaction);
+    const focusPath = getAssetPath('/videos/tv_show_focus.mp4');
+
+    const syncLoop = () => {
+      const vid = videoRef.current;
+      if (vid) {
+        const playingVoice = sounds.isVoicePlaying();
+        if (isVocalState) {
+          if (!playingVoice) {
+            noVoiceFramesRef.current += 1;
+            // Si la voix est arrêtée depuis > 300ms (~18 frames), basculer sur l'écoute silencieuse bouche fermée
+            if (noVoiceFramesRef.current > 18 && currentVideo !== focusPath) {
+              switchVideoSmoothly(focusPath);
+            }
+          } else {
+            noVoiceFramesRef.current = 0;
+            const amp = sounds.getRealVoiceAmplitude();
+            if (amp < 0.04) {
+              silenceFramesRef.current += 1;
+              // Pause respiratoire naturelle entre deux phrases : ralentir doucement le mouvement des lèvres
+              if (silenceFramesRef.current > 12) {
+                vid.playbackRate = 0.25;
+              }
+            } else {
+              silenceFramesRef.current = 0;
+              vid.playbackRate = 1.0;
+            }
+          }
+        } else {
+          // États silencieux ou célébrations/défaites : vitesse nominale 1.0
+          if (vid.playbackRate !== 1.0) vid.playbackRate = 1.0;
+        }
+      }
+      rafId = requestAnimationFrame(syncLoop);
+    };
+
+    rafId = requestAnimationFrame(syncLoop);
+    return () => cancelAnimationFrame(rafId);
+  }, [reaction, currentVideo]);
 
   // Célébrations interactives (confettis, sons)
   useEffect(() => {
@@ -290,15 +353,15 @@ export default function GameShow3D({
       className="w-full h-full relative select-none overflow-hidden bg-slate-950 flex items-center justify-center"
       style={{ minHeight: '320px' }}
     >
-      {/* Fond de décor de studio étendu pour les écrans ultra-larges */}
+      {/* Fond de décor de studio étendu (exactement la même esthétique maître) */}
       <img
-        src={getAssetPath('/images/pixar_millionaire_dark_studio.jpg')}
-        alt="Studio WWTBAM"
-        className="absolute inset-0 w-full h-full object-cover filter blur-sm brightness-[0.55] opacity-80 pointer-events-none"
+        src={getAssetPath('/images/henri_real_logo_plan1.jpg')}
+        alt="Studio WWTBAM HECh"
+        className="absolute inset-0 w-full h-full object-cover filter blur-md brightness-[0.45] opacity-85 pointer-events-none"
       />
 
       {/* =========================================================================
-          1. MOTEUR VIDÉO BROADCAST WAN 2.1 (ANIMATION PIXAR VIVANTE EN CONTINU)
+          1. MOTEUR VIDÉO BROADCAST WAN 2.1 (CROSSFADE SANS FAUX RACCORD + SYNC VOCALE)
           ========================================================================= */}
       <div 
         className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none transition-transform duration-300 ease-out"
@@ -307,25 +370,30 @@ export default function GameShow3D({
           transformOrigin: 'center center'
         }}
       >
+        {/* Vidéo sortante en fondu enchaîné (zéro flash noir lors du changement de plan) */}
+        {prevVideo && isTransitioning && (
+          <video
+            src={prevVideo}
+            autoPlay
+            muted
+            playsInline
+            className="absolute h-full w-auto max-w-full object-contain filter saturate-[1.06] contrast-[1.04] opacity-100 transition-opacity duration-300"
+          />
+        )}
+
         <video
           ref={videoRef}
           key={currentVideo}
           src={currentVideo}
           poster={getAssetPath('/images/henri_real_logo_plan1.jpg')}
           autoPlay
-          loop={reaction === 'idle' || reaction === 'speaking' || reaction === 'focus' || reaction === 'pressure'}
+          loop
           muted
           playsInline
-          className="h-full w-auto max-w-full object-contain filter saturate-[1.06] contrast-[1.04] drop-shadow-[0_15px_40px_rgba(0,0,0,0.85)]"
-          onEnded={() => {
-            // Revenir à l'écoute attentive bouche fermée si un joker ou une réplique se termine
-            if (reaction !== 'focus' && reaction !== 'victory') {
-              setCurrentVideo(getAssetPath('/videos/tv_show_focus.mp4'));
-            }
-          }}
+          className={`relative z-10 h-full w-auto max-w-full object-contain filter saturate-[1.06] contrast-[1.04] drop-shadow-[0_15px_40px_rgba(0,0,0,0.85)] transition-opacity duration-300 ${isTransitioning ? 'opacity-95' : 'opacity-100'}`}
           onError={(e) => {
             console.warn("[GameShow3D] Fallback vers vidéo standard :", e);
-            setCurrentVideo(getAssetPath('/videos/tv_show_focus.mp4'));
+            switchVideoSmoothly(getAssetPath('/videos/tv_show_focus.mp4'));
           }}
         />
 

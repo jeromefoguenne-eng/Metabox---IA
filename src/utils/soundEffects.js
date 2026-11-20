@@ -67,6 +67,28 @@ class SoundManager {
     return !!(this.currentVoiceAudio && !this.currentVoiceAudio.paused && !this.currentVoiceAudio.ended);
   }
 
+  // Niveau d'amplitude vocal RÉEL en direct (Web Audio AnalyserNode + fallback syllabique)
+  getRealVoiceAmplitude() {
+    if (!this.currentVoiceAudio || this.currentVoiceAudio.paused || this.currentVoiceAudio.ended) {
+      return 0;
+    }
+    if (this.voiceAnalyser && this.voiceFreqData) {
+      try {
+        this.voiceAnalyser.getByteTimeDomainData(this.voiceFreqData);
+        let sumSq = 0;
+        for (let i = 0; i < this.voiceFreqData.length; i++) {
+          const v = (this.voiceFreqData[i] - 128) / 128;
+          sumSq += v * v;
+        }
+        const rms = Math.sqrt(sumSq / this.voiceFreqData.length);
+        // Normalisation sensible aux syllabes humaines (seuil bruit < 0.015)
+        if (rms < 0.015) return 0;
+        return Math.min(1.0, rms * 5.2);
+      } catch {}
+    }
+    return this.getVoiceLevel();
+  }
+
   // Niveau d'amplitude et cadence de parole en direct (Lip-Sync précis 60 FPS)
   getVoiceLevel() {
     if (!this.currentVoiceAudio || this.currentVoiceAudio.paused || this.currentVoiceAudio.ended) {
@@ -201,9 +223,27 @@ class SoundManager {
     const voicePath = this.resolveAssetPath(`/audio/voices/${voiceKey}.mp3`);
     try {
       const audio = new Audio(voicePath);
+      audio.crossOrigin = "anonymous";
       this.currentVoiceAudio = audio;
       this.activeVoicesSet.add(audio);
       audio.volume = 0.95;
+
+      // Brancher un vrai AnalyserNode Web Audio pour mesurer les syllabes et pauses en temps réel
+      try {
+        this.init();
+        if (this.ctx) {
+          const srcNode = this.ctx.createMediaElementSource(audio);
+          const analyser = this.ctx.createAnalyser();
+          analyser.fftSize = 256;
+          analyser.smoothingTimeConstant = 0.35;
+          srcNode.connect(analyser);
+          analyser.connect(this.ctx.destination);
+          this.voiceAnalyser = analyser;
+          this.voiceFreqData = new Uint8Array(analyser.fftSize);
+        }
+      } catch {
+        this.voiceAnalyser = null;
+      }
 
       let hasEnded = false;
       const finish = () => {
