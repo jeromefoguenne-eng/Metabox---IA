@@ -27,57 +27,64 @@ os.makedirs(WORK_DIR, exist_ok=True)
 MASTER_IMAGE = "henri_real_logo_plan1.jpg"
 QUAD_3_4 = [(0.285, 0.778), (0.478, 0.806), (0.475, 0.935), (0.288, 0.903)]
 
+UNIFORM_LOCK = (
+    "Masterpiece 3D Disney Pixar animation, crisp high definition, "
+    "EXACT SAME studio scene, EXACT SAME lighting, EXACT SAME brightness and color palette, "
+    "EXACT SAME camera angle and framing, EXACT SAME host Henri in navy blue blazer and beige vest behind his illuminated HECh podium, "
+    "EXACT SAME dark tiered audience in the background, zero lighting shift, zero camera cut, "
+)
+
 UNIFIED_SHOTS = [
     {
         "id": "unified_pressure_suspense",
-        "title": "Plan Unifié 1 (12s) - Paliers 4-10, Analyse & Suspense Ultime",
+        "title": "Plan 03 (12s) - Paliers 4-10, Analyse & Suspense (Même scène & lumière)",
         "outputs": ["tv_show_q_medium.mp4", "tv_show_q_hard.mp4", "tv_show_pressure.mp4", "tv_show_suspense_intense.mp4"],
         "segments": [
-            "Masterpiece 3D Disney Pixar animation, crisp high definition, exact same studio and host Henri behind his HECh podium, transitioning smoothly into a serious focused analytical posture, lowering his hands to clasp them firmly on the wooden desk edge, leaning slightly forward with intense concentrated eyes, speaking gravely, dark suspenseful blue lighting, stable camera.",
-            "Masterpiece 3D Disney Pixar animation, crisp high definition, seamless continuation, Henri holds his intense piercing gaze directly into the camera, subtly tilting his head as he asks the decisive high-stakes question with deliberate solemn mouth animation, dramatic midnight-blue spotlight beaming down, silent tense audience in shadows, stable camera.",
-            "Masterpiece 3D Disney Pixar animation, crisp high definition, seamless continuation, heavy suspense silence in the dark studio, Henri keeps his mouth strictly closed, hands clasped on the HECh podium, steady unwavering eye contact scrutinizing the contestant, subtle slow breathing, stable camera."
+            UNIFORM_LOCK + "Henri smoothly lowers his hands to clasp them firmly on the wooden desk edge, leaning slightly forward with serious focused eyes, speaking with calm grave authority, fluid natural motion.",
+            UNIFORM_LOCK + "seamless continuation, Henri holds his steady focused gaze directly into the camera, subtly tilting his head while asking the decisive question with deliberate measured mouth movement, calm posture.",
+            UNIFORM_LOCK + "seamless continuation, Henri keeps his mouth strictly closed in attentive suspense, hands clasped on the HECh podium, steady unwavering eye contact, subtle natural breathing."
         ]
     },
     {
         "id": "unified_celebration_victory",
-        "title": "Plan Unifié 2 (8s) - Bonne Réponse, Applaudissements & Victoire 60 ECTS",
+        "title": "Plan 04 (8s) - Bonne Réponse & Victoire (Même scène & lumière)",
         "outputs": ["tv_show_celebration.mp4", "tv_show_victoire.mp4"],
         "segments": [
-            "Masterpiece 3D Disney Pixar animation, crisp high definition, exact same studio and host Henri behind his HECh podium, breaking into a huge radiant joyful smile and clapping his hands enthusiastically in celebration, warm golden spotlight rays illuminating the studio, audience in the tiered dark background rising and applauding happily, fluid Pixar motion, stable camera.",
-            "Masterpiece 3D Disney Pixar animation, crisp high definition, seamless continuation, Henri beams proudly, raising both arms in triumphant celebration as golden sparkles and confetti drift softly through the studio air, audience cheering and clapping enthusiastically behind him, stable camera."
+            UNIFORM_LOCK + "Henri breaks into a big radiant joyful smile and claps his hands enthusiastically toward the contestant, audience in the dark background clapping happily, fluid Pixar motion.",
+            UNIFORM_LOCK + "seamless continuation, Henri smiles broadly with pride, gives an enthusiastic approving nod and raises his hands in warm celebration while the audience continues applauding behind him."
         ]
     },
     {
         "id": "unified_defeat",
-        "title": "Plan Unifié 3 (8s) - Défaite & Empathie Sincère",
+        "title": "Plan 05 (8s) - Défaite & Empathie (Même scène & lumière)",
         "outputs": ["tv_show_defeat.mp4", "tv_show_wrong.mp4"],
         "segments": [
-            "Masterpiece 3D Disney Pixar animation, crisp high definition, exact same studio and host Henri behind his HECh podium, expression shifting to sincere compassionate sadness, slowly shaking his head with empathetic eyes and lowering his hands gently onto the desk, dim somber lighting, disappointed audience in the dark background, fluid motion, stable camera.",
-            "Masterpiece 3D Disney Pixar animation, crisp high definition, seamless continuation, Henri looks sympathetically at the contestant with a gentle reassuring nod and an open palm gesture of empathy, calm somber dark blue studio atmosphere, stable camera."
+            UNIFORM_LOCK + "Henri's expression shifts to sincere compassionate empathy, gently closing his eyes for a moment and slowly shaking his head while resting his hands softly on the HECh podium, audience reacting with quiet disappointment.",
+            UNIFORM_LOCK + "seamless continuation, Henri looks warmly and sympathetically at the contestant with a gentle comforting nod and a calm open-hand gesture of encouragement."
         ]
     },
     {
         "id": "unified_joker_5050",
-        "title": "Plan Unifié 4 (4s) - Joker 50/50",
+        "title": "Plan 06 (4s) - Joker 50/50 (Même scène & lumière)",
         "outputs": ["tv_show_joker_5050.mp4"],
         "segments": [
-            "Masterpiece 3D Disney Pixar animation, crisp high definition, exact same studio and host Henri behind his HECh podium, pressing decisively onto the illuminated touch console on top of his desk, looking up with an excited charismatic smile as bright cyan blue light beams sweep across the dark studio, fluid motion, stable camera."
+            UNIFORM_LOCK + "Henri presses decisively onto the touch panel on top of his HECh podium, then looks back up into the camera with a confident charismatic smile, fluid natural motion."
         ]
     },
     {
         "id": "unified_joker_public",
-        "title": "Plan Unifié 5 (4s) - Joker Vote du Public",
+        "title": "Plan 07 (4s) - Joker Vote du Public (Même scène & lumière)",
         "outputs": ["tv_show_joker_public.mp4", "tv_show_joker.mp4"],
         "segments": [
-            "Masterpiece 3D Disney Pixar animation, crisp high definition, exact same studio and host Henri behind his HECh podium, turning his torso smoothly toward the dark tiered audience and extending his open arm warmly to invite the audience to vote on their keypads, audience members leaning forward in the dim blue light, stable camera."
+            UNIFORM_LOCK + "Henri turns his upper body smoothly toward the dark tiered audience and extends his open hand warmly to invite the audience to vote on their keypads, fluid natural motion."
         ]
     },
     {
         "id": "unified_joker_sar",
-        "title": "Plan Unifié 6 (4s) - Joker Appel au SAR",
+        "title": "Plan 08 (4s) - Joker Appel au SAR (Même scène & lumière)",
         "outputs": ["tv_show_joker_sar.mp4"],
         "segments": [
-            "Masterpiece 3D Disney Pixar animation, crisp high definition, exact same studio and host Henri behind his HECh podium, raising his right hand gracefully to his ear to listen closely to his earpiece, nodding attentively with focused concentration as emerald studio accents glow softly, fluid Pixar motion, stable camera."
+            UNIFORM_LOCK + "Henri raises his right hand gracefully to his ear to listen closely to his earpiece, tilting his head slightly and nodding attentively with focused concentration, fluid natural motion."
         ]
     }
 ]
@@ -286,7 +293,8 @@ def produce_shot(shot):
         print(f"🎉 DÉPLOYÉ (100% raccord maître) : {dst}", flush=True)
 
 if __name__ == "__main__":
-    finalize_focus_first()
+    print("⏳ Attente de la disponibilité de ComfyUI avant de lancer les Plans 03 à 08 unifiés...", flush=True)
+    wait_for_comfy_idle()
     for shot in UNIFIED_SHOTS:
         produce_shot(shot)
-    print("\n🏁 SUITE UNIFIÉE 100% RACCORD TERMINÉE AVEC SUCCÈS !", flush=True)
+    print("\n🏁 SUITE UNIFIÉE 100% RACCORD (MÊME SCÈNE, MÊME LUMIÈRE) TERMINÉE AVEC SUCCÈS !", flush=True)

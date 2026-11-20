@@ -397,15 +397,11 @@ export default function GameShow3D({
           }}
         />
 
-        {/* Halo d'ambiance dynamique selon la réponse */}
+        {/* Vignette studio uniforme (luminosité et colorimétrie strictement constantes sur tous les plans) */}
         <div 
-          className="absolute inset-0 pointer-events-none transition-opacity duration-500 z-10"
+          className="absolute inset-0 pointer-events-none z-10"
           style={{
-            background: reaction === 'correct' || reaction === 'victory'
-              ? 'radial-gradient(circle at 50% 45%, rgba(16, 185, 129, 0.22) 0%, rgba(251, 191, 36, 0.15) 50%, transparent 80%)'
-              : reaction === 'wrong'
-              ? 'radial-gradient(circle at 50% 45%, rgba(225, 29, 72, 0.28) 0%, transparent 70%)'
-              : 'radial-gradient(circle at 50% 30%, rgba(56, 189, 248, 0.08) 0%, transparent 65%)'
+            background: 'radial-gradient(circle at 50% 35%, rgba(56, 189, 248, 0.04) 0%, transparent 65%)'
           }}
         />
       </div>
