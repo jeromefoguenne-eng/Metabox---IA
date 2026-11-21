@@ -30,36 +30,45 @@ export default function GameShow3D({
   const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
   const reactionPrevRef = useRef(reaction);
 
-  // Détermination de la source vidéo selon la réaction et le palier de questions (Zéro répétition)
+  // Détermination de la source vidéo selon les 21 Plans du Storyboard validé (100% cohérent)
   const getVideoSrc = () => {
-    if (reaction === 'victory') return getAssetPath('/videos/tv_show_victoire.mp4');
-    if (reaction === 'correct') return getAssetPath('/videos/tv_show_celebration.mp4');
-    if (reaction === 'wrong' || reaction === 'defeat') return getAssetPath('/videos/tv_show_defeat.mp4');
-    if (reaction === 'joker_5050') return getAssetPath('/videos/tv_show_joker_5050.mp4');
-    if (reaction === 'joker_public') return getAssetPath('/videos/tv_show_joker_public.mp4');
-    if (reaction === 'joker_sar') return getAssetPath('/videos/tv_show_joker_sar.mp4');
-    if (reaction === 'joker') return getAssetPath('/videos/tv_show_joker.mp4');
-    if (reaction === 'suspense') return getAssetPath('/videos/tv_show_suspense_intense.mp4');
-    if (reaction === 'pressure') return getAssetPath('/videos/tv_show_pressure.mp4');
-
-    // Quand Henri parle pour poser une question : plans longs différenciés par palier !
-    if (reaction === 'speaking' || reaction === 'intro_presentation') {
-      if (reaction === 'intro_presentation') return getAssetPath('/videos/tv_show_intro.mp4');
-
-      // Paliers 1 à 3 (Questions faciles - Plan Long Accueil & Détente)
-      if (currentQuestionIdx <= 2) {
-        return getAssetPath('/videos/tv_show_q_easy.mp4');
-      }
-      // Paliers 4 à 7 (Questions intermédiaires - Plan Long Réflexion Analytique)
-      if (currentQuestionIdx <= 6) {
-        return getAssetPath('/videos/tv_show_q_medium.mp4');
-      }
-      // Paliers 8 à 10 (Sommet de la pyramide - Plan Long Suspense Ultime)
-      return getAssetPath('/videos/tv_show_q_hard.mp4');
+    if (reaction === 'victory') return getAssetPath('/videos/wwtbam/plan21_victoire.mp4');
+    if (reaction === 'correct') return getAssetPath('/videos/wwtbam/plan19_bonne_reponse.mp4');
+    if (reaction === 'wrong' || reaction === 'defeat') return getAssetPath('/videos/wwtbam/plan20_defaite.mp4');
+    if (reaction === 'joker_5050') return getAssetPath('/videos/wwtbam/plan16_joker_5050.mp4');
+    if (reaction === 'joker_public' || reaction === 'joker') return getAssetPath('/videos/wwtbam/plan17_joker_public.mp4');
+    if (reaction === 'joker_sar') return getAssetPath('/videos/wwtbam/plan18_joker_sar.mp4');
+    if (reaction === 'suspense') return getAssetPath('/videos/wwtbam/plan14_pression3.mp4');
+    if (reaction === 'pressure') {
+      if (currentQuestionIdx >= 7) return getAssetPath('/videos/wwtbam/plan13_pression2.mp4');
+      return getAssetPath('/videos/wwtbam/plan12_pression1.mp4');
     }
 
-    // En attente / écoute : Henri bouche fermée attentif et concentré
-    return getAssetPath('/videos/tv_show_focus.mp4');
+    // Présentation de l'émission (Plan 01)
+    if (reaction === 'intro_presentation') {
+      return getAssetPath('/videos/wwtbam/plan01_presentation.mp4');
+    }
+
+    // Les 10 plans distincts de questions génériques (Plans 02 à 11)
+    if (reaction === 'speaking') {
+      const qPlans = [
+        '/videos/wwtbam/plan02_q1.mp4',
+        '/videos/wwtbam/plan03_q2.mp4',
+        '/videos/wwtbam/plan04_q3.mp4',
+        '/videos/wwtbam/plan05_q4.mp4',
+        '/videos/wwtbam/plan06_q5.mp4',
+        '/videos/wwtbam/plan07_q6.mp4',
+        '/videos/wwtbam/plan08_q7.mp4',
+        '/videos/wwtbam/plan09_q8.mp4',
+        '/videos/wwtbam/plan10_q9.mp4',
+        '/videos/wwtbam/plan11_q10.mp4',
+      ];
+      const idx = Math.max(0, Math.min(qPlans.length - 1, currentQuestionIdx));
+      return getAssetPath(qPlans[idx]);
+    }
+
+    // Plan 15 — Écoute silencieuse attentive (bouche strictement fermée, 20s)
+    return getAssetPath('/videos/wwtbam/plan15_ecoute.mp4');
   };
 
   const [currentVideo, setCurrentVideo] = useState(getVideoSrc());
@@ -97,7 +106,7 @@ export default function GameShow3D({
   useEffect(() => {
     let rafId;
     const isVocalState = ['speaking', 'intro_presentation', 'pressure', 'joker_5050', 'joker_public', 'joker_sar'].includes(reaction);
-    const focusPath = getAssetPath('/videos/tv_show_focus.mp4');
+    const focusPath = getAssetPath('/videos/wwtbam/plan15_ecoute.mp4');
 
     const syncLoop = () => {
       const vid = videoRef.current;
@@ -353,15 +362,15 @@ export default function GameShow3D({
       className="w-full h-full relative select-none overflow-hidden bg-slate-950 flex items-center justify-center"
       style={{ minHeight: '320px' }}
     >
-      {/* Fond de décor de studio étendu (exactement la même esthétique maître) */}
+      {/* Fond de décor de studio étendu (exactement l'esthétique maître validée) */}
       <img
-        src={getAssetPath('/images/henri_real_logo_plan1.jpg')}
+        src={getAssetPath('/images/storyboard/master_wwtbam_hech_base.jpg')}
         alt="Studio WWTBAM HECh"
         className="absolute inset-0 w-full h-full object-cover filter blur-md brightness-[0.45] opacity-85 pointer-events-none"
       />
 
       {/* =========================================================================
-          1. MOTEUR VIDÉO BROADCAST WAN 2.1 (CROSSFADE SANS FAUX RACCORD + SYNC VOCALE)
+          1. MOTEUR VIDÉO BROADCAST WAN 2.1 (21 PLANS STORYBOARD + CROSSFADE + SYNC VOCALE)
           ========================================================================= */}
       <div 
         className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none transition-transform duration-300 ease-out"
@@ -385,15 +394,18 @@ export default function GameShow3D({
           ref={videoRef}
           key={currentVideo}
           src={currentVideo}
-          poster={getAssetPath('/images/henri_real_logo_plan1.jpg')}
+          poster={getAssetPath('/images/storyboard/master_wwtbam_hech_base.jpg')}
           autoPlay
           loop
           muted
           playsInline
           className={`relative z-10 h-full w-auto max-w-full object-contain filter saturate-[1.06] contrast-[1.04] drop-shadow-[0_15px_40px_rgba(0,0,0,0.85)] transition-opacity duration-300 ${isTransitioning ? 'opacity-95' : 'opacity-100'}`}
           onError={(e) => {
-            console.warn("[GameShow3D] Fallback vers vidéo standard :", e);
-            switchVideoSmoothly(getAssetPath('/videos/tv_show_focus.mp4'));
+            console.warn("[GameShow3D] Plan en cours de rendu, fallback propre vers plan01 :", e);
+            const fallback = getAssetPath('/videos/wwtbam/plan01_presentation.mp4');
+            if (currentVideo !== fallback) {
+              switchVideoSmoothly(fallback);
+            }
           }}
         />
 
